@@ -93,3 +93,5 @@ ENV/
 
 # IDEA
 .idea
+*.snap
+*.xlog

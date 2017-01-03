@@ -11,36 +11,31 @@ import datetime
 
 import asynctnt
 
+
 async def main():
     conn = asynctnt.Connection(host='127.0.0.1', port=3303, username='tt2', password='ttp2',
                                reconnect_timeout=1)
     await conn.connect()
-    # await conn.auth('tt2', 'ttp2')
-
-    # await conn.disconnect()
-    # await conn.connect()
     
-    try:
-        res = await conn.call('long', 4, timeout=2)
-        print(res.data)
-    except asyncio.TimeoutError:
-        print('timeout!')
+    n_requests = 50000
     
-    n_requests = 10
-
+    start = datetime.datetime.now()
+    
+    coros = []
+    
     try:
         for _ in range(n_requests):
-            try:
-                res = await conn.ping()
-                print(res)
-            except Exception as e:
-                print(e)
-            await asyncio.sleep(1)
+            # await conn.ping()
+            coros.append(asyncio.ensure_future(conn.call('test')))
     except Exception as e:
         print(e)
     
-    print('all')
-    # await asyncio.sleep(2)
+    await asyncio.wait(coros)
     
+    end = datetime.datetime.now()
+    elapsed = end - start
+    print('Elapsed: {}, RPS: {}'.format(elapsed, n_requests / elapsed.total_seconds()))
+
+
 loop = asyncio.get_event_loop()
 loop.run_until_complete(main())
