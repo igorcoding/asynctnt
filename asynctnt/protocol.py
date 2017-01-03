@@ -14,13 +14,13 @@ from tarantool.utils import check_key
 
 from asynctnt.const import IPROTO_GREETING_SIZE, TARANTOOL_VERSION_LENGTH, SALT_LENGTH, SCRAMBLE_SIZE
 from asynctnt.iproto import IProto
+from asynctnt.schema import Schema, parse_schema
 
 
 class ProtocolState(enum.IntEnum):
     IDLE = 0
     GREETING = 1
-    AUTH = 2
-    NORMAL = 3
+    NORMAL = 2
     
 
 class ConnectionState(enum.IntEnum):
@@ -53,7 +53,7 @@ class BaseProtocol:
         '_host', '_port', '_opts', '_on_connection_lost', '_loop',
         '_request_timeout', '_reconnect_timeout',
         '_connection', '_connected_fut', '_transport',
-        '_reqs', '_state', '_con_state', '_rbuf', '_iproto',
+        '_reqs', '_state', '_con_state', '_rbuf', '_iproto', '_schema',
         'version', 'salt',
         'encoding', 'error',
         'create_future',
@@ -77,7 +77,8 @@ class BaseProtocol:
         self._state = ProtocolState.IDLE
         self._con_state = ConnectionState.BAD
         self._rbuf = bytes()
-        self._iproto = IProto(self)
+        self._iproto = IProto()
+        self._schema = None
         
         self.version = None
         self.salt = None
@@ -213,6 +214,7 @@ class BaseProtocol:
                 spaces, indexes = f.result()
                 logger.debug('Tarantool[{}:{}] Schema fetch succeeded. Spaces: {}, Indexes: {}.'.format(
                              self._host, self._port, len(spaces), len(indexes)))
+                self._schema = parse_schema(spaces, indexes)
                 self._connected_fut.set_result(True)
                 self._con_state = ConnectionState.FULLY_CONNECTED
             else:
@@ -315,16 +317,29 @@ class BaseProtocol:
         key = check_key(key, select=True)
 
         if isinstance(space_name, str):
-            assert False, 'not supported yet'
+            sp = self._schema.get_space(space_name)
+            if sp is None:
+                raise Exception('Space {} not found'.format(space_name))
+            space_name = sp.sid
 
         if isinstance(index_name, str):
-            assert False, 'not supported yet'
+            idx = self._schema.get_index(space_name, index_name)
+            if idx is None:
+                raise Exception('Index {} for space {} not found'.format(index_name, space_name))
+            index_name = idx.iid
 
         return self._execute(*self._iproto.select(space_name, index_name, key, offset, limit, iterator),
                              timeout=timeout)
     
     def insert(self, space_name, values, **kwargs):
         timeout = kwargs.get('timeout')
+        
+        if isinstance(space_name, str):
+            sp = self._schema.get_space(space_name)
+            if sp is None:
+                raise Exception('Space {} not found'.format(space_name))
+            space_name = sp.sid
+            
         return self._execute(*self._iproto.insert(space_name, values),
                              timeout=timeout)
 

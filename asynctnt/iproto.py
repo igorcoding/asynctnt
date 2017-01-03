@@ -13,8 +13,7 @@ class IProto:
     """
         Proxy to tarantool Request objects
     """
-    def __init__(self, protocol):
-        self._protocol = protocol
+    def __init__(self):
         self._sync = 0
         
     def generate_sync(self):

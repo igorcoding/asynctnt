@@ -1,3 +1,5 @@
+import pyximport; pyximport.install()
+
 import asyncio
 # import uvloop; asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
 import logging
@@ -25,12 +27,13 @@ async def main():
     
     try:
         for _ in range(n_requests):
-            # await conn.ping()
-            coros.append(asyncio.ensure_future(conn.call('test')))
+            await conn.ping()
+            # coros.append(asyncio.ensure_future(conn.call('test')))
     except Exception as e:
         print(e)
     
-    await asyncio.wait(coros)
+    if coros:
+        await asyncio.wait(coros)
     
     end = datetime.datetime.now()
     elapsed = end - start

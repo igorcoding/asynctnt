@@ -3,14 +3,13 @@ import os
 
 import logging
 
-from asynctnt import iproto
 from asynctnt import protocol
 
 __all__ = (
     'Connection'
 )
 
-logger = logging.getLogger('asynctnt')
+logger = logging.getLogger(__package__)
 
 
 class Connection:
@@ -105,7 +104,7 @@ class Connection:
                 self._transport = tr
                 self._protocol = pr
                 return
-            except:
+            except (OSError, asyncio.TimeoutError) as e:
                 if self._reconnect_timeout > 0:
                     logger.warning('Connecting to Tarantool[%s:%s] failed. Retrying in %i seconds',
                                    self._host, self._port, self._reconnect_timeout)
@@ -134,8 +133,8 @@ class Connection:
     
     def __getattr__(self, name):
         # Proxy commands.
-        if name not in iproto.all_requests:
-            raise AttributeError('Request \'{}\' not found'.format(name))
+        # if name not in iproto.all_requests:
+        #     raise AttributeError('Request \'{}\' not found'.format(name))
         
         return getattr(self._protocol, name)
 
