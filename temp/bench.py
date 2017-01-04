@@ -27,8 +27,8 @@ async def main():
     
     try:
         for _ in range(n_requests):
-            await conn.ping()
-            # coros.append(asyncio.ensure_future(conn.call('test')))
+            # await conn.ping()
+            coros.append(conn.call('test'))
     except Exception as e:
         print(e)
     

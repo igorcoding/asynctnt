@@ -8,6 +8,8 @@ import os
 import time
 import unittest
 
+from asynctnt.instance import TarantoolInstance
+
 
 @contextlib.contextmanager
 def silence_asyncio_long_exec_warning():
@@ -68,6 +70,7 @@ class TestCase(unittest.TestCase, metaclass=TestCaseMeta):
 
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(None)
+        asyncio.get_child_watcher().attach_loop(loop)
         cls.loop = loop
 
     @classmethod
@@ -85,3 +88,21 @@ class TestCase(unittest.TestCase, metaclass=TestCaseMeta):
             if time.monotonic() - st > delta:
                 raise AssertionError(
                     'running block took longer than {}'.format(delta))
+
+
+class TarantoolTestCase(TestCase):
+    tnt = None
+    
+    @classmethod
+    def setUpClass(cls):
+        TestCase.setUpClass()
+        logging.basicConfig(level=logging.DEBUG)
+        tnt = TarantoolInstance(loop=cls.loop)
+        cls.loop.run_until_complete(tnt.start())
+        cls.tnt = tnt
+        
+    @classmethod
+    def tearDownClass(cls):
+        if cls.tnt:
+            cls.loop.run_until_complete(cls.tnt.stop())
+        TestCase.tearDownClass()

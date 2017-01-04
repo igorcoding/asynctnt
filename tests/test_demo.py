@@ -1,10 +1,12 @@
-from asynctnt._testbase import TestCase
-from asynctnt.demo import super_func
+import pyximport; pyximport.install()
+
+import asynctnt
+from asynctnt._testbase import TarantoolTestCase
 
 
-class DemoTestCase(TestCase):
-    async def test_super_func(self):
-        a = 5
-        b = 6
-        res = await super_func(a, b, loop=self.loop)
-        self.assertEqual(res, a + b)
+class ConnectTestCase(TarantoolTestCase):
+    async def test_connect(self):
+        conn = asynctnt.Connection(host=self.tnt.host, port=self.tnt.port, loop=self.loop)
+        await conn.connect()
+        print(await conn.ping())
+        await conn.disconnect()

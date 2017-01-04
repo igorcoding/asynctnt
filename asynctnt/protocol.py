@@ -266,6 +266,9 @@ class BaseProtocol:
             self._on_connection_lost(exc)
     
     def _execute(self, sync, request_data, *, timeout=0):
+        if not self.is_connected():
+            raise NotConnectedError('Tarantool is not connected')
+        
         waiter = self.create_future()
         if timeout and timeout > 0:
             # Client should wait the special timeout-ed future (wrapping waiter)
@@ -278,10 +281,6 @@ class BaseProtocol:
             fut = waiter
         
         self._reqs[sync] = waiter
-        
-        if not self.is_connected():
-            raise NotConnectedError('Tarantool is not connected')
-        
         self._transport.write(request_data)
         
         return fut
