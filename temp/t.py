@@ -14,9 +14,11 @@ import datetime
 import asynctnt
 
 async def main():
-    conn = asynctnt.Connection(host='127.0.0.1', port=3303, username='tt2', password='ttp2',
+    conn = asynctnt.Connection(host='127.0.0.1', port=3303,
                                reconnect_timeout=1)
     await conn.connect()
+    print(conn._protocol._schema)
+    print(conn._protocol._con_state)
     
     # await conn.auth('tt2', 'ttp2')
 
@@ -31,16 +33,16 @@ async def main():
     #
     n_requests = 10
 
-    try:
-        for _ in range(n_requests):
-            try:
-                res = await conn.ping()
-                print(res)
-            except Exception as e:
-                print(e)
-            await asyncio.sleep(1)
-    except Exception as e:
-        print(e)
+    # try:
+    #     for _ in range(n_requests):
+    #         try:
+    #             res = await conn.ping()
+    #             print(res)
+    #         except Exception as e:
+    #             print(e)
+    #         await asyncio.sleep(1)
+    # except Exception as e:
+    #     print(e)
     
     print('all')
     # await asyncio.sleep(2)

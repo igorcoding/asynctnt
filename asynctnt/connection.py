@@ -131,6 +131,12 @@ class Connection:
     def version(self):
         return self._protocol.version
     
+    @property
+    def is_connected(self):
+        if self._protocol is None:
+            return False
+        return self._protocol.is_connected()
+    
     def __getattr__(self, name):
         # Proxy commands.
         # if name not in iproto.all_requests:

@@ -8,6 +8,7 @@ import os
 import time
 import unittest
 
+import asynctnt
 from asynctnt.instance import TarantoolInstance
 
 
@@ -91,13 +92,28 @@ class TestCase(unittest.TestCase, metaclass=TestCaseMeta):
 
 
 class TarantoolTestCase(TestCase):
+    DO_CONNECT = True
+    LOGGING_LEVEL = logging.WARNING
+    TNT_APP_LUA_PATH = None
+    TNT_CLEANUP = True
+
     tnt = None
+    
+    @classmethod
+    def read_applua(cls):
+        if cls.TNT_APP_LUA_PATH:
+            with open(cls.TNT_APP_LUA_PATH, 'r') as f:
+                return f.read()
     
     @classmethod
     def setUpClass(cls):
         TestCase.setUpClass()
-        logging.basicConfig(level=logging.DEBUG)
-        tnt = TarantoolInstance(loop=cls.loop)
+        logging.basicConfig(level=cls.LOGGING_LEVEL)
+        tnt = TarantoolInstance(
+            applua=cls.read_applua(),
+            cleanup=cls.TNT_CLEANUP,
+            loop=cls.loop
+        )
         cls.loop.run_until_complete(tnt.start())
         cls.tnt = tnt
         
@@ -106,3 +122,14 @@ class TarantoolTestCase(TestCase):
         if cls.tnt:
             cls.loop.run_until_complete(cls.tnt.stop())
         TestCase.tearDownClass()
+        
+    def setUp(self):
+        super(TarantoolTestCase, self).setUp()
+        if self.DO_CONNECT:
+            self.conn = asynctnt.Connection(host=self.tnt.host, port=self.tnt.port, loop=self.loop)
+            self.loop.run_until_complete(self.conn.connect())
+    
+    def tearDown(self):
+        if hasattr(self, 'conn') and self.conn is not None:
+            self.loop.run_until_complete(self.conn.disconnect())
+        super(TarantoolTestCase, self).tearDown()

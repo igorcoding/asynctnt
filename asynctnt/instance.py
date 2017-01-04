@@ -129,6 +129,8 @@ class TarantoolInstance:
         self._is_stopping = False
         self._transport = None
         self._protocol = None
+        self._last_return_code = None
+        self._stop_event = asyncio.Event(loop=self._loop)
         
     def _random_string(self,
                        length, *,
@@ -177,7 +179,7 @@ class TarantoolInstance:
             'replication_source': 'nil' if not self._replication_source else '"{}"'.format(self._replication_source),
             'work_dir': self._root,
             'log_level': self._log_level,
-            'applua': self._applua
+            'applua': self._applua if self._applua else ''
         }
         return template.substitute(d)
     
@@ -197,6 +199,8 @@ class TarantoolInstance:
         return 'Tarantool[{}:{}]'.format(self._host, self._port)
             
     def prepare(self):
+        self._last_return_code = None
+        self._stop_event.clear()
         os.mkdir(self._root)
         initlua = self._render_initlua()
         initlua_path = self._save_initlua(initlua)
@@ -223,9 +227,14 @@ class TarantoolInstance:
         return self._protocol.pid if self._protocol else None
     
     def _on_process_exit(self, return_code):
+        self._last_return_code = return_code
         if self._is_stopping:
             return
+        self._stop_event.set()
         self.cleanup()
+        
+    async def wait_stopped(self):
+        return await self._stop_event.wait()
 
     async def start(self):
         self._logger.info('Starting Tarantool instance ({})'.format(self._title))
@@ -245,7 +254,8 @@ class TarantoolInstance:
         attempts = math.ceil(self._timeout / interval)
         while attempts > 0:
             if self._protocol is None or self._protocol.returncode is not None:
-                break
+                raise RuntimeError('{} exited unexpectedly with exit code {}'.format(self.fingerprint,
+                                                                                     self._last_return_code))
             cmdline = procinfo.cmdline()
             if cmdline:
                 cmdline = cmdline[0]
@@ -292,29 +302,10 @@ class TarantoolInstance:
         self._is_stopping = False
         self._transport = None
         self._protocol = None
+        self._stop_event.clear()
         if self._cleanup:
             shutil.rmtree(self._root, ignore_errors=True)
         self._logger.info('Destroyed Tarantool instance ({})'.format(self._title))
 
     def __del__(self):
         self.terminate()
-        
-        
-if __name__ == '__main__':
-    # import uvloop; asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
-    async def main(loop):
-        t = TarantoolInstance(loop=loop)
-        await t.start()
-        await t.stop()
-        
-    logging.basicConfig(level=logging.DEBUG)
-    event_loop = asyncio.get_event_loop()
-    asyncio.set_event_loop(None)
-    asyncio.get_child_watcher().attach_loop(event_loop)
-    try:
-        event_loop.run_until_complete(
-            main(event_loop)
-        )
-    finally:
-        event_loop.close()
-

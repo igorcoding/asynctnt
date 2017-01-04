@@ -95,3 +95,4 @@ ENV/
 .idea
 *.snap
 *.xlog
+__tnt*

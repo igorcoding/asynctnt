@@ -53,7 +53,7 @@ class BaseProtocol:
         '_host', '_port', '_opts', '_on_connection_lost', '_loop',
         '_request_timeout', '_reconnect_timeout',
         '_connection', '_connected_fut', '_transport',
-        '_reqs', '_state', '_con_state', '_rbuf', '_iproto', '_schema',
+        '_reqs', '_state', '_con_state', '_rbuf', '_iproto', 'schema',
         'version', 'salt',
         'encoding', 'error',
         'create_future',
@@ -78,7 +78,7 @@ class BaseProtocol:
         self._con_state = ConnectionState.BAD
         self._rbuf = bytes()
         self._iproto = IProto()
-        self._schema = None
+        self.schema = None
         
         self.version = None
         self.salt = None
@@ -91,8 +91,8 @@ class BaseProtocol:
             self.create_future = self._loop.create_future
         except AttributeError:
             self.create_future = self._create_future_fallback
-    
-    def _create_future_fallback(self):
+
+    def _create_future_fallback(self):  # pragma: no cover
         return asyncio.Future(loop=self._loop)
     
     def set_connection(self, connection):
@@ -169,11 +169,17 @@ class BaseProtocol:
         if self._opts:
             username = self._opts.get('username')
             password = self._opts.get('password')
+            fetch_schema = self._opts.get('fetch_schema', False)
             
             if username and password:
                 self._do_auth(username, password)
                 return
+            elif fetch_schema:
+                self._do_fetch_schema()
+                return
+                
         self._connected_fut.set_result(True)
+        self._con_state = ConnectionState.FULLY_CONNECTED
         
     def _do_auth(self, username, password):
         fut = self.auth(username, password)
@@ -214,7 +220,7 @@ class BaseProtocol:
                 spaces, indexes = f.result()
                 logger.debug('Tarantool[{}:{}] Schema fetch succeeded. Spaces: {}, Indexes: {}.'.format(
                              self._host, self._port, len(spaces), len(indexes)))
-                self._schema = parse_schema(spaces, indexes)
+                self.schema = parse_schema(spaces, indexes)
                 self._connected_fut.set_result(True)
                 self._con_state = ConnectionState.FULLY_CONNECTED
             else:
@@ -225,11 +231,15 @@ class BaseProtocol:
                 else:
                     self._connected_fut.set_exception(e)
         
-        fut = asyncio.ensure_future(asyncio.wait_for(
-            asyncio.gather(fut_vspace, fut_vindex, loop=self._loop, return_exceptions=True),
-            self._request_timeout,
+        fut = asyncio.ensure_future(
+            asyncio.wait_for(
+                asyncio.gather(fut_vspace, fut_vindex, return_exceptions=True,
+                               loop=self._loop),
+                self._request_timeout,
+                loop=self._loop
+            ),
             loop=self._loop
-        ))
+        )
         fut.add_done_callback(on_fetch)
         return fut
     
@@ -256,8 +266,11 @@ class BaseProtocol:
     def connection_lost(self, exc):
         logger.debug('Connection lost: {}'.format(exc))
         self._con_state = ConnectionState.BAD
+        self.schema = None
+        self.version = None
+        self.salt = None
+        self._rbuf = bytes()
         
-        print(self._reqs)
         for sync, fut in self._reqs.items():
             if fut and not fut.cancelled():
                 fut.set_exception(ConnectionLostError('Connection to Tarantool lost'))
@@ -316,13 +329,13 @@ class BaseProtocol:
         key = check_key(key, select=True)
 
         if isinstance(space_name, str):
-            sp = self._schema.get_space(space_name)
+            sp = self.schema.get_space(space_name)
             if sp is None:
                 raise Exception('Space {} not found'.format(space_name))
             space_name = sp.sid
 
         if isinstance(index_name, str):
-            idx = self._schema.get_index(space_name, index_name)
+            idx = self.schema.get_index(space_name, index_name)
             if idx is None:
                 raise Exception('Index {} for space {} not found'.format(index_name, space_name))
             index_name = idx.iid
@@ -334,7 +347,7 @@ class BaseProtocol:
         timeout = kwargs.get('timeout')
         
         if isinstance(space_name, str):
-            sp = self._schema.get_space(space_name)
+            sp = self.schema.get_space(space_name)
             if sp is None:
                 raise Exception('Space {} not found'.format(space_name))
             space_name = sp.sid
