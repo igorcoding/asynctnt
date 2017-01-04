@@ -10,8 +10,6 @@ import string
 import functools
 import psutil
 
-CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
-
 
 class TarantoolInstanceProtocol(asyncio.SubprocessProtocol):
     def __init__(self, tnt, on_exit):
