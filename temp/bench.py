@@ -19,7 +19,7 @@ async def main():
                                reconnect_timeout=1)
     await conn.connect()
     
-    n_requests = 50000
+    n_requests = 10000
     
     start = datetime.datetime.now()
     
@@ -27,8 +27,8 @@ async def main():
     
     try:
         for _ in range(n_requests):
-            # await conn.ping()
-            coros.append(conn.call('test'))
+            await conn.ping()
+            # coros.append(conn.call('test'))
     except Exception as e:
         print(e)
     

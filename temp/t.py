@@ -17,7 +17,7 @@ async def main():
     conn = asynctnt.Connection(host='127.0.0.1', port=3303,
                                reconnect_timeout=1)
     await conn.connect()
-    print(conn._protocol._schema)
+    print(conn._protocol.schema)
     print(conn._protocol._con_state)
     
     # await conn.auth('tt2', 'ttp2')

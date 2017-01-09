@@ -1,20 +1,12 @@
 import asyncio
-import os
 
-import logging
-import pyximport; pyximport.install()
+from tests import MyBaseTarantoolTestCase
 
 import asynctnt
-from asynctnt._testbase import TarantoolTestCase
 
 
-CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
-
-
-class ConnectTestCase(TarantoolTestCase):
+class ConnectTestCase(MyBaseTarantoolTestCase):
     DO_CONNECT = False
-    LOGGING_LEVEL = logging.ERROR
-    TNT_APP_LUA_PATH = os.path.join(CURRENT_DIR, 'files', 'app.lua')
     
     async def test_connect(self):
         conn = asynctnt.Connection(host=self.tnt.host, port=self.tnt.port,
@@ -27,7 +19,7 @@ class ConnectTestCase(TarantoolTestCase):
         self.assertTrue(conn._protocol.is_fully_connected())
         self.assertIsNotNone(conn._protocol.schema)
         await conn.disconnect()
-        
+    
     async def test_connect_no_schema(self):
         conn = asynctnt.Connection(host=self.tnt.host, port=self.tnt.port,
                                    reconnect_timeout=0, fetch_schema=False,
@@ -39,7 +31,7 @@ class ConnectTestCase(TarantoolTestCase):
         self.assertTrue(conn._protocol.is_fully_connected())
         self.assertIsNone(conn._protocol.schema)
         await conn.disconnect()
-        
+    
     async def test_connect_auth(self):
         conn = asynctnt.Connection(host=self.tnt.host, port=self.tnt.port,
                                    username='t1', password='t1',
@@ -52,7 +44,7 @@ class ConnectTestCase(TarantoolTestCase):
         self.assertTrue(conn._protocol.is_fully_connected())
         self.assertIsNotNone(conn._protocol.schema)
         await conn.disconnect()
-        
+    
     async def test_connect_auth_no_schema(self):
         conn = asynctnt.Connection(host=self.tnt.host, port=self.tnt.port,
                                    username='t1', password='t1',
@@ -65,7 +57,7 @@ class ConnectTestCase(TarantoolTestCase):
         self.assertTrue(conn._protocol.is_fully_connected())
         self.assertIsNone(conn._protocol.schema)
         await conn.disconnect()
-        
+    
     async def test_disconnect(self):
         conn = asynctnt.Connection(host=self.tnt.host, port=self.tnt.port,
                                    reconnect_timeout=0,
@@ -75,7 +67,7 @@ class ConnectTestCase(TarantoolTestCase):
         self.assertFalse(conn.is_connected)
         self.assertFalse(conn._protocol.is_fully_connected())
         self.assertIsNone(conn._protocol.schema)
-        
+    
     async def test_disconnect_auth(self):
         conn = asynctnt.Connection(host=self.tnt.host, port=self.tnt.port,
                                    username='t1', password='t1',
@@ -86,7 +78,7 @@ class ConnectTestCase(TarantoolTestCase):
         self.assertFalse(conn.is_connected)
         self.assertFalse(conn._protocol.is_fully_connected())
         self.assertIsNone(conn._protocol.schema)
-
+    
     async def test_connect_multiple(self):
         conn = asynctnt.Connection(host=self.tnt.host, port=self.tnt.port,
                                    reconnect_timeout=0,
@@ -96,7 +88,7 @@ class ConnectTestCase(TarantoolTestCase):
             await conn.disconnect()
         self.assertFalse(conn.is_connected)
         self.assertFalse(conn._protocol.is_fully_connected())
-
+    
     async def test_connect_cancel(self):
         conn = asynctnt.Connection(host=self.tnt.host, port=self.tnt.port,
                                    reconnect_timeout=0,
