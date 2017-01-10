@@ -1,7 +1,7 @@
 from libc.stdint cimport uint32_t, uint64_t, int64_t
 
 cimport cmsgpuck as mp
-cimport const as tnt_const
+cimport tntconst
 
 from response cimport TntResponse
 
@@ -125,18 +125,18 @@ cdef cresponse_parse(bytes buf):
         #     raise TypeError('Header key must be a MP_UINT')
         
         key = mp.mp_decode_uint(&b)
-        if key == tnt_const.TP_CODE:
+        if key == tntconst.TP_CODE:
             # if mp.mp_typeof(b[0]) != mp.MP_UINT:
             #     raise TypeError('code type must be a MP_UINT')
             
             resp.code = mp.mp_decode_uint(&b)
             resp.code &= 0x7FFF
-        elif key == tnt_const.TP_SYNC:
+        elif key == tntconst.TP_SYNC:
             # if mp.mp_typeof(b[0]) != mp.MP_UINT:
             #     raise TypeError('sync type must be a MP_UINT')
             
             resp.sync = mp.mp_decode_uint(&b)
-        elif key == tnt_const.TP_SCHEMA_ID:
+        elif key == tntconst.TP_SCHEMA_ID:
             # if mp.mp_typeof(b[0]) != mp.MP_UINT:
             #     raise TypeError('schema_id type must be a MP_UINT')
             
@@ -160,7 +160,7 @@ cdef cresponse_parse(bytes buf):
         #     raise TypeError('Header key must be a MP_UINT')
         
         key = mp.mp_decode_uint(&b)
-        if key == tnt_const.TP_ERROR:
+        if key == tntconst.TP_ERROR:
             # if mp.mp_typeof(b[0]) != mp.MP_STR:
             #     raise TypeError('errstr type must be a MP_STR')
             
@@ -168,7 +168,7 @@ cdef cresponse_parse(bytes buf):
             s_len = 0
             s = mp.mp_decode_str(&b, &s_len)
             resp.errmsg = s[:s_len].decode()
-        elif key == tnt_const.TP_DATA:
+        elif key == tntconst.TP_DATA:
             if mp.mp_typeof(b[0]) != mp.MP_ARRAY:
                 raise TypeError('body data type must be a MP_ARRAY')
             resp.body = _cresponse_parse_body_data(b)

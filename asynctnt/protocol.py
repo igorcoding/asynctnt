@@ -21,13 +21,13 @@ class ProtocolState(enum.IntEnum):
     IDLE = 0
     GREETING = 1
     NORMAL = 2
-    
+
 
 class ConnectionState(enum.IntEnum):
     BAD = 0
     CONNECTED = 1
     FULLY_CONNECTED = 2
-    
+
 
 logger = logging.getLogger(__package__)
 
@@ -57,7 +57,7 @@ class BaseProtocol:
         'version', 'salt',
         'encoding', 'error',
         'create_future',
-        
+    
     )
     
     def __init__(self, host, port, opts, connected_fut, on_connection_lost, loop, **kwargs):
@@ -76,7 +76,7 @@ class BaseProtocol:
         self._reqs = {}
         self._state = ProtocolState.IDLE
         self._con_state = ConnectionState.BAD
-        self._rbuf = bytes()
+        self._rbuf = bytearray()
         self._iproto = IProto()
         self.schema = None
         
@@ -91,13 +91,13 @@ class BaseProtocol:
             self.create_future = self._loop.create_future
         except AttributeError:
             self.create_future = self._create_future_fallback
-
+    
     def _create_future_fallback(self):  # pragma: no cover
         return asyncio.Future(loop=self._loop)
     
     def set_connection(self, connection):
         self._connection = connection
-        
+    
     def is_connected(self):
         return self._con_state != ConnectionState.BAD
     
@@ -108,15 +108,14 @@ class BaseProtocol:
         if not data:
             return
         
+        self._rbuf.extend(data)
         if self._state == ProtocolState.GREETING:
-            self._rbuf += data
             if len(self._rbuf) < IPROTO_GREETING_SIZE:
                 logger.debug('greeting not enough')
                 return
             self._process__greeting()
             self._rbuf = self._rbuf[IPROTO_GREETING_SIZE:]
         elif self._state == ProtocolState.NORMAL:
-            self._rbuf += data
             rbuf = self._rbuf
             len_buf = len(rbuf)
             curr = 0
@@ -155,7 +154,7 @@ class BaseProtocol:
                 self._rbuf = rbuf[curr:]
         else:
             pass
-
+    
     def eof_received(self):
         print('eof')
     
@@ -177,13 +176,13 @@ class BaseProtocol:
             elif fetch_schema:
                 self._do_fetch_schema()
                 return
-                
+        
         self._connected_fut.set_result(True)
         self._con_state = ConnectionState.FULLY_CONNECTED
-        
+    
     def _do_auth(self, username, password):
         fut = self.auth(username, password)
-    
+        
         def on_authorized(f):
             if f.cancelled():
                 self._connected_fut.set_exception(asyncio.futures.CancelledError())
@@ -202,10 +201,10 @@ class BaseProtocol:
                 logger.error('Tarantool[{}:{}] Authorization failed'.format(self._host, self._port))
                 self._connected_fut.set_exception(e)
                 self._con_state = ConnectionState.BAD
-    
+        
         fut.add_done_callback(on_authorized)
         return fut
-        
+    
     def _do_fetch_schema(self):
         fut_vspace = self.select(self._SPACE_VSPACE)
         fut_vindex = self.select(self._SPACE_VINDEX)
@@ -219,7 +218,7 @@ class BaseProtocol:
             if not e:
                 spaces, indexes = f.result()
                 logger.debug('Tarantool[{}:{}] Schema fetch succeeded. Spaces: {}, Indexes: {}.'.format(
-                             self._host, self._port, len(spaces), len(indexes)))
+                    self._host, self._port, len(spaces), len(indexes)))
                 self.schema = parse_schema(spaces, indexes)
                 self._connected_fut.set_result(True)
                 self._con_state = ConnectionState.FULLY_CONNECTED
@@ -262,7 +261,7 @@ class BaseProtocol:
             self._state = ProtocolState.GREETING
         except Exception as ex:
             transport.abort()
-
+    
     def connection_lost(self, exc):
         logger.debug('Connection lost: {}'.format(exc))
         self._con_state = ConnectionState.BAD
@@ -314,7 +313,7 @@ class BaseProtocol:
         
         if len(args) == 1 and isinstance(args[0], (list, tuple)):
             args = args[0]
-
+        
         timeout = kwargs.get('timeout')
         return self._execute(*self._iproto.call(func_name, args),
                              timeout=timeout)
@@ -325,21 +324,21 @@ class BaseProtocol:
         index_name = kwargs.get('index', 0)
         iterator = kwargs.get('iterator', 0)
         timeout = kwargs.get('timeout', 0)
-
+        
         key = check_key(key, select=True)
-
+        
         if isinstance(space_name, str):
             sp = self.schema.get_space(space_name)
             if sp is None:
                 raise Exception('Space {} not found'.format(space_name))
             space_name = sp.sid
-
+        
         if isinstance(index_name, str):
             idx = self.schema.get_index(space_name, index_name)
             if idx is None:
                 raise Exception('Index {} for space {} not found'.format(index_name, space_name))
             index_name = idx.iid
-
+        
         return self._execute(*self._iproto.select(space_name, index_name, key, offset, limit, iterator),
                              timeout=timeout)
     
@@ -351,7 +350,7 @@ class BaseProtocol:
             if sp is None:
                 raise Exception('Space {} not found'.format(space_name))
             space_name = sp.sid
-            
+        
         return self._execute(*self._iproto.insert(space_name, values),
                              timeout=timeout)
 

@@ -61,11 +61,11 @@ class build_ext(_build_ext.build_ext):
                 import Cython
             except ImportError:
                 raise RuntimeError(
-                    'please install Cython to compile asyncpg from source')
+                    'please install Cython to compile asynctnt from source')
 
             if Cython.__version__ < '0.24':
                 raise RuntimeError(
-                    'asyncpg requires Cython version 0.24 or greater')
+                    'asynctnt requires Cython version 0.24 or greater')
 
             from Cython.Build import cythonize
 
@@ -160,11 +160,20 @@ class build_ext(_build_ext.build_ext):
 setup(
     name="asynctnt",
     packages=["asynctnt"],
+    include_package_data=True,
     cmdclass={'build_ext': build_ext},
     ext_modules=[
         Extension("asynctnt.ciproto.encdec",
                   sources=[
                       "asynctnt/ciproto/encdec.pyx",
+                      "third_party/msgpuck/msgpuck.c"
+                  ],
+                  include_dirs=[
+                      '-Ithird_party'
+                  ]),
+        Extension("asynctnt.ciproto.request",
+                  sources=[
+                      "asynctnt/ciproto/request.pyx",
                       "third_party/msgpuck/msgpuck.c"
                   ],
                   include_dirs=[

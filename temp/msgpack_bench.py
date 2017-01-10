@@ -1,8 +1,11 @@
 import datetime
 
 import functools
+
+from tarantool.request import RequestPing
 from tarantool.response import Response
 from asynctnt.ciproto.encdec import response_parse
+from asynctnt.ciproto.request import make_request_ping
 
 data = b'\x83\x00\xce\x00\x00\x00\x00\x01\xcf\x00\x00\x00\x00\x00\x00\x00\x02\x05\xce\x00\x00\x004\x810\xdd\x00\x00' \
        b'\x00 \x96\xcd\x01\x10\x00\xa7primary\xa4tree\x81\xa6unique\xc3\x91\x92\x00\xa6string\x96\xcd\x01\x18\x00' \
@@ -39,6 +42,9 @@ class DummyConn:
     def __init__(self):
         self.encoding = 'utf-8'
         self.error = False
+        
+    def generate_sync(self):
+        return 4
 
 c = DummyConn()
 
@@ -58,18 +64,35 @@ def measure(n):
 
 
 @measure(N)
-def test1():
+def resp_test1():
     for _ in range(N):
         Response(c, data)
     
 
 @measure(N)
-def test2():
+def resp_test2():
     # r = response_parse(data)
     for _ in range(N):
         response_parse(data)
 
 
+@measure(N)
+def req_ping_test1():
+    # r = RequestPing(c)
+    # print(bytes(r))
+    for _ in range(N):
+        r = RequestPing(c)
+        # print(bytes(r))
+        
+@measure(N)
+def req_ping_test2():
+    # r = make_request_ping(1)
+    # print(r)
+    for _ in range(N):
+        make_request_ping(4)
+
 if __name__ == '__main__':
-    test1()
-    test2()
+    # resp_test1()
+    # resp_test2()
+    req_ping_test1()
+    req_ping_test2()

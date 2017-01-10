@@ -24,3 +24,16 @@ cdef enum tnt_body_key_t:
 cdef enum tnt_response_key_t:
 	TP_DATA = 0x30
 	TP_ERROR = 0x31
+
+
+cdef enum tp_request_type:
+	TP_SELECT = 0x01
+	TP_INSERT = 0x02
+	TP_REPLACE = 0x03
+	TP_UPDATE = 0x04
+	TP_DELETE = 0x05
+	TP_CALL = 0x06
+	TP_AUTH = 0x07
+	TP_EVAL = 0x08
+	TP_UPSERT = 0x09
+	TP_PING = 0x40
