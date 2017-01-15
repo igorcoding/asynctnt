@@ -29,4 +29,3 @@ cdef class BaseProtocol(CoreProtocol):
     
     cdef _next_sync(self)
     cdef _execute(self, Request req, float timeout)
-    cdef _ping(self)

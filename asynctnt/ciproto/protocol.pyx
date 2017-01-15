@@ -1,3 +1,5 @@
+# cython: profile=False
+
 import asyncio
 
 include "const.pxi"
@@ -86,15 +88,12 @@ cdef class BaseProtocol(CoreProtocol):
         req.sync = self._next_sync()
         req.make()
         self.reqs[req.sync] = waiter
-        self._write(req.get_bytes())
+        self._write(req.buf)
         
         return fut
     
-    cdef _ping(self):
-        return RequestPing()
-    
     def ping(self, timeout=0):
-        return self._execute(self._ping(), timeout=timeout)
+        return self._execute(RequestPing.new(), timeout=timeout)
     
     
 class Protocol(BaseProtocol, asyncio.Protocol):

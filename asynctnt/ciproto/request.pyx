@@ -6,9 +6,6 @@ cdef class Request:
         self.sync = 0
         self.buf = None
         
-    def __init__(self, tnt.tp_request_type op):
-        self.op = op
-        
     cdef make(self):
         self.buf = WriteBuffer.new()
         self.buf.write_header(self.sync, self.op)
@@ -23,8 +20,14 @@ cdef class Request:
     
 
 cdef class RequestPing(Request):
-    def __init__(self):
-        super(RequestPing, self).__init__(tnt.TP_PING)
+    def __cinit__(self):
+        self.op = tnt.TP_PING
         
     cdef make_body(self):
         pass
+    
+    @staticmethod
+    cdef RequestPing new():
+        cdef RequestPing r
+        r = RequestPing.__new__(RequestPing)
+        return r

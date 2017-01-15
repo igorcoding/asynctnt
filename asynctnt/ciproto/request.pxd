@@ -4,7 +4,7 @@ cimport tnt
 
 cdef class Request:
     cdef:
-        public uint64_t sync
+        uint64_t sync
         tnt.tp_request_type op
         WriteBuffer buf
         
@@ -15,4 +15,5 @@ cdef class Request:
     
     
 cdef class RequestPing(Request):
-    pass
+    @staticmethod
+    cdef RequestPing new()

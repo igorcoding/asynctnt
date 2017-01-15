@@ -103,6 +103,8 @@ cdef class CoreProtocol:
                     print('sync {} not found'.format(sync))
                     continue
                     
+                del self.reqs[sync]
+                    
                 if not waiter.cancelled():
                     if resp.code != 0:
                         waiter.set_exception(DatabaseError(resp.code, resp.errmsg))

@@ -67,7 +67,9 @@ cdef class WriteBuffer:
 
     cdef _reallocate(self, ssize_t new_size):
         cdef char *new_buf
-
+    
+    
+        print('reallocate: {}'.format(new_size))
         if new_size < _BUFFER_MAX_GROW:
             new_size = _BUFFER_MAX_GROW
         else:

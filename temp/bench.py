@@ -1,7 +1,7 @@
 # import pyximport; pyximport.install()
 
 import asyncio
-# import uvloop; asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
+import uvloop; asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
 import logging
 import sys
 
@@ -19,7 +19,7 @@ async def main():
                                reconnect_timeout=1)
     await conn.connect()
     
-    n_requests = 1000000
+    n_requests = 10000
     
     start = datetime.datetime.now()
     
