@@ -1,4 +1,4 @@
-import pyximport; pyximport.install()
+# import pyximport; pyximport.install()
 
 import asyncio
 # import uvloop; asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
@@ -19,7 +19,7 @@ async def main():
                                reconnect_timeout=1)
     await conn.connect()
     
-    n_requests = 10000
+    n_requests = 1000000
     
     start = datetime.datetime.now()
     
@@ -29,6 +29,7 @@ async def main():
         for _ in range(n_requests):
             await conn.ping()
             # coros.append(conn.call('test'))
+            # coros.append(conn.ping())
     except Exception as e:
         print(e)
     

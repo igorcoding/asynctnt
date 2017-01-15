@@ -6,7 +6,6 @@ from cpython.mem cimport PyMem_Malloc, PyMem_Realloc, PyMem_Free
 from cpython cimport PyBuffer_FillInfo, PyBytes_AsString
 from libc.stdint cimport uint32_t, uint64_t, int64_t
 
-cimport tntconst
 
 cdef class Memory:
     cdef as_bytes(self):
@@ -20,10 +19,11 @@ cdef class Memory:
         mem.length = length
         return mem
 
+# noinspection PyUnresolvedReferences
+# noinspection PyAttributeOutsideInit
 @cython.no_gc_clear
 @cython.final
 @cython.freelist(_BUFFER_FREELIST_SIZE)
-# noinspection PyAttributeOutsideInit
 cdef class WriteBuffer:
     def __cinit__(self):
         self._smallbuf_inuse = True
@@ -102,15 +102,15 @@ cdef class WriteBuffer:
         buf = WriteBuffer.__new__(WriteBuffer)
         return buf
     
-    cdef write_header(self, uint32_t sync, tntconst.tp_request_type op):
+    cdef write_header(self, uint64_t sync, tnt.tp_request_type op):
         cdef char* p = NULL
         self.ensure_allocated(HEADER_CONST_LEN)
         
         p = &self._buf[self._length]
         p = mp_encode_map(&p[5], 2)
-        p = mp_encode_uint(p, tntconst.TP_CODE)
+        p = mp_encode_uint(p, tnt.TP_CODE)
         p = mp_encode_uint(p, <uint32_t>op)
-        p = mp_encode_uint(p, tntconst.TP_SYNC)
+        p = mp_encode_uint(p, tnt.TP_SYNC)
         p = mp_encode_uint(p, sync)
         self._length += (p - self._buf)
         
@@ -120,3 +120,9 @@ cdef class WriteBuffer:
         p = self._buf
         p = mp_store_u8(p, 0xce)
         p = mp_store_u32(p, self._length - 5)
+
+
+
+cdef class ReadBuffer:
+    cdef:
+        char* buf

@@ -14,6 +14,11 @@ cdef extern from "../../third_party/msgpuck/msgpuck.h":
         MP_DOUBLE
         MP_EXT
     
+    cdef uint8_t mp_load_u8(const char **data);
+    cdef uint16_t mp_load_u16(const char **data);
+    cdef uint32_t mp_load_u32(const char **data);
+    cdef uint64_t mp_load_u64(const char **data);
+    
     cdef char *mp_store_u8(char *data, uint8_t val);
     cdef char *mp_store_u16(char *data, uint16_t val);
     cdef char *mp_store_u32(char *data, uint32_t val);

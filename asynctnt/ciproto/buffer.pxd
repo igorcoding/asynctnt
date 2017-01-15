@@ -1,8 +1,6 @@
 from libc.stdint cimport uint32_t, uint64_t, int64_t
-cimport tntconst
 
-include "const.pxi"
-include "cmsgpuck.pxd"
+cimport tnt
 
 cdef class Memory:
     cdef:
@@ -30,7 +28,7 @@ cdef class WriteBuffer:
     cdef inline len(self)
     cdef inline ensure_allocated(self, ssize_t extra_length)
     cdef _reallocate(self, ssize_t new_size)
-    cdef write_header(self, uint32_t sync, tntconst.tp_request_type op)
+    cdef write_header(self, uint64_t sync, tnt.tp_request_type op)
     cdef write_length(self)
 
     @staticmethod

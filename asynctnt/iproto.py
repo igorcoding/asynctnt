@@ -1,7 +1,5 @@
 from tarantool.request import RequestCall, RequestAuthenticate, RequestInsert, RequestSelect, RequestPing
 
-from asynctnt.ciproto.request import make_request_ping
-
 all_requests = set()
 
 
@@ -24,12 +22,12 @@ class IProto:
     
     @request
     def ping(self):
-        # r = RequestPing(self)
-        # print(r.sync, repr(r))
-        # return r.sync, bytes(r)
-        sync = self.generate_sync()
-        r = make_request_ping(sync)
-        return sync, r.get_bytes()
+        r = RequestPing(self)
+        print(r.sync, repr(r))
+        return r.sync, bytes(r)
+        # sync = self.generate_sync()
+        # r = make_request_ping(sync)
+        # return sync, r.get_bytes()
 
     @request
     def auth(self, salt, user, password):

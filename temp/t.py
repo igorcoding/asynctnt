@@ -1,4 +1,4 @@
-import pyximport; pyximport.install()
+# import pyximport; pyximport.install()
 
 import asyncio
 # import uvloop; asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
@@ -17,8 +17,13 @@ async def main():
     conn = asynctnt.Connection(host='127.0.0.1', port=3303,
                                reconnect_timeout=1)
     await conn.connect()
-    print(conn._protocol.schema)
-    print(conn._protocol._con_state)
+    print('connected')
+    # print(conn._protocol.schema)
+    # print(conn._protocol._con_state)
+    
+    res = await conn.ping()
+    print(res)
+    await conn.disconnect()
     
     # await conn.auth('tt2', 'ttp2')
 

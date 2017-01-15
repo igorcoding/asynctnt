@@ -271,8 +271,12 @@ class BaseProtocol:
         self._rbuf = bytes()
         
         for sync, fut in self._reqs.items():
-            if fut and not fut.cancelled():
-                fut.set_exception(ConnectionLostError('Connection to Tarantool lost'))
+            if fut and not fut.cancelled() and not fut.done():
+                if exc is None:
+                    fut.set_result(None)
+                else:
+                    # fut.set_exception(ConnectionLostError('Connection to Tarantool lost'))
+                    fut.set_exception(exc)
         
         if self._on_connection_lost:
             self._on_connection_lost(exc)

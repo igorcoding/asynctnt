@@ -93,6 +93,11 @@ ENV/
 
 # IDEA
 .idea
+
+# Custom
 *.snap
+*.c
+asynctnt/ciproto/*.html
 *.xlog
 __tnt*
+!third_party/**/*

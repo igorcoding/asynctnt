@@ -3,7 +3,8 @@ import os
 
 import logging
 
-from asynctnt import protocol
+# from asynctnt import protocol
+from asynctnt.ciproto import protocol
 
 __all__ = (
     'Connection'
@@ -69,12 +70,12 @@ class Connection:
                     self._disconnect_waiter = None
         
         def protocol_factory():
-            return protocol.Protocol(host=self._host, port=self._port, opts=opts,
+            return protocol.Protocol(host=self._host, port=self._port,
+                                     username=self._username, password=self._password,
+                                     fetch_schema=self._fetch_schema,
                                      connected_fut=connected_fut,
                                      on_connection_lost=connection_lost,
-                                     loop=self.loop,
-                                     request_timeout=self._request_timeout,
-                                     reconnect_timeout=self._reconnect_timeout)
+                                     loop=self.loop)
 
         while True:
             try:
@@ -100,7 +101,7 @@ class Connection:
                     tr.close()
                     raise
             
-                pr.set_connection(self)
+                # pr.set_connection(self)
                 self._transport = tr
                 self._protocol = pr
                 return

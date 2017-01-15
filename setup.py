@@ -2,7 +2,6 @@
 import os
 import re
 
-from Cython.Build import cythonize
 from setuptools import Extension
 
 from setuptools.command import build_ext as _build_ext
@@ -163,25 +162,13 @@ setup(
     include_package_data=True,
     cmdclass={'build_ext': build_ext},
     ext_modules=[
-        Extension("asynctnt.ciproto.encdec",
+        Extension("asynctnt.ciproto.protocol",
                   sources=[
-                      "asynctnt/ciproto/encdec.pyx",
+                      "asynctnt/ciproto/protocol.pyx",
                       "third_party/msgpuck/msgpuck.c"
                   ],
                   include_dirs=[
                       '-Ithird_party'
-                  ]),
-        Extension("asynctnt.ciproto.request",
-                  sources=[
-                      "asynctnt/ciproto/request.pyx",
-                      "third_party/msgpuck/msgpuck.c"
-                  ],
-                  include_dirs=[
-                      '-Ithird_party'
-                  ]),
-        Extension(name="asynctnt.ciproto.response",
-                  sources=[
-                      "asynctnt/ciproto/response.pyx"
                   ]),
         Extension(name="asynctnt.schema",
                   sources=[
