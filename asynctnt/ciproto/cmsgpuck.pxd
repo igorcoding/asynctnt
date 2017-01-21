@@ -26,33 +26,40 @@ cdef extern from "../../third_party/msgpuck/msgpuck.h":
     
     cdef mp_type mp_typeof(const char c);
     
+    cdef uint32_t mp_sizeof_array(uint32_t size);
     cdef char *mp_encode_array(char *data, uint32_t size);
     cdef uint32_t mp_decode_array(const char **data);
     
+    cdef uint32_t mp_sizeof_map(uint32_t size);
     cdef char *mp_encode_map(char *data, uint32_t size);
     cdef uint32_t mp_decode_map(const char **data);
     
+    cdef uint32_t mp_sizeof_uint(uint64_t num);
     cdef char *mp_encode_uint(char *data, uint64_t num);
     cdef uint64_t mp_decode_uint(const char **data);
     
+    cdef uint32_t mp_sizeof_int(int64_t num);
     cdef char *mp_encode_int(char *data, int64_t num);
     cdef int64_t mp_decode_int(const char **data);
     
     cdef char *mp_encode_float(char *data, float num);
     cdef float mp_decode_float(const char **data);
     
+    cdef uint32_t mp_sizeof_double(double num);
     cdef char *mp_encode_double(char *data, double num);
     cdef double mp_decode_double(const char **data);
     
     cdef char *mp_encode_strl(char *data, uint32_t len);
     cdef uint32_t mp_decode_strl(const char **data);
     
+    cdef uint32_t mp_sizeof_str(uint32_t len);
     cdef char *mp_encode_str(char *data, const char *str, uint32_t len);
     cdef const char *mp_decode_str(const char **data, uint32_t *len);
     
     cdef char *mp_encode_binl(char *data, uint32_t len);
     cdef uint32_t mp_decode_binl(const char **data);
     
+    cdef uint32_t mp_sizeof_bin(uint32_t len);
     cdef char *mp_encode_bin(char *data, const char *str, uint32_t len);
     cdef const char *mp_decode_bin(const char **data, uint32_t *len);
     

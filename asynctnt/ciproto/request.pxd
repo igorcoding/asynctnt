@@ -7,13 +7,12 @@ cdef class Request:
         uint64_t sync
         tnt.tp_request_type op
         WriteBuffer buf
-        
-    cdef make(self)
-    cdef make_body(self)
     
     cdef get_bytes(self)
     
     
 cdef class RequestPing(Request):
-    @staticmethod
-    cdef RequestPing new()
+    pass
+
+cdef class RequestCall(Request):
+    pass

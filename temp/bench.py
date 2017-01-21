@@ -19,19 +19,17 @@ async def main():
                                reconnect_timeout=1)
     await conn.connect()
     
-    n_requests = 10000
+    n_requests = 1
     
     start = datetime.datetime.now()
     
     coros = []
     
-    try:
-        for _ in range(n_requests):
-            await conn.ping()
-            # coros.append(conn.call('test'))
-            # coros.append(conn.ping())
-    except Exception as e:
-        print(e)
+    for _ in range(n_requests):
+        # await conn.ping(timeout=0)
+        # coros.append(conn.ping())
+        res = await conn.call('test')
+        # coros.append(conn.call('test'))
     
     if coros:
         await asyncio.wait(coros)

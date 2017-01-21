@@ -78,7 +78,7 @@ cdef object _decode_obj(const char** p):
         return None
 
     
-cdef list _cresponse_parse_body_data(const char* b):
+cdef list _response_parse_body_data(const char* b):
     cdef:
         uint32_t size
         uint32_t tuple_size
@@ -88,16 +88,12 @@ cdef list _cresponse_parse_body_data(const char* b):
     size = mp_decode_array(&b)
     tuples = []
     for i in range(size):
-        tuple_size = mp_decode_array(&b)
-        t = []
-        for k in range(tuple_size):
-            t.append(_decode_obj(&b))
-        tuples.append(t)
+        tuples.append(_decode_obj(&b))
     
     return tuples
             
 
-cdef TntResponse cresponse_parse(const char* buf, uint32_t buf_len):
+cdef TntResponse response_parse(const char* buf, uint32_t buf_len):
     cdef:
         const char* b
         uint32_t size
@@ -165,7 +161,7 @@ cdef TntResponse cresponse_parse(const char* buf, uint32_t buf_len):
         elif key == tnt.TP_DATA:
             if mp_typeof(b[0]) != MP_ARRAY:
                 raise TypeError('body data type must be a MP_ARRAY')
-            resp.body = _cresponse_parse_body_data(b)
+            resp.body = _response_parse_body_data(b)
             
     return resp
 

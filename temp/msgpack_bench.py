@@ -4,8 +4,6 @@ import functools
 
 from tarantool.request import RequestPing
 from tarantool.response import Response
-from asynctnt.ciproto.encdec import response_parse
-from asynctnt.ciproto.request import make_request_ping
 
 data = b'\x83\x00\xce\x00\x00\x00\x00\x01\xcf\x00\x00\x00\x00\x00\x00\x00\x02\x05\xce\x00\x00\x004\x810\xdd\x00\x00' \
        b'\x00 \x96\xcd\x01\x10\x00\xa7primary\xa4tree\x81\xa6unique\xc3\x91\x92\x00\xa6string\x96\xcd\x01\x18\x00' \
@@ -36,6 +34,9 @@ data = b'\x83\x00\xce\x00\x00\x00\x00\x01\xcf\x00\x00\x00\x00\x00\x00\x00\x02\x0
        b'\xa4tree\x81\xa6unique\xc3\x91\x92\x00\xa8unsigned\x96\xcd\x01@\x01\xa4uuid\xa4tree\x81\xa6unique\xc3\x91' \
        b'\x92\x01\xa6string\x96\xcd\x02\x00\x00\xa7primary\xa4tree\x82\xa6unique\xc3\xa3lsn\t\x91\x92\x00\xa8unsigned '
 
+data1 = b'\x83\x00\xce\x00\x00\x00\x00\x01\xcf\x00\x00\x00\x00\x00\x00\x00\x01\x05\xce\x00\x00\x004\x810\xdd\x00\x00\x00\x01\x91\xa5hello'
+data2 = b'\x83\x00\xce\x00\x00\x00\x00\x01\xcf\x00\x00\x00\x00\x00\x00\x00\x02\x05\xce\x00\x00\x004\x810\xdd\x00\x00\x00\x01\xa5hello'
+
 N = 50000
 
 class DummyConn:
@@ -63,10 +64,11 @@ def measure(n):
     return _measure
 
 
-@measure(N)
+@measure(1)
 def resp_test1():
-    for _ in range(N):
-        Response(c, data)
+    res1 = Response(c, data1)
+    res2 = Response(c, data2)
+    pass
     
 
 @measure(N)
@@ -92,7 +94,7 @@ def req_ping_test2():
         make_request_ping(4)
 
 if __name__ == '__main__':
-    # resp_test1()
+    resp_test1()
     # resp_test2()
-    req_ping_test1()
-    req_ping_test2()
+    # req_ping_test1()
+    # req_ping_test2()

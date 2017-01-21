@@ -21,8 +21,11 @@ async def main():
     # print(conn._protocol.schema)
     # print(conn._protocol._con_state)
     
-    res = await conn.ping()
-    print(res)
+    res = await conn.call16('test')
+    print(res.body)
+
+    res = await conn.call('test')
+    print(res.body)
     await conn.disconnect()
     
     # await conn.auth('tt2', 'ttp2')

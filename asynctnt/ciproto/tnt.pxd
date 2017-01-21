@@ -32,7 +32,8 @@ cdef enum tp_request_type:
 	TP_REPLACE = 0x03
 	TP_UPDATE = 0x04
 	TP_DELETE = 0x05
-	TP_CALL = 0x06
+	TP_CALL_16 = 0x06
+	TP_CALL = 0x0a
 	TP_AUTH = 0x07
 	TP_EVAL = 0x08
 	TP_UPSERT = 0x09

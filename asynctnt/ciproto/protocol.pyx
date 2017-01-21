@@ -84,16 +84,24 @@ cdef class BaseProtocol(CoreProtocol):
         else:
             # Client should wait the waiter
             fut = waiter
-        
-        req.sync = self._next_sync()
-        req.make()
+            
+        # req.make()
         self.reqs[req.sync] = waiter
         self._write(req.buf)
         
         return fut
     
-    def ping(self, timeout=0):
-        return self._execute(RequestPing.new(), timeout=timeout)
+    def ping(self, *, timeout=0):
+        return self._execute(RequestPing(self.encoding, self._next_sync()),
+                             timeout)
+    
+    def call16(self, func_name, args=None, *, timeout=0):
+        return self._execute(RequestCall16(self.encoding, self._next_sync(), func_name, args),
+                             timeout)
+    
+    def call(self, func_name, args=None, *, timeout=0):
+        return self._execute(RequestCall(self.encoding, self._next_sync(), func_name, args),
+                             timeout)
     
     
 class Protocol(BaseProtocol, asyncio.Protocol):

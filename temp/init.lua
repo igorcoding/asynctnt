@@ -24,7 +24,7 @@ function long(t)
 end
 
 function test()
-	return {'hello'}
+	return 'hello'
 end
 
 require('console').start()

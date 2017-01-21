@@ -6,14 +6,12 @@ cdef class Request:
         self.sync = 0
         self.buf = None
         
-    cdef make(self):
-        self.buf = WriteBuffer.new()
+    def __init__(self, str encoding, uint64_t sync):
+        self.sync = sync
+        self.buf = WriteBuffer.new(encoding)
         self.buf.write_header(self.sync, self.op)
-        self.make_body()
-        self.buf.write_length()
-        
-    cdef make_body(self):
-        raise NotImplementedError
+        # write body (optional)
+        # write length (mandatory): self.buf.write_length()
     
     cdef get_bytes(self):
         return Memory.new(self.buf._buf, self.buf._length).as_bytes()
@@ -23,11 +21,27 @@ cdef class RequestPing(Request):
     def __cinit__(self):
         self.op = tnt.TP_PING
         
-    cdef make_body(self):
-        pass
-    
-    @staticmethod
-    cdef RequestPing new():
-        cdef RequestPing r
-        r = RequestPing.__new__(RequestPing)
-        return r
+    def __init__(self, str encoding, uint64_t sync):
+        Request.__init__(self, encoding, sync)
+        self.buf.write_length()
+
+
+cdef class RequestCall(Request):
+    def __cinit__(self):
+        self.op = tnt.TP_CALL
+        
+    def __init__(self, str encoding, uint64_t sync, func_name, args):
+        Request.__init__(self, encoding, sync)
+        self.buf.encode_request_call(func_name, args)
+        self.buf.write_length()
+        
+
+cdef class RequestCall16(Request):
+    def __cinit__(self):
+        self.op = tnt.TP_CALL_16
+        
+    def __init__(self, str encoding, uint64_t sync, func_name, args):
+        Request.__init__(self, encoding, sync)
+        self.buf.encode_request_call(func_name, args)
+        self.buf.write_length()
+        

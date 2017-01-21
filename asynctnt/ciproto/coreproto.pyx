@@ -74,7 +74,6 @@ cdef class CoreProtocol:
         
         rlen = <uint32_t>cpython.Py_SIZE(self.rbuf)
         if self.state == PROTOCOL_GREETING:
-            print('processing greeting')
             if rlen < IPROTO_GREETING_SIZE:
                 # not enough for greeting
                 return
@@ -93,7 +92,7 @@ cdef class CoreProtocol:
                     break
                 
                 curr += 5 + packet_len
-                resp = cresponse_parse(p, packet_len)
+                resp = response_parse(p, packet_len)
                 p = &p[packet_len]
                 
                 sync = resp.sync
