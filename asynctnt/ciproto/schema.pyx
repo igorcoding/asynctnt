@@ -1,16 +1,9 @@
-cdef class SchemaIndex(object):
-    cdef public int sid
-    cdef public int iid
-    cdef public str name
-    cdef public str index_type
-    cdef public object unique
-    cdef public list parts
-    
-    def __init__(self, index_row):
+cdef class SchemaIndex:
+    def __init__(self, list index_row):
         self.sid = index_row[0]
         self.iid = index_row[1]
-        self.name = index_row[2].decode()
-        self.index_type = index_row[3].decode()
+        self.name = index_row[2]
+        self.index_type = index_row[3]
         self.unique = index_row[4]
         self.parts = []
         if isinstance(index_row[5], (list, tuple)):
@@ -20,39 +13,43 @@ cdef class SchemaIndex(object):
             for i in range(index_row[5]):
                 self.parts.append(
                     (index_row[5 + 1 + i * 2], index_row[5 + 2 + i * 2]))
+                
+        def __repr__(self):
+            return '<SchemaIndex sid={}, id={}, name={}, ' \
+                   'type={}, unique={}>'.format(
+                self.sid, self.iid, self.name, self.index_type, self.unique
+            )
             
 
 cdef class SchemaSpace:
-    cdef public int sid
-    cdef public int arity
-    cdef public str name
-    cdef public dict indexes
-    
-    def __init__(self, space_row):
+    def __init__(self, list space_row):
         self.sid = space_row[0]
         self.arity = space_row[1]
-        self.name = space_row[2].decode()
+        self.name = space_row[2]
         self.indexes = {}
             
-    cpdef add_index(self, SchemaIndex idx):
+    cdef add_index(self, SchemaIndex idx):
         self.indexes[idx.iid] = idx
         if idx.name:
             self.indexes[idx.name] = idx
+            
+    def __repr__(self):
+        return '<SchemaSpace id={}, name={}, arity={}>'.format(
+            self.sid, self.name, self.arity
+        )
 
 
-cdef class Schema(object):
-    cdef dict schema
-    
+cdef class Schema:
     def __init__(self):
         self.schema = {}
 
-    cpdef get_space(self, space):
+    cpdef SchemaSpace get_space(self, space):
         try:
             return self.schema[space]
         except KeyError:
             return None
 
-    cpdef get_index(self, space, index):
+    cpdef SchemaIndex get_index(self, space, index):
         sp = self.get_space(space)
         if sp is None:
             return None
@@ -61,11 +58,18 @@ cdef class Schema(object):
         except KeyError:
             return None
 
-    cdef clear(self):
+    cdef inline clear(self):
         self.schema.clear()
+        
+    def __repr__(self):
+        return '<Schema>'
 
 
-def parse_schema(spaces, indexes):
+cdef Schema parse_schema(spaces, indexes):
+    cdef:
+        Schema s
+        SchemaSpace sp
+        SchemaIndex idx
     s = Schema()
     for space_row in spaces:
         sp = SchemaSpace(space_row)

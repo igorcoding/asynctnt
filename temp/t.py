@@ -15,6 +15,7 @@ import asynctnt
 
 async def main():
     conn = asynctnt.Connection(host='127.0.0.1', port=3303,
+                               username='tt2', password='ttp2',
                                reconnect_timeout=1)
     await conn.connect()
     print('connected')
@@ -23,10 +24,11 @@ async def main():
     #
     # res = await conn.call16('test')
     # print(res.body)
+    # res = await conn.auth('tt', 'ttp')
 
-    res = await conn.select(280)
+    # res = await conn.select(280)
     # res = await conn.eval('return box.cfg')
-    # res = await conn.call('test', timeout=0.0000000001)
+    res = await conn.call('test', timeout=0)
     # res = await conn.call('long', [], timeout=1)
     print(res.body2yaml())
     await conn.disconnect()

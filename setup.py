@@ -171,10 +171,10 @@ setup(
                   include_dirs=[
                       '-Ithird_party'
                   ]),
-        Extension(name="asynctnt.schema",
-                  sources=[
-                      "asynctnt/schema.pyx"
-                  ]),
+        # Extension(name="asynctnt.schema",
+        #           sources=[
+        #               "asynctnt/schema.pyx"
+        #           ]),
     ],
     version=find_version(),
     author="igorcoding",

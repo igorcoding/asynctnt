@@ -27,3 +27,7 @@ cdef class RequestEval(Request):
 
 cdef class RequestSelect(Request):
     pass
+
+cdef class RequestAuth(Request):
+    cdef bytes sha1(self, tuple values)
+    cdef bytes strxor(self, bytes hash1, bytes scramble)

@@ -7,6 +7,7 @@ include "buffer.pxd"
 include "request.pxd"
 include "response.pxd"
 include "encdec.pxd"
+include "schema.pxd"
 
 include "coreproto.pxd"
 
@@ -24,11 +25,13 @@ cdef class BaseProtocol(CoreProtocol):
         object _on_request_timeout_cb
         
         uint64_t _sync
+        Schema _schema
         
     cdef void _set_connection_ready(self)
+    cdef void _set_connection_error(self, e)
 
-    cdef _do_auth(self, str username, str password)
-    cdef _do_fetch_schema(self)
+    cdef void _do_auth(self, str username, str password)
+    cdef void _do_fetch_schema(self)
     
     cdef uint64_t _next_sync(self)
     

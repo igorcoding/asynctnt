@@ -1,11 +1,9 @@
 import asyncio
 import base64
 import enum
-import socket
-
 import logging
-
 import re
+import socket
 
 import msgpack
 from tarantool import DatabaseError
@@ -14,7 +12,6 @@ from tarantool.utils import check_key
 
 from asynctnt.const import IPROTO_GREETING_SIZE, TARANTOOL_VERSION_LENGTH, SALT_LENGTH, SCRAMBLE_SIZE
 from asynctnt.iproto import IProto
-from asynctnt.schema import Schema, parse_schema
 
 
 class ProtocolState(enum.IntEnum):

@@ -1,3 +1,6 @@
+import hashlib
+
+cimport cpython.bytes
 from libc.stdint cimport uint32_t, uint64_t, int64_t
 
 
@@ -58,3 +61,52 @@ cdef class RequestSelect(Request):
         self.buf.encode_request_select(space, index, key,
                                        offset, limit, iterator)
         self.buf.write_length()
+
+cdef class RequestAuth(Request):
+    def __init__(self, str encoding, uint64_t sync,
+                 salt, username, password):
+        cdef:
+            bytes username_bytes
+            bytes password_bytes
+            bytes scramble
+            
+        Request.__init__(self, tnt.TP_AUTH, encoding, sync)
+        if isinstance(username, bytes):
+            username_bytes = username
+        else:
+            username_bytes = username.encode(encoding)
+        
+        if isinstance(password, bytes):
+            password_bytes = password
+        else:
+            password_bytes = password.encode(encoding)
+            
+        hash1 = self.sha1((password_bytes,))
+        hash2 = self.sha1((hash1,))
+        scramble = self.sha1((salt, hash2))
+        scramble = self.strxor(hash1, scramble)
+        
+        self.buf.encode_request_auth(username_bytes, scramble)
+        self.buf.write_length()
+
+    cdef bytes sha1(self, tuple values):
+        cdef object sha = hashlib.sha1()
+        for i in values:
+            if i is not None:
+                sha.update(i)
+        return sha.digest()
+
+    cdef bytes strxor(self, bytes hash1, bytes scramble):
+        cdef:
+            char* hash1_str
+            ssize_t hash1_len
+            
+            char* scramble_str
+            ssize_t scramble_len
+        cpython.bytes.PyBytes_AsStringAndSize(hash1,
+                                              &hash1_str, &hash1_len)
+        cpython.bytes.PyBytes_AsStringAndSize(scramble,
+                                              &scramble_str, &scramble_len)
+        for i in range(scramble_len):
+            scramble_str[i] = hash1_str[i] ^ scramble_str[i]
+        return scramble

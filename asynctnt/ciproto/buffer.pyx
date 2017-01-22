@@ -380,6 +380,51 @@ cdef class WriteBuffer:
         p = self._encode_list(p, key)
         self._length += (p - self._buf)
     
+    cdef void encode_request_auth(self, bytes username, bytes scramble):
+        cdef:
+            char* p
+            uint32_t body_map_sz
+            uint32_t max_body_len
+    
+            char* username_str
+            ssize_t username_len
+            
+            char* scramble_str
+            ssize_t scramble_len
+    
+        cpython.bytes.PyBytes_AsStringAndSize(username,
+                                              &username_str, &username_len)
+        cpython.bytes.PyBytes_AsStringAndSize(scramble,
+                                              &scramble_str, &scramble_len)
+        body_map_sz = 2
+        # Size description:
+        # mp_sizeof_map()
+        # + mp_sizeof_uint(TP_USERNAME)
+        # + mp_sizeof_str(username_len)
+        # + mp_sizeof_uint(TP_TUPLE)
+        # + mp_sizeof_array(2)
+        # + mp_sizeof_str(9) (chap-sha1)
+        # + mp_sizeof_str(SCRAMBLE_SIZE)
+        max_body_len = 1 \
+                       + 1 \
+                       + mp_sizeof_str(<uint32_t>username_len) \
+                       + 1 \
+                       + 1 \
+                       + 1 + 9 \
+                       + mp_sizeof_str(<uint32_t>scramble_len)
+    
+        self.ensure_allocated(max_body_len)
+    
+        p = &self._buf[self._length]
+        p = mp_encode_map(p, body_map_sz)
+        p = mp_encode_uint(p, tnt.TP_USERNAME)
+        p = mp_encode_str(p, username_str, <uint32_t>username_len)
+    
+        p = mp_encode_uint(p, tnt.TP_TUPLE)
+        p = mp_encode_array(p, 2)
+        p = mp_encode_str(p, "chap-sha1", 9)
+        p = mp_encode_str(p, scramble_str, <uint32_t>scramble_len)
+        self._length += (p - self._buf)
 
 cdef class ReadBuffer:
     cdef:

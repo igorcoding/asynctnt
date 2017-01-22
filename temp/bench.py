@@ -26,7 +26,7 @@ async def main():
     coros = []
     
     for _ in range(n_requests):
-        await conn.ping()
+        # await conn.ping()
         # coros.append(conn.ping())
         
         # await conn.call('test', timeout=1)
@@ -34,6 +34,11 @@ async def main():
 
         # await conn.eval('return box.info')
         # coros.append(conn.eval('return box.info'))
+
+        # await conn.select(280)
+        # coros.append(conn.select(280))
+
+        await conn.auth('tt2', 'ttp2')
     
     if coros:
         await asyncio.wait(coros)

@@ -51,6 +51,7 @@ cdef class WriteBuffer:
     cdef void encode_request_select(self, uint32_t space, uint32_t index,
                                     list key, uint64_t offset, uint64_t limit,
                                     uint32_t iterator)
+    cdef void encode_request_auth(self, bytes username, bytes scramble)
     
 
     @staticmethod

@@ -8,6 +8,7 @@ include "buffer.pyx"
 include "request.pyx"
 include "response.pyx"
 include "encdec.pyx"
+include "schema.pyx"
 
 include "coreproto.pyx"
 
@@ -32,6 +33,7 @@ cdef class BaseProtocol(CoreProtocol):
         self._on_request_timeout_cb = self._on_request_timeout
         
         self._sync = 0
+        self._schema = None
         
         try:
             self.create_future = self.loop.create_future
@@ -41,9 +43,17 @@ cdef class BaseProtocol(CoreProtocol):
     def _create_future_fallback(self):  # pragma: no cover
         return asyncio.Future(loop=self.loop)
     
+    @property
+    def schema(self):
+        return self._schema
+    
     cdef void _set_connection_ready(self):
         self.connected_fut.set_result(True)
         self.con_state = CONNECTION_FULL
+        
+    cdef void _set_connection_error(self, e):
+        self.connected_fut.set_exception(e)
+        self.con_state = CONNECTION_BAD
     
     cdef void _on_greeting_received(self):
         if self.username and self.password:
@@ -53,15 +63,56 @@ cdef class BaseProtocol(CoreProtocol):
         else:
             self._set_connection_ready()
 
-    cdef _do_auth(self, str username, str password):
-        # TODO: make auth
-        if self.fetch_schema:
-            self._do_fetch_schema()
-        else:
-            self._set_connection_ready()
+    cdef void _do_auth(self, str username, str password):
+        fut = self.auth(username, password)
+        
+        def on_authorized(f):
+            if f.cancelled():
+                self._set_connection_error(asyncio.futures.CancelledError())
+                return
+            e = f.exception()
+            if not e:
+                print('Tarantool[{}:{}] Authorized successfully'.format(self.host, self.port))
+                
+                if self.fetch_schema:
+                    self._do_fetch_schema()
+                else:
+                    self._set_connection_ready()
+            else:
+                print('Tarantool[{}:{}] Authorization failed'.format(self.host, self.port))
+                self._set_connection_error(e)
+        
+        fut.add_done_callback(on_authorized)
             
-    cdef _do_fetch_schema(self):
-        self._set_connection_ready()
+    cdef void _do_fetch_schema(self):
+        fut_vspace = self.select(SPACE_VSPACE)
+        fut_vindex = self.select(SPACE_VINDEX)
+        
+        def on_fetch(f):
+            if f.cancelled():
+                self._set_connection_error(asyncio.futures.CancelledError())
+                return
+            e = f.exception()
+            if not e:
+                spaces, indexes = f.result()
+                print('Tarantool[{}:{}] Schema fetch succeeded. '
+                      'Spaces: {}, Indexes: {}.'.format(
+                    self.host, self.port, len(spaces.body), len(indexes.body)))
+                self._schema = parse_schema(spaces.body, indexes.body)
+                self._set_connection_ready()
+            else:
+                print('Tarantool[{}:{}] Schema fetch failed'.format(
+                    self.host, self.port))
+                if isinstance(e, asyncio.TimeoutError):
+                    self._set_connection_error(
+                        asyncio.TimeoutError('Schema fetch timeout'))
+                else:
+                    self._set_connection_error(e)
+        
+        fut = asyncio.gather(fut_vspace, fut_vindex,
+                             return_exceptions=True,
+                             loop=self.loop)
+        fut.add_done_callback(on_fetch)
         
     cdef void _on_connection_lost(self, exc):
         CoreProtocol._on_connection_lost(self, exc)
@@ -107,8 +158,6 @@ cdef class BaseProtocol(CoreProtocol):
         return fut
 
     cdef object _execute(self, Request req, float timeout):
-        cdef:
-            object waiter
         if not self._is_connected():
             raise NotConnectedError('Tarantool is not connected')
         
@@ -122,6 +171,13 @@ cdef class BaseProtocol(CoreProtocol):
     def ping(self, *, timeout=0):
         return self._execute(
             RequestPing(self.encoding, self._next_sync()),
+            timeout
+        )
+    
+    def auth(self, username, password, *, timeout=0):
+        return self._execute(
+            RequestAuth(self.encoding, self._next_sync(),
+                        self.salt, username, password),
             timeout
         )
     
