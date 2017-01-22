@@ -43,22 +43,23 @@ cdef class CoreProtocol:
         self.version = None
         self.salt = None
         
-    cdef _is_connected(self):
+    cdef bint _is_connected(self):
         return self.con_state != CONNECTION_BAD
         
-    cdef _is_fully_connected(self):
+    cdef bint _is_fully_connected(self):
         return self.con_state == CONNECTION_FULL
         
-    cdef _write(self, buf):
+    cdef void _write(self, buf):
         self.transport.write(memoryview(buf))
         
-    cdef _on_data_received(self, data):
+    cdef void _on_data_received(self, data):
         cdef:
-            uint32_t rlen
+            uint32_t rlen, curr
             const char* p
-            uint32_t curr
             uint32_t packet_len
+            Request req
             TntResponse resp
+            object waiter
              
             
         # print('received data: {}'.format(data))
@@ -97,14 +98,17 @@ cdef class CoreProtocol:
                 
                 sync = resp.sync
                 
-                waiter = self.reqs.get(sync)
-                if waiter is None:
+                req = self.reqs.get(sync)
+                if req is None:
                     print('sync {} not found'.format(sync))
                     continue
                     
                 del self.reqs[sync]
-                    
-                if not waiter.cancelled():
+                
+                waiter = req.waiter
+                if waiter is not None \
+                        and not waiter.done() \
+                        and not waiter.cancelled():
                     if resp.code != 0:
                         waiter.set_exception(DatabaseError(resp.code, resp.errmsg))
                     else:
@@ -116,7 +120,7 @@ cdef class CoreProtocol:
             # TODO: raise exception
             pass
         
-    cdef _process__greeting(self):
+    cdef void _process__greeting(self):
         ver_length = TARANTOOL_VERSION_LENGTH
         rbuf = self.rbuf
         self.version = self._parse_version(rbuf[:ver_length])
@@ -130,7 +134,7 @@ cdef class CoreProtocol:
             ver = m.group(1)
             return tuple(map(int, ver.split('.')))
     
-    cdef _on_connection_lost(self, exc):
+    cdef void _on_connection_lost(self, exc):
         for sync, fut in self.reqs.items():
             if fut and not fut.cancelled() and not fut.done():
                 if exc is None:
@@ -139,7 +143,7 @@ cdef class CoreProtocol:
                     # fut.set_exception(ConnectionLostError('Connection to Tarantool lost'))
                     fut.set_exception(exc)
             
-    cdef _on_greeting_received(self):
+    cdef void _on_greeting_received(self):
         pass
                 
                 

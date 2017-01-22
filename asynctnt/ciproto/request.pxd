@@ -7,6 +7,8 @@ cdef class Request:
         uint64_t sync
         tnt.tp_request_type op
         WriteBuffer buf
+        object waiter
+        object timeout_handle
     
     cdef get_bytes(self)
     

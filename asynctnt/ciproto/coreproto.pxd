@@ -25,12 +25,12 @@ cdef class CoreProtocol:
         tuple version
         bytes salt
 
-    cdef _is_connected(self)
-    cdef _is_fully_connected(self)
+    cdef bint _is_connected(self)
+    cdef bint _is_fully_connected(self)
     
-    cdef _write(self, buf)
-    cdef _on_data_received(self, data)
-    cdef _process__greeting(self)
-    cdef _on_greeting_received(self)
-    cdef _on_connection_lost(self, exc)
+    cdef void _write(self, buf)
+    cdef void _on_data_received(self, data)
+    cdef void _process__greeting(self)
+    cdef void _on_greeting_received(self)
+    cdef void _on_connection_lost(self, exc)
         

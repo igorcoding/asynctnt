@@ -20,11 +20,11 @@ async def main():
     print('connected')
     # print(conn._protocol.schema)
     # print(conn._protocol._con_state)
-    
-    res = await conn.call16('test')
-    print(res.body)
+    #
+    # res = await conn.call16('test')
+    # print(res.body)
 
-    res = await conn.call('test')
+    res = await conn.call('test', timeout=0.0000000001)
     print(res.body)
     await conn.disconnect()
     
