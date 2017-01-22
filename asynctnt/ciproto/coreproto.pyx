@@ -110,7 +110,8 @@ cdef class CoreProtocol:
                         and not waiter.done() \
                         and not waiter.cancelled():
                     if resp.code != 0:
-                        waiter.set_exception(DatabaseError(resp.code, resp.errmsg))
+                        waiter.set_exception(
+                            DatabaseError(resp.code, resp.errmsg))
                     else:
                         waiter.set_result(resp)
                 
@@ -124,7 +125,8 @@ cdef class CoreProtocol:
         ver_length = TARANTOOL_VERSION_LENGTH
         rbuf = self.rbuf
         self.version = self._parse_version(rbuf[:ver_length])
-        self.salt = base64.b64decode(rbuf[ver_length:ver_length + SALT_LENGTH])[:SCRAMBLE_SIZE]
+        self.salt = base64.b64decode(
+            rbuf[ver_length:ver_length + SALT_LENGTH])[:SCRAMBLE_SIZE]
         self.state = PROTOCOL_NORMAL
         self._on_greeting_received()
         
@@ -158,7 +160,8 @@ cdef class CoreProtocol:
 
         sock = transport.get_extra_info('socket')
         if sock is not None and \
-                (not hasattr(socket, 'AF_UNIX') or sock.family != socket.AF_UNIX):
+                (not hasattr(socket, 'AF_UNIX') or
+                         sock.family != socket.AF_UNIX):
             sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
         
         try:

@@ -47,6 +47,11 @@ cdef class WriteBuffer:
     cdef char* _encode_obj(self, char* p, object o)
     
     cdef void encode_request_call(self, str func_name, list args)
+    cdef void encode_request_eval(self, str expression, list args)
+    cdef void encode_request_select(self, uint32_t space, uint32_t index,
+                                    list key, uint64_t offset, uint64_t limit,
+                                    uint32_t iterator)
+    
 
     @staticmethod
     cdef WriteBuffer new(str encoding)

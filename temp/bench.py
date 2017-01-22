@@ -26,10 +26,14 @@ async def main():
     coros = []
     
     for _ in range(n_requests):
-        await conn.ping(timeout=1)
+        await conn.ping()
         # coros.append(conn.ping())
-        # res = await conn.call('test', timeout=1)
+        
+        # await conn.call('test', timeout=1)
         # coros.append(conn.call('test', timeout=1))
+
+        # await conn.eval('return box.info')
+        # coros.append(conn.eval('return box.info'))
     
     if coros:
         await asyncio.wait(coros)

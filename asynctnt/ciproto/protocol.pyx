@@ -81,7 +81,10 @@ cdef class BaseProtocol(CoreProtocol):
         
         req.timeout_handle.cancel()
         req.timeout_handle = None
-        waiter.set_exception(asyncio.TimeoutError('{} exceeded timeout'.format(req.__class__.__name__)))
+        waiter.set_exception(
+            asyncio.TimeoutError(
+                '{} exceeded timeout'.format(req.__class__.__name__))
+        )
         
     def _on_request_completed(self, fut):
         cdef Request req = fut._req
@@ -98,7 +101,8 @@ cdef class BaseProtocol(CoreProtocol):
         
         # timeout = timeout
         if timeout is not None and timeout > 0:
-            req.timeout_handle = self.loop.call_later(timeout, self._on_request_timeout_cb, fut)
+            req.timeout_handle = \
+                self.loop.call_later(timeout, self._on_request_timeout_cb, fut)
         req.waiter.add_done_callback(self._on_request_completed_cb)
         return fut
 
@@ -133,6 +137,30 @@ cdef class BaseProtocol(CoreProtocol):
             timeout
         )
     
+    def eval(self, expression, args=None, *, timeout=0):
+        return self._execute(
+            RequestEval(self.encoding, self._next_sync(), expression, args),
+            timeout
+        )
+    
+    def select(self, space, key=None, *, **kwargs):
+        offset = kwargs.get('offset', 0)
+        limit = kwargs.get('limit', 0xffffffff)
+        index = kwargs.get('index', 0)
+        iterator = kwargs.get('iterator', 0)
+        timeout = kwargs.get('timeout', 0)
+        
+        if isinstance(space, str):
+            raise NotImplementedError
+        
+        if isinstance(index, str):
+            raise NotImplementedError
+    
+        return self._execute(
+            RequestSelect(self.encoding, self._next_sync(),
+                          space, index, key, offset, limit, iterator),
+            timeout
+        )
     
 class Protocol(BaseProtocol, asyncio.Protocol):
     pass

@@ -27,15 +27,34 @@ cdef class RequestPing(Request):
 
 
 cdef class RequestCall(Request):
-    def __init__(self, str encoding, uint64_t sync, func_name, args):
+    def __init__(self, str encoding, uint64_t sync,
+                 func_name, args):
         Request.__init__(self, tnt.TP_CALL, encoding, sync)
         self.buf.encode_request_call(func_name, args)
         self.buf.write_length()
         
 
 cdef class RequestCall16(Request):
-    def __init__(self, str encoding, uint64_t sync, func_name, args):
+    def __init__(self, str encoding, uint64_t sync,
+                 func_name, args):
         Request.__init__(self, tnt.TP_CALL_16, encoding, sync)
         self.buf.encode_request_call(func_name, args)
         self.buf.write_length()
         
+
+cdef class RequestEval(Request):
+    def __init__(self, str encoding, uint64_t sync,
+                 expression, args):
+        Request.__init__(self, tnt.TP_EVAL, encoding, sync)
+        self.buf.encode_request_eval(expression, args)
+        self.buf.write_length()
+
+
+cdef class RequestSelect(Request):
+    def __init__(self, str encoding, uint64_t sync,
+                 uint32_t space, uint32_t index, list key,
+                 uint64_t offset, uint64_t limit, uint32_t iterator):
+        Request.__init__(self, tnt.TP_SELECT, encoding, sync)
+        self.buf.encode_request_select(space, index, key,
+                                       offset, limit, iterator)
+        self.buf.write_length()

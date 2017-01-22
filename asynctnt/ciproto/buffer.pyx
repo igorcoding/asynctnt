@@ -240,7 +240,8 @@ cdef class WriteBuffer:
             return self._encode_dict(p, o)
         
         else:
-            raise TypeError('Type `{}` is not supported for encoding'.format(type(o)))
+            raise TypeError(
+                'Type `{}` is not supported for encoding'.format(type(o)))
 
     cdef void encode_request_call(self, str func_name, list args):
         cdef:
@@ -249,15 +250,15 @@ cdef class WriteBuffer:
             uint32_t max_body_len
             
             bytes func_name_temp
-            char* c_func_name
+            char* func_name_str
             ssize_t func_name_len
         
-        c_func_name = NULL
+        func_name_str = NULL
         func_name_len = 0
         
         func_name_temp = func_name.encode(self._encoding, 'strict')
         cpython.bytes.PyBytes_AsStringAndSize(func_name_temp,
-                                              &c_func_name,
+                                              &func_name_str,
                                               &func_name_len)
         body_map_sz = 2
         # Size description:
@@ -275,11 +276,110 @@ cdef class WriteBuffer:
         p = &self._buf[self._length]
         p = mp_encode_map(p, body_map_sz)
         p = mp_encode_uint(p, tnt.TP_FUNCTION)
-        p = mp_encode_str(p, c_func_name, <uint32_t>func_name_len)
+        p = mp_encode_str(p, func_name_str, <uint32_t>func_name_len)
         
         p = mp_encode_uint(p, tnt.TP_TUPLE)
         p = self._encode_list(p, args)
         self._length += (p - self._buf)
+        
+    cdef void encode_request_eval(self, str expression, list args):
+        cdef:
+            char* p
+            uint32_t body_map_sz
+            uint32_t max_body_len
+            
+            bytes expression_temp
+            char* expression_str
+            ssize_t expression_len
+        
+        expression_str = NULL
+        expression_len = 0
+        
+        expression_temp = expression.encode(self._encoding, 'strict')
+        cpython.bytes.PyBytes_AsStringAndSize(expression_temp,
+                                              &expression_str,
+                                              &expression_len)
+        body_map_sz = 2
+        # Size description:
+        # mp_sizeof_map()
+        # + mp_sizeof_uint(TP_EXPRESSION)
+        # + mp_sizeof_str(expression)
+        # + mp_sizeof_uint(TP_TUPLE)
+        max_body_len = 1 \
+                       + 1 \
+                       + mp_sizeof_str(<uint32_t>expression_len) \
+                       + 1
+        
+        self.ensure_allocated(max_body_len)
+        
+        p = &self._buf[self._length]
+        p = mp_encode_map(p, body_map_sz)
+        p = mp_encode_uint(p, tnt.TP_EXPRESSION)
+        p = mp_encode_str(p, expression_str, <uint32_t>expression_len)
+        
+        p = mp_encode_uint(p, tnt.TP_TUPLE)
+        p = self._encode_list(p, args)
+        self._length += (p - self._buf)
+        
+    cdef void encode_request_select(self, uint32_t space, uint32_t index,
+                                    list key, uint64_t offset, uint64_t limit,
+                                    uint32_t iterator):
+        cdef:
+            char* p
+            uint32_t body_map_sz
+            uint32_t max_body_len
+        
+        body_map_sz = 3 \
+                      + <uint32_t>(index > 0) \
+                      + <uint32_t>(offset > 0) \
+                      + <uint32_t>(iterator > 0)
+        # Size description:
+        # mp_sizeof_map(body_map_sz)
+        # + mp_sizeof_uint(TP_SPACE)
+        # + mp_sizeof_uint(space)
+        # + mp_sizeof_uint(TP_LIMIT)
+        # + mp_sizeof_uint(limit)
+        max_body_len = 1 \
+                       + 1 \
+                       + 9 \
+                       + 1 \
+                       + 9
+        
+        if index > 0:
+            # mp_sizeof_uint(TP_INDEX) + mp_sizeof_uint(index)
+            max_body_len += 1 + 9
+        if offset > 0:
+            # mp_sizeof_uint(TP_OFFSET) + mp_sizeof_uint(offset)
+            max_body_len += 1 + 9
+        if iterator > 0:
+            # mp_sizeof_uint(TP_ITERATOR) + mp_sizeof_uint(iterator)
+            max_body_len += 1 + 1
+            
+        max_body_len += 1  # mp_sizeof_uint(TP_KEY);
+        
+        self.ensure_allocated(max_body_len)
+        
+        p = &self._buf[self._length]
+        p = mp_encode_map(p, body_map_sz)
+        p = mp_encode_uint(p, tnt.TP_SPACE)
+        p = mp_encode_uint(p, space)
+        p = mp_encode_uint(p, tnt.TP_LIMIT)
+        p = mp_encode_uint(p, limit)
+        
+        if index > 0:
+            p = mp_encode_uint(p, tnt.TP_INDEX)
+            p = mp_encode_uint(p, index)
+        if offset > 0:
+            p = mp_encode_uint(p, tnt.TP_OFFSET)
+            p = mp_encode_uint(p, offset)
+        if iterator > 0:
+            p = mp_encode_uint(p, tnt.TP_ITERATOR)
+            p = mp_encode_uint(p, iterator)
+        
+        p = mp_encode_uint(p, tnt.TP_KEY)
+        p = self._encode_list(p, key)
+        self._length += (p - self._buf)
+    
 
 cdef class ReadBuffer:
     cdef:

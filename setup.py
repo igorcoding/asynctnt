@@ -17,7 +17,8 @@ CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
 def find_version():
     for line in open("asynctnt/__init__.py"):
         if line.startswith("__version__"):
-            return re.match(r"""__version__\s*=\s*(['"])([^'"]+)\1""", line).group(2)
+            return re.match(
+                r"""__version__\s*=\s*(['"])([^'"]+)\1""", line).group(2)
 
 
 class build_ext(_build_ext.build_ext):

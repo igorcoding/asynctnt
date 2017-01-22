@@ -61,7 +61,8 @@ class Connection:
         
         def connection_lost(exc):
             if self._reconnect_timeout > 0 and not self._closing:
-                logger.info('Tarantool[%s:%s] Starting reconnecting', self._host, self._port)
+                logger.info('Tarantool[%s:%s] Starting reconnecting',
+                            self._host, self._port)
                 asyncio.ensure_future(self.connect(), loop=self.loop)
             else:
                 self._closing = False
@@ -71,7 +72,8 @@ class Connection:
         
         def protocol_factory():
             return protocol.Protocol(host=self._host, port=self._port,
-                                     username=self._username, password=self._password,
+                                     username=self._username,
+                                     password=self._password,
                                      fetch_schema=self._fetch_schema,
                                      connected_fut=connected_fut,
                                      on_connection_lost=connection_lost,
@@ -81,19 +83,25 @@ class Connection:
             try:
                 if is_unix:
                     unix_path = self._port
-                    assert unix_path, 'No unix file path specified'
-                    assert os.path.isfile(unix_path), 'Unix socket `{}` not found'.format(unix_path)
+                    assert unix_path, \
+                        'No unix file path specified'
+                    assert os.path.isfile(unix_path), \
+                        'Unix socket `{}` not found'.format(unix_path)
                     
-                    conn = self.loop.create_unix_connection(protocol_factory, unix_path)
+                    conn = self.loop.create_unix_connection(protocol_factory,
+                                                            unix_path)
                 else:
-                    conn = self.loop.create_connection(protocol_factory, self._host, self._port)
+                    conn = self.loop.create_connection(protocol_factory,
+                                                       self._host, self._port)
                 
                 try:
-                    tr, pr = await asyncio.wait_for(conn, timeout=self._connect_timeout, loop=self.loop)
+                    tr, pr = await asyncio.wait_for(
+                        conn, timeout=self._connect_timeout, loop=self.loop)
                 except (OSError, asyncio.TimeoutError):
                     raise
                 
-                logger.info('Connected successfully to Tarantool[%s:%s]', self._host, self._port)
+                logger.info('Connected successfully to Tarantool[%s:%s]',
+                            self._host, self._port)
                 
                 try:
                     await connected_fut
@@ -107,14 +115,19 @@ class Connection:
                 return
             except (OSError, asyncio.TimeoutError) as e:
                 if self._reconnect_timeout > 0:
-                    logger.warning('Connecting to Tarantool[%s:%s] failed. Retrying in %i seconds',
-                                   self._host, self._port, self._reconnect_timeout)
-                    await asyncio.sleep(self._reconnect_timeout, loop=self.loop)
+                    logger.warning(
+                        'Connecting to Tarantool[%s:%s] failed. '
+                        'Retrying in %i seconds',
+                        self._host, self._port, self._reconnect_timeout)
+                    
+                    await asyncio.sleep(self._reconnect_timeout,
+                                        loop=self.loop)
                 else:
                     raise
     
     def disconnect(self):
-        logger.info('Disconnecting from Tarantool[{}:{}]'.format(self._host, self._port))
+        logger.info('Disconnecting from Tarantool[{}:{}]'.format(self._host,
+                                                                 self._port))
         self._closing = True
         waiter = _create_future(self.loop)
         if self._transport:

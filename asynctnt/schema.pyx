@@ -18,7 +18,8 @@ cdef class SchemaIndex(object):
                 self.parts.append((k, v))
         else:
             for i in range(index_row[5]):
-                self.parts.append((index_row[5 + 1 + i * 2], index_row[5 + 2 + i * 2]))
+                self.parts.append(
+                    (index_row[5 + 1 + i * 2], index_row[5 + 2 + i * 2]))
             
 
 cdef class SchemaSpace:

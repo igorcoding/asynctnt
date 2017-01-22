@@ -1,3 +1,4 @@
+import yaml
 
 cdef class TntResponse:
     def __init__(self):
@@ -15,3 +16,6 @@ cdef class TntResponse:
     
     def __repr__(self):
         return '<TntResponse: code={}, sync={}>'.format(self.code, self.sync)
+    
+    def body2yaml(self):
+        return yaml.dump(self.body)

@@ -87,23 +87,32 @@ class TarantoolInstance:
                  ):
         """
         
-        :param host: The host which Tarantool instance is going to be listening on (default = 127.0.0.1)
-        :param port: The port which Tarantool instance is going to be listening on (default = 3301)
-        :param console_port: The port which Tarantool console is going to be listening on (to execute admin commands)
+        :param host: The host which Tarantool instance is going
+                     to be listening on (default = 127.0.0.1)
+        :param port: The port which Tarantool instance is going
+                     to be listening on (default = 3301)
+        :param console_port: The port which Tarantool console is going
+                             to be listening on (to execute admin commands)
                              (default = 3302)
-        :param replication_source: The replication source string. If it's None, then replication_source=nil in box.cfg
-        :param title: Tarantool instance title (substitutes into custom_proc_title). If None then it is "tnt[host:port]"
+        :param replication_source: The replication source string.
+                                   If it's None, then replication_source=nil
+                                   in box.cfg
+        :param title: Tarantool instance title (substitutes
+                      into custom_proc_title). (default = "tnt[host:port]")
         :param logger: logger, where all messages are logged to.
-                       If None new logger is created with name Tarantool[host:port]
+                       default logger name = Tarantool[host:port]
         :param log_level: Tarantool's log_level (default = 5)
         :param slab_alloc_arena: Tarantool's slab_alloc_arena (default = 0.1)
         :param wal_mode: Tarantool's wal_mode (default = 'none')
         :param root: Tarantool's work_dir location
         :param cleanup: do cleanup or not
         :param initlua_template: The initial init.lua template
-                                 (default can be found in _create_initlua_template function)
-        :param applua: Any extra lua script (a string) (default = '-- app.lua --')
-        :param timeout: Timeout in seconds - how much to wait for tarantool becoming active
+                                 (default can be found in
+                                 _create_initlua_template function)
+        :param applua: Any extra lua script (a string)
+                       (default = '-- app.lua --')
+        :param timeout: Timeout in seconds - how much to wait for tarantool
+                        to become active
         :param loop: loop instance
         """
         self._loop = loop or asyncio.get_event_loop()
@@ -120,7 +129,8 @@ class TarantoolInstance:
         self._root = root or self._generate_root_folder_name()
         self._cleanup = cleanup
         
-        self._initlua_template = initlua_template or self._create_initlua_template()
+        self._initlua_template = initlua_template or \
+                                 self._create_initlua_template()
         self._applua = applua
         
         self._timeout = timeout
@@ -134,7 +144,9 @@ class TarantoolInstance:
         
     def _random_string(self,
                        length, *,
-                       source=string.ascii_uppercase + string.ascii_lowercase + string.digits):
+                       source=string.ascii_uppercase +
+                                string.ascii_lowercase +
+                                string.digits):
         return ''.join(random.choice(source) for _ in range(length))
         
     def _generate_title(self):
@@ -144,7 +156,8 @@ class TarantoolInstance:
         cwd = os.getcwd()
         path = None
         while path is None or os.path.isdir(path):
-            folder_name = '__tnt__' + self._title + '_' + self._random_string(10)
+            folder_name = '__tnt__' + self._title + \
+                          '_' + self._random_string(10)
             path = os.path.join(cwd, folder_name)
         return path
 
@@ -176,7 +189,7 @@ class TarantoolInstance:
             'wal_mode': self._wal_mode,
             'custom_proc_title': self._title,
             'slab_alloc_arena': self._slab_alloc_arena,
-            'replication_source': 'nil' if not self._replication_source else '"{}"'.format(self._replication_source),
+            'replication_source': 'nil' if not self._replication_source else '"{}"'.format(self._replication_source),  # nopep8
             'work_dir': self._root,
             'log_level': self._log_level,
             'applua': self._applua if self._applua else ''
@@ -237,11 +250,13 @@ class TarantoolInstance:
         return await self._stop_event.wait()
 
     async def start(self):
-        self._logger.info('Starting Tarantool instance ({})'.format(self._title))
+        self._logger.info(
+            'Starting Tarantool instance ({})'.format(self._title))
         initlua_path = self.prepare()
         self._logger.info('Launching process')
 
-        factory = functools.partial(TarantoolInstanceProtocol, self, self._on_process_exit)
+        factory = functools.partial(
+            TarantoolInstanceProtocol, self, self._on_process_exit)
         self._transport, self._protocol = await self._loop.subprocess_exec(
             factory,
             'tarantool', initlua_path,
@@ -254,8 +269,10 @@ class TarantoolInstance:
         attempts = math.ceil(self._timeout / interval)
         while attempts > 0:
             if self._protocol is None or self._protocol.returncode is not None:
-                raise RuntimeError('{} exited unexpectedly with exit code {}'.format(self.fingerprint,
-                                                                                     self._last_return_code))
+                raise RuntimeError(
+                    '{} exited unexpectedly with exit code {}'.format(
+                        self.fingerprint, self._last_return_code)
+                )
             cmdline = procinfo.cmdline()
             if cmdline:
                 cmdline = cmdline[0]
@@ -265,7 +282,8 @@ class TarantoolInstance:
             await asyncio.sleep(interval, loop=self._loop)
             attempts -= 1
         else:
-            raise asyncio.TimeoutError('Timeout while waiting for Tarantool to move to running state')
+            raise asyncio.TimeoutError(
+                'Timeout while waiting for Tarantool to move to running state')
         self._is_running = True
         
     async def stop(self):
@@ -305,7 +323,8 @@ class TarantoolInstance:
         self._stop_event.clear()
         if self._cleanup:
             shutil.rmtree(self._root, ignore_errors=True)
-        self._logger.info('Destroyed Tarantool instance ({})'.format(self._title))
+        self._logger.info(
+            'Destroyed Tarantool instance ({})'.format(self._title))
 
     def __del__(self):
         self.terminate()

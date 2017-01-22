@@ -18,3 +18,12 @@ cdef class RequestPing(Request):
 
 cdef class RequestCall(Request):
     pass
+
+cdef class RequestCall16(Request):
+    pass
+
+cdef class RequestEval(Request):
+    pass
+
+cdef class RequestSelect(Request):
+    pass

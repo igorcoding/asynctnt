@@ -24,8 +24,11 @@ async def main():
     # res = await conn.call16('test')
     # print(res.body)
 
-    res = await conn.call('test', timeout=0.0000000001)
-    print(res.body)
+    res = await conn.select(280)
+    # res = await conn.eval('return box.cfg')
+    # res = await conn.call('test', timeout=0.0000000001)
+    # res = await conn.call('long', [], timeout=1)
+    print(res.body2yaml())
     await conn.disconnect()
     
     # await conn.auth('tt2', 'ttp2')
