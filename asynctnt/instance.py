@@ -11,17 +11,22 @@ import functools
 import psutil
 
 
+__all__ = (
+    'TarantoolInstanceProtocol', 'TarantoolInstance'
+)
+
+
 class TarantoolInstanceProtocol(asyncio.SubprocessProtocol):
     def __init__(self, tnt, on_exit):
         super().__init__()
         self._tnt = tnt
         self._on_exit = on_exit
         self._transport = None
-        
+
     @property
     def logger(self):
         return self._tnt.logger
-    
+
     @property
     def pid(self):
         return self._transport.get_pid() if self._transport else None
@@ -66,7 +71,7 @@ class TarantoolInstanceProtocol(asyncio.SubprocessProtocol):
     def kill(self):
         self._transport.kill()
 
-        
+
 class TarantoolInstance:
     def __init__(self, *,
                  host='127.0.0.1',
@@ -86,7 +91,7 @@ class TarantoolInstance:
                  loop=None
                  ):
         """
-        
+
         :param host: The host which Tarantool instance is going
                      to be listening on (default = 127.0.0.1)
         :param port: The port which Tarantool instance is going
@@ -116,7 +121,7 @@ class TarantoolInstance:
         :param loop: loop instance
         """
         self._loop = loop or asyncio.get_event_loop()
-        
+
         self._host = host
         self._port = port
         self._console_port = console_port
@@ -128,30 +133,30 @@ class TarantoolInstance:
         self._wal_mode = wal_mode
         self._root = root or self._generate_root_folder_name()
         self._cleanup = cleanup
-        
+
         self._initlua_template = initlua_template or \
-                                 self._create_initlua_template()
+            self._create_initlua_template()
         self._applua = applua
-        
+
         self._timeout = timeout
-        
+
         self._is_running = False
         self._is_stopping = False
         self._transport = None
         self._protocol = None
         self._last_return_code = None
         self._stop_event = asyncio.Event(loop=self._loop)
-        
+
     def _random_string(self,
                        length, *,
                        source=string.ascii_uppercase +
-                                string.ascii_lowercase +
-                                string.digits):
+                       string.ascii_lowercase +
+                       string.digits):
         return ''.join(random.choice(source) for _ in range(length))
-        
+
     def _generate_title(self):
         return 'tnt[{}:{}]'.format(self._host, self._port)
-    
+
     def _generate_root_folder_name(self):
         cwd = os.getcwd()
         path = None
@@ -172,14 +177,11 @@ class TarantoolInstance:
               work_dir = "${work_dir}",
               log_level = ${log_level}
             }
-            
             box.schema.user.grant("guest", "read,write,execute", "universe")
-            
             require('console').listen("${host}:${console_port}")
-            
             ${applua}
         """
-    
+
     def _render_initlua(self):
         template = string.Template(self._initlua_template)
         d = {
@@ -195,22 +197,22 @@ class TarantoolInstance:
             'applua': self._applua if self._applua else ''
         }
         return template.substitute(d)
-    
+
     def _save_initlua(self, initlua):
         initlua = initlua.replace(' ' * 4, '')
         initlua_path = os.path.join(self._root, 'init.lua')
         with open(initlua_path, 'w') as f:
             f.write(initlua)
         return initlua_path
-            
+
     @property
     def logger(self):
         return self._logger
-    
+
     @property
     def fingerprint(self):
         return 'Tarantool[{}:{}]'.format(self._host, self._port)
-            
+
     def prepare(self):
         self._last_return_code = None
         self._stop_event.clear()
@@ -218,34 +220,34 @@ class TarantoolInstance:
         initlua = self._render_initlua()
         initlua_path = self._save_initlua(initlua)
         return initlua_path
-    
+
     @property
     def host(self):
         return self._host
-    
+
     @property
     def port(self):
         return self._port
-    
+
     @property
     def console_port(self):
         return self._console_port
-    
+
     @property
     def is_running(self):
         return self._is_running
-    
+
     @property
     def pid(self):
         return self._protocol.pid if self._protocol else None
-    
+
     def _on_process_exit(self, return_code):
         self._last_return_code = return_code
         if self._is_stopping:
             return
         self._stop_event.set()
         self.cleanup()
-        
+
     async def wait_stopped(self):
         return await self._stop_event.wait()
 
@@ -263,7 +265,7 @@ class TarantoolInstance:
             stdin=None,
             stderr=asyncio.subprocess.PIPE,
         )
-        
+
         procinfo = psutil.Process(self.pid)
         interval = 0.1
         attempts = math.ceil(self._timeout / interval)
@@ -285,7 +287,7 @@ class TarantoolInstance:
             raise asyncio.TimeoutError(
                 'Timeout while waiting for Tarantool to move to running state')
         self._is_running = True
-        
+
     async def stop(self):
         if self._protocol is not None:
             self._is_stopping = True
@@ -311,11 +313,11 @@ class TarantoolInstance:
         self._logger.info('Waiting for process to complete')
         await self._protocol.wait()
         self.cleanup()
-        
+
     def cleanup(self):
         return_code = self._protocol.returncode
         self._logger.info('Finished with return code {}'.format(return_code))
-        
+
         self._is_running = False
         self._is_stopping = False
         self._transport = None

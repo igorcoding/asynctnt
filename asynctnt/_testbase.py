@@ -1,5 +1,4 @@
 import asyncio
-import atexit
 import contextlib
 import functools
 import inspect
@@ -10,6 +9,11 @@ import unittest
 
 import asynctnt
 from asynctnt.instance import TarantoolInstance
+
+
+__all__ = (
+    'TestCase', 'TarantoolTestCase'
+)
 
 
 @contextlib.contextmanager
@@ -68,8 +72,6 @@ class TestCase(unittest.TestCase, metaclass=TestCaseMeta):
         if os.environ.get('USE_UVLOOP'):
             import uvloop
             asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
-            p = asyncio.get_event_loop_policy()
-            pass
 
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(None)
@@ -100,13 +102,13 @@ class TarantoolTestCase(TestCase):
     TNT_CLEANUP = True
 
     tnt = None
-    
+
     @classmethod
     def read_applua(cls):
         if cls.TNT_APP_LUA_PATH:
             with open(cls.TNT_APP_LUA_PATH, 'r') as f:
                 return f.read()
-    
+
     @classmethod
     def setUpClass(cls):
         TestCase.setUpClass()
@@ -118,19 +120,20 @@ class TarantoolTestCase(TestCase):
         )
         cls.loop.run_until_complete(tnt.start())
         cls.tnt = tnt
-        
+
     @classmethod
     def tearDownClass(cls):
         if cls.tnt:
             cls.loop.run_until_complete(cls.tnt.stop())
         TestCase.tearDownClass()
-        
+
     def setUp(self):
         super(TarantoolTestCase, self).setUp()
         if self.DO_CONNECT:
-            self.conn = asynctnt.Connection(host=self.tnt.host, port=self.tnt.port, loop=self.loop)
+            self.conn = asynctnt.Connection(
+                host=self.tnt.host, port=self.tnt.port, loop=self.loop)
             self.loop.run_until_complete(self.conn.connect())
-    
+
     def tearDown(self):
         if hasattr(self, 'conn') and self.conn is not None:
             self.loop.run_until_complete(self.conn.disconnect())

@@ -1,11 +1,13 @@
 # import pyximport; pyximport.install()
 
 import asyncio
-import uvloop; asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
+import uvloop;
+
+from asynctnt.iproto.protocol import Iterator
+
+asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
 import logging
 import sys
-
-from asynctnt.protocol import ConnectionLostError
 
 logging.basicConfig(level=logging.DEBUG, stream=sys.stdout)
 
@@ -19,7 +21,7 @@ async def main():
                                reconnect_timeout=1)
     await conn.connect()
     
-    n_requests = 100000
+    n_requests = 10000
     
     start = datetime.datetime.now()
     
@@ -35,14 +37,14 @@ async def main():
         # await conn.eval('return box.info')
         # coros.append(conn.eval('return box.info'))
 
-        # await conn.select(280)
+        await conn.select('tester', iterator=Iterator.LE)
         # coros.append(conn.select(280))
 
         # await conn.auth('tt2', 'ttp2')
         # await conn.insert('tester', [_])
         # coros.append(conn.replace('tester', [_, 'hello']))
 
-        await conn.update('tester', [2], [(':', 1, 1, 3, 'yo!')])
+        # await conn.update('tester', [2], [(':', 1, 1, 3, 'yo!')])
         # coros.append(conn.update('tester', [2], [(':', 1, 1, 3, 'yo!')]))
 
     # start = datetime.datetime.now()

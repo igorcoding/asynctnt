@@ -163,18 +163,14 @@ setup(
     include_package_data=True,
     cmdclass={'build_ext': build_ext},
     ext_modules=[
-        Extension("asynctnt.ciproto.protocol",
+        Extension("asynctnt.iproto.protocol",
                   sources=[
-                      "asynctnt/ciproto/protocol.pyx",
+                      "asynctnt/iproto/protocol.pyx",
                       "third_party/msgpuck/msgpuck.c"
                   ],
                   include_dirs=[
                       '-Ithird_party'
-                  ]),
-        # Extension(name="asynctnt.schema",
-        #           sources=[
-        #               "asynctnt/schema.pyx"
-        #           ]),
+                  ])
     ],
     version=find_version(),
     author="igorcoding",
@@ -186,9 +182,7 @@ setup(
         "Topic :: Software Development :: Libraries :: Python Modules",
         "Topic :: Database :: Front-Ends"
     ],
-    install_requires=[
-        "tarantool>=0.5.1",
-    ],
+    install_requires=[],
     description="Tarantool connection driver for work with asyncio",
-    # long_description=open("README.rst").read()
+    long_description=open("README.md").read()
 )

@@ -4,24 +4,26 @@ cimport cpython.bytes
 cimport cpython.list
 cimport cpython.unicode
 
-from libc.string cimport memcpy
 from cpython.mem cimport PyMem_Malloc, PyMem_Realloc, PyMem_Free
-from cpython cimport PyBuffer_FillInfo, PyBytes_AsString
-from cpython.ref cimport PyObject, Py_DECREF
+
+from libc.string cimport memcpy
 from libc.stdint cimport uint32_t, uint64_t, int64_t
 
+from asynctnt.exceptions import TarantoolRequestError
+from asynctnt.log import logger
 
 cdef class Memory:
     cdef as_bytes(self):
-        return cpython.PyBytes_FromStringAndSize(self.buf, self.length)
+        return cpython.bytes.PyBytes_FromStringAndSize(self.buf, self.length)
 
     @staticmethod
-    cdef inline Memory new(char* buf, ssize_t length):
+    cdef inline Memory new(char *buf, ssize_t length):
         cdef Memory mem
         mem = Memory.__new__(Memory)
         mem.buf = buf
         mem.length = length
         return mem
+
 
 # noinspection PyUnresolvedReferences
 # noinspection PyAttributeOutsideInit
@@ -49,10 +51,11 @@ cdef class WriteBuffer:
     def __getbuffer__(self, Py_buffer *buffer, int flags):
         self._view_count += 1
 
-        PyBuffer_FillInfo(
+        cpython.PyBuffer_FillInfo(
             buffer, self, self._buf, self._length,
             1,  # read-only
-            flags)
+            flags
+        )
 
     def __releasebuffer__(self, Py_buffer *buffer):
         self._view_count -= 1
@@ -72,9 +75,8 @@ cdef class WriteBuffer:
 
     cdef void _reallocate(self, ssize_t new_size):
         cdef char *new_buf
-    
-    
-        print('reallocate: {}'.format(new_size))
+
+        logger.debug('reallocate: {}'.format(new_size))
         if new_size < _BUFFER_MAX_GROW:
             new_size = _BUFFER_MAX_GROW
         else:
@@ -109,11 +111,11 @@ cdef class WriteBuffer:
         buf = WriteBuffer.__new__(WriteBuffer)
         buf._encoding = encoding
         return buf
-    
+
     cdef void write_header(self, uint64_t sync, tnt.tp_request_type op):
-        cdef char* p = NULL
+        cdef char *p = NULL
         self.ensure_allocated(HEADER_CONST_LEN)
-        
+
         p = &self._buf[self._length]
         p = mp_encode_map(&p[5], 2)
         p = mp_encode_uint(p, tnt.TP_CODE)
@@ -121,99 +123,100 @@ cdef class WriteBuffer:
         p = mp_encode_uint(p, tnt.TP_SYNC)
         p = mp_encode_uint(p, sync)
         self._length += (p - self._buf)
-        
+
     cdef void write_length(self):
         cdef:
-            char* p
+            char *p
         p = self._buf
         p = mp_store_u8(p, 0xce)
         p = mp_store_u32(p, self._length - 5)
-        
-    cdef char* _encode_nil(self, char* p):
+
+    cdef char *_encode_nil(self, char *p) except NULL:
         self.ensure_allocated(1)
         return mp_encode_nil(p)
-    
-    cdef char* _encode_bool(self, char* p, bint value):
+
+    cdef char *_encode_bool(self, char *p, bint value) except NULL:
         self.ensure_allocated(1)
         return mp_encode_bool(p, value)
-    
-    cdef char* _encode_double(self, char* p, double value):
+
+    cdef char *_encode_double(self, char *p, double value) except NULL:
         self.ensure_allocated(mp_sizeof_double(value))
         return mp_encode_double(p, value)
-    
-    cdef char* _encode_uint(self, char* p, uint64_t value):
+
+    cdef char *_encode_uint(self, char *p, uint64_t value) except NULL:
         self.ensure_allocated(mp_sizeof_uint(value))
         return mp_encode_uint(p, value)
-    
-    cdef char* _encode_int(self, char* p, int64_t value):
+
+    cdef char *_encode_int(self, char *p, int64_t value) except NULL:
         self.ensure_allocated(mp_sizeof_int(value))
         return mp_encode_int(p, value)
-    
-    cdef char* _encode_str(self, char* p, const char* str, uint32_t len):
+
+    cdef char *_encode_str(self, char *p,
+                           const char *str, uint32_t len) except NULL:
         self.ensure_allocated(mp_sizeof_str(len))
         return mp_encode_str(p, str, len)
-    
-    cdef char* _encode_bin(self, char* p, const char* data, uint32_t len):
+
+    cdef char *_encode_bin(self, char *p,
+                           const char *data, uint32_t len) except NULL:
         self.ensure_allocated(mp_sizeof_bin(len))
         return mp_encode_bin(p, data, len)
-    
-    cdef char* _encode_array(self, char* p, uint32_t len):
+
+    cdef char *_encode_array(self, char *p, uint32_t len) except NULL:
         self.ensure_allocated(mp_sizeof_array(len))
         return mp_encode_array(p, len)
-    
-    cdef char* _encode_map(self, char* p, uint32_t len):
+
+    cdef char *_encode_map(self, char *p, uint32_t len) except NULL:
         self.ensure_allocated(mp_sizeof_map(len))
         return mp_encode_map(p, len)
-    
-    cdef char* _encode_list(self, char* p, list arr):
+
+    cdef char *_encode_list(self, char *p, list arr) except NULL:
         cdef:
             uint32_t arr_len
-            
+
         if arr is not None:
             arr_len = <uint32_t>cpython.list.PyList_GET_SIZE(arr)
         else:
             arr_len = 0
         p = self._encode_array(p, arr_len)
-        
+
         if arr_len > 0:
             for item in arr:
                 p = self._encode_obj(p, item)
         return p
-    
-    cdef char* _encode_dict(self, char* p, dict d):
+
+    cdef char *_encode_dict(self, char *p, dict d) except NULL:
         cdef:
             uint32_t d_len
-            
+
         d_len = len(d)
         p = self._encode_map(p, d_len)
-        for k, v in d.items():
+        for k in d:
+            v = d[k]
             p = self._encode_obj(p, k)
             p = self._encode_obj(p, v)
         return p
 
-    cdef char* _encode_obj(self, char* p, object o):
+    cdef char *_encode_obj(self, char *p, object o) except NULL:
         cdef:
             bytes o_string_temp
-            char* o_string_str
+            char *o_string_str
             ssize_t o_string_len
-            
-        # o_ptr = <PyObject*>o
-            
+
         if o is None:
             return self._encode_nil(p)
-        
+
         elif isinstance(o, bool):
             return self._encode_bool(p, <bint>o)
-        
+
         elif isinstance(o, float):
             return self._encode_double(p, <double>o)
-        
+
         elif isinstance(o, int):
             if o >= 0:
                 return self._encode_uint(p, <uint64_t>o)
             else:
                 return self._encode_int(p, <int64_t>o)
-        
+
         elif isinstance(o, str):
             o_string_temp = o.encode(self._encoding, 'strict')
             o_string_str = NULL
@@ -221,10 +224,10 @@ cdef class WriteBuffer:
             cpython.bytes.PyBytes_AsStringAndSize(o_string_temp,
                                                   &o_string_str,
                                                   &o_string_len)
-            
+
             p = self._encode_str(p, o_string_str, <uint32_t>o_string_len)
             return p
-        
+
         elif isinstance(o, bytes):
             o_string_str = NULL
             o_string_len = 0
@@ -232,29 +235,29 @@ cdef class WriteBuffer:
                                                   &o_string_str,
                                                   &o_string_len)
             return self._encode_bin(p, o_string_str, <uint32_t>o_string_len)
-        
+
         elif isinstance(o, list):
             return self._encode_list(p, o)
-        
+
         elif isinstance(o, dict):
             return self._encode_dict(p, o)
-        
+
         else:
-            raise TypeError(
+            raise TarantoolRequestError(
                 'Type `{}` is not supported for encoding'.format(type(o)))
-        
-    cdef tnt.tnt_update_op_kind _op_type_to_kind(self, char* str, ssize_t len):
+
+    cdef tnt.tnt_update_op_kind _op_type_to_kind(self, char *str, ssize_t len):
         cdef:
             char op
         if len < 0 or len > 1:
             return tnt.OP_UPD_UNKNOWN
-        
+
         op = str[0]
         if op == b'+' \
-            or op == b'-' \
-            or op == b'&' \
-            or op == b'^' \
-            or op == b'|':
+              or op == b'-' \
+              or op == b'&' \
+              or op == b'^' \
+              or op == b'|':
             return tnt.OP_UPD_ARITHMETIC
         elif op == b'#':
             return tnt.OP_UPD_DELETE
@@ -265,104 +268,116 @@ cdef class WriteBuffer:
             return tnt.OP_UPD_SPLICE
         else:
             return tnt.OP_UPD_UNKNOWN
-        
-    cdef char* _encode_update_ops(self, char* p, list operations):
+
+    cdef char *_encode_update_ops(self, char *p, list operations) except NULL:
         cdef:
             uint32_t ops_len, op_len
             bytes str_temp
-            char* str_c
+            char *str_c
             ssize_t str_len
-            
-            char* op_str_c
+
+            char *op_str_c
             ssize_t op_str_len
-            
+
             uint32_t extra_length
-            
+
             tnt.tnt_update_op_kind op_kind
             uint64_t field_no
-            
+
             uint32_t splice_position, splice_offset
-            
+
         if operations is not None:
             ops_len = <uint32_t>cpython.list.PyList_GET_SIZE(operations)
         else:
             ops_len = 0
-        
+
         self.ensure_allocated(mp_sizeof_array(ops_len))
         p = self._encode_array(p, ops_len)
         if ops_len == 0:
             return p
-        
+
         for operation in operations:
             if not isinstance(operation, (list, tuple)):
-                raise Exception('Single operation must be a tuple or list')
-            
+                raise TarantoolRequestError(
+                    'Single operation must be a tuple or list')
+
             op_len = <uint32_t>cpython.list.PyList_GET_SIZE(operation)
             if op_len < 3:
-                raise Exception('Operation length must be at least 3')
-            
-            # TODO: get op type and its arguments
+                raise TarantoolRequestError(
+                    'Operation length must be at least 3')
+
             op_type_str = operation[0]
             if isinstance(op_type_str, str):
                 str_temp = op_type_str.encode(self._encoding, 'strict')
             elif isinstance(op_type_str, bytes):
                 str_temp = op_type_str
             else:
-                raise Exception('Operation type must of a str or bytes type')
-            
-            cpython.bytes.PyBytes_AsStringAndSize(str_temp, &op_str_c, &op_str_len)
-            
+                raise TarantoolRequestError(
+                    'Operation type must of a str or bytes type')
+
+            cpython.bytes.PyBytes_AsStringAndSize(str_temp,
+                                                  &op_str_c, &op_str_len)
+
             op_kind = self._op_type_to_kind(op_str_c, op_str_len)
             field_no = <uint64_t>int(operation[1])
-            
-            if op_kind == tnt.OP_UPD_ARITHMETIC or op_kind == tnt.OP_UPD_DELETE:
+
+            if op_kind == tnt.OP_UPD_ARITHMETIC \
+                    or op_kind == tnt.OP_UPD_DELETE:
                 op_argument = operation[2]
                 if not isinstance(op_argument, int):
-                    raise Exception('int argument required for '
-                                    'Arithmetic and Delete operations')
-                # mp_sizeof_array(3) + mp_sizeof_str(1) + mp_sizeof_uint(field_no)
+                    raise TarantoolRequestError(
+                        'int argument required for '
+                        'Arithmetic and Delete operations'
+                    )
+                # mp_sizeof_array(3)
+                # + mp_sizeof_str(1)
+                # + mp_sizeof_uint(field_no)
                 extra_length = 1 + 2 + mp_sizeof_uint(field_no)
                 self.ensure_allocated(extra_length)
-                
+
                 p = mp_encode_array(p, 3)
                 p = mp_encode_str(p, op_str_c, 1)
                 p = mp_encode_uint(p, field_no)
                 p = self._encode_obj(p, op_argument)
             elif op_kind == tnt.OP_UPD_INSERT_ASSIGN:
                 op_argument = operation[2]
-                
-                # mp_sizeof_array(3) + mp_sizeof_str(1) + mp_sizeof_uint(field_no)
+
+                # mp_sizeof_array(3)
+                # + mp_sizeof_str(1)
+                # + mp_sizeof_uint(field_no)
                 extra_length = 1 + 2 + mp_sizeof_uint(field_no)
                 self.ensure_allocated(extra_length)
-                
+
                 p = mp_encode_array(p, 3)
                 p = mp_encode_str(p, op_str_c, 1)
                 p = mp_encode_uint(p, field_no)
                 p = self._encode_obj(p, op_argument)
-                
+
             elif op_kind == tnt.OP_UPD_SPLICE:
                 if op_len < 5:
-                    raise Exception('Splice operation must have length of 5, '
-                                    'but got: {}'.format(op_len))
-                
+                    raise TarantoolRequestError(
+                        'Splice operation must have length of 5, '
+                        'but got: {}'.format(op_len)
+                    )
+
                 splice_position_obj = operation[2]
                 splice_offset_obj = operation[3]
                 op_argument = operation[4]
                 if not isinstance(splice_position_obj, int):
-                    raise Exception('Splice position must be int')
+                    raise TarantoolRequestError('Splice position must be int')
                 if not isinstance(splice_offset_obj, int):
-                    raise Exception('Splice offset must be int')
-                
+                    raise TarantoolRequestError('Splice offset must be int')
+
                 splice_position = <uint32_t>splice_position_obj
                 splice_offset = <uint32_t>splice_offset_obj
-                
+
                 # mp_sizeof_array(5) + mp_sizeof_str(1) + ...
                 extra_length = 1 + 2 \
                                 + mp_sizeof_uint(field_no) \
                                 + mp_sizeof_uint(splice_position) \
                                 + mp_sizeof_uint(splice_offset)
                 self.ensure_allocated(extra_length)
-                
+
                 p = mp_encode_array(p, 5)
                 p = mp_encode_str(p, op_str_c, 1)
                 p = mp_encode_uint(p, field_no)
@@ -370,22 +385,23 @@ cdef class WriteBuffer:
                 p = mp_encode_uint(p, splice_offset)
                 p = self._encode_obj(p, op_argument)
             else:
-                raise Exception('Unknown update operation `{}`'.format(op_type_str))
+                raise TarantoolRequestError(
+                    'Unknown update operation `{}`'.format(op_type_str))
         return p
 
-    cdef void encode_request_call(self, str func_name, list args):
+    cdef void encode_request_call(self, str func_name, list args) except *:
         cdef:
-            char* p
+            char *p
             uint32_t body_map_sz
             uint32_t max_body_len
-            
+
             bytes func_name_temp
-            char* func_name_str
+            char *func_name_str
             ssize_t func_name_len
-        
+
         func_name_str = NULL
         func_name_len = 0
-        
+
         func_name_temp = func_name.encode(self._encoding, 'strict')
         cpython.bytes.PyBytes_AsStringAndSize(func_name_temp,
                                               &func_name_str,
@@ -400,31 +416,31 @@ cdef class WriteBuffer:
                        + 1 \
                        + mp_sizeof_str(<uint32_t>func_name_len) \
                        + 1
-        
+
         self.ensure_allocated(max_body_len)
-        
+
         p = &self._buf[self._length]
         p = mp_encode_map(p, body_map_sz)
         p = mp_encode_uint(p, tnt.TP_FUNCTION)
         p = mp_encode_str(p, func_name_str, <uint32_t>func_name_len)
-        
+
         p = mp_encode_uint(p, tnt.TP_TUPLE)
         p = self._encode_list(p, args)
         self._length += (p - self._buf)
-        
-    cdef void encode_request_eval(self, str expression, list args):
+
+    cdef void encode_request_eval(self, str expression, list args) except *:
         cdef:
-            char* p
+            char *p
             uint32_t body_map_sz
             uint32_t max_body_len
-            
+
             bytes expression_temp
-            char* expression_str
+            char *expression_str
             ssize_t expression_len
-        
+
         expression_str = NULL
         expression_len = 0
-        
+
         expression_temp = expression.encode(self._encoding, 'strict')
         cpython.bytes.PyBytes_AsStringAndSize(expression_temp,
                                               &expression_str,
@@ -439,26 +455,26 @@ cdef class WriteBuffer:
                        + 1 \
                        + mp_sizeof_str(<uint32_t>expression_len) \
                        + 1
-        
+
         self.ensure_allocated(max_body_len)
-        
+
         p = &self._buf[self._length]
         p = mp_encode_map(p, body_map_sz)
         p = mp_encode_uint(p, tnt.TP_EXPRESSION)
         p = mp_encode_str(p, expression_str, <uint32_t>expression_len)
-        
+
         p = mp_encode_uint(p, tnt.TP_TUPLE)
         p = self._encode_list(p, args)
         self._length += (p - self._buf)
-        
+
     cdef void encode_request_select(self, uint32_t space, uint32_t index,
                                     list key, uint64_t offset, uint64_t limit,
-                                    uint32_t iterator):
+                                    uint32_t iterator) except *:
         cdef:
-            char* p
+            char *p
             uint32_t body_map_sz
             uint32_t max_body_len
-        
+
         body_map_sz = 3 \
                       + <uint32_t>(index > 0) \
                       + <uint32_t>(offset > 0) \
@@ -474,7 +490,7 @@ cdef class WriteBuffer:
                        + 9 \
                        + 1 \
                        + 9
-        
+
         if index > 0:
             # mp_sizeof_uint(TP_INDEX) + mp_sizeof_uint(index)
             max_body_len += 1 + 9
@@ -484,18 +500,18 @@ cdef class WriteBuffer:
         if iterator > 0:
             # mp_sizeof_uint(TP_ITERATOR) + mp_sizeof_uint(iterator)
             max_body_len += 1 + 1
-            
+
         max_body_len += 1  # mp_sizeof_uint(TP_KEY);
-        
+
         self.ensure_allocated(max_body_len)
-        
+
         p = &self._buf[self._length]
         p = mp_encode_map(p, body_map_sz)
         p = mp_encode_uint(p, tnt.TP_SPACE)
         p = mp_encode_uint(p, space)
         p = mp_encode_uint(p, tnt.TP_LIMIT)
         p = mp_encode_uint(p, limit)
-        
+
         if index > 0:
             p = mp_encode_uint(p, tnt.TP_INDEX)
             p = mp_encode_uint(p, index)
@@ -505,17 +521,17 @@ cdef class WriteBuffer:
         if iterator > 0:
             p = mp_encode_uint(p, tnt.TP_ITERATOR)
             p = mp_encode_uint(p, iterator)
-        
+
         p = mp_encode_uint(p, tnt.TP_KEY)
         p = self._encode_list(p, key)
         self._length += (p - self._buf)
-        
-    cdef void encode_request_insert(self, uint32_t space, list t):
+
+    cdef void encode_request_insert(self, uint32_t space, list t) except *:
         cdef:
-            char* p
+            char *p
             uint32_t body_map_sz
             uint32_t max_body_len
-        
+
         body_map_sz = 2
         # Size description:
         # mp_sizeof_map(body_map_sz)
@@ -526,25 +542,25 @@ cdef class WriteBuffer:
                        + 1 \
                        + 9 \
                        + 1
-        
+
         self.ensure_allocated(max_body_len)
-        
+
         p = &self._buf[self._length]
         p = mp_encode_map(p, body_map_sz)
         p = mp_encode_uint(p, tnt.TP_SPACE)
         p = mp_encode_uint(p, space)
-        
+
         p = mp_encode_uint(p, tnt.TP_TUPLE)
         p = self._encode_list(p, t)
         self._length += (p - self._buf)
-        
+
     cdef void encode_request_delete(self, uint32_t space, uint32_t index,
-                                    list key):
+                                    list key) except *:
         cdef:
-            char* p
+            char *p
             uint32_t body_map_sz
             uint32_t max_body_len
-        
+
         body_map_sz = 2 \
                       + <uint32_t>(index > 0)
         # Size description:
@@ -554,37 +570,38 @@ cdef class WriteBuffer:
         max_body_len = 1 \
                        + 1 \
                        + 9
-        
+
         if index > 0:
             # mp_sizeof_uint(TP_INDEX) + mp_sizeof_uint(index)
             max_body_len += 1 + 9
-            
+
         max_body_len += 1  # mp_sizeof_uint(TP_KEY);
-        
+
         self.ensure_allocated(max_body_len)
-        
+
         p = &self._buf[self._length]
         p = mp_encode_map(p, body_map_sz)
         p = mp_encode_uint(p, tnt.TP_SPACE)
         p = mp_encode_uint(p, space)
-        
+
         if index > 0:
             p = mp_encode_uint(p, tnt.TP_INDEX)
             p = mp_encode_uint(p, index)
-        
+
         p = mp_encode_uint(p, tnt.TP_KEY)
         p = self._encode_list(p, key)
         self._length += (p - self._buf)
-        
+
     cdef void encode_request_update(self, uint32_t space, uint32_t index,
                                     list key_tuple, list operations,
                                     uint32_t key_of_tuple=tnt.TP_KEY,
-                                    uint32_t key_of_operations=tnt.TP_TUPLE):
+                                    uint32_t key_of_operations=tnt.TP_TUPLE
+                                    ) except *:
         cdef:
-            char* p
+            char *p
             uint32_t body_map_sz
             uint32_t max_body_len
-        
+
         body_map_sz = 3 + <uint32_t>(index > 0)
         # Size description:
         # mp_sizeof_map(body_map_sz)
@@ -593,52 +610,53 @@ cdef class WriteBuffer:
         max_body_len = 1 \
                        + 1 \
                        + 9
-        
+
         if index > 0:
             # + mp_sizeof_uint(TP_INDEX)
             # + mp_sizeof_uint(index)
             max_body_len += 1 + 9
-            
+
         max_body_len += 1  # + mp_sizeof_uint(TP_KEY)
         max_body_len += 1  # + mp_sizeof_uint(TP_TUPLE)
-        
+
         self.ensure_allocated(max_body_len)
-        
+
         p = &self._buf[self._length]
         p = mp_encode_map(p, body_map_sz)
         p = mp_encode_uint(p, tnt.TP_SPACE)
         p = mp_encode_uint(p, space)
-        
+
         if index > 0:
             p = mp_encode_uint(p, tnt.TP_INDEX)
             p = mp_encode_uint(p, index)
-        
+
         p = mp_encode_uint(p, key_of_tuple)
         p = self._encode_list(p, key_tuple)
-        
+
         p = mp_encode_uint(p, key_of_operations)
         p = self._encode_update_ops(p, operations)
-        
+
         self._length += (p - self._buf)
-        
+
     cdef void encode_request_upsert(self, uint32_t space,
-                                    list t, list operations):
+                                    list t, list operations) except *:
         self.encode_request_update(space, 0, t, operations,
                                    tnt.TP_TUPLE, tnt.TP_OPERATIONS)
-        
-    
-    cdef void encode_request_auth(self, bytes username, bytes scramble):
+
+    cdef void encode_request_auth(self,
+                                  bytes username,
+                                  bytes scramble) except *:
         cdef:
-            char* p
+            char *p
             uint32_t body_map_sz
             uint32_t max_body_len
-    
-            char* username_str
+
+            char *username_str
             ssize_t username_len
-            
-            char* scramble_str
+
+            char *scramble_str
             ssize_t scramble_len
-    
+
         cpython.bytes.PyBytes_AsStringAndSize(username,
                                               &username_str, &username_len)
         cpython.bytes.PyBytes_AsStringAndSize(scramble,
@@ -659,14 +677,14 @@ cdef class WriteBuffer:
                        + 1 \
                        + 1 + 9 \
                        + mp_sizeof_str(<uint32_t>scramble_len)
-    
+
         self.ensure_allocated(max_body_len)
-    
+
         p = &self._buf[self._length]
         p = mp_encode_map(p, body_map_sz)
         p = mp_encode_uint(p, tnt.TP_USERNAME)
         p = mp_encode_str(p, username_str, <uint32_t>username_len)
-    
+
         p = mp_encode_uint(p, tnt.TP_TUPLE)
         p = mp_encode_array(p, 2)
         p = mp_encode_str(p, "chap-sha1", 9)
@@ -675,4 +693,4 @@ cdef class WriteBuffer:
 
 cdef class ReadBuffer:
     cdef:
-        char* buf
+        char *buf

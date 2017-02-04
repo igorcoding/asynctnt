@@ -97,7 +97,7 @@ ENV/
 # Custom
 *.snap
 *.c
-asynctnt/ciproto/*.html
+asynctnt/iproto/*.html
 *.xlog
 __tnt*
 !third_party/**/*

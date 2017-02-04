@@ -20,22 +20,23 @@ cdef class BaseProtocol(CoreProtocol):
         bint fetch_schema
         object connected_fut
         object on_connected_lost_cb
-        
+
         object _on_request_completed_cb
         object _on_request_timeout_cb
-        
+
         uint64_t _sync
         Schema _schema
-        
+
     cdef void _set_connection_ready(self)
     cdef void _set_connection_error(self, e)
 
     cdef void _do_auth(self, str username, str password)
     cdef object _do_fetch_schema(self)
-    
+
     cdef uint64_t _next_sync(self)
+    cdef uint32_t _transform_iterator(self, iterator) except *
     cdef uint32_t _transform_space(self, space)
     cdef uint32_t _transform_index(self, space, index)
-    
+
     cdef object _new_waiter_for_request(self, Request req, float timeout)
     cdef object _execute(self, Request req, float timeout)

@@ -9,10 +9,10 @@ cdef class Request:
         WriteBuffer buf
         object waiter
         object timeout_handle
-    
+
     cdef get_bytes(self)
-    
-    
+
+
 cdef class RequestPing(Request):
     pass
 

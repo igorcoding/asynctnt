@@ -1,3 +1,4 @@
 psutil==5.0.1
-tarantool>=0.5
 cython==0.25.2
+pep8==1.7.0
+flake8==3.2.1

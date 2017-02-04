@@ -13,13 +13,14 @@ cdef class SchemaIndex:
             for i in range(index_row[5]):
                 self.parts.append(
                     (index_row[5 + 1 + i * 2], index_row[5 + 2 + i * 2]))
-                
+
         def __repr__(self):
-            return '<SchemaIndex sid={}, id={}, name={}, ' \
-                   'type={}, unique={}>'.format(
-                self.sid, self.iid, self.name, self.index_type, self.unique
-            )
-            
+            return \
+                '<SchemaIndex sid={}, id={}, name={}, ' \
+                'type={}, unique={}>'.format(
+                    self.sid, self.iid, self.name, self.index_type, self.unique
+                )
+
 
 cdef class SchemaSpace:
     def __init__(self, list space_row):
@@ -27,12 +28,12 @@ cdef class SchemaSpace:
         self.arity = space_row[1]
         self.name = space_row[2]
         self.indexes = {}
-            
+
     cdef add_index(self, SchemaIndex idx):
         self.indexes[idx.iid] = idx
         if idx.name:
             self.indexes[idx.name] = idx
-            
+
     def __repr__(self):
         return '<SchemaSpace id={}, name={}, arity={}>'.format(
             self.sid, self.name, self.arity
@@ -60,7 +61,7 @@ cdef class Schema:
 
     cdef inline clear(self):
         self.schema.clear()
-        
+
     def __repr__(self):
         return '<Schema>'
 

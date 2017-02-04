@@ -1,7 +1,8 @@
-import hashlib
-
 cimport cpython.bytes
+
 from libc.stdint cimport uint32_t, uint64_t, int64_t
+
+import hashlib
 
 
 cdef class Request:
@@ -10,7 +11,7 @@ cdef class Request:
         self.buf = None
         self.waiter = None
         self.timeout_handle = None
-        
+
     def __init__(self, tnt.tp_request_type op, str encoding, uint64_t sync):
         self.op = op
         self.sync = sync
@@ -18,10 +19,10 @@ cdef class Request:
         self.buf.write_header(self.sync, self.op)
         # write body (optional)
         # write length (mandatory): self.buf.write_length()
-    
+
     cdef get_bytes(self):
         return Memory.new(self.buf._buf, self.buf._length).as_bytes()
-    
+
 
 cdef class RequestPing(Request):
     def __init__(self, str encoding, uint64_t sync):
@@ -35,7 +36,7 @@ cdef class RequestCall(Request):
         Request.__init__(self, tnt.TP_CALL, encoding, sync)
         self.buf.encode_request_call(func_name, args)
         self.buf.write_length()
-        
+
 
 cdef class RequestCall16(Request):
     def __init__(self, str encoding, uint64_t sync,
@@ -43,7 +44,7 @@ cdef class RequestCall16(Request):
         Request.__init__(self, tnt.TP_CALL_16, encoding, sync)
         self.buf.encode_request_call(func_name, args)
         self.buf.write_length()
-        
+
 
 cdef class RequestEval(Request):
     def __init__(self, str encoding, uint64_t sync,
@@ -61,8 +62,8 @@ cdef class RequestSelect(Request):
         self.buf.encode_request_select(space, index, key,
                                        offset, limit, iterator)
         self.buf.write_length()
-        
-        
+
+
 cdef class RequestInsert(Request):
     def __init__(self, str encoding, uint64_t sync,
                  uint32_t space, list t, bint replace):
@@ -70,7 +71,7 @@ cdef class RequestInsert(Request):
         Request.__init__(self, op, encoding, sync)
         self.buf.encode_request_insert(space, t)
         self.buf.write_length()
-        
+
 
 cdef class RequestDelete(Request):
     def __init__(self, str encoding, uint64_t sync,
@@ -78,8 +79,8 @@ cdef class RequestDelete(Request):
         Request.__init__(self, tnt.TP_DELETE, encoding, sync)
         self.buf.encode_request_delete(space, index, key)
         self.buf.write_length()
-        
-        
+
+
 cdef class RequestUpdate(Request):
     def __init__(self, str encoding, uint64_t sync,
                  uint32_t space, uint32_t index,
@@ -87,8 +88,8 @@ cdef class RequestUpdate(Request):
         Request.__init__(self, tnt.TP_UPDATE, encoding, sync)
         self.buf.encode_request_update(space, index, key, operations)
         self.buf.write_length()
-        
-        
+
+
 cdef class RequestUpsert(Request):
     def __init__(self, str encoding, uint64_t sync,
                  uint32_t space,
@@ -105,23 +106,23 @@ cdef class RequestAuth(Request):
             bytes username_bytes
             bytes password_bytes
             bytes scramble
-            
+
         Request.__init__(self, tnt.TP_AUTH, encoding, sync)
         if isinstance(username, bytes):
             username_bytes = username
         else:
             username_bytes = username.encode(encoding)
-        
+
         if isinstance(password, bytes):
             password_bytes = password
         else:
             password_bytes = password.encode(encoding)
-            
+
         hash1 = self.sha1((password_bytes,))
         hash2 = self.sha1((hash1,))
         scramble = self.sha1((salt, hash2))
         scramble = self.strxor(hash1, scramble)
-        
+
         self.buf.encode_request_auth(username_bytes, scramble)
         self.buf.write_length()
 
@@ -134,10 +135,10 @@ cdef class RequestAuth(Request):
 
     cdef bytes strxor(self, bytes hash1, bytes scramble):
         cdef:
-            char* hash1_str
+            char *hash1_str
             ssize_t hash1_len
-            
-            char* scramble_str
+
+            char *scramble_str
             ssize_t scramble_len
         cpython.bytes.PyBytes_AsStringAndSize(hash1,
                                               &hash1_str, &hash1_len)

@@ -1,4 +1,4 @@
-.PHONY: build debug test quicktest clean all
+.PHONY: build debug test quicktest clean annotate all
 
 
 PYTHON ?= python
@@ -9,9 +9,18 @@ all: build
 
 clean:
 	rm -rf asynctnt/*.c asynctnt/*.so asynctnt/*.html
-	rm -rf asynctnt/ciproto/*.c asynctnt/ciproto/*.so asynctnt/ciproto/*.html
+	rm -rf asynctnt/iproto/*.c asynctnt/iproto/*.so asynctnt/iproto/*.html
 	rm -rf build *.egg-info
 	find . -name '__pycache__' | xargs rm -rf
+
+
+annotate:
+	cython -a asynctnt/iproto/protocol.pyx
+
+
+style:
+	pep8 asynctnt
+	flake8 --config=.flake8.cython
 
 
 build:
