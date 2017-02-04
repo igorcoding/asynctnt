@@ -137,13 +137,15 @@ cdef class CoreProtocol:
             return tuple(map(int, ver.split('.')))
     
     cdef void _on_connection_lost(self, exc):
-        for sync, fut in self.reqs.items():
-            if fut and not fut.cancelled() and not fut.done():
+        cdef Request req
+        for sync, req in self.reqs.items():
+            waiter = req.waiter
+            if waiter and not waiter.done():
                 if exc is None:
-                    fut.set_result(None)
+                    waiter.set_result(None)
                 else:
                     # fut.set_exception(ConnectionLostError('Connection to Tarantool lost'))
-                    fut.set_exception(exc)
+                    waiter.set_exception(exc)
             
     cdef void _on_greeting_received(self):
         pass

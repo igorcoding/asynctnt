@@ -61,6 +61,42 @@ cdef class RequestSelect(Request):
         self.buf.encode_request_select(space, index, key,
                                        offset, limit, iterator)
         self.buf.write_length()
+        
+        
+cdef class RequestInsert(Request):
+    def __init__(self, str encoding, uint64_t sync,
+                 uint32_t space, list t, bint replace):
+        op = tnt.TP_INSERT if not replace else tnt.TP_REPLACE
+        Request.__init__(self, op, encoding, sync)
+        self.buf.encode_request_insert(space, t)
+        self.buf.write_length()
+        
+
+cdef class RequestDelete(Request):
+    def __init__(self, str encoding, uint64_t sync,
+                 uint32_t space, uint32_t index, list key):
+        Request.__init__(self, tnt.TP_DELETE, encoding, sync)
+        self.buf.encode_request_delete(space, index, key)
+        self.buf.write_length()
+        
+        
+cdef class RequestUpdate(Request):
+    def __init__(self, str encoding, uint64_t sync,
+                 uint32_t space, uint32_t index,
+                 list key, list operations):
+        Request.__init__(self, tnt.TP_UPDATE, encoding, sync)
+        self.buf.encode_request_update(space, index, key, operations)
+        self.buf.write_length()
+        
+        
+cdef class RequestUpsert(Request):
+    def __init__(self, str encoding, uint64_t sync,
+                 uint32_t space,
+                 list t, list operations):
+        Request.__init__(self, tnt.TP_UPSERT, encoding, sync)
+        self.buf.encode_request_upsert(space, t, operations)
+        self.buf.write_length()
+
 
 cdef class RequestAuth(Request):
     def __init__(self, str encoding, uint64_t sync,

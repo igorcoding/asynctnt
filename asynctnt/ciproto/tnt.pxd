@@ -38,3 +38,11 @@ cdef enum tp_request_type:
 	TP_EVAL = 0x08
 	TP_UPSERT = 0x09
 	TP_PING = 0x40
+
+
+cdef enum tnt_update_op_kind:
+	OP_UPD_ARITHMETIC
+	OP_UPD_DELETE
+	OP_UPD_INSERT_ASSIGN
+	OP_UPD_SPLICE
+	OP_UPD_UNKNOWN

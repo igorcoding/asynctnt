@@ -31,9 +31,11 @@ cdef class BaseProtocol(CoreProtocol):
     cdef void _set_connection_error(self, e)
 
     cdef void _do_auth(self, str username, str password)
-    cdef void _do_fetch_schema(self)
+    cdef object _do_fetch_schema(self)
     
     cdef uint64_t _next_sync(self)
+    cdef uint32_t _transform_space(self, space)
+    cdef uint32_t _transform_index(self, space, index)
     
     cdef object _new_waiter_for_request(self, Request req, float timeout)
     cdef object _execute(self, Request req, float timeout)

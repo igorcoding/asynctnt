@@ -242,6 +242,136 @@ cdef class WriteBuffer:
         else:
             raise TypeError(
                 'Type `{}` is not supported for encoding'.format(type(o)))
+        
+    cdef tnt.tnt_update_op_kind _op_type_to_kind(self, char* str, ssize_t len):
+        cdef:
+            char op
+        if len < 0 or len > 1:
+            return tnt.OP_UPD_UNKNOWN
+        
+        op = str[0]
+        if op == b'+' \
+            or op == b'-' \
+            or op == b'&' \
+            or op == b'^' \
+            or op == b'|':
+            return tnt.OP_UPD_ARITHMETIC
+        elif op == b'#':
+            return tnt.OP_UPD_DELETE
+        elif op == b'!' \
+              or op == b'=':
+            return tnt.OP_UPD_INSERT_ASSIGN
+        elif op == b':':
+            return tnt.OP_UPD_SPLICE
+        else:
+            return tnt.OP_UPD_UNKNOWN
+        
+    cdef char* _encode_update_ops(self, char* p, list operations):
+        cdef:
+            uint32_t ops_len, op_len
+            bytes str_temp
+            char* str_c
+            ssize_t str_len
+            
+            char* op_str_c
+            ssize_t op_str_len
+            
+            uint32_t extra_length
+            
+            tnt.tnt_update_op_kind op_kind
+            uint64_t field_no
+            
+            uint32_t splice_position, splice_offset
+            
+        if operations is not None:
+            ops_len = <uint32_t>cpython.list.PyList_GET_SIZE(operations)
+        else:
+            ops_len = 0
+        
+        self.ensure_allocated(mp_sizeof_array(ops_len))
+        p = self._encode_array(p, ops_len)
+        if ops_len == 0:
+            return p
+        
+        for operation in operations:
+            if not isinstance(operation, (list, tuple)):
+                raise Exception('Single operation must be a tuple or list')
+            
+            op_len = <uint32_t>cpython.list.PyList_GET_SIZE(operation)
+            if op_len < 3:
+                raise Exception('Operation length must be at least 3')
+            
+            # TODO: get op type and its arguments
+            op_type_str = operation[0]
+            if isinstance(op_type_str, str):
+                str_temp = op_type_str.encode(self._encoding, 'strict')
+            elif isinstance(op_type_str, bytes):
+                str_temp = op_type_str
+            else:
+                raise Exception('Operation type must of a str or bytes type')
+            
+            cpython.bytes.PyBytes_AsStringAndSize(str_temp, &op_str_c, &op_str_len)
+            
+            op_kind = self._op_type_to_kind(op_str_c, op_str_len)
+            field_no = <uint64_t>int(operation[1])
+            
+            if op_kind == tnt.OP_UPD_ARITHMETIC or op_kind == tnt.OP_UPD_DELETE:
+                op_argument = operation[2]
+                if not isinstance(op_argument, int):
+                    raise Exception('int argument required for '
+                                    'Arithmetic and Delete operations')
+                # mp_sizeof_array(3) + mp_sizeof_str(1) + mp_sizeof_uint(field_no)
+                extra_length = 1 + 2 + mp_sizeof_uint(field_no)
+                self.ensure_allocated(extra_length)
+                
+                p = mp_encode_array(p, 3)
+                p = mp_encode_str(p, op_str_c, 1)
+                p = mp_encode_uint(p, field_no)
+                p = self._encode_obj(p, op_argument)
+            elif op_kind == tnt.OP_UPD_INSERT_ASSIGN:
+                op_argument = operation[2]
+                
+                # mp_sizeof_array(3) + mp_sizeof_str(1) + mp_sizeof_uint(field_no)
+                extra_length = 1 + 2 + mp_sizeof_uint(field_no)
+                self.ensure_allocated(extra_length)
+                
+                p = mp_encode_array(p, 3)
+                p = mp_encode_str(p, op_str_c, 1)
+                p = mp_encode_uint(p, field_no)
+                p = self._encode_obj(p, op_argument)
+                
+            elif op_kind == tnt.OP_UPD_SPLICE:
+                if op_len < 5:
+                    raise Exception('Splice operation must have length of 5, '
+                                    'but got: {}'.format(op_len))
+                
+                splice_position_obj = operation[2]
+                splice_offset_obj = operation[3]
+                op_argument = operation[4]
+                if not isinstance(splice_position_obj, int):
+                    raise Exception('Splice position must be int')
+                if not isinstance(splice_offset_obj, int):
+                    raise Exception('Splice offset must be int')
+                
+                splice_position = <uint32_t>splice_position_obj
+                splice_offset = <uint32_t>splice_offset_obj
+                
+                # mp_sizeof_array(5) + mp_sizeof_str(1) + ...
+                extra_length = 1 + 2 \
+                                + mp_sizeof_uint(field_no) \
+                                + mp_sizeof_uint(splice_position) \
+                                + mp_sizeof_uint(splice_offset)
+                self.ensure_allocated(extra_length)
+                
+                p = mp_encode_array(p, 5)
+                p = mp_encode_str(p, op_str_c, 1)
+                p = mp_encode_uint(p, field_no)
+                p = mp_encode_uint(p, splice_position)
+                p = mp_encode_uint(p, splice_offset)
+                p = self._encode_obj(p, op_argument)
+            else:
+                raise Exception('Unknown update operation `{}`'.format(op_type_str))
+        return p
 
     cdef void encode_request_call(self, str func_name, list args):
         cdef:
@@ -379,6 +509,123 @@ cdef class WriteBuffer:
         p = mp_encode_uint(p, tnt.TP_KEY)
         p = self._encode_list(p, key)
         self._length += (p - self._buf)
+        
+    cdef void encode_request_insert(self, uint32_t space, list t):
+        cdef:
+            char* p
+            uint32_t body_map_sz
+            uint32_t max_body_len
+        
+        body_map_sz = 2
+        # Size description:
+        # mp_sizeof_map(body_map_sz)
+        # + mp_sizeof_uint(TP_SPACE)
+        # + mp_sizeof_uint(space)
+        # + mp_sizeof_uint(TP_TUPLE)
+        max_body_len = 1 \
+                       + 1 \
+                       + 9 \
+                       + 1
+        
+        self.ensure_allocated(max_body_len)
+        
+        p = &self._buf[self._length]
+        p = mp_encode_map(p, body_map_sz)
+        p = mp_encode_uint(p, tnt.TP_SPACE)
+        p = mp_encode_uint(p, space)
+        
+        p = mp_encode_uint(p, tnt.TP_TUPLE)
+        p = self._encode_list(p, t)
+        self._length += (p - self._buf)
+        
+    cdef void encode_request_delete(self, uint32_t space, uint32_t index,
+                                    list key):
+        cdef:
+            char* p
+            uint32_t body_map_sz
+            uint32_t max_body_len
+        
+        body_map_sz = 2 \
+                      + <uint32_t>(index > 0)
+        # Size description:
+        # mp_sizeof_map(body_map_sz)
+        # + mp_sizeof_uint(TP_SPACE)
+        # + mp_sizeof_uint(space)
+        max_body_len = 1 \
+                       + 1 \
+                       + 9
+        
+        if index > 0:
+            # mp_sizeof_uint(TP_INDEX) + mp_sizeof_uint(index)
+            max_body_len += 1 + 9
+            
+        max_body_len += 1  # mp_sizeof_uint(TP_KEY);
+        
+        self.ensure_allocated(max_body_len)
+        
+        p = &self._buf[self._length]
+        p = mp_encode_map(p, body_map_sz)
+        p = mp_encode_uint(p, tnt.TP_SPACE)
+        p = mp_encode_uint(p, space)
+        
+        if index > 0:
+            p = mp_encode_uint(p, tnt.TP_INDEX)
+            p = mp_encode_uint(p, index)
+        
+        p = mp_encode_uint(p, tnt.TP_KEY)
+        p = self._encode_list(p, key)
+        self._length += (p - self._buf)
+        
+    cdef void encode_request_update(self, uint32_t space, uint32_t index,
+                                    list key_tuple, list operations,
+                                    uint32_t key_of_tuple=tnt.TP_KEY,
+                                    uint32_t key_of_operations=tnt.TP_TUPLE):
+        cdef:
+            char* p
+            uint32_t body_map_sz
+            uint32_t max_body_len
+        
+        body_map_sz = 3 + <uint32_t>(index > 0)
+        # Size description:
+        # mp_sizeof_map(body_map_sz)
+        # + mp_sizeof_uint(TP_SPACE)
+        # + mp_sizeof_uint(space)
+        max_body_len = 1 \
+                       + 1 \
+                       + 9
+        
+        if index > 0:
+            # + mp_sizeof_uint(TP_INDEX)
+            # + mp_sizeof_uint(index)
+            max_body_len += 1 + 9
+            
+        max_body_len += 1  # + mp_sizeof_uint(TP_KEY)
+        max_body_len += 1  # + mp_sizeof_uint(TP_TUPLE)
+        
+        self.ensure_allocated(max_body_len)
+        
+        p = &self._buf[self._length]
+        p = mp_encode_map(p, body_map_sz)
+        p = mp_encode_uint(p, tnt.TP_SPACE)
+        p = mp_encode_uint(p, space)
+        
+        if index > 0:
+            p = mp_encode_uint(p, tnt.TP_INDEX)
+            p = mp_encode_uint(p, index)
+        
+        p = mp_encode_uint(p, key_of_tuple)
+        p = self._encode_list(p, key_tuple)
+        
+        p = mp_encode_uint(p, key_of_operations)
+        p = self._encode_update_ops(p, operations)
+        
+        self._length += (p - self._buf)
+        
+    cdef void encode_request_upsert(self, uint32_t space,
+                                    list t, list operations):
+        self.encode_request_update(space, 0, t, operations,
+                                   tnt.TP_TUPLE, tnt.TP_OPERATIONS)
+        
     
     cdef void encode_request_auth(self, bytes username, bytes scramble):
         cdef:

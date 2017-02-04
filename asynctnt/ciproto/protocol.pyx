@@ -48,12 +48,14 @@ cdef class BaseProtocol(CoreProtocol):
         return self._schema
     
     cdef void _set_connection_ready(self):
-        self.connected_fut.set_result(True)
-        self.con_state = CONNECTION_FULL
+        if not self.connected_fut.done():
+            self.connected_fut.set_result(True)
+            self.con_state = CONNECTION_FULL
         
     cdef void _set_connection_error(self, e):
-        self.connected_fut.set_exception(e)
-        self.con_state = CONNECTION_BAD
+        if not self.connected_fut.done():
+            self.connected_fut.set_exception(e)
+            self.con_state = CONNECTION_BAD
     
     cdef void _on_greeting_received(self):
         if self.username and self.password:
@@ -84,9 +86,11 @@ cdef class BaseProtocol(CoreProtocol):
         
         fut.add_done_callback(on_authorized)
             
-    cdef void _do_fetch_schema(self):
+    cdef object _do_fetch_schema(self):
         fut_vspace = self.select(SPACE_VSPACE)
         fut_vindex = self.select(SPACE_VINDEX)
+        
+        fut = self.create_future()
         
         def on_fetch(f):
             if f.cancelled():
@@ -100,19 +104,20 @@ cdef class BaseProtocol(CoreProtocol):
                     self.host, self.port, len(spaces.body), len(indexes.body)))
                 self._schema = parse_schema(spaces.body, indexes.body)
                 self._set_connection_ready()
+                fut.set_result(self._schema)
             else:
                 print('Tarantool[{}:{}] Schema fetch failed'.format(
                     self.host, self.port))
                 if isinstance(e, asyncio.TimeoutError):
-                    self._set_connection_error(
-                        asyncio.TimeoutError('Schema fetch timeout'))
-                else:
-                    self._set_connection_error(e)
+                    e = asyncio.TimeoutError('Schema fetch timeout')
+                self._set_connection_error(e)
+                fut.set_exception(e)
         
-        fut = asyncio.gather(fut_vspace, fut_vindex,
-                             return_exceptions=True,
-                             loop=self.loop)
-        fut.add_done_callback(on_fetch)
+        gather_fut = asyncio.gather(fut_vspace, fut_vindex,
+                                    return_exceptions=True,
+                                    loop=self.loop)
+        gather_fut.add_done_callback(on_fetch)
+        return fut
         
     cdef void _on_connection_lost(self, exc):
         CoreProtocol._on_connection_lost(self, exc)
@@ -168,6 +173,25 @@ cdef class BaseProtocol(CoreProtocol):
         
         return waiter
     
+    cdef uint32_t _transform_space(self, space):
+        if isinstance(space, str):
+            sp = self._schema.get_space(space)
+            if sp is None:
+                raise Exception('Space {} not found'.format(space))
+            return sp.sid
+        return space
+    
+    cdef uint32_t _transform_index(self, space, index):
+        if isinstance(index, str):
+            idx = self._schema.get_index(space, index)
+            if idx is None:
+                raise Exception('Index {} for space {} not found'.format(index, space))
+            return idx.iid
+        return index
+    
+    def refetch_schema(self):
+        return self._do_fetch_schema()
+    
     def ping(self, *, timeout=0):
         return self._execute(
             RequestPing(self.encoding, self._next_sync()),
@@ -206,15 +230,61 @@ cdef class BaseProtocol(CoreProtocol):
         iterator = kwargs.get('iterator', 0)
         timeout = kwargs.get('timeout', 0)
         
-        if isinstance(space, str):
-            raise NotImplementedError
-        
-        if isinstance(index, str):
-            raise NotImplementedError
+        space = self._transform_space(space)
+        index = self._transform_index(space, index)
     
         return self._execute(
             RequestSelect(self.encoding, self._next_sync(),
                           space, index, key, offset, limit, iterator),
+            timeout
+        )
+    
+    def insert(self, space, t, *, replace=False, timeout=0):
+        space = self._transform_space(space)
+            
+        return self._execute(
+            RequestInsert(self.encoding, self._next_sync(),
+                          space, t, replace),
+            timeout
+        )
+    
+    def replace(self, space, t, *, timeout=0):
+        return self.insert(space, t, replace=True, timeout=timeout)
+    
+    def delete(self, space, key, *, **kwargs):
+        index = kwargs.get('index', 0)
+        timeout = kwargs.get('timeout', 0)
+        
+        space = self._transform_space(space)
+        index = self._transform_index(space, index)
+        
+        return self._execute(
+            RequestDelete(self.encoding, self._next_sync(),
+                          space, index, key),
+            timeout
+        )
+    
+    def update(self, space, key, operations, *, **kwargs):
+        index = kwargs.get('index', 0)
+        timeout = kwargs.get('timeout', 0)
+        
+        space = self._transform_space(space)
+        index = self._transform_index(space, index)
+        
+        return self._execute(
+            RequestUpdate(self.encoding, self._next_sync(),
+                          space, index, key, operations),
+            timeout
+        )
+    
+    def upsert(self, space, t, operations, *, **kwargs):
+        timeout = kwargs.get('timeout', 0)
+        
+        space = self._transform_space(space)
+        
+        return self._execute(
+            RequestUpsert(self.encoding, self._next_sync(),
+                          space, t, operations),
             timeout
         )
     

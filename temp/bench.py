@@ -19,7 +19,7 @@ async def main():
                                reconnect_timeout=1)
     await conn.connect()
     
-    n_requests = 10000
+    n_requests = 100000
     
     start = datetime.datetime.now()
     
@@ -38,8 +38,14 @@ async def main():
         # await conn.select(280)
         # coros.append(conn.select(280))
 
-        await conn.auth('tt2', 'ttp2')
-    
+        # await conn.auth('tt2', 'ttp2')
+        # await conn.insert('tester', [_])
+        # coros.append(conn.replace('tester', [_, 'hello']))
+
+        await conn.update('tester', [2], [(':', 1, 1, 3, 'yo!')])
+        # coros.append(conn.update('tester', [2], [(':', 1, 1, 3, 'yo!')]))
+
+    # start = datetime.datetime.now()
     if coros:
         await asyncio.wait(coros)
     

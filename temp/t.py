@@ -28,9 +28,14 @@ async def main():
 
     # res = await conn.select(280)
     # res = await conn.eval('return box.cfg')
-    res = await conn.call('test', timeout=0)
-    # res = await conn.call('long', [], timeout=1)
-    print(res.body2yaml())
+    # res = await conn.call('test', timeout=0)
+    # res = await conn.call('long', [15])
+    # res = await conn.refetch_schema()
+    # res = await conn.replace('tester', [2, 'hello', 3])
+    # res = await conn.update('tester', [2], [(':', 1, 1, 3, 'yo!')])
+    # await conn.upsert('tester', [2, 'hello'], [(':', 2, 1, 3, 'yo!')])
+    await conn.delete('tester', [2], index='primary')
+    # print(res.body2yaml())
     await conn.disconnect()
     
     # await conn.auth('tt2', 'ttp2')

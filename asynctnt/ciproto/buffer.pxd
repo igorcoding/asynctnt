@@ -46,11 +46,23 @@ cdef class WriteBuffer:
     cdef char* _encode_dict(self, char* p, dict d)
     cdef char* _encode_obj(self, char* p, object o)
     
+    cdef tnt.tnt_update_op_kind _op_type_to_kind(self, char* str, ssize_t len)
+    cdef char* _encode_update_ops(self, char* p, list operations)
+    
     cdef void encode_request_call(self, str func_name, list args)
     cdef void encode_request_eval(self, str expression, list args)
     cdef void encode_request_select(self, uint32_t space, uint32_t index,
                                     list key, uint64_t offset, uint64_t limit,
                                     uint32_t iterator)
+    cdef void encode_request_insert(self, uint32_t space, list t)
+    cdef void encode_request_delete(self, uint32_t space, uint32_t index,
+                                    list key)
+    cdef void encode_request_update(self, uint32_t space, uint32_t index,
+                                    list key_tuple, list operations,
+                                    uint32_t key_of_tuple=*,
+                                    uint32_t key_of_operations=*)
+    cdef void encode_request_upsert(self, uint32_t space,
+                                    list t, list operations)
     cdef void encode_request_auth(self, bytes username, bytes scramble)
     
 

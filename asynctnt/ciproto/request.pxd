@@ -28,6 +28,18 @@ cdef class RequestEval(Request):
 cdef class RequestSelect(Request):
     pass
 
+cdef class RequestInsert(Request):
+    pass
+
+cdef class RequestDelete(Request):
+    pass
+
+cdef class RequestUpdate(Request):
+    pass
+
+cdef class RequestUpsert(Request):
+    pass
+
 cdef class RequestAuth(Request):
     cdef bytes sha1(self, tuple values)
     cdef bytes strxor(self, bytes hash1, bytes scramble)
