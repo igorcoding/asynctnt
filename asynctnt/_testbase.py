@@ -97,6 +97,10 @@ class TestCase(unittest.TestCase, metaclass=TestCaseMeta):
                     'running block took longer than {}'.format(delta))
 
     @classmethod
+    def ensure_future(cls, coro_or_future):
+        return asyncio.ensure_future(coro_or_future, loop=cls.loop)
+
+    @classmethod
     def sleep(cls, delay, result=None):
         return asyncio.sleep(delay, result, loop=cls.loop)
 

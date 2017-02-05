@@ -10,12 +10,12 @@ from asynctnt import Iterator
 from asynctnt.exceptions import TarantoolConnectionLostError
 from asynctnt.instance import TarantoolInstance
 
-logging.basicConfig(level=logging.DEBUG, stream=sys.stdout)
+logging.basicConfig(format='%(created)f [%(module)s:%(funcName)s:%(lineno)d] %(levelname)s: %(message)s',
+                    level=logging.DEBUG, stream=sys.stdout)
 
 import datetime
 
 import asynctnt
-
 
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -33,14 +33,22 @@ async def main(loop):
         loop=loop
     )
 
-    await tnt.start()
+    # await tnt.start()
     conn = None
     try:
-        conn = await asynctnt.connect(host=tnt.host, port=tnt.port,
-                                      username='t1', password='t1',
-                                      fetch_schema=True,
-                                      reconnect_timeout=0.0000001, request_timeout=2,
-                                      loop=loop)
+        coro = asyncio.ensure_future(
+            asynctnt.connect(host=tnt.host, port=tnt.port,
+                             username='t1', password='t1',
+                             fetch_schema=True,
+                             reconnect_timeout=0.000001, request_timeout=2,
+                             encoding='utf-8',
+                             loop=loop),
+            loop=loop
+        )
+        await asyncio.sleep(1, loop=loop)
+        await tnt.start()
+        conn = await coro
+
         print('connected')
         # print(conn._protocol.schema)
         # print(conn._protocol._con_state)
@@ -53,7 +61,9 @@ async def main(loop):
         print('RESTARTED TNT')
         # await asyncio.sleep(1, loop=loop)
 
-        res = await conn.select(281)
+        # res = await conn.insert('tester', [1, 'привет'])
+        # print(res.body2yaml())
+        res = await conn.select('_space')
         print(res.body)
         # res = await conn.eval('return box.cfg')
         # res = await conn.call('test', timeout=0)

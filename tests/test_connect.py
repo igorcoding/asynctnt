@@ -1,5 +1,8 @@
 import asyncio
 
+import logging
+
+from asynctnt.connection import ConnectionState
 from tests import BaseTarantoolTestCase
 
 import asynctnt
@@ -65,6 +68,7 @@ class ConnectTestCase(BaseTarantoolTestCase):
         await conn.connect()
         await conn.disconnect()
         self.assertFalse(conn.is_connected)
+        self.assertEqual(conn.state, ConnectionState.DISCONNECTED)
         self.assertIsNone(conn.schema)
 
     async def test__disconnect_auth(self):
@@ -75,6 +79,7 @@ class ConnectTestCase(BaseTarantoolTestCase):
         await conn.connect()
         await conn.disconnect()
         self.assertFalse(conn.is_connected)
+        self.assertEqual(conn.state, ConnectionState.DISCONNECTED)
         self.assertIsNone(conn.schema)
 
     async def test__connect_multiple(self):
@@ -96,3 +101,37 @@ class ConnectTestCase(BaseTarantoolTestCase):
             await f
 
         await conn.disconnect()
+
+    async def test__connect_wait_tnt_started(self):
+        await self.tnt.stop()
+        conn = asynctnt.Connection(host=self.tnt.host, port=self.tnt.port,
+                                   username='t1', password='t1',
+                                   fetch_schema=True,
+                                   reconnect_timeout=0.000001,
+                                   loop=self.loop)
+        coro = self.ensure_future(conn.connect())
+        await self.sleep(0.1)
+        await self.tnt.start()
+        await coro
+        self.assertEqual(conn.state, ConnectionState.CONNECTED)
+        await conn.disconnect()
+
+    async def test__connect_tnt_restarted(self):
+        conn = asynctnt.Connection(host=self.tnt.host, port=self.tnt.port,
+                                   username='t1', password='t1',
+                                   fetch_schema=True,
+                                   reconnect_timeout=0.000001,
+                                   loop=self.loop)
+        await conn.connect()
+
+        await self.tnt.stop()
+        await self.tnt.start()
+        await self.sleep(0.2)
+        try:
+            await conn.ping()
+        except Exception as e:
+            self.fail(
+                'Should not throw any exceptions, but got: {}'.format(e))
+        finally:
+            await conn.disconnect()
+

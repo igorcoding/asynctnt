@@ -2,12 +2,13 @@ import yaml
 
 
 cdef class TntResponse:
-    def __init__(self):
+    def __init__(self, str encoding='utf-8'):
         self.code = 0
         self.sync = 0
         self.schema_id = -1
         self.errmsg = None
         self.body = None
+        self.encoding = encoding
 
     cdef inline has_schema_id(self):
         return self.schema_id != -1
@@ -19,4 +20,4 @@ cdef class TntResponse:
         return '<TntResponse: code={}, sync={}>'.format(self.code, self.sync)
 
     def body2yaml(self):
-        return yaml.dump(self.body)
+        return yaml.dump(self.body, allow_unicode=True)

@@ -4,7 +4,7 @@ cimport tnt
 
 from asynctnt.log import logger
 
-cdef object _decode_obj(const char** p):
+cdef object _decode_obj(const char** p, str encoding='utf-8'):
     cdef:
         uint32_t i
         mp_type obj_type
@@ -31,7 +31,7 @@ cdef object _decode_obj(const char** p):
         s = NULL
         s_len = 0
         s = mp_decode_str(p, &s_len)
-        return s[:s_len].decode()
+        return s[:s_len].decode(encoding)
     elif obj_type == MP_BIN:
         s = NULL
         s_len = 0
@@ -47,7 +47,7 @@ cdef object _decode_obj(const char** p):
         arr_size = mp_decode_array(p)
         value = []
         for i in range(arr_size):
-            value.append(_decode_obj(p))
+            value.append(_decode_obj(p, encoding))
         return value
     elif obj_type == MP_MAP:
         map = {}
@@ -57,7 +57,7 @@ cdef object _decode_obj(const char** p):
             if map_key_type == MP_STR:
                 map_key_len = 0
                 map_key_str = mp_decode_str(p, &map_key_len)
-                map_key = <object>(map_key_str[:map_key_len].decode())
+                map_key = <object>(map_key_str[:map_key_len].decode(encoding))
             elif map_key_type == MP_UINT:
                 map_key = <object>mp_decode_uint(p)
             elif map_key_type == MP_INT:
@@ -68,7 +68,7 @@ cdef object _decode_obj(const char** p):
                 logger.warning(
                     'Unexpected key type in map: {}'.format(map_key_type))
 
-            map[map_key] = _decode_obj(p)
+            map[map_key] = _decode_obj(p, encoding)
 
         return map
     elif obj_type == MP_NIL:
@@ -80,7 +80,7 @@ cdef object _decode_obj(const char** p):
         return None
 
 
-cdef list _response_parse_body_data(const char *b):
+cdef list _response_parse_body_data(const char *b, str encoding='utf-8'):
     cdef:
         uint32_t size
         uint32_t tuple_size
@@ -90,12 +90,12 @@ cdef list _response_parse_body_data(const char *b):
     size = mp_decode_array(&b)
     tuples = []
     for i in range(size):
-        tuples.append(_decode_obj(&b))
+        tuples.append(_decode_obj(&b, encoding))
 
     return tuples
 
 
-cdef TntResponse response_parse(const char *buf, uint32_t buf_len):
+cdef TntResponse response_parse(const char *buf, uint32_t buf_len, str encoding='utf-8'):
     cdef:
         const char *b
         uint32_t size
@@ -108,7 +108,7 @@ cdef TntResponse response_parse(const char *buf, uint32_t buf_len):
     if mp_typeof(b[0]) != MP_MAP:
         raise TypeError('Response header must be a MP_MAP')
 
-    resp = TntResponse()
+    resp = TntResponse(encoding)
 
     # parsing header
     size = mp_decode_map(&b)
@@ -158,10 +158,10 @@ cdef TntResponse response_parse(const char *buf, uint32_t buf_len):
             s = NULL
             s_len = 0
             s = mp_decode_str(&b, &s_len)
-            resp.errmsg = s[:s_len].decode()
+            resp.errmsg = s[:s_len].decode(encoding)
         elif key == tnt.TP_DATA:
             if mp_typeof(b[0]) != MP_ARRAY:
                 raise TypeError('body data type must be a MP_ARRAY')
-            resp.body = _response_parse_body_data(b)
+            resp.body = _response_parse_body_data(b, encoding)
 
     return resp

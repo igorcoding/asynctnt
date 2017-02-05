@@ -147,18 +147,12 @@ cdef class BaseProtocol(CoreProtocol):
                 self._set_connection_error(e)
                 fut.set_exception(e)
 
-        try:
-            fut_vspace = self.select(SPACE_VSPACE)
-            fut_vindex = self.select(SPACE_VINDEX)
-        except TarantoolNotConnectedError as e:
-            gather_fut = self.create_future()
-            gather_fut.add_done_callback(on_fetch)
-            gather_fut.set_exception(e)
-        else:
-            gather_fut = asyncio.gather(fut_vspace, fut_vindex,
-                                        return_exceptions=True,
-                                        loop=self.loop)
-            gather_fut.add_done_callback(on_fetch)
+        fut_vspace = self.select(SPACE_VSPACE)
+        fut_vindex = self.select(SPACE_VINDEX)
+        gather_fut = asyncio.gather(fut_vspace, fut_vindex,
+                                    return_exceptions=True,
+                                    loop=self.loop)
+        gather_fut.add_done_callback(on_fetch)
         return fut
 
     cdef void _on_connection_made(self):

@@ -19,7 +19,6 @@ cdef class CoreProtocol:
                  encoding='utf-8'):
         self.host = host
         self.port = port
-
         self.encoding = encoding
 
         self.transport = None
@@ -87,7 +86,7 @@ cdef class CoreProtocol:
                     break
 
                 curr += 5 + packet_len
-                resp = response_parse(p, packet_len)
+                resp = response_parse(p, packet_len, self.encoding)
                 p = &p[packet_len]
 
                 sync = resp.sync
@@ -153,7 +152,7 @@ cdef class CoreProtocol:
         self._on_data_received(data)
 
     def connection_made(self, transport):
-        print('connection_made')
+        print('coreproto: connection_made')
         self.transport = transport
         self.con_state = CONNECTION_CONNECTED
 
@@ -163,11 +162,7 @@ cdef class CoreProtocol:
                          sock.family != socket.AF_UNIX):
             sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
 
-        try:
-            self.state = PROTOCOL_GREETING
-        except Exception as ex:
-            transport.abort()
-
+        self.state = PROTOCOL_GREETING
         self._on_connection_made()
 
     def connection_lost(self, exc):
