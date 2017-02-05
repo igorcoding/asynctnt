@@ -1,5 +1,6 @@
 import logging
 import os
+import sys
 
 import pyximport; pyximport.install()
 from asynctnt._testbase import TarantoolTestCase
@@ -8,7 +9,8 @@ from asynctnt._testbase import TarantoolTestCase
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
 
 
-class MyBaseTarantoolTestCase(TarantoolTestCase):
+class BaseTarantoolTestCase(TarantoolTestCase):
     DO_CONNECT = True
-    LOGGING_LEVEL = logging.ERROR
+    LOGGING_LEVEL = logging.DEBUG
+    LOGGING_STREAM = sys.stderr
     TNT_APP_LUA_PATH = os.path.join(CURRENT_DIR, 'files', 'app.lua')

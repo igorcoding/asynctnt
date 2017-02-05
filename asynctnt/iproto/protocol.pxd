@@ -35,8 +35,8 @@ cdef class BaseProtocol(CoreProtocol):
 
     cdef uint64_t _next_sync(self)
     cdef uint32_t _transform_iterator(self, iterator) except *
-    cdef uint32_t _transform_space(self, space)
-    cdef uint32_t _transform_index(self, space, index)
+    cdef uint32_t _transform_space(self, space) except *
+    cdef uint32_t _transform_index(self, space, index) except *
 
     cdef object _new_waiter_for_request(self, Request req, float timeout)
     cdef object _execute(self, Request req, float timeout)

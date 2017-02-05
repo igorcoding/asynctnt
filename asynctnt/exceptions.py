@@ -1,3 +1,4 @@
+import enum
 
 
 class TarantoolError(Exception):
@@ -30,3 +31,7 @@ class TarantoolNotConnectedError(TarantoolNetworkError):
 
 class TarantoolConnectionLostError(TarantoolNetworkError):
     pass
+
+
+class ErrorCode(enum.IntEnum):
+    ER_LOADING = 116

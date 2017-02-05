@@ -7,6 +7,8 @@ import os
 import time
 import unittest
 
+import sys
+
 import asynctnt
 from asynctnt.instance import TarantoolInstance
 
@@ -94,10 +96,15 @@ class TestCase(unittest.TestCase, metaclass=TestCaseMeta):
                 raise AssertionError(
                     'running block took longer than {}'.format(delta))
 
+    @classmethod
+    def sleep(cls, delay, result=None):
+        return asyncio.sleep(delay, result, loop=cls.loop)
+
 
 class TarantoolTestCase(TestCase):
     DO_CONNECT = True
     LOGGING_LEVEL = logging.WARNING
+    LOGGING_STREAM = sys.stderr
     TNT_APP_LUA_PATH = None
     TNT_CLEANUP = True
 
@@ -112,7 +119,8 @@ class TarantoolTestCase(TestCase):
     @classmethod
     def setUpClass(cls):
         TestCase.setUpClass()
-        logging.basicConfig(level=cls.LOGGING_LEVEL)
+        logging.basicConfig(level=cls.LOGGING_LEVEL,
+                            stream=cls.LOGGING_STREAM)
         tnt = TarantoolInstance(
             applua=cls.read_applua(),
             cleanup=cls.TNT_CLEANUP,
@@ -130,11 +138,30 @@ class TarantoolTestCase(TestCase):
     def setUp(self):
         super(TarantoolTestCase, self).setUp()
         if self.DO_CONNECT:
-            self.conn = asynctnt.Connection(
-                host=self.tnt.host, port=self.tnt.port, loop=self.loop)
-            self.loop.run_until_complete(self.conn.connect())
+            self.loop.run_until_complete(self.tnt_connect())
 
     def tearDown(self):
-        if hasattr(self, 'conn') and self.conn is not None:
-            self.loop.run_until_complete(self.conn.disconnect())
+        self.loop.run_until_complete(self.tnt_disconnect())
         super(TarantoolTestCase, self).tearDown()
+
+    async def tnt_connect(self, *,
+                          username=None, password=None, fetch_schema=None,
+                          connect_timeout=None, reconnect_timeout=1/3,
+                          request_timeout=None):
+        self.conn = asynctnt.Connection(
+            host=self.tnt.host,
+            port=self.tnt.port,
+            username=username,
+            password=password,
+            fetch_schema=fetch_schema,
+            connect_timeout=connect_timeout,
+            reconnect_timeout=reconnect_timeout,
+            request_timeout=request_timeout,
+            loop=self.loop)
+        await self.conn.connect()
+        return self.conn
+
+    async def tnt_disconnect(self):
+        if hasattr(self, 'conn') and self.conn is not None:
+            await self.conn.disconnect()
+            self.conn = None

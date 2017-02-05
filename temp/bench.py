@@ -20,17 +20,17 @@ async def main():
     conn = asynctnt.Connection(host='127.0.0.1', port=3303, username='tt2', password='ttp2',
                                reconnect_timeout=1)
     await conn.connect()
-    
+
     n_requests = 10000
-    
+
     start = datetime.datetime.now()
-    
+
     coros = []
-    
+
     for _ in range(n_requests):
         # await conn.ping()
         # coros.append(conn.ping())
-        
+
         # await conn.call('test', timeout=1)
         # coros.append(conn.call('test', timeout=1))
 
@@ -38,7 +38,7 @@ async def main():
         # coros.append(conn.eval('return box.info'))
 
         await conn.select('tester', iterator=Iterator.LE)
-        # coros.append(conn.select(280))
+        # coros.append(conn.select('tester', iterator=Iterator.LE))
 
         # await conn.auth('tt2', 'ttp2')
         # await conn.insert('tester', [_])
@@ -50,7 +50,7 @@ async def main():
     # start = datetime.datetime.now()
     if coros:
         await asyncio.wait(coros)
-    
+
     end = datetime.datetime.now()
     elapsed = end - start
     print('Elapsed: {}, RPS: {}'.format(elapsed, n_requests / elapsed.total_seconds()))

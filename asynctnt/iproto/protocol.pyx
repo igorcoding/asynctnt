@@ -36,7 +36,9 @@ cdef class BaseProtocol(CoreProtocol):
     def __init__(self, host, port,
                  username, password,
                  fetch_schema,
-                 connected_fut, on_connection_lost, loop,
+                 connected_fut,
+                 on_connection_made, on_connection_lost,
+                 loop,
                  request_timeout=None,
                  encoding='utf-8'):
         CoreProtocol.__init__(self, host, port, encoding)
@@ -48,6 +50,7 @@ cdef class BaseProtocol(CoreProtocol):
         self.fetch_schema = fetch_schema
         self.request_timeout = request_timeout or 0
         self.connected_fut = connected_fut
+        self.on_connection_made_cb = on_connection_made
         self.on_connection_lost_cb = on_connection_lost
 
         self._on_request_completed_cb = self._on_request_completed
@@ -79,6 +82,7 @@ cdef class BaseProtocol(CoreProtocol):
             self.con_state = CONNECTION_BAD
 
     cdef void _on_greeting_received(self):
+        print('_on_greeting_received')
         if self.username and self.password:
             self._do_auth(self.username, self.password)
         elif self.fetch_schema:
@@ -87,6 +91,7 @@ cdef class BaseProtocol(CoreProtocol):
             self._set_connection_ready()
 
     cdef void _do_auth(self, str username, str password):
+        print('_do_auth')
         fut = self.auth(username, password)
 
         def on_authorized(f):
@@ -106,17 +111,14 @@ cdef class BaseProtocol(CoreProtocol):
                     self._set_connection_ready()
             else:
                 logger.error(
-                    'Tarantool[{}:{}] Authorization failed'.format(
-                        self.host, self.port)
+                    'Tarantool[{}:{}] Authorization failed: {}'.format(
+                        self.host, self.port, str(e))
                 )
                 self._set_connection_error(e)
 
         fut.add_done_callback(on_authorized)
 
     cdef object _do_fetch_schema(self):
-        fut_vspace = self.select(SPACE_VSPACE)
-        fut_vindex = self.select(SPACE_VINDEX)
-
         fut = self.create_future()
 
         def on_fetch(f):
@@ -136,19 +138,34 @@ cdef class BaseProtocol(CoreProtocol):
                 self._set_connection_ready()
                 fut.set_result(self._schema)
             else:
-                logger.error('Tarantool[{}:{}] Schema fetch failed'.format(
-                    self.host, self.port)
+                logger.error(
+                    'Tarantool[{}:{}] Schema fetch failed: {}'.format(
+                    self.host, self.port, str(e))
                 )
                 if isinstance(e, asyncio.TimeoutError):
                     e = asyncio.TimeoutError('Schema fetch timeout')
                 self._set_connection_error(e)
                 fut.set_exception(e)
 
-        gather_fut = asyncio.gather(fut_vspace, fut_vindex,
-                                    return_exceptions=True,
-                                    loop=self.loop)
-        gather_fut.add_done_callback(on_fetch)
+        try:
+            fut_vspace = self.select(SPACE_VSPACE)
+            fut_vindex = self.select(SPACE_VINDEX)
+        except TarantoolNotConnectedError as e:
+            gather_fut = self.create_future()
+            gather_fut.add_done_callback(on_fetch)
+            gather_fut.set_exception(e)
+        else:
+            gather_fut = asyncio.gather(fut_vspace, fut_vindex,
+                                        return_exceptions=True,
+                                        loop=self.loop)
+            gather_fut.add_done_callback(on_fetch)
         return fut
+
+    cdef void _on_connection_made(self):
+        CoreProtocol._on_connection_made(self)
+
+        if self.on_connection_made_cb:
+            self.on_connection_made_cb()
 
     cdef void _on_connection_lost(self, exc):
         CoreProtocol._on_connection_lost(self, exc)
@@ -194,8 +211,9 @@ cdef class BaseProtocol(CoreProtocol):
         return fut
 
     cdef object _execute(self, Request req, float timeout):
-        if not self._is_connected():
-            raise TarantoolNotConnectedError('Tarantool is not connected')
+        # print('Con state: {}'.format(self.con_state))
+        # if not self._is_connected():
+        #     raise TarantoolNotConnectedError('Tarantool is not connected')
 
         waiter = self._new_waiter_for_request(req, timeout)
 
@@ -214,16 +232,22 @@ cdef class BaseProtocol(CoreProtocol):
         else:
             raise TarantoolRequestError('Iterator is of unsupported type')
 
-    cdef uint32_t _transform_space(self, space):
+    cdef uint32_t _transform_space(self, space) except *:
         if isinstance(space, str):
+            if self._schema is None:
+                raise TarantoolSchemaError('Schema not fetched')
+
             sp = self._schema.get_space(space)
             if sp is None:
                 raise TarantoolSchemaError('Space {} not found'.format(space))
             return sp.sid
         return space
 
-    cdef uint32_t _transform_index(self, space, index):
+    cdef uint32_t _transform_index(self, space, index) except *:
         if isinstance(index, str):
+            if self._schema is None:
+                raise TarantoolSchemaError('Schema not fetched')
+
             idx = self._schema.get_index(space, index)
             if idx is None:
                 raise TarantoolSchemaError(

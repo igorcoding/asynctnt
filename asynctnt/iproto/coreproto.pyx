@@ -130,9 +130,13 @@ cdef class CoreProtocol:
             ver = m.group(1)
             return tuple(map(int, ver.split('.')))
 
+    cdef void _on_connection_made(self):
+        pass
+
     cdef void _on_connection_lost(self, exc):
         cdef Request req
-        for sync, req in self.reqs.items():
+        for sync in self.reqs:
+            req = self.reqs[sync]
             waiter = req.waiter
             if waiter and not waiter.done():
                 if exc is None:
@@ -149,6 +153,7 @@ cdef class CoreProtocol:
         self._on_data_received(data)
 
     def connection_made(self, transport):
+        print('connection_made')
         self.transport = transport
         self.con_state = CONNECTION_CONNECTED
 
@@ -163,7 +168,10 @@ cdef class CoreProtocol:
         except Exception as ex:
             transport.abort()
 
+        self._on_connection_made()
+
     def connection_lost(self, exc):
+        print('coreproto: connection_lost')
         self.con_state = CONNECTION_BAD
         # self.schema = None
         self.version = None

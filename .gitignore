@@ -102,3 +102,4 @@ asynctnt/iproto/*.html
 __tnt*
 !third_party/**/*
 vinyl.meta
+*.vymeta
