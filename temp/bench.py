@@ -17,11 +17,11 @@ import asynctnt
 
 
 async def main():
-    conn = asynctnt.Connection(host='127.0.0.1', port=3303, username='tt2', password='ttp2',
+    conn = asynctnt.Connection(host='127.0.0.1', port=3303, username='t1', password='t1',
                                reconnect_timeout=1)
     await conn.connect()
 
-    n_requests = 10000
+    n_requests = 1000000
 
     start = datetime.datetime.now()
 

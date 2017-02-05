@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import os
 import re
+import unittest
 
 from setuptools import Extension
 
@@ -19,6 +20,12 @@ def find_version():
         if line.startswith("__version__"):
             return re.match(
                 r"""__version__\s*=\s*(['"])([^'"]+)\1""", line).group(2)
+
+#
+# def discover_tests():
+#     test_loader = unittest.TestLoader()
+#     test_suite = test_loader.discover('tests', pattern='test_*.py')
+#     return test_suite
 
 
 class build_ext(_build_ext.build_ext):
@@ -186,5 +193,6 @@ setup(
         'PyYAML>=3.12'
     ],
     description="Tarantool connection driver for work with asyncio",
-    long_description=open("README.md").read()
+    long_description=open("README.md").read(),
+    # test_suite='setup.discover_tests'
 )

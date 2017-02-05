@@ -26,12 +26,12 @@ class Connection:
         '_host', '_port', '_username', '_password', '_fetch_schema',
         '_encoding', '_connect_timeout', '_reconnect_timeout',
         '_request_timeout', '_loop', '_state', '_state_prev',
-        '_transport', '_protocol', '_disconnect_waiter'
+        '_transport', '_protocol', '_disconnect_waiter', '_reconnect_coro'
     )
 
     def __init__(self, *,
-                 host=None,
-                 port=None,
+                 host='127.0.0.1',
+                 port=3301,
                  username=None,
                  password=None,
                  fetch_schema=True,
@@ -60,6 +60,7 @@ class Connection:
         self._state = ConnectionState.DISCONNECTED
         self._state_prev = ConnectionState.DISCONNECTED
         self._disconnect_waiter = None
+        self._reconnect_coro = None
 
     def _set_state(self, new_state):
         if self._state != new_state:
@@ -75,7 +76,7 @@ class Connection:
         self._set_state(ConnectionState.CONNECTED)
 
     def connection_lost(self, exc):
-        print('connection_lost: {}'.format(exc))
+        #print('connection_lost: {}'.format(exc))
 
         if self._transport:
             self._transport.close()
@@ -86,8 +87,9 @@ class Connection:
             self._set_state(ConnectionState.DISCONNECTING)
             self._set_state(ConnectionState.RECONNECTING)
             logger.info('{} Started reconnecting'.format(self.fingerprint))
-            asyncio.ensure_future(self._connect(return_exceptions=False),
-                                  loop=self._loop)
+            self._reconnect_coro = \
+                asyncio.ensure_future(self._connect(return_exceptions=False),
+                                      loop=self._loop)
         else:
             self._set_state(ConnectionState.DISCONNECTED)
             if self._disconnect_waiter:
@@ -120,7 +122,7 @@ class Connection:
 
                 self._set_state(ConnectionState.CONNECTING)
 
-                print('__ Started connecting to Tarantool __')
+                #print('__ Started connecting to Tarantool __')
                 connected_fut = _create_future(self._loop)
 
                 if self._host.startswith('unix/'):
@@ -157,18 +159,21 @@ class Connection:
 
                 logger.info(
                     '{} Connected successfully'.format(self.fingerprint))
+                self._set_state(ConnectionState.CONNECTED)
 
                 self._transport = tr
                 self._protocol = pr
+                self._reconnect_coro = None
                 return
             except TarantoolDatabaseError as e:
-                print(repr(e))
+                #print(repr(e))
                 if e.code in {ErrorCode.ER_LOADING}:
                     # If Tarantool is still loading then reconnect
                     if self._reconnect_timeout > 0:
                         await self._do_reconnect(e)
                         continue
                 if return_exceptions:
+                    self._reconnect_coro = None
                     raise e
                 else:
                     logger.exception(e)
@@ -176,11 +181,12 @@ class Connection:
                         await self._do_reconnect(e)
                         continue
             except Exception as e:
-                print(repr(e))
+                #print(repr(e))
                 if self._reconnect_timeout > 0:
                     await self._do_reconnect(e)
                     continue
                 if return_exceptions:
+                    self._reconnect_coro = None
                     raise e
                 else:
                     logger.exception(e)
@@ -207,6 +213,10 @@ class Connection:
 
         logger.info('{} Disconnecting...'.format(self.fingerprint))
         waiter = _create_future(self._loop)
+        if self._reconnect_coro:
+            self._reconnect_coro.cancel()
+            self._reconnect_coro = None
+
         if self._transport:
             self._disconnect_waiter = waiter
             self._transport.close()

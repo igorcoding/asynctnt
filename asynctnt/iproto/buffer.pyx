@@ -2,6 +2,7 @@ cimport cpython
 cimport cython
 cimport cpython.bytes
 cimport cpython.list
+cimport cpython.tuple
 cimport cpython.unicode
 
 from cpython.mem cimport PyMem_Malloc, PyMem_Realloc, PyMem_Free
@@ -184,6 +185,21 @@ cdef class WriteBuffer:
                 p = self._encode_obj(p, item)
         return p
 
+    cdef char *_encode_tuple(self, char *p, tuple t) except NULL:
+        cdef:
+            uint32_t t_len
+
+        if t is not None:
+            t_len = <uint32_t>cpython.tuple.PyTuple_GET_SIZE(t)
+        else:
+            t_len = 0
+        p = self._encode_array(p, t_len)
+
+        if t_len > 0:
+            for item in t:
+                p = self._encode_obj(p, item)
+        return p
+
     cdef char *_encode_dict(self, char *p, dict d) except NULL:
         cdef:
             uint32_t d_len
@@ -217,6 +233,14 @@ cdef class WriteBuffer:
             else:
                 return self._encode_int(p, <int64_t>o)
 
+        elif isinstance(o, bytes):
+            o_string_str = NULL
+            o_string_len = 0
+            cpython.bytes.PyBytes_AsStringAndSize(o,
+                                                  &o_string_str,
+                                                  &o_string_len)
+            return self._encode_bin(p, o_string_str, <uint32_t>o_string_len)
+
         elif isinstance(o, str):
             o_string_temp = o.encode(self._encoding, 'strict')
             o_string_str = NULL
@@ -228,16 +252,11 @@ cdef class WriteBuffer:
             p = self._encode_str(p, o_string_str, <uint32_t>o_string_len)
             return p
 
-        elif isinstance(o, bytes):
-            o_string_str = NULL
-            o_string_len = 0
-            cpython.bytes.PyBytes_AsStringAndSize(o,
-                                                  &o_string_str,
-                                                  &o_string_len)
-            return self._encode_bin(p, o_string_str, <uint32_t>o_string_len)
-
         elif isinstance(o, list):
             return self._encode_list(p, o)
+
+        elif isinstance(o, tuple):
+            return self._encode_tuple(p, o)
 
         elif isinstance(o, dict):
             return self._encode_dict(p, o)

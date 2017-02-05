@@ -152,7 +152,7 @@ cdef class CoreProtocol:
         self._on_data_received(data)
 
     def connection_made(self, transport):
-        print('coreproto: connection_made')
+        #print('coreproto: connection_made')
         self.transport = transport
         self.con_state = CONNECTION_CONNECTED
 
@@ -166,7 +166,7 @@ cdef class CoreProtocol:
         self._on_connection_made()
 
     def connection_lost(self, exc):
-        print('coreproto: connection_lost')
+        #print('coreproto: connection_lost')
         self.con_state = CONNECTION_BAD
         # self.schema = None
         self.version = None

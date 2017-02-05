@@ -36,7 +36,7 @@ cdef object _decode_obj(const char** p, str encoding='utf-8'):
         s = NULL
         s_len = 0
         s = mp_decode_bin(p, &s_len)
-        return <bytes>s
+        return <bytes>s[:s_len]
     elif obj_type == MP_BOOL:
         return mp_decode_bool(p)
     elif obj_type == MP_FLOAT:

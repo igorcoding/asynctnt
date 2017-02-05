@@ -20,6 +20,7 @@ class ConnectTestCase(BaseTarantoolTestCase):
         self.assertIsNotNone(conn._protocol)
         self.assertTrue(conn.is_connected)
         self.assertTrue(conn._protocol.is_fully_connected())
+        self.assertEqual(conn.state, ConnectionState.CONNECTED)
         self.assertIsNotNone(conn._protocol.schema)
         await conn.disconnect()
 
@@ -32,6 +33,7 @@ class ConnectTestCase(BaseTarantoolTestCase):
         self.assertIsNotNone(conn._protocol)
         self.assertTrue(conn.is_connected)
         self.assertTrue(conn._protocol.is_fully_connected())
+        self.assertEqual(conn.state, ConnectionState.CONNECTED)
         self.assertIsNone(conn._protocol.schema)
         await conn.disconnect()
 
@@ -45,6 +47,7 @@ class ConnectTestCase(BaseTarantoolTestCase):
         self.assertIsNotNone(conn._protocol)
         self.assertTrue(conn.is_connected)
         self.assertTrue(conn._protocol.is_fully_connected())
+        self.assertEqual(conn.state, ConnectionState.CONNECTED)
         self.assertIsNotNone(conn._protocol.schema)
         await conn.disconnect()
 
@@ -58,6 +61,7 @@ class ConnectTestCase(BaseTarantoolTestCase):
         self.assertIsNotNone(conn._protocol)
         self.assertTrue(conn.is_connected)
         self.assertTrue(conn._protocol.is_fully_connected())
+        self.assertEqual(conn.state, ConnectionState.CONNECTED)
         self.assertIsNone(conn._protocol.schema)
         await conn.disconnect()
 
@@ -84,18 +88,22 @@ class ConnectTestCase(BaseTarantoolTestCase):
 
     async def test__connect_multiple(self):
         conn = asynctnt.Connection(host=self.tnt.host, port=self.tnt.port,
+                                   fetch_schema=False,
                                    reconnect_timeout=0,
                                    loop=self.loop)
-        for _ in range(100):
+        for _ in range(10):
             await conn.connect()
             await conn.disconnect()
         self.assertFalse(conn.is_connected)
+        self.assertEqual(conn.state, ConnectionState.DISCONNECTED)
 
     async def test__connect_cancel(self):
         conn = asynctnt.Connection(host=self.tnt.host, port=self.tnt.port,
+                                   fetch_schema=True,
                                    reconnect_timeout=0,
                                    loop=self.loop)
         f = asyncio.ensure_future(conn.connect(), loop=self.loop)
+        await self.sleep(0.0001)
         f.cancel()
         with self.assertRaises(asyncio.CancelledError):
             await f
@@ -110,7 +118,7 @@ class ConnectTestCase(BaseTarantoolTestCase):
                                    reconnect_timeout=0.000001,
                                    loop=self.loop)
         coro = self.ensure_future(conn.connect())
-        await self.sleep(0.1)
+        await self.sleep(0.3)
         await self.tnt.start()
         await coro
         self.assertEqual(conn.state, ConnectionState.CONNECTED)

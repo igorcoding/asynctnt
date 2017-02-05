@@ -8,9 +8,6 @@ from tests import BaseTarantoolTestCase
 
 
 class PingTestCase(BaseTarantoolTestCase):
-    DO_CONNECT = True
-    LOGGING_STREAM = sys.stdout
-
     SMALL_TIMEOUT = 0.00000000001
 
     async def test__ping_basic(self):

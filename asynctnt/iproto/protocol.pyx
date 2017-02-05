@@ -3,8 +3,7 @@
 import asyncio
 import enum
 
-from asynctnt.exceptions import \
-    TarantoolNotConnectedError, TarantoolSchemaError
+from asynctnt.exceptions import TarantoolSchemaError
 
 include "const.pxi"
 
@@ -82,7 +81,7 @@ cdef class BaseProtocol(CoreProtocol):
             self.con_state = CONNECTION_BAD
 
     cdef void _on_greeting_received(self):
-        print('_on_greeting_received')
+        #print('_on_greeting_received')
         if self.username and self.password:
             self._do_auth(self.username, self.password)
         elif self.fetch_schema:
@@ -91,7 +90,7 @@ cdef class BaseProtocol(CoreProtocol):
             self._set_connection_ready()
 
     cdef void _do_auth(self, str username, str password):
-        print('_do_auth')
+        #print('_do_auth')
         fut = self.auth(username, password)
 
         def on_authorized(f):
@@ -206,10 +205,6 @@ cdef class BaseProtocol(CoreProtocol):
         return fut
 
     cdef object _execute(self, Request req, float timeout):
-        # print('Con state: {}'.format(self.con_state))
-        # if not self._is_connected():
-        #     raise TarantoolNotConnectedError('Tarantool is not connected')
-
         waiter = self._new_waiter_for_request(req, timeout)
 
         self.reqs[req.sync] = req

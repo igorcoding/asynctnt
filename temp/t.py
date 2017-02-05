@@ -37,7 +37,7 @@ async def main(loop):
     conn = None
     try:
         coro = asyncio.ensure_future(
-            asynctnt.connect(host=tnt.host, port=tnt.port,
+            asynctnt.connect(host=tnt.host, port=3303,
                              username='t1', password='t1',
                              fetch_schema=True,
                              reconnect_timeout=0.000001, request_timeout=2,
@@ -45,8 +45,8 @@ async def main(loop):
                              loop=loop),
             loop=loop
         )
-        await asyncio.sleep(1, loop=loop)
-        await tnt.start()
+        # await asyncio.sleep(1, loop=loop)
+        # await tnt.start()
         conn = await coro
 
         print('connected')
@@ -56,21 +56,20 @@ async def main(loop):
         # res = await conn.call16('long', [3])
         # res = await conn.auth('tt', 'ttp')d
 
-        await tnt.stop()
-        await tnt.start()
-        print('RESTARTED TNT')
+        # await tnt.stop()
+        # await tnt.start()
+        # print('RESTARTED TNT')
         # await asyncio.sleep(1, loop=loop)
 
-        # res = await conn.insert('tester', [1, 'привет'])
         # print(res.body2yaml())
-        res = await conn.select('_space')
-        print(res.body)
+        # res = await conn.select('tester')
+        # print(res.body)
         # res = await conn.eval('return box.cfg')
         # res = await conn.call('test', timeout=0)
         # res = await conn.call('long', [15])
         # res = await conn.refetch_schema()
         # res = await conn.replace('tester', [2, 'hello', 3])
-        # res = await conn.update('tester', [2], [(':', 1, 1, 3, 'yo!')])
+        res = await conn.update('tester', [2], [(':', 1, 1, 3, 'yo!')])
         # res = await conn.update('tester', [3], [(':', 1, 1, 3, 'yo!')])
         # await conn.upsert('tester', [2, 'hello'], [(':', 2, 1, 3, 'yo!')])
         # await conn.delete('tester', [2], index='primary')

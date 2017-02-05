@@ -45,6 +45,7 @@ cdef class WriteBuffer:
     cdef char *_encode_array(self, char *p, uint32_t len) except NULL
     cdef char *_encode_map(self, char *p, uint32_t len) except NULL
     cdef char *_encode_list(self, char *p, list arr) except NULL
+    cdef char *_encode_tuple(self, char *p, tuple t) except NULL
     cdef char *_encode_dict(self, char *p, dict d) except NULL
     cdef char *_encode_obj(self, char *p, object o) except NULL
 

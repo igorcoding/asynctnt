@@ -27,4 +27,8 @@ function test()
 	return 'hello'
 end
 
+function func_param(p)
+    return {p}
+end
+
 require('console').start()
