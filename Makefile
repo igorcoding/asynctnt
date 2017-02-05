@@ -38,7 +38,7 @@ debug:
 test:
 	PYTHONASYNCIODEBUG=1 $(PYTHON) -m unittest discover -s tests
 	$(PYTHON) -m unittest discover -s tests
-	USE_UVLOOP=1 $(PYTHON) -m unittest discover -s tests
+	#USE_UVLOOP=1 $(PYTHON) -m unittest discover -s tests
 
 
 quicktest:

@@ -1,11 +1,11 @@
-from libc.stdint cimport uint64_t, uint32_t
+from libc.stdint cimport uint64_t, uint32_t, int64_t
 
 
 cdef class TntResponse:
     cdef:
         public uint32_t code
         public uint64_t sync
-        public uint64_t schema_id
+        public int64_t schema_id
         public str errmsg
         public list body
 

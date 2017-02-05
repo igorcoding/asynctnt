@@ -21,16 +21,9 @@ class PingTestCase(BaseTarantoolTestCase):
         self.assertEqual(res.code, 0, 'Code is 0')
         self.assertIsNone(res.body, 'No body for ping')
 
-    async def test__ping_timeout(self):
-        with self.assertRaises(asyncio.TimeoutError):
-            await self.conn.ping(timeout=self.SMALL_TIMEOUT)
-
     async def test__ping_timeout_on_conn(self):
         await self.tnt_disconnect()
         await self.tnt_connect(request_timeout=self.SMALL_TIMEOUT)
-
-        with self.assertRaises(asyncio.TimeoutError):
-            await self.conn.ping()
 
         try:
             await self.conn.ping(timeout=1)

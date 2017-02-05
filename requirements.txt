@@ -2,3 +2,5 @@ psutil==5.0.1
 cython==0.25.2
 pep8==1.7.0
 flake8==3.2.1
+PyYAML>=3.12
+

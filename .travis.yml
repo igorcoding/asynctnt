@@ -1,12 +1,23 @@
 language: python
 python:
-  - "3.5"
-  - "3.5-dev" # 3.5 development branch
-  - "3.6"
-  - "3.6-dev" # 3.6 development branch
-  - "3.7-dev" # 3.7 development branch
-  - "nightly" # currently points to 3.7-dev
+  - 3.5
+  - 3.5-dev
+  - 3.6
+  - 3.6-dev
+  - 3.7-dev
+  - nightly
+before_install:
+  - curl -L https://packagecloud.io/tarantool/1_7/gpgkey | sudo apt-key add -
+  - release=`lsb_release -c -s`
+  - sudo apt-get -y install apt-transport-https
+  - sudo rm -f /etc/apt/sources.list.d/*tarantool*.list
+  - echo "deb https://packagecloud.io/tarantool/1_7/ubuntu/ $release main" | sudo tee /etc/apt/sources.list.d/tarantool_1_7.list
+  - echo "deb-src https://packagecloud.io/tarantool/1_7/ubuntu/ $release main" | sudo tee -a /etc/apt/sources.list.d/tarantool_1_7.list
+  - sudo apt-get -qq update
+  - sudo apt-get -y install tarantool
+  - sudo tarantoolctl stop example
 install:
   - pip install -r requirements.txt
   - make
-script: "make test"
+script:
+  - make test

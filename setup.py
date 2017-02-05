@@ -182,7 +182,9 @@ setup(
         "Topic :: Software Development :: Libraries :: Python Modules",
         "Topic :: Database :: Front-Ends"
     ],
-    install_requires=[],
+    install_requires=[
+        'PyYAML>=3.12'
+    ],
     description="Tarantool connection driver for work with asyncio",
     long_description=open("README.md").read()
 )

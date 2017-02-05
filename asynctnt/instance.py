@@ -320,6 +320,8 @@ class TarantoolInstance:
 
         self._is_running = False
         self._is_stopping = False
+        if self._transport:
+            self._transport.close()
         self._transport = None
         self._protocol = None
         self._stop_event.clear()
