@@ -206,7 +206,8 @@ cdef class BaseProtocol(CoreProtocol):
         timeout = timeout or self.request_timeout
         if timeout is not None and timeout > 0:
             req.timeout_handle = \
-                self.loop.call_later(timeout, self._on_request_timeout_cb, fut)
+                self.loop.call_later(timeout,
+                                     self._on_request_timeout_cb, fut)
         req.waiter.add_done_callback(self._on_request_completed_cb)
         return fut
 
