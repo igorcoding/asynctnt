@@ -151,7 +151,7 @@ class TarantoolTestCase(TestCase):
     async def tnt_connect(self, *,
                           username=None, password=None, fetch_schema=None,
                           connect_timeout=None, reconnect_timeout=1/3,
-                          request_timeout=None):
+                          request_timeout=None, encoding='utf-8'):
         self.conn = asynctnt.Connection(
             host=self.tnt.host,
             port=self.tnt.port,
@@ -161,6 +161,7 @@ class TarantoolTestCase(TestCase):
             connect_timeout=connect_timeout,
             reconnect_timeout=reconnect_timeout,
             request_timeout=request_timeout,
+            encoding=encoding,
             loop=self.loop)
         await self.conn.connect()
         return self.conn

@@ -2,6 +2,8 @@ import asyncio
 
 import sys
 
+import logging
+
 from asynctnt import TntResponse
 from asynctnt.exceptions import TarantoolNotConnectedError
 from tests import BaseTarantoolTestCase

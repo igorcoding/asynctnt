@@ -1,16 +1,18 @@
-# cython: profile=False
+cimport cython
+cimport cpython.dict
 
 import asyncio
 import enum
 
-from asynctnt.exceptions import TarantoolSchemaError
+from asynctnt.exceptions import TarantoolSchemaError, TarantoolNotConnectedError
 
 include "const.pxi"
 
+include "unicode.pyx"
 include "buffer.pyx"
+include "rbuffer.pyx"
 include "request.pyx"
 include "response.pyx"
-include "encdec.pyx"
 include "schema.pyx"
 
 include "coreproto.pyx"
@@ -39,7 +41,7 @@ cdef class BaseProtocol(CoreProtocol):
                  on_connection_made, on_connection_lost,
                  loop,
                  request_timeout=None,
-                 encoding='utf-8'):
+                 encoding=None):
         CoreProtocol.__init__(self, host, port, encoding)
 
         self.loop = loop
@@ -201,16 +203,17 @@ cdef class BaseProtocol(CoreProtocol):
             req.timeout_handle = \
                 self.loop.call_later(timeout,
                                      self._on_request_timeout_cb, fut)
-        req.waiter.add_done_callback(self._on_request_completed_cb)
+            fut.add_done_callback(self._on_request_completed_cb)
         return fut
 
     cdef object _execute(self, Request req, float timeout):
-        waiter = self._new_waiter_for_request(req, timeout)
+        if self.con_state == CONNECTION_BAD:
+            raise TarantoolNotConnectedError('Tarantool is not connected')
 
-        self.reqs[req.sync] = req
+        cpython.dict.PyDict_SetItem(self.reqs, req.sync, req)
         self._write(req.buf)
 
-        return waiter
+        return self._new_waiter_for_request(req, timeout)
 
     cdef uint32_t _transform_iterator(self, iterator) except *:
         if isinstance(iterator, int):
@@ -248,99 +251,87 @@ cdef class BaseProtocol(CoreProtocol):
     def refetch_schema(self):
         return self._do_fetch_schema()
 
-    def ping(self, *, timeout=0):
+    def ping(self, timeout=0):
         return self._execute(
-            RequestPing(self.encoding, self._next_sync()),
+            request_ping(self.encoding, self._next_sync()),
             timeout
         )
 
-    def auth(self, username, password, *, timeout=0):
+    def auth(self, username, password, timeout=0):
         return self._execute(
-            RequestAuth(self.encoding, self._next_sync(),
-                        self.salt, username, password),
+            request_auth(self.encoding, self._next_sync(),
+                         self.salt, username, password),
             timeout
         )
 
-    def call16(self, func_name, args=None, *, timeout=0):
+    def call16(self, func_name, args=None, timeout=0):
         return self._execute(
-            RequestCall16(self.encoding, self._next_sync(), func_name, args),
+            request_call16(self.encoding, self._next_sync(), func_name, args),
             timeout
         )
 
-    def call(self, func_name, args=None, *, timeout=0):
+    def call(self, func_name, args=None, timeout=0):
         return self._execute(
-            RequestCall(self.encoding, self._next_sync(), func_name, args),
+            request_call(self.encoding, self._next_sync(), func_name, args),
             timeout
         )
 
-    def eval(self, expression, args=None, *, timeout=0):
+    def eval(self, expression, args=None, timeout=0):
         return self._execute(
-            RequestEval(self.encoding, self._next_sync(), expression, args),
+            request_eval(self.encoding, self._next_sync(), expression, args),
             timeout
         )
 
-    def select(self, space, key=None, **kwargs):
-        offset = kwargs.get('offset', 0)
-        limit = kwargs.get('limit', 0xffffffff)
-        index = kwargs.get('index', 0)
-        iterator = self._transform_iterator(kwargs.get('iterator', 0))
-        timeout = kwargs.get('timeout', 0)
-
+    def select(self, space, key=None,
+                 offset=0, limit=0xffffffff, index=0, iterator=0, timeout=0):
         space = self._transform_space(space)
         index = self._transform_index(space, index)
+        iterator = self._transform_iterator(iterator)
 
         return self._execute(
-            RequestSelect(self.encoding, self._next_sync(),
-                          space, index, key, offset, limit, iterator),
+            request_select(self.encoding, self._next_sync(),
+                           space, index, key, offset, limit, iterator),
             timeout
         )
 
-    def insert(self, space, t, *, replace=False, timeout=0):
+    def insert(self, space, t, replace=False, timeout=0):
         space = self._transform_space(space)
 
         return self._execute(
-            RequestInsert(self.encoding, self._next_sync(),
-                          space, t, replace),
+            request_insert(self.encoding, self._next_sync(),
+                           space, t, replace),
             timeout
         )
 
-    def replace(self, space, t, *, timeout=0):
+    def replace(self, space, t, timeout=0):
         return self.insert(space, t, replace=True, timeout=timeout)
 
-    def delete(self, space, key, *, **kwargs):
-        index = kwargs.get('index', 0)
-        timeout = kwargs.get('timeout', 0)
-
+    def delete(self, space, key, index=0, timeout=0):
         space = self._transform_space(space)
         index = self._transform_index(space, index)
 
         return self._execute(
-            RequestDelete(self.encoding, self._next_sync(),
-                          space, index, key),
+            request_delete(self.encoding, self._next_sync(),
+                           space, index, key),
             timeout
         )
 
-    def update(self, space, key, operations, **kwargs):
-        index = kwargs.get('index', 0)
-        timeout = kwargs.get('timeout', 0)
-
+    def update(self, space, key, operations, index=0, timeout=0):
         space = self._transform_space(space)
         index = self._transform_index(space, index)
 
         return self._execute(
-            RequestUpdate(self.encoding, self._next_sync(),
-                          space, index, key, operations),
+            request_update(self.encoding, self._next_sync(),
+                           space, index, key, operations),
             timeout
         )
 
-    def upsert(self, space, t, operations, **kwargs):
-        timeout = kwargs.get('timeout', 0)
-
+    def upsert(self, space, t, operations, timeout=0):
         space = self._transform_space(space)
 
         return self._execute(
-            RequestUpsert(self.encoding, self._next_sync(),
-                          space, t, operations),
+            request_upsert(self.encoding, self._next_sync(),
+                           space, t, operations),
             timeout
         )
 

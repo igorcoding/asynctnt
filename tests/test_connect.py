@@ -22,6 +22,7 @@ class ConnectTestCase(BaseTarantoolTestCase):
         self.assertTrue(conn._protocol.is_fully_connected())
         self.assertEqual(conn.state, ConnectionState.CONNECTED)
         self.assertIsNotNone(conn._protocol.schema)
+        self.assertIsNotNone(conn.version)
         await conn.disconnect()
 
     async def test__connect_no_schema(self):

@@ -10,7 +10,11 @@ def get_complex_param(replace_bin=True, encoding='utf-8'):
             'k': 1,
             'l': (1, 2)
         },
-        'e': b'1234567890'
+        'e': b'1234567890',
+        'f': [],
+        'g': {},
+        'h': 'some long text',
+        'i': 'русский текст'
     }
     p_copy = copy.copy(p)
     # tuples return as lists

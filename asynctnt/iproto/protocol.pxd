@@ -3,10 +3,11 @@ include "const.pxi"
 include "cmsgpuck.pxd"
 include "python.pxd"
 
+include "unicode.pxd"
 include "buffer.pxd"
+include "rbuffer.pxd"
 include "request.pxd"
 include "response.pxd"
-include "encdec.pxd"
 include "schema.pxd"
 
 include "coreproto.pxd"

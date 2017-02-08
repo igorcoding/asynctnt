@@ -15,13 +15,13 @@ cdef class CoreProtocol:
         object host
         object port
 
-        str encoding
+        bytes encoding
 
         ProtocolState state
         ConnectionState con_state
         dict reqs
 
-        bytearray rbuf
+        ReadBuffer rbuf
         tuple version
         bytes salt
 

@@ -38,7 +38,7 @@ class Connection:
                  connect_timeout=60,
                  request_timeout=None,
                  reconnect_timeout=1. / 3.,
-                 encoding='utf-8',
+                 encoding=None,
                  loop=None):
 
         self._host = host
@@ -46,7 +46,7 @@ class Connection:
         self._username = username
         self._password = password
         self._fetch_schema = fetch_schema
-        self._encoding = encoding
+        self._encoding = encoding or 'utf-8'
 
         self._connect_timeout = connect_timeout
         self._reconnect_timeout = reconnect_timeout or 0
@@ -275,7 +275,7 @@ class Connection:
     def version(self):
         if self._protocol is None:
             return None
-        return self._protocol.version
+        return self._protocol.get_version()
 
     @property
     def loop(self):
@@ -304,54 +304,46 @@ class Connection:
     def refetch_schema(self):
         return self._protocol.refetch_schema()
 
+    # def __getattr__(self, item):
+    #     return self._protocol.__getattribute__(item)
+
     def ping(self, *, timeout=0):
-        self.check_connected()
         return self._protocol.ping(timeout=timeout)
 
     def auth(self, username, password, *, timeout=0):
-        self.check_connected()
         return self._protocol.auth(username, password,
                                    timeout=timeout)
 
     def call16(self, func_name, args=None, *, timeout=0):
-        self.check_connected()
         return self._protocol.call16(func_name, args,
                                      timeout=timeout)
 
     def call(self, func_name, args=None, *, timeout=0):
-        self.check_connected()
         return self._protocol.call(func_name, args,
                                    timeout=timeout)
 
     def eval(self, expression, args=None, *, timeout=0):
-        self.check_connected()
         return self._protocol.eval(expression, args,
                                    timeout=timeout)
 
     def select(self, space, key=None, **kwargs):
-        self.check_connected()
         return self._protocol.select(space, key, **kwargs)
 
     def insert(self, space, t, *, replace=False, timeout=0):
-        self.check_connected()
         return self._protocol.insert(space, t,
                                      replace=replace, timeout=timeout)
 
     def replace(self, space, t, *, timeout=0):
-        self.check_connected()
         return self._protocol.replace(space, t,
                                       timeout=timeout)
 
     def delete(self, space, key, **kwargs):
-        self.check_connected()
         return self._protocol.delete(space, key, **kwargs)
 
     def update(self, space, key, operations, **kwargs):
-        self.check_connected()
         return self._protocol.update(space, key, operations, **kwargs)
 
     def upsert(self, space, t, operations, **kwargs):
-        self.check_connected()
         return self._protocol.upsert(space, t, operations, **kwargs)
 
 

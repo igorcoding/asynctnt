@@ -3,9 +3,11 @@ cimport cython
 cimport cpython.bytes
 cimport cpython.list
 cimport cpython.tuple
+cimport cpython.dict
 cimport cpython.unicode
 
 from cpython.mem cimport PyMem_Malloc, PyMem_Realloc, PyMem_Free
+from cpython.ref cimport PyObject
 
 from libc.string cimport memcpy
 from libc.stdint cimport uint32_t, uint64_t, int64_t
@@ -37,7 +39,7 @@ cdef class WriteBuffer:
         self._buf = self._smallbuf
         self._size = _BUFFER_INITIAL_SIZE
         self._length = 0
-        self._encoding = 'utf-8'
+        self._encoding = None
 
     def __dealloc__(self):
         if self._buf is not NULL and not self._smallbuf_inuse:
@@ -107,7 +109,7 @@ cdef class WriteBuffer:
             self._size = new_size
 
     @staticmethod
-    cdef WriteBuffer new(str encoding):
+    cdef WriteBuffer new(bytes encoding):
         cdef WriteBuffer buf
         buf = WriteBuffer.__new__(WriteBuffer)
         buf._encoding = encoding
@@ -173,6 +175,8 @@ cdef class WriteBuffer:
     cdef char *_encode_list(self, char *p, list arr) except NULL:
         cdef:
             uint32_t arr_len
+            PyObject *item_ptr
+            object item
 
         if arr is not None:
             arr_len = <uint32_t>cpython.list.PyList_GET_SIZE(arr)
@@ -181,13 +185,17 @@ cdef class WriteBuffer:
         p = self._encode_array(p, arr_len)
 
         if arr_len > 0:
-            for item in arr:
+            for i in range(arr_len):
+                item_ptr = cpython.list.PyList_GET_ITEM(arr, i)
+                item = <object>item_ptr
                 p = self._encode_obj(p, item)
         return p
 
     cdef char *_encode_tuple(self, char *p, tuple t) except NULL:
         cdef:
             uint32_t t_len
+            PyObject *item_ptr
+            object item
 
         if t is not None:
             t_len = <uint32_t>cpython.tuple.PyTuple_GET_SIZE(t)
@@ -196,20 +204,33 @@ cdef class WriteBuffer:
         p = self._encode_array(p, t_len)
 
         if t_len > 0:
-            for item in t:
+            for i in range(t_len):
+                item_ptr = cpython.tuple.PyTuple_GET_ITEM(t, i)
+                item = <object>item_ptr
                 p = self._encode_obj(p, item)
         return p
 
     cdef char *_encode_dict(self, char *p, dict d) except NULL:
         cdef:
             uint32_t d_len
+            PyObject *pkey
+            PyObject *pvalue
+            object key, value
+            Py_ssize_t pos
 
-        d_len = len(d)
+        if d is not None:
+            d_len = <uint32_t>cpython.dict.PyDict_Size(d)
+        else:
+            d_len = 0
         p = self._encode_map(p, d_len)
-        for k in d:
-            v = d[k]
-            p = self._encode_obj(p, k)
-            p = self._encode_obj(p, v)
+
+        pos = 0
+        while cpython.dict.PyDict_Next(d, &pos, &pkey, &pvalue):
+            key = <object>pkey
+            value = <object>pvalue
+            p = self._encode_obj(p, key)
+            p = self._encode_obj(p, value)
+
         return p
 
     cdef char *_encode_obj(self, char *p, object o) except NULL:
@@ -242,7 +263,7 @@ cdef class WriteBuffer:
             return self._encode_bin(p, o_string_str, <uint32_t>o_string_len)
 
         elif isinstance(o, str):
-            o_string_temp = o.encode(self._encoding, 'strict')
+            o_string_temp = encode_unicode_string(o, self._encoding)
             o_string_str = NULL
             o_string_len = 0
             cpython.bytes.PyBytes_AsStringAndSize(o_string_temp,
@@ -327,7 +348,7 @@ cdef class WriteBuffer:
 
             op_type_str = operation[0]
             if isinstance(op_type_str, str):
-                str_temp = op_type_str.encode(self._encoding, 'strict')
+                str_temp = encode_unicode_string(op_type_str, self._encoding)
             elif isinstance(op_type_str, bytes):
                 str_temp = op_type_str
             else:
@@ -421,7 +442,7 @@ cdef class WriteBuffer:
         func_name_str = NULL
         func_name_len = 0
 
-        func_name_temp = func_name.encode(self._encoding, 'strict')
+        func_name_temp = encode_unicode_string(func_name, self._encoding)
         cpython.bytes.PyBytes_AsStringAndSize(func_name_temp,
                                               &func_name_str,
                                               &func_name_len)
@@ -460,7 +481,7 @@ cdef class WriteBuffer:
         expression_str = NULL
         expression_len = 0
 
-        expression_temp = expression.encode(self._encoding, 'strict')
+        expression_temp = encode_unicode_string(expression, self._encoding)
         cpython.bytes.PyBytes_AsStringAndSize(expression_temp,
                                               &expression_str,
                                               &expression_len)
@@ -709,7 +730,3 @@ cdef class WriteBuffer:
         p = mp_encode_str(p, "chap-sha1", 9)
         p = mp_encode_str(p, scramble_str, <uint32_t>scramble_len)
         self._length += (p - self._buf)
-
-cdef class ReadBuffer:
-    cdef:
-        char *buf

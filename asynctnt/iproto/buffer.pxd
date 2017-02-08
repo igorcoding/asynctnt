@@ -24,7 +24,7 @@ cdef class WriteBuffer:
         ssize_t _length  # Length of data in the buffer
         int _view_count  # Number of memoryviews attached to the buffer
 
-        str _encoding
+        bytes _encoding
 
     cdef inline _check_readonly(self)
     cdef inline len(self)
@@ -72,4 +72,4 @@ cdef class WriteBuffer:
                                   bytes scramble) except *
 
     @staticmethod
-    cdef WriteBuffer new(str encoding)
+    cdef WriteBuffer new(bytes encoding)

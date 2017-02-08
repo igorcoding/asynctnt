@@ -192,7 +192,7 @@ setup(
     install_requires=[
         'PyYAML>=3.12'
     ],
-    description="Tarantool connection driver for work with asyncio",
+    description="A fast Tarantool Database connector for Python/asyncio.",
     long_description=open("README.md").read(),
     # test_suite='setup.discover_tests'
 )

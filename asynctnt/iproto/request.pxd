@@ -4,42 +4,46 @@ cimport tnt
 
 cdef class Request:
     cdef:
-        uint64_t sync
         tnt.tp_request_type op
+        uint64_t sync
         WriteBuffer buf
         object waiter
         object timeout_handle
 
-    cdef get_bytes(self)
+    @staticmethod
+    cdef inline Request new(tnt.tp_request_type op,
+                            uint64_t sync,
+                            WriteBuffer buf)
 
 
-cdef class RequestPing(Request):
-    pass
+cdef Request request_ping(bytes encoding, uint64_t sync)
 
-cdef class RequestCall(Request):
-    pass
+cdef Request request_call(bytes encoding, uint64_t sync,
+                          str func_name, list args)
 
-cdef class RequestCall16(Request):
-    pass
+cdef Request request_call16(bytes encoding, uint64_t sync,
+                            str func_name, list args)
 
-cdef class RequestEval(Request):
-    pass
+cdef Request request_eval(bytes encoding, uint64_t sync,
+                          str expression, list args)
 
-cdef class RequestSelect(Request):
-    pass
+cdef Request request_select(bytes encoding, uint64_t sync,
+                            uint32_t space, uint32_t index, list key,
+                            uint64_t offset, uint64_t limit, uint32_t iterator)
 
-cdef class RequestInsert(Request):
-    pass
+cdef Request request_insert(bytes encoding, uint64_t sync,
+                            uint32_t space, list t, bint replace)
 
-cdef class RequestDelete(Request):
-    pass
+cdef Request request_delete(bytes encoding, uint64_t sync,
+                            uint32_t space, uint32_t index, list key)
 
-cdef class RequestUpdate(Request):
-    pass
+cdef Request request_update(bytes encoding, uint64_t sync,
+                            uint32_t space, uint32_t index,
+                            list key, list operations)
 
-cdef class RequestUpsert(Request):
-    pass
+cdef Request request_upsert(bytes encoding, uint64_t sync,
+                            uint32_t space,
+                            list t, list operations)
 
-cdef class RequestAuth(Request):
-    cdef bytes sha1(self, tuple values)
-    cdef bytes strxor(self, bytes hash1, bytes scramble)
+cdef Request request_auth(bytes encoding, uint64_t sync,
+                          bytes salt, str username, str password)

@@ -17,28 +17,29 @@ import asynctnt
 
 
 async def main():
-    conn = asynctnt.Connection(host='127.0.0.1', port=3303, username='t1', password='t1',
-                               reconnect_timeout=1)
+    # conn = asynctnt.Connection(host='127.0.0.1', port=3303, username='t1', password='t1',
+    #                            reconnect_timeout=1)
+    conn = asynctnt.Connection(host='127.0.0.1', port=3303, fetch_schema=False)
     await conn.connect()
 
-    n_requests = 1000000
+    n_requests = 50000
 
     start = datetime.datetime.now()
-
+    #
     coros = []
 
     for _ in range(n_requests):
-        # await conn.ping()
+        await conn.ping()
         # coros.append(conn.ping())
 
-        # await conn.call('test', timeout=1)
+        # await conn.call('test')
         # coros.append(conn.call('test', timeout=1))
 
         # await conn.eval('return box.info')
         # coros.append(conn.eval('return box.info'))
 
-        await conn.select('tester', iterator=Iterator.LE)
-        # coros.append(conn.select('tester', iterator=Iterator.LE))
+        # await conn.select(512, iterator=Iterator.LE)
+        # coros.append(conn.select(512, iterator=Iterator.LE))
 
         # await conn.auth('tt2', 'ttp2')
         # await conn.insert('tester', [_])

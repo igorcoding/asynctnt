@@ -28,11 +28,11 @@ build:
 
 
 debug:
-	$(PYTHON) setup.py build_ext --inplace --debug \
+	$(PYTHON) setup.py build_ext --inplace \
 		--cython-always \
 		--cython-annotate \
-		--cython-directives="linetrace=True" \
-		--define CYTHON_TRACE,CYTHON_TRACE_NOGIL
+		--cython-directives="linetrace=True"
+		#--define CYTHON_TRACE,CYTHON_TRACE_NOGIL
 
 
 test:
