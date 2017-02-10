@@ -8,11 +8,11 @@ from asynctnt.log import logger
 import yaml
 
 
-cdef class TntResponse:
+cdef class Response:
     @staticmethod
-    cdef inline TntResponse new(bytes encoding):
-        cdef TntResponse resp
-        resp = TntResponse.__new__(TntResponse)
+    cdef inline Response new(bytes encoding):
+        cdef Response resp
+        resp = Response.__new__(Response)
         resp.sync = 0
         resp.code = 0
         resp.schema_id = -1
@@ -28,7 +28,7 @@ cdef class TntResponse:
         return self.code != 0
 
     def __repr__(self):
-        return '<TntResponse: code={}, sync={}>'.format(self.code, self.sync)
+        return '<Response: code={}, sync={}>'.format(self.code, self.sync)
 
     def body2yaml(self):
         return yaml.dump(self.body, allow_unicode=True)
@@ -125,20 +125,20 @@ cdef list _response_parse_body_data(const char *b, bytes encoding=b'utf-8'):
     return tuples
 
 
-cdef TntResponse response_parse(const char *buf, uint32_t buf_len, bytes encoding=b'utf-8'):
+cdef Response response_parse(const char *buf, uint32_t buf_len, bytes encoding=b'utf-8'):
     cdef:
         const char *b
         uint32_t size
         uint32_t key
         uint32_t s_len
         const char *s
-        TntResponse resp
+        Response resp
 
     b = <const char*>buf
     if mp_typeof(b[0]) != MP_MAP:
         raise TypeError('Response header must be a MP_MAP')
 
-    resp = TntResponse.new(encoding)
+    resp = Response.new(encoding)
 
     # parsing header
     size = mp_decode_map(&b)

@@ -3,7 +3,8 @@ import enum
 import functools
 import os
 
-from asynctnt.exceptions import TarantoolDatabaseError, ErrorCode, TarantoolNotConnectedError
+from asynctnt.exceptions import TarantoolDatabaseError, \
+    ErrorCode, TarantoolNotConnectedError
 from asynctnt.iproto import protocol
 from asynctnt.log import logger
 
@@ -45,7 +46,7 @@ class Connection:
         self._port = port
         self._username = username
         self._password = password
-        self._fetch_schema = fetch_schema
+        self._fetch_schema = False if fetch_schema is None else fetch_schema
         self._encoding = encoding or 'utf-8'
 
         self._connect_timeout = connect_timeout
@@ -76,8 +77,6 @@ class Connection:
         self._set_state(ConnectionState.CONNECTED)
 
     def connection_lost(self, exc):
-        #print('connection_lost: {}'.format(exc))
-
         if self._transport:
             self._transport.close()
         self._transport = None
@@ -122,7 +121,7 @@ class Connection:
 
                 self._set_state(ConnectionState.CONNECTING)
 
-                #print('__ Started connecting to Tarantool __')
+                # print('__ Started connecting to Tarantool __')
                 connected_fut = _create_future(self._loop)
 
                 if self._host.startswith('unix/'):
@@ -166,7 +165,7 @@ class Connection:
                 self._reconnect_coro = None
                 return
             except TarantoolDatabaseError as e:
-                #print(repr(e))
+                # print(repr(e))
                 if e.code in {ErrorCode.ER_LOADING}:
                     # If Tarantool is still loading then reconnect
                     if self._reconnect_timeout > 0:
@@ -181,7 +180,7 @@ class Connection:
                         await self._do_reconnect(e)
                         continue
             except Exception as e:
-                #print(repr(e))
+                # print(repr(e))
                 if self._reconnect_timeout > 0:
                     await self._do_reconnect(e)
                     continue
@@ -309,10 +308,6 @@ class Connection:
 
     def ping(self, *, timeout=0):
         return self._protocol.ping(timeout=timeout)
-
-    def auth(self, username, password, *, timeout=0):
-        return self._protocol.auth(username, password,
-                                   timeout=timeout)
 
     def call16(self, func_name, args=None, *, timeout=0):
         return self._protocol.call16(func_name, args,

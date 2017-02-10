@@ -12,7 +12,6 @@ from cpython.ref cimport PyObject
 from libc.string cimport memcpy, memmove
 from libc.stdint cimport uint32_t, uint64_t, int64_t
 
-from asynctnt.exceptions import TarantoolRequestError
 from asynctnt.log import logger
 
 

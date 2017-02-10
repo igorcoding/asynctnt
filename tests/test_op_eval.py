@@ -1,6 +1,6 @@
 import asyncio
 
-from asynctnt import TntResponse
+from asynctnt import Response
 from tests.util import get_complex_param
 from tests import BaseTarantoolTestCase
 
@@ -10,7 +10,7 @@ class EvalTestCase(BaseTarantoolTestCase):
     async def test__eval_basic(self):
         res = await self.conn.eval('return "hola"')
 
-        self.assertIsInstance(res, TntResponse, 'Got eval response')
+        self.assertIsInstance(res, Response, 'Got eval response')
         self.assertEqual(res.code, 0, 'success')
         self.assertGreater(res.sync, 0, 'sync > 0')
         self.assertListEqual(res.body, ['hola'], 'Body ok')
@@ -18,7 +18,7 @@ class EvalTestCase(BaseTarantoolTestCase):
     async def test__eval_basic_pack(self):
         res = await self.conn.eval('return {"hola"}')
 
-        self.assertIsInstance(res, TntResponse, 'Got eval response')
+        self.assertIsInstance(res, Response, 'Got eval response')
         self.assertEqual(res.code, 0, 'success')
         self.assertGreater(res.sync, 0, 'sync > 0')
         self.assertListEqual(res.body, [['hola']], 'Body ok')

@@ -1,0 +1,278 @@
+import asyncio
+
+from asynctnt import Iterator
+from asynctnt import Response
+from asynctnt.exceptions import TarantoolSchemaError
+from tests import BaseTarantoolTestCase
+from tests.util import get_complex_param
+
+
+class UpdateTestCase(BaseTarantoolTestCase):
+    async def _fill_data(self):
+        data = [
+            [0, 'a', 1],
+            [1, 'b', 0],
+        ]
+        for t in data:
+            await self.conn.insert(self.TESTER_SPACE_ID, t)
+
+        return data
+
+    async def test__update_one_assign(self):
+        data = await self._fill_data()
+
+        res = await self.conn.update(self.TESTER_SPACE_ID,
+                                     [1], [['=', 2, 2]])
+        self.assertIsInstance(res, Response, 'Got response')
+        self.assertEqual(res.code, 0, 'success')
+        self.assertGreater(res.sync, 0, 'sync > 0')
+
+        data[1][2] = 2
+        self.assertListEqual(res.body, [data[1]], 'Body ok')
+
+    async def test__update_one_insert(self):
+        data = await self._fill_data()
+
+        res = await self.conn.update(self.TESTER_SPACE_ID,
+                                     [1], [['!', 2, 14]])
+        data[1].insert(2, 14)
+        self.assertListEqual(res.body, [data[1]], 'Body ok')
+
+    async def test__update_one_delete(self):
+        data = await self._fill_data()
+
+        res = await self.conn.update(self.TESTER_SPACE_ID,
+                                     [1], [['#', 2, 1]])
+        data[1].pop(2)
+        self.assertListEqual(res.body, [data[1]], 'Body ok')
+
+    async def test__update_one_plus(self):
+        data = await self._fill_data()
+
+        res = await self.conn.update(self.TESTER_SPACE_ID,
+                                     [1], [['+', 2, 3]])
+        data[1][2] += 3
+        self.assertListEqual(res.body, [data[1]], 'Body ok')
+
+    async def test__update_one_plus_negative(self):
+        data = await self._fill_data()
+
+        res = await self.conn.update(self.TESTER_SPACE_ID,
+                                     [1], [['+', 2, -3]])
+        data[1][2] += -3
+        self.assertListEqual(res.body, [data[1]], 'Body ok')
+
+    async def test__update_one_minus(self):
+        data = await self._fill_data()
+
+        res = await self.conn.update(self.TESTER_SPACE_ID,
+                                     [1], [['-', 2, 3]])
+        data[1][2] -= 3
+        self.assertListEqual(res.body, [data[1]], 'Body ok')
+
+    async def test__update_one_minus_negative(self):
+        data = await self._fill_data()
+
+        res = await self.conn.update(self.TESTER_SPACE_ID,
+                                     [1], [['-', 2, -3]])
+        data[1][2] -= -3
+        self.assertListEqual(res.body, [data[1]], 'Body ok')
+
+    async def test__update_one_band(self):
+        data = await self._fill_data()
+
+        res = await self.conn.update(self.TESTER_SPACE_ID,
+                                     [1], [['&', 2, 3]])
+        data[1][2] &= 3
+        self.assertListEqual(res.body, [data[1]], 'Body ok')
+
+        res = await self.conn.update(self.TESTER_SPACE_ID,
+                                     [1], [['&', 2, 2]])
+        data[1][2] &= 2
+        self.assertListEqual(res.body, [data[1]], 'Body ok')
+
+        res = await self.conn.update(self.TESTER_SPACE_ID,
+                                     [1], [['&', 2, 1]])
+        data[1][2] &= 1
+        self.assertListEqual(res.body, [data[1]], 'Body ok')
+
+        res = await self.conn.update(self.TESTER_SPACE_ID,
+                                     [1], [['&', 2, 0]])
+        data[1][2] &= 0
+        self.assertListEqual(res.body, [data[1]], 'Body ok')
+
+    async def test__update_one_bor(self):
+        data = await self._fill_data()
+
+        res = await self.conn.update(self.TESTER_SPACE_ID,
+                                     [1], [['|', 2, 3]])
+        data[1][2] |= 3
+        self.assertListEqual(res.body, [data[1]], 'Body ok')
+
+        res = await self.conn.update(self.TESTER_SPACE_ID,
+                                     [1], [['|', 2, 2]])
+        data[1][2] |= 2
+        self.assertListEqual(res.body, [data[1]], 'Body ok')
+
+        res = await self.conn.update(self.TESTER_SPACE_ID,
+                                     [1], [['|', 2, 1]])
+        data[1][2] |= 1
+        self.assertListEqual(res.body, [data[1]], 'Body ok')
+
+        res = await self.conn.update(self.TESTER_SPACE_ID,
+                                     [1], [['|', 2, 0]])
+        data[1][2] |= 0
+        self.assertListEqual(res.body, [data[1]], 'Body ok')
+
+    async def test__update_one_bxor(self):
+        data = await self._fill_data()
+
+        res = await self.conn.update(self.TESTER_SPACE_ID,
+                                     [1], [['^', 2, 3]])
+        data[1][2] ^= 3
+        self.assertListEqual(res.body, [data[1]], 'Body ok')
+
+        res = await self.conn.update(self.TESTER_SPACE_ID,
+                                     [1], [['^', 2, 2]])
+        data[1][2] ^= 2
+        self.assertListEqual(res.body, [data[1]], 'Body ok')
+
+        res = await self.conn.update(self.TESTER_SPACE_ID,
+                                     [1], [['^', 2, 1]])
+        data[1][2] ^= 1
+        self.assertListEqual(res.body, [data[1]], 'Body ok')
+
+        res = await self.conn.update(self.TESTER_SPACE_ID,
+                                     [1], [['^', 2, 0]])
+        data[1][2] ^= 0
+        self.assertListEqual(res.body, [data[1]], 'Body ok')
+
+    async def test__update_splice(self):
+        data = [1, 'hello', 'hi']
+        await self.conn.insert(self.TESTER_SPACE_ID, data)
+
+        res = await self.conn.update(self.TESTER_SPACE_ID,
+                                     [1], [[':', 2, 1, 3, '!!!']])
+
+        data[2] = 'h!!!'
+        self.assertListEqual(res.body, [data], 'Body ok')
+
+    async def test__update_splice_wrong_args(self):
+        data = [1, 'hello', 'hi']
+        await self.conn.insert(self.TESTER_SPACE_ID, data)
+
+        with self.assertRaisesRegex(
+                IndexError, r'Operation length must be at least 3'):
+            await self.conn.update(self.TESTER_SPACE_ID,
+                                   [1], [[':', 2]])
+
+        with self.assertRaisesRegex(
+                IndexError, r'Splice operation must have length of 5'):
+            await self.conn.update(self.TESTER_SPACE_ID,
+                                   [1], [[':', 2, 1]])
+
+        with self.assertRaisesRegex(
+                IndexError, r'Splice operation must have length of 5'):
+            await self.conn.update(self.TESTER_SPACE_ID,
+                                   [1], [[':', 2, 1, 3]])
+
+        with self.assertRaisesRegex(
+                TypeError, r'Splice offset must be int'):
+            await self.conn.update(self.TESTER_SPACE_ID,
+                                   [1], [[':', 2, 1, {}, ':::']])
+
+        with self.assertRaisesRegex(
+                TypeError, r'Splice position must be int'):
+            await self.conn.update(self.TESTER_SPACE_ID,
+                                   [1], [[':', 2, {}, {}, ':::']])
+
+        with self.assertRaisesRegex(
+                TypeError, r'Operation field_no must be of int type'):
+            await self.conn.update(self.TESTER_SPACE_ID,
+                                   [1], [[':', {}, {}, {}, ':::']])
+
+    async def test__update_multiple_operations(self):
+        t = [1, '1', 1, 0, 3, 4, 8, 'hello']
+        await self.conn.insert(self.TESTER_SPACE_ID, t)
+
+        t[2] += 1
+        t[3] -= 4
+        t[4] &= 5
+        t[5] |= 7
+        t[6] = 100
+        t[7] = 'h!!!o'
+
+        operations = [
+            ['+', 2, 1],
+            ['-', 3, 4],
+            ['&', 4, 5],
+            ['|', 5, 7],
+            ['=', 6, 100],
+            [':', 7, 1, 3, '!!!'],
+        ]
+
+        res = await self.conn.update(self.TESTER_SPACE_ID,
+                                     [1], operations)
+        self.assertListEqual(res.body, [t], 'Body ok')
+
+    async def test__update_by_name(self):
+        data = await self._fill_data()
+
+        res = await self.conn.update(self.TESTER_SPACE_NAME,
+                                     [1], [['=', 2, 2]])
+
+        data[1][2] = 2
+        self.assertIsInstance(res, Response, 'Got response')
+        self.assertEqual(res.code, 0, 'success')
+        self.assertGreater(res.sync, 0, 'sync > 0')
+        self.assertListEqual(res.body, [data[1]], 'Body ok')
+
+    async def test__update_by_name_no_schema(self):
+        await self._fill_data()
+
+        await self.tnt_reconnect(fetch_schema=False)
+
+        with self.assertRaises(TarantoolSchemaError):
+            await self.conn.update(self.TESTER_SPACE_NAME,
+                                   [1], [['=', 2, 2]])
+
+    async def test__update_by_index_id(self):
+        data = await self._fill_data()
+
+        res = await self.conn.update(self.TESTER_SPACE_ID, [0],
+                                     [['=', 2, 1]], index=0)
+
+        data[0][2] = 1
+        self.assertIsInstance(res, Response, 'Got response')
+        self.assertEqual(res.code, 0, 'success')
+        self.assertGreater(res.sync, 0, 'sync > 0')
+        self.assertListEqual(res.body, [data[0]], 'Body ok')
+
+    async def test__select_by_index_name(self):
+        data = await self._fill_data()
+
+        res = await self.conn.update(self.TESTER_SPACE_ID, [0],
+                                     [['=', 2, 1]], index=0)
+
+        data[0][2] = 1
+        self.assertIsInstance(res, Response, 'Got response')
+        self.assertEqual(res.code, 0, 'success')
+        self.assertGreater(res.sync, 0, 'sync > 0')
+        self.assertListEqual(res.body, [data[0]], 'Body ok')
+
+    async def test__update_by_index_id_no_schema(self):
+        await self._fill_data()
+        await self.tnt_reconnect(fetch_schema=False)
+
+        try:
+            await self.conn.update(self.TESTER_SPACE_ID, [0],
+                                   [['=', 2, 1]], index=0)
+        except Exception as e:
+            self.fail(e)
+
+    async def test__select_by_index_name_no_schema(self):
+        await self.tnt_reconnect(fetch_schema=False)
+
+        with self.assertRaises(TarantoolSchemaError):
+            await self.conn.update(self.TESTER_SPACE_NAME, [0],
+                                   [['=', 2, 1]], index='primary')

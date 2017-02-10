@@ -92,8 +92,11 @@ cdef class BaseProtocol(CoreProtocol):
             self._set_connection_ready()
 
     cdef void _do_auth(self, str username, str password):
-        #print('_do_auth')
-        fut = self.auth(username, password)
+        fut = self._execute(
+            request_auth(self.encoding, self._next_sync(),
+                         self.salt, username, password),
+            0  # timeout
+        )
 
         def on_authorized(f):
             if f.cancelled():
@@ -223,7 +226,8 @@ cdef class BaseProtocol(CoreProtocol):
         if isinstance(iterator, str):
             return Iterator[iterator]
         else:
-            raise TarantoolRequestError('Iterator is of unsupported type')
+            raise TypeError('Iterator is of unsupported type '
+                            '(asynctnt.Iterator, int, str)')
 
     cdef uint32_t _transform_space(self, space) except *:
         if isinstance(space, str):
@@ -254,13 +258,6 @@ cdef class BaseProtocol(CoreProtocol):
     def ping(self, timeout=0):
         return self._execute(
             request_ping(self.encoding, self._next_sync()),
-            timeout
-        )
-
-    def auth(self, username, password, timeout=0):
-        return self._execute(
-            request_auth(self.encoding, self._next_sync(),
-                         self.salt, username, password),
             timeout
         )
 

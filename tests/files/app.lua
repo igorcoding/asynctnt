@@ -4,7 +4,20 @@ box.once('v1', function()
 
     local s = box.schema.create_space('tester')
     s:create_index('primary')
+    s:create_index('txt', {unique = false, parts = {2, 'string'}})
 end)
+
+
+function truncate()
+    local keys = {}
+    for _, el in box.space.tester:pairs() do
+        table.insert(keys, el[1])
+    end
+
+    for _, k in ipairs(keys) do
+        box.space.tester:delete({k})
+    end
+end
 
 
 _G.fiber = require('fiber')

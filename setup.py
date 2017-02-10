@@ -184,6 +184,7 @@ setup(
     author_email="igorcoding@gmail.com",
     classifiers=[
         "Programming Language :: Python :: 3.5",
+        "Programming Language :: Python :: 3.6",
         "Intended Audience :: Developers",
         "License :: OSI Approved :: GNU Library or Lesser General Public License (LGPL)",
         "Topic :: Software Development :: Libraries :: Python Modules",

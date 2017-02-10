@@ -149,7 +149,8 @@ class TarantoolTestCase(TestCase):
         super(TarantoolTestCase, self).tearDown()
 
     async def tnt_connect(self, *,
-                          username=None, password=None, fetch_schema=None,
+                          username=None, password=None,
+                          fetch_schema=True,
                           connect_timeout=None, reconnect_timeout=1/3,
                           request_timeout=None, encoding='utf-8'):
         self.conn = asynctnt.Connection(
@@ -170,3 +171,7 @@ class TarantoolTestCase(TestCase):
         if hasattr(self, 'conn') and self.conn is not None:
             await self.conn.disconnect()
             self.conn = None
+
+    async def tnt_reconnect(self, **kwargs):
+        await self.tnt_disconnect()
+        await self.tnt_connect(**kwargs)

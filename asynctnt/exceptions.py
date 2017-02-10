@@ -9,10 +9,6 @@ class TarantoolSchemaError(TarantoolError):
     pass
 
 
-class TarantoolRequestError(TarantoolError):
-    pass
-
-
 class TarantoolDatabaseError(TarantoolError):
 
     def __init__(self, code, message):

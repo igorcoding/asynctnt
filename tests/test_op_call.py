@@ -1,6 +1,6 @@
 import asyncio
 
-from asynctnt import TntResponse
+from asynctnt import Response
 from asynctnt.exceptions import TarantoolDatabaseError, ErrorCode
 from tests.util import get_complex_param
 from tests import BaseTarantoolTestCase
@@ -10,7 +10,7 @@ class CallTestCase(BaseTarantoolTestCase):
     async def test__call_basic(self):
         res = await self.conn.call('func_hello')
 
-        self.assertIsInstance(res, TntResponse, 'Got call response')
+        self.assertIsInstance(res, Response, 'Got call response')
         self.assertEqual(res.code, 0, 'success')
         self.assertGreater(res.sync, 0, 'sync > 0')
         self.assertListEqual(res.body, [['hello']], 'Body ok')
@@ -18,7 +18,7 @@ class CallTestCase(BaseTarantoolTestCase):
     async def test__call_basic_bare(self):
         res = await self.conn.call('func_hello_bare')
 
-        self.assertIsInstance(res, TntResponse, 'Got call response')
+        self.assertIsInstance(res, Response, 'Got call response')
         self.assertEqual(res.code, 0, 'success')
         self.assertGreater(res.sync, 0, 'sync > 0')
         self.assertListEqual(res.body, ['hello'], 'Body ok')
@@ -31,13 +31,13 @@ class CallTestCase(BaseTarantoolTestCase):
     async def test__call_with_param(self):
         res = await self.conn.call('func_param', ['myparam'])
 
-        self.assertIsInstance(res, TntResponse, 'Got call response')
+        self.assertIsInstance(res, Response, 'Got call response')
         self.assertListEqual(res.body, [['myparam']], 'Body ok')
 
     async def test__call_with_param_bare(self):
         res = await self.conn.call('func_param_bare', ['myparam'])
 
-        self.assertIsInstance(res, TntResponse, 'Got call response')
+        self.assertIsInstance(res, Response, 'Got call response')
         self.assertListEqual(res.body, ['myparam'], 'Body ok')
 
     async def test__call_func_name_invalid_type(self):
@@ -91,7 +91,7 @@ class Call16TestCase(BaseTarantoolTestCase):
     async def test__call16_basic(self):
         res = await self.conn.call16('func_hello')
 
-        self.assertIsInstance(res, TntResponse, 'Got call response')
+        self.assertIsInstance(res, Response, 'Got call response')
         self.assertEqual(res.code, 0, 'success')
         self.assertGreater(res.sync, 0, 'sync > 0')
         self.assertListEqual(res.body, [['hello']], 'Body ok')
@@ -101,7 +101,7 @@ class Call16TestCase(BaseTarantoolTestCase):
 
         res = await self.conn.call16('func_hello')
 
-        self.assertIsInstance(res, TntResponse, 'Got call response')
+        self.assertIsInstance(res, Response, 'Got call response')
         self.assertEqual(res.code, 0, 'success')
         self.assertGreater(res.sync, 0, 'sync > 0')
         self.assertListEqual(res.body, [['hello']], 'Body ok')
@@ -114,7 +114,7 @@ class Call16TestCase(BaseTarantoolTestCase):
     async def test__call16_with_param(self):
         res = await self.conn.call16('func_param', ['myparam'])
 
-        self.assertIsInstance(res, TntResponse, 'Got call response')
+        self.assertIsInstance(res, Response, 'Got call response')
         self.assertListEqual(res.body, [['myparam']], 'Body ok')
 
     async def test__call16_with_param_bare(self):
@@ -122,7 +122,7 @@ class Call16TestCase(BaseTarantoolTestCase):
 
         res = await self.conn.call16('func_param_bare', ['myparam'])
 
-        self.assertIsInstance(res, TntResponse, 'Got call response')
+        self.assertIsInstance(res, Response, 'Got call response')
         self.assertListEqual(res.body, [['myparam']], 'Body ok')
 
     async def test__call16_func_name_invalid_type(self):

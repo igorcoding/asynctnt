@@ -40,7 +40,7 @@ async def main(loop):
             asynctnt.connect(host=tnt.host, port=3303,
                              username='t1', password='t1',
                              fetch_schema=True,
-                             reconnect_timeout=0.000001, request_timeout=2,
+                             reconnect_timeout=1, request_timeout=20,
                              encoding='utf-8',
                              loop=loop),
             loop=loop
@@ -66,10 +66,11 @@ async def main(loop):
         # print(res.body)
         # res = await conn.eval('return box.cfg')
         # res = await conn.call('test', timeout=0)
-        # res = await conn.call('long', [15])
+        res = await conn.call('long', [15])
+        print(res)
         # res = await conn.refetch_schema()
-        # res = await conn.replace('tester', [2, 'hello', 3])
-        res = await conn.update('tester', [2], [(':', 1, 1, 3, 'yo!')])
+        # res = await conn.insert('tester', (2, 'hello', 3))
+        # res = await conn.update('tester', [2], [(':', 1, 1, 3, 'yo!')])
         # res = await conn.update('tester', [3], [(':', 1, 1, 3, 'yo!')])
         # await conn.upsert('tester', [2, 'hello'], [(':', 2, 1, 3, 'yo!')])
         # await conn.delete('tester', [2], index='primary')

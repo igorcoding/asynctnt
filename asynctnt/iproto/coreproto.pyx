@@ -68,7 +68,7 @@ cdef class CoreProtocol:
             uint32_t packet_len
             PyObject *req_p
             Request req
-            TntResponse resp
+            Response resp
             object waiter
             object sync_obj
 
@@ -191,7 +191,7 @@ cdef class CoreProtocol:
             waiter = req.waiter
             if waiter and not waiter.done():
                 if exc is None:
-                    waiter.set_result(
+                    waiter.set_exception(
                         TarantoolNotConnectedError('Lost connection to Tarantool'))
                 else:
                     waiter.set_exception(exc)

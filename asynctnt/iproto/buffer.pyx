@@ -12,7 +12,6 @@ from cpython.ref cimport PyObject
 from libc.string cimport memcpy
 from libc.stdint cimport uint32_t, uint64_t, int64_t
 
-from asynctnt.exceptions import TarantoolRequestError
 from asynctnt.log import logger
 
 cdef class Memory:
@@ -283,7 +282,7 @@ cdef class WriteBuffer:
             return self._encode_dict(p, o)
 
         else:
-            raise TarantoolRequestError(
+            raise TypeError(
                 'Type `{}` is not supported for encoding'.format(type(o)))
 
     cdef tnt.tnt_update_op_kind _op_type_to_kind(self, char *str, ssize_t len):
@@ -338,12 +337,12 @@ cdef class WriteBuffer:
 
         for operation in operations:
             if not isinstance(operation, (list, tuple)):
-                raise TarantoolRequestError(
+                raise TypeError(
                     'Single operation must be a tuple or list')
 
             op_len = <uint32_t>cpython.list.PyList_GET_SIZE(operation)
             if op_len < 3:
-                raise TarantoolRequestError(
+                raise IndexError(
                     'Operation length must be at least 3')
 
             op_type_str = operation[0]
@@ -352,20 +351,23 @@ cdef class WriteBuffer:
             elif isinstance(op_type_str, bytes):
                 str_temp = op_type_str
             else:
-                raise TarantoolRequestError(
+                raise TypeError(
                     'Operation type must of a str or bytes type')
 
             cpython.bytes.PyBytes_AsStringAndSize(str_temp,
                                                   &op_str_c, &op_str_len)
 
             op_kind = self._op_type_to_kind(op_str_c, op_str_len)
+            if not isinstance(operation[1], int):
+                raise TypeError(
+                        'Operation field_no must be of int type')
             field_no = <uint64_t>int(operation[1])
 
             if op_kind == tnt.OP_UPD_ARITHMETIC \
                     or op_kind == tnt.OP_UPD_DELETE:
                 op_argument = operation[2]
                 if not isinstance(op_argument, int):
-                    raise TarantoolRequestError(
+                    raise TypeError(
                         'int argument required for '
                         'Arithmetic and Delete operations'
                     )
@@ -395,7 +397,7 @@ cdef class WriteBuffer:
 
             elif op_kind == tnt.OP_UPD_SPLICE:
                 if op_len < 5:
-                    raise TarantoolRequestError(
+                    raise IndexError(
                         'Splice operation must have length of 5, '
                         'but got: {}'.format(op_len)
                     )
@@ -404,9 +406,9 @@ cdef class WriteBuffer:
                 splice_offset_obj = operation[3]
                 op_argument = operation[4]
                 if not isinstance(splice_position_obj, int):
-                    raise TarantoolRequestError('Splice position must be int')
+                    raise TypeError('Splice position must be int')
                 if not isinstance(splice_offset_obj, int):
-                    raise TarantoolRequestError('Splice offset must be int')
+                    raise TypeError('Splice offset must be int')
 
                 splice_position = <uint32_t>splice_position_obj
                 splice_offset = <uint32_t>splice_offset_obj
@@ -425,8 +427,8 @@ cdef class WriteBuffer:
                 p = mp_encode_uint(p, splice_offset)
                 p = self._encode_obj(p, op_argument)
             else:
-                raise TarantoolRequestError(
-                    'Unknown update operation `{}`'.format(op_type_str))
+                raise TypeError(
+                    'Unknown update operation type `{}`'.format(op_type_str))
         return p
 
     cdef void encode_request_call(self, str func_name, list args) except *:

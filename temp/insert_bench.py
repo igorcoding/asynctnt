@@ -15,9 +15,9 @@ async def insert_job(tnt):
 
     for it in range(2500):
         cnt += 1
-        r = await tnt.insert(512, (cnt, cnt))
-        
-        
+        r = await tnt.insert(512, [cnt, cnt])
+
+
 async def main():
     conn = asynctnt.Connection(host='127.0.0.1', port=3303)
     await conn.connect()
