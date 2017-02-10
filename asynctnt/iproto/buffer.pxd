@@ -2,16 +2,6 @@ from libc.stdint cimport uint32_t, uint64_t, int64_t
 
 cimport tnt
 
-cdef class Memory:
-    cdef:
-        char *buf
-        ssize_t length
-
-    cdef as_bytes(self)
-
-    @staticmethod
-    cdef inline Memory new(char *buf, ssize_t length)
-
 
 cdef class WriteBuffer:
     cdef:

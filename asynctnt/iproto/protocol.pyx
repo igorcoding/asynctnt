@@ -14,6 +14,7 @@ include "rbuffer.pyx"
 include "request.pyx"
 include "response.pyx"
 include "schema.pyx"
+include "db.pyx"
 
 include "coreproto.pyx"
 
@@ -59,6 +60,7 @@ cdef class BaseProtocol(CoreProtocol):
 
         self._sync = 0
         self._schema = None
+        self._db = self._create_db()
 
         try:
             self.create_future = self.loop.create_future
@@ -92,8 +94,8 @@ cdef class BaseProtocol(CoreProtocol):
             self._set_connection_ready()
 
     cdef void _do_auth(self, str username, str password):
-        fut = self._execute(
-            request_auth(self.encoding, self._next_sync(),
+        fut = self.execute(
+            request_auth(self.encoding, self.next_sync(),
                          self.salt, username, password),
             0  # timeout
         )
@@ -151,8 +153,8 @@ cdef class BaseProtocol(CoreProtocol):
                 self._set_connection_error(e)
                 fut.set_exception(e)
 
-        fut_vspace = self.select(SPACE_VSPACE)
-        fut_vindex = self.select(SPACE_VINDEX)
+        fut_vspace = self._db.select(SPACE_VSPACE)
+        fut_vindex = self._db.select(SPACE_VINDEX)
         gather_fut = asyncio.gather(fut_vspace, fut_vindex,
                                     return_exceptions=True,
                                     loop=self.loop)
@@ -171,16 +173,17 @@ cdef class BaseProtocol(CoreProtocol):
         if self.on_connection_lost_cb:
             self.on_connection_lost_cb(exc)
 
-    cdef uint64_t _next_sync(self):
+    cdef uint64_t next_sync(self):
         self._sync += 1
         return self._sync
 
     def _on_request_timeout(self, waiter):
-        cdef Request req = waiter._req
+        cdef Request req
 
         if waiter.done():
             return
 
+        req = waiter._req
         req.timeout_handle.cancel()
         req.timeout_handle = None
         waiter.set_exception(
@@ -209,7 +212,16 @@ cdef class BaseProtocol(CoreProtocol):
             fut.add_done_callback(self._on_request_completed_cb)
         return fut
 
-    cdef object _execute(self, Request req, float timeout):
+    cdef Db _create_db(self):
+        return Db.new(self)
+
+    def create_db(self):
+        return self._create_db()
+
+    def get_common_db(self):
+        return self._db
+
+    cdef object execute(self, Request req, float timeout):
         if self.con_state == CONNECTION_BAD:
             raise TarantoolNotConnectedError('Tarantool is not connected')
 
@@ -218,7 +230,7 @@ cdef class BaseProtocol(CoreProtocol):
 
         return self._new_waiter_for_request(req, timeout)
 
-    cdef uint32_t _transform_iterator(self, iterator) except *:
+    cdef uint32_t transform_iterator(self, iterator) except *:
         if isinstance(iterator, int):
             return iterator
         if isinstance(iterator, Iterator):
@@ -229,7 +241,7 @@ cdef class BaseProtocol(CoreProtocol):
             raise TypeError('Iterator is of unsupported type '
                             '(asynctnt.Iterator, int, str)')
 
-    cdef uint32_t _transform_space(self, space) except *:
+    cdef uint32_t transform_space(self, space) except *:
         if isinstance(space, str):
             if self._schema is None:
                 raise TarantoolSchemaError('Schema not fetched')
@@ -240,7 +252,7 @@ cdef class BaseProtocol(CoreProtocol):
             return sp.sid
         return space
 
-    cdef uint32_t _transform_index(self, space, index) except *:
+    cdef uint32_t transform_index(self, space, index) except *:
         if isinstance(index, str):
             if self._schema is None:
                 raise TarantoolSchemaError('Schema not fetched')
@@ -254,83 +266,6 @@ cdef class BaseProtocol(CoreProtocol):
 
     def refetch_schema(self):
         return self._do_fetch_schema()
-
-    def ping(self, timeout=0):
-        return self._execute(
-            request_ping(self.encoding, self._next_sync()),
-            timeout
-        )
-
-    def call16(self, func_name, args=None, timeout=0):
-        return self._execute(
-            request_call16(self.encoding, self._next_sync(), func_name, args),
-            timeout
-        )
-
-    def call(self, func_name, args=None, timeout=0):
-        return self._execute(
-            request_call(self.encoding, self._next_sync(), func_name, args),
-            timeout
-        )
-
-    def eval(self, expression, args=None, timeout=0):
-        return self._execute(
-            request_eval(self.encoding, self._next_sync(), expression, args),
-            timeout
-        )
-
-    def select(self, space, key=None,
-                 offset=0, limit=0xffffffff, index=0, iterator=0, timeout=0):
-        space = self._transform_space(space)
-        index = self._transform_index(space, index)
-        iterator = self._transform_iterator(iterator)
-
-        return self._execute(
-            request_select(self.encoding, self._next_sync(),
-                           space, index, key, offset, limit, iterator),
-            timeout
-        )
-
-    def insert(self, space, t, replace=False, timeout=0):
-        space = self._transform_space(space)
-
-        return self._execute(
-            request_insert(self.encoding, self._next_sync(),
-                           space, t, replace),
-            timeout
-        )
-
-    def replace(self, space, t, timeout=0):
-        return self.insert(space, t, replace=True, timeout=timeout)
-
-    def delete(self, space, key, index=0, timeout=0):
-        space = self._transform_space(space)
-        index = self._transform_index(space, index)
-
-        return self._execute(
-            request_delete(self.encoding, self._next_sync(),
-                           space, index, key),
-            timeout
-        )
-
-    def update(self, space, key, operations, index=0, timeout=0):
-        space = self._transform_space(space)
-        index = self._transform_index(space, index)
-
-        return self._execute(
-            request_update(self.encoding, self._next_sync(),
-                           space, index, key, operations),
-            timeout
-        )
-
-    def upsert(self, space, t, operations, timeout=0):
-        space = self._transform_space(space)
-
-        return self._execute(
-            request_upsert(self.encoding, self._next_sync(),
-                           space, t, operations),
-            timeout
-        )
 
 
 class Protocol(BaseProtocol, asyncio.Protocol):

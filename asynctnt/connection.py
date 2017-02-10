@@ -8,7 +8,6 @@ from asynctnt.exceptions import TarantoolDatabaseError, \
 from asynctnt.iproto import protocol
 from asynctnt.log import logger
 
-
 __all__ = (
     'Connection', 'connect'
 )
@@ -27,7 +26,8 @@ class Connection:
         '_host', '_port', '_username', '_password', '_fetch_schema',
         '_encoding', '_connect_timeout', '_reconnect_timeout',
         '_request_timeout', '_loop', '_state', '_state_prev',
-        '_transport', '_protocol', '_disconnect_waiter', '_reconnect_coro'
+        '_transport', '_protocol', '_db',
+        '_disconnect_waiter', '_reconnect_coro'
     )
 
     def __init__(self, *,
@@ -57,6 +57,7 @@ class Connection:
 
         self._transport = None
         self._protocol = None
+        self._db = None
 
         self._state = ConnectionState.DISCONNECTED
         self._state_prev = ConnectionState.DISCONNECTED
@@ -162,6 +163,7 @@ class Connection:
 
                 self._transport = tr
                 self._protocol = pr
+                self._db = self._protocol.get_common_db()
                 self._reconnect_coro = None
                 return
             except TarantoolDatabaseError as e:
@@ -221,6 +223,7 @@ class Connection:
             self._transport.close()
             self._transport = None
             self._protocol = None
+            self._db = None
         else:
             waiter.set_result(True)
             self._set_state(ConnectionState.DISCONNECTED)
@@ -307,39 +310,39 @@ class Connection:
     #     return self._protocol.__getattribute__(item)
 
     def ping(self, *, timeout=0):
-        return self._protocol.ping(timeout=timeout)
+        return self._db.ping(timeout=timeout)
 
     def call16(self, func_name, args=None, *, timeout=0):
-        return self._protocol.call16(func_name, args,
-                                     timeout=timeout)
+        return self._db.call16(func_name, args,
+                               timeout=timeout)
 
     def call(self, func_name, args=None, *, timeout=0):
-        return self._protocol.call(func_name, args,
-                                   timeout=timeout)
+        return self._db.call(func_name, args,
+                             timeout=timeout)
 
     def eval(self, expression, args=None, *, timeout=0):
-        return self._protocol.eval(expression, args,
-                                   timeout=timeout)
+        return self._db.eval(expression, args,
+                             timeout=timeout)
 
     def select(self, space, key=None, **kwargs):
-        return self._protocol.select(space, key, **kwargs)
+        return self._db.select(space, key, **kwargs)
 
     def insert(self, space, t, *, replace=False, timeout=0):
-        return self._protocol.insert(space, t,
-                                     replace=replace, timeout=timeout)
+        return self._db.insert(space, t,
+                               replace=replace, timeout=timeout)
 
     def replace(self, space, t, *, timeout=0):
-        return self._protocol.replace(space, t,
-                                      timeout=timeout)
+        return self._db.replace(space, t,
+                                timeout=timeout)
 
     def delete(self, space, key, **kwargs):
-        return self._protocol.delete(space, key, **kwargs)
+        return self._db.delete(space, key, **kwargs)
 
     def update(self, space, key, operations, **kwargs):
-        return self._protocol.update(space, key, operations, **kwargs)
+        return self._db.update(space, key, operations, **kwargs)
 
     def upsert(self, space, t, operations, **kwargs):
-        return self._protocol.upsert(space, t, operations, **kwargs)
+        return self._db.upsert(space, t, operations, **kwargs)
 
 
 def _create_future(loop):

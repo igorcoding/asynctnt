@@ -14,18 +14,6 @@ from libc.stdint cimport uint32_t, uint64_t, int64_t
 
 from asynctnt.log import logger
 
-cdef class Memory:
-    cdef as_bytes(self):
-        return cpython.bytes.PyBytes_FromStringAndSize(self.buf, self.length)
-
-    @staticmethod
-    cdef inline Memory new(char *buf, ssize_t length):
-        cdef Memory mem
-        mem = Memory.__new__(Memory)
-        mem.buf = buf
-        mem.length = length
-        return mem
-
 
 # noinspection PyUnresolvedReferences
 # noinspection PyAttributeOutsideInit
