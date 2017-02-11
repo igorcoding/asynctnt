@@ -8,8 +8,7 @@ import shutil
 import string
 
 import functools
-import psutil
-
+import yaml
 
 __all__ = (
     'TarantoolInstanceProtocol', 'TarantoolInstance'
@@ -84,10 +83,13 @@ class TarantoolInstance:
                  slab_alloc_arena=0.1,
                  wal_mode='none',
                  root=None,
+                 specify_work_dir=True,
                  cleanup=True,
                  initlua_template=None,
                  applua='-- app.lua --',
                  timeout=5.,
+                 command_to_run='tarantool',
+                 command_args=None,
                  loop=None
                  ):
         """
@@ -110,6 +112,7 @@ class TarantoolInstance:
         :param slab_alloc_arena: Tarantool's slab_alloc_arena (default = 0.1)
         :param wal_mode: Tarantool's wal_mode (default = 'none')
         :param root: Tarantool's work_dir location
+        :param specify_work_dir: Specify or not the workdir of Tarantool
         :param cleanup: do cleanup or not
         :param initlua_template: The initial init.lua template
                                  (default can be found in
@@ -118,6 +121,8 @@ class TarantoolInstance:
                        (default = '-- app.lua --')
         :param timeout: Timeout in seconds - how much to wait for tarantool
                         to become active
+        :param command_to_run: command exe
+        :param command_args: command args
         :param loop: loop instance
         """
         self._loop = loop or asyncio.get_event_loop()
@@ -132,11 +137,14 @@ class TarantoolInstance:
         self._slab_alloc_arena = slab_alloc_arena
         self._wal_mode = wal_mode
         self._root = root or self._generate_root_folder_name()
+        self._specify_work_dir = specify_work_dir
         self._cleanup = cleanup
 
         self._initlua_template = initlua_template or \
             self._create_initlua_template()
         self._applua = applua
+        self._command_to_run = command_to_run
+        self._command_args = command_args
 
         self._timeout = timeout
 
@@ -161,7 +169,7 @@ class TarantoolInstance:
         cwd = os.getcwd()
         path = None
         while path is None or os.path.isdir(path):
-            folder_name = '__tnt__' + self._title + \
+            folder_name = '__tnt__' + self._host + '_' + str(self._port) + \
                           '_' + self._random_string(10)
             path = os.path.join(cwd, folder_name)
         return path
@@ -174,10 +182,11 @@ class TarantoolInstance:
               custom_proc_title = "${custom_proc_title}",
               slab_alloc_arena = ${slab_alloc_arena},
               replication_source = ${replication_source},
-              work_dir = "${work_dir}",
+              work_dir = ${work_dir},
               log_level = ${log_level}
             }
-            box.schema.user.grant("guest", "read,write,execute", "universe")
+            box.schema.user.grant("guest", "read,write,execute", "universe", nil,
+                                  {if_not_exists = true})
             require('console').listen("${host}:${console_port}")
             ${applua}
         """
@@ -192,7 +201,7 @@ class TarantoolInstance:
             'custom_proc_title': self._title,
             'slab_alloc_arena': self._slab_alloc_arena,
             'replication_source': 'nil' if not self._replication_source else '"{}"'.format(self._replication_source),  # nopep8
-            'work_dir': self._root,
+            'work_dir': '"' + self._root + '"' if self._specify_work_dir else 'nil',
             'log_level': self._log_level,
             'applua': self._applua if self._applua else ''
         }
@@ -251,6 +260,25 @@ class TarantoolInstance:
     async def wait_stopped(self):
         return await self._stop_event.wait()
 
+    async def command(self, cmd, print_greeting=True):
+        reader, writer = await asyncio.open_connection(
+            self._host, self._console_port, loop=self._loop
+        )
+
+        greeting = (await reader.read(128)).decode()
+        if print_greeting:
+            self._logger.info(greeting)
+
+        try:
+            if isinstance(cmd, str):
+                cmd = cmd.encode('utf-8')
+            writer.write(cmd + b'\n')
+            data = (await reader.readuntil(b'...\n')).decode()
+            data = yaml.load(data)
+            return data
+        finally:
+            writer.close()
+
     async def start(self):
         self._logger.info(
             'Starting Tarantool instance ({})'.format(self._title))
@@ -259,28 +287,36 @@ class TarantoolInstance:
 
         factory = functools.partial(
             TarantoolInstanceProtocol, self, self._on_process_exit)
+        if not self._command_args:
+            args = [initlua_path]
+        else:
+            args = self._command_args
         self._transport, self._protocol = await self._loop.subprocess_exec(
             factory,
-            'tarantool', initlua_path,
+            self._command_to_run, *args,
             stdin=None,
-            stderr=asyncio.subprocess.PIPE,
+            stderr=asyncio.subprocess.PIPE
         )
 
-        procinfo = psutil.Process(self.pid)
         interval = 0.1
         attempts = math.ceil(self._timeout / interval)
         while attempts > 0:
-            if self._protocol is None or self._protocol.returncode is not None:
+            if self._protocol is None or \
+                            self._protocol.returncode is not None:
                 raise RuntimeError(
                     '{} exited unexpectedly with exit code {}'.format(
                         self.fingerprint, self._last_return_code)
                 )
-            cmdline = procinfo.cmdline()
-            if cmdline:
-                cmdline = cmdline[0]
-                if 'running' in cmdline:
-                    self._logger.info('Moved to the running state')
-                    break
+            try:
+                status = await self.command('box.info.status',
+                                            print_greeting=False)
+                if status:
+                    status = status[0]
+                    if status == 'running':
+                        self._logger.info('Moved to the running state')
+                        break
+            except OSError:
+                pass
             await asyncio.sleep(interval, loop=self._loop)
             attempts -= 1
         else:
@@ -332,3 +368,47 @@ class TarantoolInstance:
 
     def __del__(self):
         self.terminate()
+
+
+class TarantoolDockerInstance(TarantoolInstance):
+    def __init__(self, *,
+                 version='1.7',
+                 host='0.0.0.0',
+                 port=3301,
+                 console_port=3302,
+                 replication_source=None,
+                 title=None,
+                 logger=None,
+                 log_level=5,
+                 slab_alloc_arena=0.1,
+                 wal_mode='none',
+                 initlua_template=None,
+                 applua='-- app.lua --',
+                 timeout=10.,
+                 loop=None):
+        super().__init__(host=host, port=port, console_port=console_port,
+                         replication_source=replication_source,
+                         title=title, logger=logger, log_level=log_level,
+                         slab_alloc_arena=slab_alloc_arena,
+                         wal_mode=wal_mode,
+                         root=None, specify_work_dir=False, cleanup=True,
+                         initlua_template=initlua_template,
+                         applua=applua, timeout=timeout,
+                         loop=loop)
+        self._docker_tarantool_version = version
+
+        cmd = "docker run --rm " \
+              "-p {port}:{port} " \
+              "-p {console_port}:{console_port} " \
+              "-v {root}:/opt/tarantool " \
+              "tarantool/tarantool:{version} " \
+              "tarantool /opt/tarantool/init.lua"
+        cmd = cmd.format(
+            port=self.port,
+            console_port=self.console_port,
+            root=self._root,
+            version=self._docker_tarantool_version
+        )
+        args = cmd.split(' ')
+        self._command_to_run = args[0]
+        self._command_args = args[1:]

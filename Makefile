@@ -41,6 +41,18 @@ test:
 	#USE_UVLOOP=1 $(PYTHON) -m unittest discover -s tests
 
 
+test_16:
+	TARANTOOL_DOCKER_VERSION=1.6 PYTHONASYNCIODEBUG=1 $(PYTHON) -m unittest discover -s tests
+	TARANTOOL_DOCKER_VERSION=1.6 $(PYTHON) -m unittest discover -s tests
+	#TARANTOOL_DOCKER_VERSION=1.6 USE_UVLOOP=1 $(PYTHON) -m unittest discover -s tests
+
+
+test_17:
+	TARANTOOL_DOCKER_VERSION=1.7 PYTHONASYNCIODEBUG=1 $(PYTHON) -m unittest discover -s tests
+	TARANTOOL_DOCKER_VERSION=1.7 $(PYTHON) -m unittest discover -s tests
+	#TARANTOOL_DOCKER_VERSION=1.7 USE_UVLOOP=1 $(PYTHON) -m unittest discover -s tests
+
+
 coverage: debug
 	pip install -e .
 	coverage run run_tests.py

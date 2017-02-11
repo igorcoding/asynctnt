@@ -9,6 +9,11 @@ from tests import BaseTarantoolTestCase
 
 
 class CallTestCase(BaseTarantoolTestCase):
+    LOGGING_LEVEL = logging.DEBUG
+
+    def has_new_call(self):
+        return self.conn.version >= (1, 7)
+
     async def test__call_basic(self):
         res = await self.conn.call('func_hello')
 
@@ -19,11 +24,14 @@ class CallTestCase(BaseTarantoolTestCase):
 
     async def test__call_basic_bare(self):
         res = await self.conn.call('func_hello_bare')
+        cmp = ['hello']
 
         self.assertIsInstance(res, Response, 'Got call response')
         self.assertEqual(res.code, 0, 'success')
         self.assertGreater(res.sync, 0, 'sync > 0')
-        self.assertListEqual(res.body, ['hello'], 'Body ok')
+        if not self.has_new_call():
+            cmp = [cmp]
+        self.assertListEqual(res.body, cmp, 'Body ok')
 
     async def test__call_unknown_function(self):
         with self.assertRaises(TarantoolDatabaseError) as ctx:
@@ -38,9 +46,12 @@ class CallTestCase(BaseTarantoolTestCase):
 
     async def test__call_with_param_bare(self):
         res = await self.conn.call('func_param_bare', ['myparam'])
+        cmp = ['myparam']
+        if not self.has_new_call():
+            cmp = [cmp]
 
         self.assertIsInstance(res, Response, 'Got call response')
-        self.assertListEqual(res.body, ['myparam'], 'Body ok')
+        self.assertListEqual(res.body, cmp, 'Body ok')
 
     async def test__call_func_name_invalid_type(self):
         with self.assertRaises(TypeError):
@@ -75,8 +86,11 @@ class CallTestCase(BaseTarantoolTestCase):
 
     async def test__call_complex_param_bare(self):
         p, cmp = get_complex_param(encoding=self.conn.encoding)
+        cmp = [cmp]
         res = await self.conn.call('func_param_bare', [p])
-        self.assertDictEqual(res.body[0], cmp, 'Body ok')
+        if not self.has_new_call():
+            cmp = [cmp]
+        self.assertListEqual(res.body, cmp, 'Body ok')
 
     async def test__call_timeout_in_time(self):
         try:

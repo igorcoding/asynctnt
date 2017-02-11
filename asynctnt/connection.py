@@ -175,6 +175,7 @@ class Connection:
                 self._protocol = pr
                 self._db = self._protocol.get_common_db()
                 self._reconnect_coro = None
+                self._normalize_api()
                 return
             except TarantoolDatabaseError as e:
                 if e.code in {ErrorCode.ER_LOADING}:
@@ -361,6 +362,10 @@ class Connection:
 
     def upsert(self, space, t, operations, **kwargs):
         return self._db.upsert(space, t, operations, **kwargs)
+
+    def _normalize_api(self):
+        if (1, 6) <= self.version < (1, 7):
+            Connection.call = Connection.call16
 
 
 def _create_future(loop):

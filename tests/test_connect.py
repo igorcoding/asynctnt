@@ -139,7 +139,7 @@ class ConnectTestCase(BaseTarantoolTestCase):
 
         await self.tnt.stop()
         await self.tnt.start()
-        await self.sleep(0.2)
+        await self.sleep(0.5)
         try:
             await conn.ping()
         except Exception as e:

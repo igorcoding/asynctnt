@@ -10,8 +10,7 @@ import unittest
 import sys
 
 import asynctnt
-from asynctnt.instance import TarantoolInstance
-
+from asynctnt.instance import TarantoolInstance, TarantoolDockerInstance
 
 __all__ = (
     'TestCase', 'TarantoolTestCase'
@@ -125,11 +124,21 @@ class TarantoolTestCase(TestCase):
         TestCase.setUpClass()
         logging.basicConfig(level=cls.LOGGING_LEVEL,
                             stream=cls.LOGGING_STREAM)
-        tnt = TarantoolInstance(
-            applua=cls.read_applua(),
-            cleanup=cls.TNT_CLEANUP,
-            loop=cls.loop
-        )
+        tarantool_docker_version = os.getenv('TARANTOOL_DOCKER_VERSION')
+        if tarantool_docker_version:
+            print('Running tarantool in docker. Version = {}'.format(
+                tarantool_docker_version))
+            tnt = TarantoolDockerInstance(
+                applua=cls.read_applua(),
+                version=tarantool_docker_version,
+                loop=cls.loop
+            )
+        else:
+            tnt = TarantoolInstance(
+                applua=cls.read_applua(),
+                cleanup=cls.TNT_CLEANUP,
+                loop=cls.loop
+            )
         cls.loop.run_until_complete(tnt.start())
         cls.tnt = tnt
 

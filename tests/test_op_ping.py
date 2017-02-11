@@ -37,7 +37,7 @@ class PingTestCase(BaseTarantoolTestCase):
             await self.conn.ping()
 
         await self.tnt.start()
-        await self.sleep(0.5)
+        await self.sleep(1)
 
         try:
             await self.conn.ping()
