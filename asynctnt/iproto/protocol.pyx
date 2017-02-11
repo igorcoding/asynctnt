@@ -171,7 +171,7 @@ cdef class BaseProtocol(CoreProtocol):
         fut_vspace = self._db.select(SPACE_VSPACE)
         fut_vindex = self._db.select(SPACE_VINDEX)
         gather_fut = asyncio.gather(fut_vspace, fut_vindex,
-                                    return_exceptions=True,
+                                    return_exceptions=False,
                                     loop=self.loop)
         gather_fut.add_done_callback(on_fetch)
         return fut
@@ -218,6 +218,7 @@ cdef class BaseProtocol(CoreProtocol):
         fut = self.create_future()
         fut._req = req  # to be able to retrieve request after done()
         req.waiter = fut
+
 
         timeout = timeout or self.request_timeout
         if timeout is not None and timeout > 0:

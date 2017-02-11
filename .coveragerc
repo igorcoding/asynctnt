@@ -1,0 +1,12 @@
+[run]
+branch = True
+plugins = Cython.Coverage
+source =
+    asynctnt/
+    tests/
+omit =
+    *.pxd
+
+[paths]
+source =
+   asynctnt

@@ -1,4 +1,4 @@
-.PHONY: build debug test quicktest clean annotate all
+.PHONY: build debug test coverage clean annotate all
 
 
 PYTHON ?= python
@@ -27,12 +27,12 @@ build:
 	$(PYTHON) setup.py build_ext --inplace --cython-always
 
 
-debug:
-	$(PYTHON) setup.py build_ext --inplace \
+debug: clean
+	$(PYTHON) setup.py build_ext --inplace --debug \
 		--cython-always \
 		--cython-annotate \
-		--cython-directives="linetrace=True"
-		#--define CYTHON_TRACE,CYTHON_TRACE_NOGIL
+		--cython-directives="linetrace=True" \
+		--define CYTHON_TRACE,CYTHON_TRACE_NOGIL
 
 
 test:
@@ -41,8 +41,11 @@ test:
 	#USE_UVLOOP=1 $(PYTHON) -m unittest discover -s tests
 
 
-quicktest:
-	$(PYTHON) -m unittest discover -s tests
+coverage: debug
+	pip install -e .
+	coverage run run_tests.py
+	./scripts/run_until_success.sh coverage report -m
+	./scripts/run_until_success.sh coverage html
 
 
 sdist: clean build test

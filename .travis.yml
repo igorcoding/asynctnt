@@ -18,6 +18,6 @@ before_install:
   - sudo tarantoolctl stop example
 install:
   - pip install -r requirements.txt
-  - make
+  - pip install -e .
 script:
   - make test

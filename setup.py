@@ -21,12 +21,6 @@ def find_version():
             return re.match(
                 r"""__version__\s*=\s*(['"])([^'"]+)\1""", line).group(2)
 
-#
-# def discover_tests():
-#     test_loader = unittest.TestLoader()
-#     test_suite = test_loader.discover('tests', pattern='test_*.py')
-#     return test_suite
-
 
 class build_ext(_build_ext.build_ext):
     user_options = _build_ext.build_ext.user_options + [
@@ -195,5 +189,5 @@ setup(
     ],
     description="A fast Tarantool Database connector for Python/asyncio.",
     long_description=open("README.md").read(),
-    # test_suite='setup.discover_tests'
+    test_suite='run_tests.discover_tests'
 )

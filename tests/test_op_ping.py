@@ -11,6 +11,7 @@ from tests import BaseTarantoolTestCase
 
 class PingTestCase(BaseTarantoolTestCase):
     SMALL_TIMEOUT = 0.00000000001
+    LOGGING_LEVEL = logging.DEBUG
 
     async def test__ping_basic(self):
         res = await self.conn.ping()
