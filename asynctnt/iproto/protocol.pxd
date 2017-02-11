@@ -20,6 +20,7 @@ cdef class BaseProtocol(CoreProtocol):
         str username
         str password
         bint fetch_schema
+        bint auto_refetch_schema
         object connected_fut
         object on_connected_lost_cb
 
@@ -28,6 +29,7 @@ cdef class BaseProtocol(CoreProtocol):
 
         uint64_t _sync
         Schema _schema
+        int64_t _schema_id
         Db _db
 
     cdef void _set_connection_ready(self)

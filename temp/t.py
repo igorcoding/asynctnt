@@ -40,6 +40,7 @@ async def main(loop):
             asynctnt.connect(host=tnt.host, port=3303,
                              username='t1', password='t1',
                              fetch_schema=True,
+                             auto_refetch_schema=True,
                              reconnect_timeout=1, request_timeout=20,
                              encoding='utf-8',
                              loop=loop),
@@ -66,8 +67,22 @@ async def main(loop):
         # print(res.body)
         # res = await conn.eval('return box.cfg')
         # res = await conn.call('test', timeout=0)
-        res = await conn.call('long', [15])
+        res = await conn.call('long', [5])
         print(res)
+        print(res.body)
+        print(res.schema_id)
+
+        res = await conn.call('long', [2])
+        print(res)
+        if res is not None:
+            print(res.body)
+            print(res.schema_id)
+
+        res = await conn.call('long', [5])
+        print(res)
+        if res is not None:
+            print(res.body)
+            print(res.schema_id)
         # res = await conn.refetch_schema()
         # res = await conn.insert('tester', (2, 'hello', 3))
         # res = await conn.update('tester', [2], [(':', 1, 1, 3, 'yo!')])
@@ -104,7 +119,7 @@ async def main(loop):
         print('all')
         # await asyncio.sleep(2)
     except Exception as e:
-        logging.info(str(e), exc_info=e)
+        logging.error(str(e), exc_info=e)
     finally:
         if conn is not None:
             await conn.disconnect()

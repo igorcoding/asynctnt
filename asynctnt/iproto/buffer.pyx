@@ -50,6 +50,13 @@ cdef class WriteBuffer:
     def __releasebuffer__(self, Py_buffer *buffer):
         self._view_count -= 1
 
+    @staticmethod
+    cdef WriteBuffer new(bytes encoding=None):
+        cdef WriteBuffer buf
+        buf = WriteBuffer.__new__(WriteBuffer)
+        buf._encoding = encoding
+        return buf
+
     cdef inline _check_readonly(self):
         if self._view_count:
             raise BufferError('the buffer is in read-only mode')
@@ -95,23 +102,36 @@ cdef class WriteBuffer:
             self._buf = new_buf
             self._size = new_size
 
-    @staticmethod
-    cdef WriteBuffer new(bytes encoding):
-        cdef WriteBuffer buf
-        buf = WriteBuffer.__new__(WriteBuffer)
-        buf._encoding = encoding
-        return buf
+    cdef void write_buffer(self, WriteBuffer buf):
+        if not buf._length:
+            return
 
-    cdef void write_header(self, uint64_t sync, tnt.tp_request_type op):
-        cdef char *p = NULL
+        self.ensure_allocated(buf._length)
+        memcpy(self._buf + self._length,
+               <void*>buf._buf,
+               <size_t>buf._length)
+        self._length += buf._length
+
+    cdef void write_header(self, uint64_t sync, tnt.tp_request_type op,
+                           int64_t schema_id=-1):
+        cdef:
+            char *p = NULL
+            uint32_t map_size
         self.ensure_allocated(HEADER_CONST_LEN)
 
+        map_size = 2 + <uint32_t>(schema_id > 0)
+
         p = &self._buf[self._length]
-        p = mp_encode_map(&p[5], 2)
+        p = mp_encode_map(&p[5], map_size)
         p = mp_encode_uint(p, tnt.TP_CODE)
         p = mp_encode_uint(p, <uint32_t>op)
         p = mp_encode_uint(p, tnt.TP_SYNC)
         p = mp_encode_uint(p, sync)
+
+        if schema_id > 0:
+            p = mp_encode_uint(p, tnt.TP_SCHEMA_ID)
+            p = mp_encode_uint(p, schema_id)
+
         self._length += (p - self._buf)
 
     cdef void write_length(self):

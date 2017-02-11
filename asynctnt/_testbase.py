@@ -151,6 +151,7 @@ class TarantoolTestCase(TestCase):
     async def tnt_connect(self, *,
                           username=None, password=None,
                           fetch_schema=True,
+                          auto_refetch_schema=False,
                           connect_timeout=None, reconnect_timeout=1/3,
                           request_timeout=None, encoding='utf-8'):
         self.conn = asynctnt.Connection(
@@ -159,6 +160,7 @@ class TarantoolTestCase(TestCase):
             username=username,
             password=password,
             fetch_schema=fetch_schema,
+            auto_refetch_schema=auto_refetch_schema,
             connect_timeout=connect_timeout,
             reconnect_timeout=reconnect_timeout,
             request_timeout=request_timeout,

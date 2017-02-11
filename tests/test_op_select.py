@@ -110,7 +110,7 @@ class SelectTestCase(BaseTarantoolTestCase):
         data = await self._fill_data()
         next_id = data[-1][0] + 1
         next_txt = data[-1][1]
-        self.conn.insert(self.TESTER_SPACE_ID, [next_id, next_txt])
+        await self.conn.insert(self.TESTER_SPACE_ID, [next_id, next_txt])
         data.append([next_id, next_txt])
 
         res = await self.conn.select(self.TESTER_SPACE_NAME, [next_txt],

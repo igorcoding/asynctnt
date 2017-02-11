@@ -27,7 +27,9 @@ class ConnectTestCase(BaseTarantoolTestCase):
 
     async def test__connect_no_schema(self):
         conn = asynctnt.Connection(host=self.tnt.host, port=self.tnt.port,
-                                   reconnect_timeout=0, fetch_schema=False,
+                                   reconnect_timeout=0,
+                                   fetch_schema=False,
+                                   auto_refetch_schema=False,
                                    loop=self.loop)
         await conn.connect()
         self.assertIsNotNone(conn._transport)
@@ -55,7 +57,9 @@ class ConnectTestCase(BaseTarantoolTestCase):
     async def test__connect_auth_no_schema(self):
         conn = asynctnt.Connection(host=self.tnt.host, port=self.tnt.port,
                                    username='t1', password='t1',
-                                   fetch_schema=False, reconnect_timeout=0,
+                                   fetch_schema=False,
+                                   auto_refetch_schema=False,
+                                   reconnect_timeout=0,
                                    loop=self.loop)
         await conn.connect()
         self.assertIsNotNone(conn._transport)

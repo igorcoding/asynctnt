@@ -34,7 +34,7 @@ cdef class Response:
         return yaml.dump(self.body, allow_unicode=True)
 
 
-cdef object _decode_obj(const char** p, bytes encoding=b'utf-8'):
+cdef object _decode_obj(const char** p, bytes encoding):
     cdef:
         uint32_t i
         mp_type obj_type
@@ -110,7 +110,7 @@ cdef object _decode_obj(const char** p, bytes encoding=b'utf-8'):
         return None
 
 
-cdef list _response_parse_body_data(const char *b, bytes encoding=b'utf-8'):
+cdef list _response_parse_body_data(const char *b, bytes encoding):
     cdef:
         uint32_t size
         uint32_t tuple_size
@@ -125,7 +125,7 @@ cdef list _response_parse_body_data(const char *b, bytes encoding=b'utf-8'):
     return tuples
 
 
-cdef Response response_parse(const char *buf, uint32_t buf_len, bytes encoding=b'utf-8'):
+cdef Response response_parse(const char *buf, uint32_t buf_len, bytes encoding):
     cdef:
         const char *b
         uint32_t size

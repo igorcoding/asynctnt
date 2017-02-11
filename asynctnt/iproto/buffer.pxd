@@ -16,11 +16,16 @@ cdef class WriteBuffer:
 
         bytes _encoding
 
+    @staticmethod
+    cdef WriteBuffer new(bytes encoding=*)
+
     cdef inline _check_readonly(self)
     cdef inline len(self)
     cdef inline void ensure_allocated(self, ssize_t extra_length)
     cdef void _reallocate(self, ssize_t new_size)
-    cdef void write_header(self, uint64_t sync, tnt.tp_request_type op)
+    cdef void write_buffer(self, WriteBuffer buf)
+    cdef void write_header(self, uint64_t sync, tnt.tp_request_type op,
+                           int64_t schema_id=*)
     cdef void write_length(self)
 
     cdef char *_encode_nil(self, char *p) except NULL
@@ -60,6 +65,3 @@ cdef class WriteBuffer:
     cdef void encode_request_auth(self,
                                   bytes username,
                                   bytes scramble) except *
-
-    @staticmethod
-    cdef WriteBuffer new(bytes encoding)

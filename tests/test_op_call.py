@@ -1,5 +1,7 @@
 import asyncio
 
+import logging
+
 from asynctnt import Response
 from asynctnt.exceptions import TarantoolDatabaseError, ErrorCode
 from tests.util import get_complex_param

@@ -1,3 +1,6 @@
+from libc.stdint cimport int64_t
+
+
 cdef class SchemaIndex:
     cdef public int sid
     cdef public int iid
@@ -19,11 +22,13 @@ cdef class SchemaSpace:
 cdef class Schema:
     cdef:
         dict schema
+        int64_t id
 
+    cpdef get_id(self)
     cpdef SchemaSpace get_space(self, space)
     cpdef SchemaIndex get_index(self, space, index)
 
     cdef inline clear(self)
 
 
-cdef Schema parse_schema(spaces, indexes)
+cdef Schema parse_schema(int64_t schema_id, spaces, indexes)

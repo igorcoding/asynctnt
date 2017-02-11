@@ -38,6 +38,7 @@ cdef class BaseProtocol(CoreProtocol):
     def __init__(self, host, port,
                  username, password,
                  fetch_schema,
+                 auto_refetch_schema,
                  connected_fut,
                  on_connection_made, on_connection_lost,
                  loop,
@@ -50,6 +51,7 @@ cdef class BaseProtocol(CoreProtocol):
         self.username = username
         self.password = password
         self.fetch_schema = fetch_schema
+        self.auto_refetch_schema = auto_refetch_schema
         self.request_timeout = request_timeout or 0
         self.connected_fut = connected_fut
         self.on_connection_made_cb = on_connection_made
@@ -60,6 +62,7 @@ cdef class BaseProtocol(CoreProtocol):
 
         self._sync = 0
         self._schema = None
+        self._schema_id = -1
         self._db = self._create_db()
 
         try:
@@ -73,6 +76,10 @@ cdef class BaseProtocol(CoreProtocol):
     @property
     def schema(self):
         return self._schema
+
+    @property
+    def schema_id(self):
+        return self._schema_id
 
     cdef void _set_connection_ready(self):
         if not self.connected_fut.done():
@@ -94,10 +101,10 @@ cdef class BaseProtocol(CoreProtocol):
             self._set_connection_ready()
 
     cdef void _do_auth(self, str username, str password):
+        # No extra error handling from Db.execute
         fut = self.execute(
-            request_auth(self.encoding, self.next_sync(),
-                         self.salt, username, password),
-            0  # timeout
+            self._db._auth(self.salt, username, password),
+            0
         )
 
         def on_authorized(f):
@@ -140,7 +147,14 @@ cdef class BaseProtocol(CoreProtocol):
                         self.host, self.port,
                         len(spaces.body), len(indexes.body))
                 )
-                self._schema = parse_schema(spaces.body, indexes.body)
+                self._schema = parse_schema(spaces.schema_id,
+                                            spaces.body, indexes.body)
+                if self.auto_refetch_schema:
+                    # if no refetch, them we should not
+                    # send schema_id at all (leave it -1)
+                    self._schema_id = self._schema.id
+                else:
+                    self._schema_id = -1
                 self._set_connection_ready()
                 fut.set_result(self._schema)
             else:
@@ -153,6 +167,7 @@ cdef class BaseProtocol(CoreProtocol):
                 self._set_connection_error(e)
                 fut.set_exception(e)
 
+        self._schema_id = -1
         fut_vspace = self._db.select(SPACE_VSPACE)
         fut_vindex = self._db.select(SPACE_VINDEX)
         gather_fut = asyncio.gather(fut_vspace, fut_vindex,
@@ -226,7 +241,7 @@ cdef class BaseProtocol(CoreProtocol):
             raise TarantoolNotConnectedError('Tarantool is not connected')
 
         cpython.dict.PyDict_SetItem(self.reqs, req.sync, req)
-        self._write(req.buf)
+        self._write(req.build())
 
         return self._new_waiter_for_request(req, timeout)
 

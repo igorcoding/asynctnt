@@ -1,8 +1,3 @@
-import asyncio
-
-from asynctnt import Iterator
-from asynctnt import Response
-from asynctnt.exceptions import TarantoolSchemaError
 from tests import BaseTarantoolTestCase
 from tests.util import get_complex_param
 
@@ -33,3 +28,41 @@ class CommonTestCase(BaseTarantoolTestCase):
         res = await self.conn.select(self.TESTER_SPACE_ID)
         self.assertListEqual(res.body, [data_cmp], 'Body ok')
 
+    async def test__schema_refetch_on_schema_change(self):
+        await self.tnt_reconnect(auto_refetch_schema=True)
+        self.assertTrue(self.conn.fetch_schema)
+        self.assertTrue(self.conn.auto_refetch_schema)
+        schema_before = self.conn.schema_id
+        self.assertNotEqual(schema_before, -1)
+
+        # Changing scheme
+        await self.conn.eval(
+            "s = box.schema.create_space('new_space');"
+            "s:drop();"
+        )
+
+        try:
+            await self.conn.ping()
+        except Exception as e:
+            self.fail(e)
+
+        self.assertGreater(self.conn.schema_id, schema_before,
+                           'Schema changed')
+
+    async def test__schema_no_fetch_and_refetch(self):
+        await self.tnt_reconnect(auto_refetch_schema=False,
+                                 fetch_schema=False)
+        self.assertFalse(self.conn.fetch_schema)
+        self.assertFalse(self.conn.auto_refetch_schema)
+        self.assertEqual(self.conn.schema_id, -1)
+
+        # Changing scheme
+        await self.conn.eval(
+            "s = box.schema.create_space('new_space');"
+            "s:drop();"
+        )
+
+        try:
+            await self.conn.ping()
+        except Exception as e:
+            self.fail(e)

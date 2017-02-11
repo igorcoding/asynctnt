@@ -24,6 +24,7 @@ class ConnectionState(enum.IntEnum):
 class Connection:
     __slots__ = (
         '_host', '_port', '_username', '_password', '_fetch_schema',
+        '_auto_refetch_schema',
         '_encoding', '_connect_timeout', '_reconnect_timeout',
         '_request_timeout', '_loop', '_state', '_state_prev',
         '_transport', '_protocol', '_db',
@@ -36,6 +37,7 @@ class Connection:
                  username=None,
                  password=None,
                  fetch_schema=True,
+                 auto_refetch_schema=True,
                  connect_timeout=60,
                  request_timeout=None,
                  reconnect_timeout=1. / 3.,
@@ -47,6 +49,14 @@ class Connection:
         self._username = username
         self._password = password
         self._fetch_schema = False if fetch_schema is None else fetch_schema
+        if auto_refetch_schema:  # None hack
+            self._auto_refetch_schema = True
+            if not self._fetch_schema:
+                logger.warning('Setting fetch_schema to True as '
+                               'auto_refetch_schema is True')
+                self._fetch_schema = True
+        else:
+            self._auto_refetch_schema = False
         self._encoding = encoding or 'utf-8'
 
         self._connect_timeout = connect_timeout
@@ -102,6 +112,7 @@ class Connection:
                    username=self._username,
                    password=self._password,
                    fetch_schema=self._fetch_schema,
+                   auto_refetch_schema=self._auto_refetch_schema,
                    request_timeout=self._request_timeout,
                    encoding=self._encoding,
                    connected_fut=connected_fut,
@@ -258,6 +269,10 @@ class Connection:
         return self._fetch_schema
 
     @property
+    def auto_refetch_schema(self):
+        return self._auto_refetch_schema
+
+    @property
     def encoding(self):
         return self._encoding
 
@@ -298,6 +313,12 @@ class Connection:
         if self._protocol is None:
             return None
         return self._protocol.schema
+
+    @property
+    def schema_id(self):
+        if self._protocol is None:
+            return None
+        return self._protocol.schema_id
 
     def check_connected(self):
         if not self._state == ConnectionState.CONNECTED:

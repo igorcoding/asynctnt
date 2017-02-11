@@ -149,7 +149,6 @@ cdef class CoreProtocol:
 
             self.rbuf.use = end - p
             if self.rbuf.use > 0:
-                # print('slice_ptr: {}'.format(self.rbuf.use))
                 self.rbuf.move_ptr(p, self.rbuf.use)
         else:
             # TODO: raise exception

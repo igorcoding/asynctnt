@@ -17,4 +17,4 @@ cdef class Response:
     cdef inline is_error(self)
 
 
-cdef Response response_parse(const char *buf, uint32_t buf_len, bytes encoding=*)
+cdef Response response_parse(const char *buf, uint32_t buf_len, bytes encoding)

@@ -1,4 +1,5 @@
 cdef class SchemaIndex:
+
     def __init__(self, list index_row):
         self.sid = index_row[0]
         self.iid = index_row[1]
@@ -41,7 +42,8 @@ cdef class SchemaSpace:
 
 
 cdef class Schema:
-    def __init__(self):
+    def __init__(self, int64_t schema_id):
+        self.id = schema_id
         self.schema = {}
 
     cpdef SchemaSpace get_space(self, space):
@@ -59,6 +61,9 @@ cdef class Schema:
         except KeyError:
             return None
 
+    cpdef get_id(self):
+        return self.id
+
     cdef inline clear(self):
         self.schema.clear()
 
@@ -66,12 +71,12 @@ cdef class Schema:
         return '<Schema>'
 
 
-cdef Schema parse_schema(spaces, indexes):
+cdef Schema parse_schema(int64_t schema_id, spaces, indexes):
     cdef:
         Schema s
         SchemaSpace sp
         SchemaIndex idx
-    s = Schema()
+    s = Schema(schema_id)
     for space_row in spaces:
         sp = SchemaSpace(space_row)
         s.schema[sp.sid] = sp
