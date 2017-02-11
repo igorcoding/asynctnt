@@ -4,7 +4,8 @@ cimport cpython.dict
 import asyncio
 import enum
 
-from asynctnt.exceptions import TarantoolSchemaError, TarantoolNotConnectedError
+from asynctnt.exceptions import \
+    TarantoolSchemaError, TarantoolNotConnectedError
 
 include "const.pxi"
 
@@ -92,7 +93,6 @@ cdef class BaseProtocol(CoreProtocol):
             self.con_state = CONNECTION_BAD
 
     cdef void _on_greeting_received(self):
-        #print('_on_greeting_received')
         if self.username and self.password:
             self._do_auth(self.username, self.password)
         elif self.fetch_schema:
@@ -160,7 +160,7 @@ cdef class BaseProtocol(CoreProtocol):
             else:
                 logger.error(
                     'Tarantool[{}:{}] Schema fetch failed: {}'.format(
-                    self.host, self.port, str(e))
+                        self.host, self.port, str(e))
                 )
                 if isinstance(e, asyncio.TimeoutError):
                     e = asyncio.TimeoutError('Schema fetch timeout')
@@ -218,7 +218,6 @@ cdef class BaseProtocol(CoreProtocol):
         fut = self.create_future()
         fut._req = req  # to be able to retrieve request after done()
         req.waiter = fut
-
 
         timeout = timeout or self.request_timeout
         if timeout is not None and timeout > 0:

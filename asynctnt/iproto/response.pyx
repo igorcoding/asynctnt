@@ -125,7 +125,8 @@ cdef list _response_parse_body_data(const char *b, bytes encoding):
     return tuples
 
 
-cdef Response response_parse(const char *buf, uint32_t buf_len, bytes encoding):
+cdef Response response_parse(const char *buf, uint32_t buf_len,
+                             bytes encoding):
     cdef:
         const char *b
         uint32_t size

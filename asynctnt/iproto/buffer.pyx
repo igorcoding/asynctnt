@@ -368,7 +368,7 @@ cdef class WriteBuffer:
             op_kind = self._op_type_to_kind(op_str_c, op_str_len)
             if not isinstance(operation[1], int):
                 raise TypeError(
-                        'Operation field_no must be of int type')
+                    'Operation field_no must be of int type')
             field_no = <uint64_t>int(operation[1])
 
             if op_kind == tnt.OP_UPD_ARITHMETIC \

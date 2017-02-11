@@ -133,7 +133,6 @@ class Connection:
 
                 self._set_state(ConnectionState.CONNECTING)
 
-                # print('__ Started connecting to Tarantool __')
                 connected_fut = _create_future(self._loop)
 
                 if self._host.startswith('unix/'):
@@ -178,7 +177,6 @@ class Connection:
                 self._reconnect_coro = None
                 return
             except TarantoolDatabaseError as e:
-                # print(repr(e))
                 if e.code in {ErrorCode.ER_LOADING}:
                     # If Tarantool is still loading then reconnect
                     if self._reconnect_timeout > 0:
@@ -193,7 +191,6 @@ class Connection:
                         await self._do_reconnect(e)
                         continue
             except Exception as e:
-                # print(repr(e))
                 if self._reconnect_timeout > 0:
                     await self._do_reconnect(e)
                     continue

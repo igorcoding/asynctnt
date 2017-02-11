@@ -76,7 +76,6 @@ cdef class CoreProtocol:
             ssize_t data_len
             ssize_t buf_len
 
-        # print('received data: {}'.format(data))
         if not cpython.PyBytes_CheckExact(data):
             raise BufferError('_on_data_received: expected bytes object')
 
@@ -88,9 +87,7 @@ cdef class CoreProtocol:
         if data_len == 0:
             return
 
-        # print("+`{}` => use: `{}`, len: `{}`".format(data_len, self.rbuf.use, self.rbuf.len))
         self.rbuf.extend(data_str, data_len)
-        # print("use: `{}`, len: `{}`".format(self.rbuf.use, self.rbuf.len))
 
         if self.state == PROTOCOL_GREETING:
             if self.rbuf.use < IPROTO_GREETING_SIZE:
@@ -98,7 +95,6 @@ cdef class CoreProtocol:
                 return
             self._process__greeting()
             self.rbuf.move(IPROTO_GREETING_SIZE)
-            # print("use: `{}`, len: `{}`".format(self.rbuf.use, self.rbuf.len))
         elif self.state == PROTOCOL_NORMAL:
             p = self.rbuf.buf
             end = &self.rbuf.buf[self.rbuf.use]
@@ -112,7 +108,6 @@ cdef class CoreProtocol:
 
                 q = &q[1]  # skip to 2nd byte of packet length
                 packet_len = mp_load_u32(&q)
-                # print('packetlen: {}'.format(packet_len))
 
                 if buf_len < 5 + packet_len:
                     # not enough to read an entire packet
@@ -143,7 +138,6 @@ cdef class CoreProtocol:
                         waiter.set_result(resp)
 
                 if p == end:
-                    # print('p == end')
                     self.rbuf.use = 0
                     break
 
@@ -191,7 +185,9 @@ cdef class CoreProtocol:
             if waiter and not waiter.done():
                 if exc is None:
                     waiter.set_exception(
-                        TarantoolNotConnectedError('Lost connection to Tarantool'))
+                        TarantoolNotConnectedError(
+                            'Lost connection to Tarantool')
+                    )
                 else:
                     waiter.set_exception(exc)
 
@@ -204,7 +200,6 @@ cdef class CoreProtocol:
         self._on_data_received(data)
 
     def connection_made(self, transport):
-        #print('coreproto: connection_made')
         self.transport = transport
         self.con_state = CONNECTION_CONNECTED
 
@@ -218,7 +213,6 @@ cdef class CoreProtocol:
         self._on_connection_made()
 
     def connection_lost(self, exc):
-        #print('coreproto: connection_lost')
         self.con_state = CONNECTION_BAD
         # self.schema = None
         self.version = None
