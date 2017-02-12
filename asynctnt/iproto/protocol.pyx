@@ -44,8 +44,10 @@ cdef class BaseProtocol(CoreProtocol):
                  on_connection_made, on_connection_lost,
                  loop,
                  request_timeout=None,
-                 encoding=None):
-        CoreProtocol.__init__(self, host, port, encoding)
+                 encoding=None,
+                 initial_read_buffer_size=None):
+        CoreProtocol.__init__(self, host, port, encoding,
+                              initial_read_buffer_size)
 
         self.loop = loop
 

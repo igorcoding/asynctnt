@@ -11,13 +11,30 @@ from cpython.ref cimport PyObject
 
 from libc.string cimport memcpy, memmove
 from libc.stdint cimport uint32_t, uint64_t, int64_t
+from libc.math cimport fmax
 
 from asynctnt.log import logger
 
 
+cdef inline size_t size_t_max(size_t a, size_t b):
+    if a > b:
+        return a
+    return b
+
+
+cdef inline uint32_t nearest_power_of_2(uint32_t v):
+    v -= 1
+    v |= v >> 1
+    v |= v >> 2
+    v |= v >> 4
+    v |= v >> 8
+    v |= v >> 16
+    v += 1
+    return v
+
+
 @cython.no_gc_clear
 @cython.final
-@cython.freelist(_BUFFER_FREELIST_SIZE)
 cdef class ReadBuffer:
     def __cinit__(self):
         self.buf = NULL
@@ -49,7 +66,7 @@ cdef class ReadBuffer:
     cdef void _reallocate(self, size_t new_size) except *:
         cdef char *new_buf
 
-        # logger.debug('reallocate: {}'.format(new_size))
+        # print('ReadBuffer reallocate: {}'.format(new_size))
         new_buf = <char*>PyMem_Realloc(<void*>self.buf, <size_t>new_size)
         if new_buf is NULL:
             PyMem_Free(self.buf)
@@ -64,8 +81,9 @@ cdef class ReadBuffer:
         cdef size_t new_size
         new_size = self.use + len
         if new_size > self.len:
-            self._reallocate(self.len * 2)
-            # raise OverflowError('buffer limit {} exceeded'.format(self.len))
+            self._reallocate(
+                size_t_max(nearest_power_of_2(new_size), self.len << 1)
+            )
 
         memcpy(&self.buf[self.use], data, len)
         self.use += len

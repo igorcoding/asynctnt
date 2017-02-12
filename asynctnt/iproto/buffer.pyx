@@ -70,10 +70,21 @@ cdef class WriteBuffer:
         if new_size > self._size:
             self._reallocate(new_size)
 
+    cdef inline char *_ensure_allocated(self, char *p, ssize_t extra_length):
+        cdef:
+            ssize_t new_size
+
+        new_size = extra_length + self._length
+
+        if new_size > self._size:
+            used = p - self._buf
+            self._reallocate(new_size)
+            p = &self._buf[used]
+        return p
+
     cdef void _reallocate(self, ssize_t new_size):
         cdef char *new_buf
 
-        logger.debug('reallocate: {}'.format(new_size))
         if new_size < _BUFFER_MAX_GROW:
             new_size = _BUFFER_MAX_GROW
         else:
@@ -115,13 +126,14 @@ cdef class WriteBuffer:
     cdef void write_header(self, uint64_t sync, tnt.tp_request_type op,
                            int64_t schema_id=-1):
         cdef:
+            char *begin = NULL
             char *p = NULL
             uint32_t map_size
         self.ensure_allocated(HEADER_CONST_LEN)
 
         map_size = 2 + <uint32_t>(schema_id > 0)
 
-        p = &self._buf[self._length]
+        p = begin = &self._buf[self._length]
         p = mp_encode_map(&p[5], map_size)
         p = mp_encode_uint(p, tnt.TP_CODE)
         p = mp_encode_uint(p, <uint32_t>op)
@@ -132,7 +144,7 @@ cdef class WriteBuffer:
             p = mp_encode_uint(p, tnt.TP_SCHEMA_ID)
             p = mp_encode_uint(p, schema_id)
 
-        self._length += (p - self._buf)
+        self._length += (p - begin)
 
     cdef void write_length(self):
         cdef:
@@ -142,42 +154,69 @@ cdef class WriteBuffer:
         p = mp_store_u32(p, self._length - 5)
 
     cdef char *_encode_nil(self, char *p) except NULL:
-        self.ensure_allocated(1)
-        return mp_encode_nil(p)
+        cdef uint32_t size = 1
+        p = self._ensure_allocated(p, 1)
+        p = mp_encode_nil(p)
+        self._length += size
+        return p
 
     cdef char *_encode_bool(self, char *p, bint value) except NULL:
-        self.ensure_allocated(1)
-        return mp_encode_bool(p, value)
+        cdef uint32_t size = 1
+        p = self._ensure_allocated(p, size)
+        p = mp_encode_bool(p, value)
+        self._length += size
+        return p
 
     cdef char *_encode_double(self, char *p, double value) except NULL:
-        self.ensure_allocated(mp_sizeof_double(value))
-        return mp_encode_double(p, value)
+        cdef uint32_t size = mp_sizeof_double(value)
+        p = self._ensure_allocated(p, size)
+        p = mp_encode_double(p, value)
+        self._length += size
+        return p
 
     cdef char *_encode_uint(self, char *p, uint64_t value) except NULL:
-        self.ensure_allocated(mp_sizeof_uint(value))
-        return mp_encode_uint(p, value)
+        cdef uint32_t size = mp_sizeof_uint(value)
+        p = self._ensure_allocated(p, size)
+        p = mp_encode_uint(p, value)
+        self._length += size
+        return p
 
     cdef char *_encode_int(self, char *p, int64_t value) except NULL:
-        self.ensure_allocated(mp_sizeof_int(value))
-        return mp_encode_int(p, value)
+        cdef uint32_t size = mp_sizeof_int(value)
+        p = self._ensure_allocated(p, size)
+        p = mp_encode_int(p, value)
+        self._length += size
+        return p
 
     cdef char *_encode_str(self, char *p,
                            const char *str, uint32_t len) except NULL:
-        self.ensure_allocated(mp_sizeof_str(len))
-        return mp_encode_str(p, str, len)
+        cdef uint32_t size = mp_sizeof_str(len)
+        p = self._ensure_allocated(p, size)
+        p = mp_encode_str(p, str, len)
+        self._length += size
+        return p
 
     cdef char *_encode_bin(self, char *p,
                            const char *data, uint32_t len) except NULL:
-        self.ensure_allocated(mp_sizeof_bin(len))
-        return mp_encode_bin(p, data, len)
+        cdef uint32_t size = mp_sizeof_bin(len)
+        p = self._ensure_allocated(p, size)
+        p = mp_encode_bin(p, data, len)
+        self._length += size
+        return p
 
     cdef char *_encode_array(self, char *p, uint32_t len) except NULL:
-        self.ensure_allocated(mp_sizeof_array(len))
-        return mp_encode_array(p, len)
+        cdef uint32_t size = mp_sizeof_array(len)
+        p = self._ensure_allocated(p, size)
+        p = mp_encode_array(p, len)
+        self._length += size
+        return p
 
     cdef char *_encode_map(self, char *p, uint32_t len) except NULL:
-        self.ensure_allocated(mp_sizeof_map(len))
-        return mp_encode_map(p, len)
+        cdef uint32_t size = mp_sizeof_map(len)
+        p = self._ensure_allocated(p, size)
+        p = mp_encode_map(p, len)
+        self._length += size
+        return p
 
     cdef char *_encode_list(self, char *p, list arr) except NULL:
         cdef:
@@ -318,6 +357,7 @@ cdef class WriteBuffer:
 
     cdef char *_encode_update_ops(self, char *p, list operations) except NULL:
         cdef:
+            char *begin
             uint32_t ops_len, op_len
             bytes str_temp
             char *str_c
@@ -333,12 +373,13 @@ cdef class WriteBuffer:
 
             uint32_t splice_position, splice_offset
 
+        begin = NULL
+
         if operations is not None:
             ops_len = <uint32_t>cpython.list.PyList_GET_SIZE(operations)
         else:
             ops_len = 0
 
-        self.ensure_allocated(mp_sizeof_array(ops_len))
         p = self._encode_array(p, ops_len)
         if ops_len == 0:
             return p
@@ -383,11 +424,13 @@ cdef class WriteBuffer:
                 # + mp_sizeof_str(1)
                 # + mp_sizeof_uint(field_no)
                 extra_length = 1 + 2 + mp_sizeof_uint(field_no)
-                self.ensure_allocated(extra_length)
+                p = self._ensure_allocated(p, extra_length)
 
+                begin = p
                 p = mp_encode_array(p, 3)
                 p = mp_encode_str(p, op_str_c, 1)
                 p = mp_encode_uint(p, field_no)
+                self._length += (p - begin)
                 p = self._encode_obj(p, op_argument)
             elif op_kind == tnt.OP_UPD_INSERT_ASSIGN:
                 op_argument = operation[2]
@@ -396,11 +439,13 @@ cdef class WriteBuffer:
                 # + mp_sizeof_str(1)
                 # + mp_sizeof_uint(field_no)
                 extra_length = 1 + 2 + mp_sizeof_uint(field_no)
-                self.ensure_allocated(extra_length)
+                p = self._ensure_allocated(p, extra_length)
 
+                begin = p
                 p = mp_encode_array(p, 3)
                 p = mp_encode_str(p, op_str_c, 1)
                 p = mp_encode_uint(p, field_no)
+                self._length += (p - begin)
                 p = self._encode_obj(p, op_argument)
 
             elif op_kind == tnt.OP_UPD_SPLICE:
@@ -426,13 +471,15 @@ cdef class WriteBuffer:
                                 + mp_sizeof_uint(field_no) \
                                 + mp_sizeof_uint(splice_position) \
                                 + mp_sizeof_uint(splice_offset)
-                self.ensure_allocated(extra_length)
+                p = self._ensure_allocated(p, extra_length)
 
+                begin = p
                 p = mp_encode_array(p, 5)
                 p = mp_encode_str(p, op_str_c, 1)
                 p = mp_encode_uint(p, field_no)
                 p = mp_encode_uint(p, splice_position)
                 p = mp_encode_uint(p, splice_offset)
+                self._length += (p - begin)
                 p = self._encode_obj(p, op_argument)
             else:
                 raise TypeError(
@@ -441,6 +488,7 @@ cdef class WriteBuffer:
 
     cdef void encode_request_call(self, str func_name, list args) except *:
         cdef:
+            char *begin
             char *p
             uint32_t body_map_sz
             uint32_t max_body_len
@@ -469,17 +517,18 @@ cdef class WriteBuffer:
 
         self.ensure_allocated(max_body_len)
 
-        p = &self._buf[self._length]
+        p = begin = &self._buf[self._length]
         p = mp_encode_map(p, body_map_sz)
         p = mp_encode_uint(p, tnt.TP_FUNCTION)
         p = mp_encode_str(p, func_name_str, <uint32_t>func_name_len)
 
         p = mp_encode_uint(p, tnt.TP_TUPLE)
+        self._length += (p - begin)
         p = self._encode_list(p, args)
-        self._length += (p - self._buf)
 
     cdef void encode_request_eval(self, str expression, list args) except *:
         cdef:
+            char *begin
             char *p
             uint32_t body_map_sz
             uint32_t max_body_len
@@ -508,19 +557,20 @@ cdef class WriteBuffer:
 
         self.ensure_allocated(max_body_len)
 
-        p = &self._buf[self._length]
+        p = begin = &self._buf[self._length]
         p = mp_encode_map(p, body_map_sz)
         p = mp_encode_uint(p, tnt.TP_EXPRESSION)
         p = mp_encode_str(p, expression_str, <uint32_t>expression_len)
 
         p = mp_encode_uint(p, tnt.TP_TUPLE)
+        self._length += (p - begin)
         p = self._encode_list(p, args)
-        self._length += (p - self._buf)
 
     cdef void encode_request_select(self, uint32_t space, uint32_t index,
                                     list key, uint64_t offset, uint64_t limit,
                                     uint32_t iterator) except *:
         cdef:
+            char *begin
             char *p
             uint32_t body_map_sz
             uint32_t max_body_len
@@ -555,7 +605,7 @@ cdef class WriteBuffer:
 
         self.ensure_allocated(max_body_len)
 
-        p = &self._buf[self._length]
+        p = begin = &self._buf[self._length]
         p = mp_encode_map(p, body_map_sz)
         p = mp_encode_uint(p, tnt.TP_SPACE)
         p = mp_encode_uint(p, space)
@@ -573,11 +623,12 @@ cdef class WriteBuffer:
             p = mp_encode_uint(p, iterator)
 
         p = mp_encode_uint(p, tnt.TP_KEY)
+        self._length += (p - begin)
         p = self._encode_list(p, key)
-        self._length += (p - self._buf)
 
     cdef void encode_request_insert(self, uint32_t space, list t) except *:
         cdef:
+            char *begin
             char *p
             uint32_t body_map_sz
             uint32_t max_body_len
@@ -595,14 +646,14 @@ cdef class WriteBuffer:
 
         self.ensure_allocated(max_body_len)
 
-        p = &self._buf[self._length]
+        p = begin = &self._buf[self._length]
         p = mp_encode_map(p, body_map_sz)
         p = mp_encode_uint(p, tnt.TP_SPACE)
         p = mp_encode_uint(p, space)
 
         p = mp_encode_uint(p, tnt.TP_TUPLE)
+        self._length += (p - begin)
         p = self._encode_list(p, t)
-        self._length += (p - self._buf)
 
     cdef void encode_request_delete(self, uint32_t space, uint32_t index,
                                     list key) except *:
@@ -629,7 +680,7 @@ cdef class WriteBuffer:
 
         self.ensure_allocated(max_body_len)
 
-        p = &self._buf[self._length]
+        p = begin = &self._buf[self._length]
         p = mp_encode_map(p, body_map_sz)
         p = mp_encode_uint(p, tnt.TP_SPACE)
         p = mp_encode_uint(p, space)
@@ -639,8 +690,8 @@ cdef class WriteBuffer:
             p = mp_encode_uint(p, index)
 
         p = mp_encode_uint(p, tnt.TP_KEY)
+        self._length += (p - begin)
         p = self._encode_list(p, key)
-        self._length += (p - self._buf)
 
     cdef void encode_request_update(self, uint32_t space, uint32_t index,
                                     list key_tuple, list operations,
@@ -648,6 +699,7 @@ cdef class WriteBuffer:
                                     uint32_t key_of_operations=tnt.TP_TUPLE
                                     ) except *:
         cdef:
+            char *begin
             char *p
             uint32_t body_map_sz
             uint32_t max_body_len
@@ -671,7 +723,7 @@ cdef class WriteBuffer:
 
         self.ensure_allocated(max_body_len)
 
-        p = &self._buf[self._length]
+        p = begin = &self._buf[self._length]
         p = mp_encode_map(p, body_map_sz)
         p = mp_encode_uint(p, tnt.TP_SPACE)
         p = mp_encode_uint(p, space)
@@ -679,14 +731,14 @@ cdef class WriteBuffer:
         if index > 0:
             p = mp_encode_uint(p, tnt.TP_INDEX)
             p = mp_encode_uint(p, index)
+        self._length += (p - begin)
 
-        p = mp_encode_uint(p, key_of_tuple)
+        p = self._encode_uint(p, key_of_tuple)
         p = self._encode_list(p, key_tuple)
 
-        p = mp_encode_uint(p, key_of_operations)
+        p = self._encode_uint(p, key_of_operations)
         p = self._encode_update_ops(p, operations)
 
-        self._length += (p - self._buf)
 
     cdef void encode_request_upsert(self, uint32_t space,
                                     list t, list operations) except *:
@@ -697,6 +749,7 @@ cdef class WriteBuffer:
                                   bytes username,
                                   bytes scramble) except *:
         cdef:
+            char *begin
             char *p
             uint32_t body_map_sz
             uint32_t max_body_len
@@ -730,7 +783,7 @@ cdef class WriteBuffer:
 
         self.ensure_allocated(max_body_len)
 
-        p = &self._buf[self._length]
+        p = begin = &self._buf[self._length]
         p = mp_encode_map(p, body_map_sz)
         p = mp_encode_uint(p, tnt.TP_USERNAME)
         p = mp_encode_str(p, username_str, <uint32_t>username_len)
@@ -739,4 +792,4 @@ cdef class WriteBuffer:
         p = mp_encode_array(p, 2)
         p = mp_encode_str(p, "chap-sha1", 9)
         p = mp_encode_str(p, scramble_str, <uint32_t>scramble_len)
-        self._length += (p - self._buf)
+        self._length += (p - begin)

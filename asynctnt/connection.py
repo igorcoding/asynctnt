@@ -24,7 +24,7 @@ class ConnectionState(enum.IntEnum):
 class Connection:
     __slots__ = (
         '_host', '_port', '_username', '_password', '_fetch_schema',
-        '_auto_refetch_schema',
+        '_auto_refetch_schema', '_initial_read_buffer_size',
         '_encoding', '_connect_timeout', '_reconnect_timeout',
         '_request_timeout', '_loop', '_state', '_state_prev',
         '_transport', '_protocol', '_db',
@@ -42,6 +42,7 @@ class Connection:
                  request_timeout=None,
                  reconnect_timeout=1. / 3.,
                  encoding=None,
+                 initial_read_buffer_size=None,
                  loop=None):
 
         self._host = host
@@ -57,6 +58,7 @@ class Connection:
                 self._fetch_schema = True
         else:
             self._auto_refetch_schema = False
+        self._initial_read_buffer_size = initial_read_buffer_size
         self._encoding = encoding or 'utf-8'
 
         self._connect_timeout = connect_timeout
@@ -114,6 +116,7 @@ class Connection:
                    fetch_schema=self._fetch_schema,
                    auto_refetch_schema=self._auto_refetch_schema,
                    request_timeout=self._request_timeout,
+                   initial_read_buffer_size=self._initial_read_buffer_size,
                    encoding=self._encoding,
                    connected_fut=connected_fut,
                    on_connection_made=self.connection_made,
@@ -318,15 +321,19 @@ class Connection:
             return None
         return self._protocol.schema_id
 
-    def check_connected(self):
-        if not self._state == ConnectionState.CONNECTED:
-            raise TarantoolNotConnectedError('Tarantool is not connected')
+    @property
+    def encoding(self):
+        return self._encoding
+
+    @property
+    def initial_read_buffer_size(self):
+        return self._initial_read_buffer_size
 
     def refetch_schema(self):
         return self._protocol.refetch_schema()
 
     # def __getattr__(self, item):
-    #     return self._protocol.__getattribute__(item)
+    #     return self._db.__getattribute__(item)
 
     def ping(self, *, timeout=0):
         return self._db.ping(timeout=timeout)

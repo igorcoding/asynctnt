@@ -27,3 +27,9 @@ def get_complex_param(replace_bin=True, encoding='utf-8'):
     return p, p_copy
 
 
+def get_big_param(size=1024, parts=3):
+    assert parts > 0
+    d = {}
+    for p in range(parts):
+        d['a' + str(p)] = 'x' * (size // parts)
+    return d

@@ -19,7 +19,8 @@ VERSION_STRING_REGEX = re.compile(r'\s*Tarantool\s+([\d.]+)\s+.*')
 cdef class CoreProtocol:
     def __init__(self,
                  host, port,
-                 encoding=None):
+                 encoding=None,
+                 initial_read_buffer_size=None):
         self.host = host
         self.port = port
 
@@ -31,9 +32,10 @@ cdef class CoreProtocol:
         else:
             raise TypeError('encoding must be either str or bytes')
 
+        initial_read_buffer_size = initial_read_buffer_size or 0x20000
         self.transport = None
 
-        self.rbuf = ReadBuffer.new(encoding)
+        self.rbuf = ReadBuffer.new(encoding, initial_read_buffer_size)
         self.state = PROTOCOL_IDLE
         self.con_state = CONNECTION_BAD
         self.reqs = {}

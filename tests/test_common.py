@@ -1,5 +1,7 @@
+import logging
+
 from tests import BaseTarantoolTestCase
-from tests.util import get_complex_param
+from tests.util import get_complex_param, get_big_param
 
 
 class CommonTestCase(BaseTarantoolTestCase):
@@ -66,3 +68,23 @@ class CommonTestCase(BaseTarantoolTestCase):
             await self.conn.ping()
         except Exception as e:
             self.fail(e)
+
+    async def test__read_buffer_reallocate_ok(self):
+        await self.tnt_reconnect(initial_read_buffer_size=1)
+
+        p, cmp = get_complex_param(encoding=self.conn.encoding)
+        try:
+            res = await self.conn.call('func_param', [p])
+        except Exception as e:
+            self.fail(e)
+
+        self.assertDictEqual(res.body[0][0], cmp, 'Body ok')
+
+    async def test__write_buffer_reallocate(self):
+        p = get_big_param(size=100*1024)
+        try:
+            res = await self.conn.call('func_param', [p])
+        except Exception as e:
+            self.fail(e)
+
+        self.assertDictEqual(res.body[0][0], p, 'Body ok')
