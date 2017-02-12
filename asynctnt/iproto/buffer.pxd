@@ -21,12 +21,13 @@ cdef class WriteBuffer:
 
     cdef inline _check_readonly(self)
     cdef inline len(self)
-    cdef inline void ensure_allocated(self, ssize_t extra_length)
-    cdef inline char *_ensure_allocated(self, char *p, ssize_t extra_length)
-    cdef void _reallocate(self, ssize_t new_size)
-    cdef void write_buffer(self, WriteBuffer buf)
+    cdef void ensure_allocated(self, ssize_t extra_length) except *
+    cdef char *_ensure_allocated(self, char *p,
+                                        ssize_t extra_length) except NULL
+    cdef void _reallocate(self, ssize_t new_size) except *
+    cdef void write_buffer(self, WriteBuffer buf) except *
     cdef void write_header(self, uint64_t sync, tnt.tp_request_type op,
-                           int64_t schema_id=*)
+                           int64_t schema_id=*) except *
     cdef void write_length(self)
 
     cdef char *_encode_nil(self, char *p) except NULL

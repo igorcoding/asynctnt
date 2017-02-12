@@ -64,13 +64,13 @@ cdef class WriteBuffer:
     cdef inline len(self):
         return self._length
 
-    cdef inline void ensure_allocated(self, ssize_t extra_length):
+    cdef void ensure_allocated(self, ssize_t extra_length) except *:
         cdef ssize_t new_size = extra_length + self._length
 
         if new_size > self._size:
             self._reallocate(new_size)
 
-    cdef inline char *_ensure_allocated(self, char *p, ssize_t extra_length):
+    cdef char *_ensure_allocated(self, char *p, ssize_t extra_length) except NULL:
         cdef:
             ssize_t new_size
 
@@ -82,7 +82,7 @@ cdef class WriteBuffer:
             p = &self._buf[used]
         return p
 
-    cdef void _reallocate(self, ssize_t new_size):
+    cdef void _reallocate(self, ssize_t new_size) except *:
         cdef char *new_buf
 
         if new_size < _BUFFER_MAX_GROW:
@@ -113,7 +113,7 @@ cdef class WriteBuffer:
             self._buf = new_buf
             self._size = new_size
 
-    cdef void write_buffer(self, WriteBuffer buf):
+    cdef void write_buffer(self, WriteBuffer buf) except *:
         if not buf._length:
             return
 
@@ -124,7 +124,7 @@ cdef class WriteBuffer:
         self._length += buf._length
 
     cdef void write_header(self, uint64_t sync, tnt.tp_request_type op,
-                           int64_t schema_id=-1):
+                           int64_t schema_id=-1) except *:
         cdef:
             char *begin = NULL
             char *p = NULL
@@ -154,68 +154,68 @@ cdef class WriteBuffer:
         p = mp_store_u32(p, self._length - 5)
 
     cdef char *_encode_nil(self, char *p) except NULL:
-        cdef uint32_t size = 1
-        p = self._ensure_allocated(p, 1)
+        cdef char *begin
+        p = begin = self._ensure_allocated(p, 1)
         p = mp_encode_nil(p)
-        self._length += size
+        self._length += (p - begin)
         return p
 
     cdef char *_encode_bool(self, char *p, bint value) except NULL:
-        cdef uint32_t size = 1
-        p = self._ensure_allocated(p, size)
+        cdef char *begin
+        p = begin = self._ensure_allocated(p, 1)
         p = mp_encode_bool(p, value)
-        self._length += size
+        self._length += (p - begin)
         return p
 
     cdef char *_encode_double(self, char *p, double value) except NULL:
-        cdef uint32_t size = mp_sizeof_double(value)
-        p = self._ensure_allocated(p, size)
+        cdef char *begin
+        p = begin = self._ensure_allocated(p, mp_sizeof_double(value))
         p = mp_encode_double(p, value)
-        self._length += size
+        self._length += (p - begin)
         return p
 
     cdef char *_encode_uint(self, char *p, uint64_t value) except NULL:
-        cdef uint32_t size = mp_sizeof_uint(value)
-        p = self._ensure_allocated(p, size)
+        cdef char *begin
+        p = begin = self._ensure_allocated(p, mp_sizeof_uint(value))
         p = mp_encode_uint(p, value)
-        self._length += size
+        self._length += (p - begin)
         return p
 
     cdef char *_encode_int(self, char *p, int64_t value) except NULL:
-        cdef uint32_t size = mp_sizeof_int(value)
-        p = self._ensure_allocated(p, size)
+        cdef char *begin
+        p = begin = self._ensure_allocated(p, mp_sizeof_int(value))
         p = mp_encode_int(p, value)
-        self._length += size
+        self._length += (p - begin)
         return p
 
     cdef char *_encode_str(self, char *p,
                            const char *str, uint32_t len) except NULL:
-        cdef uint32_t size = mp_sizeof_str(len)
-        p = self._ensure_allocated(p, size)
+        cdef char *begin
+        p = begin = self._ensure_allocated(p, mp_sizeof_str(len))
         p = mp_encode_str(p, str, len)
-        self._length += size
+        self._length += (p - begin)
         return p
 
     cdef char *_encode_bin(self, char *p,
                            const char *data, uint32_t len) except NULL:
-        cdef uint32_t size = mp_sizeof_bin(len)
-        p = self._ensure_allocated(p, size)
+        cdef char *begin
+        p = begin = self._ensure_allocated(p, mp_sizeof_bin(len))
         p = mp_encode_bin(p, data, len)
-        self._length += size
+        self._length += (p - begin)
         return p
 
     cdef char *_encode_array(self, char *p, uint32_t len) except NULL:
-        cdef uint32_t size = mp_sizeof_array(len)
-        p = self._ensure_allocated(p, size)
+        cdef char *begin
+        p = begin = self._ensure_allocated(p, mp_sizeof_array(len))
         p = mp_encode_array(p, len)
-        self._length += size
+        self._length += (p - begin)
         return p
 
     cdef char *_encode_map(self, char *p, uint32_t len) except NULL:
-        cdef uint32_t size = mp_sizeof_map(len)
-        p = self._ensure_allocated(p, size)
+        cdef char *begin
+        p = begin = self._ensure_allocated(p, mp_sizeof_map(len))
         p = mp_encode_map(p, len)
-        self._length += size
+        self._length += (p - begin)
         return p
 
     cdef char *_encode_list(self, char *p, list arr) except NULL:
@@ -424,9 +424,8 @@ cdef class WriteBuffer:
                 # + mp_sizeof_str(1)
                 # + mp_sizeof_uint(field_no)
                 extra_length = 1 + 2 + mp_sizeof_uint(field_no)
-                p = self._ensure_allocated(p, extra_length)
+                p = begin = self._ensure_allocated(p, extra_length)
 
-                begin = p
                 p = mp_encode_array(p, 3)
                 p = mp_encode_str(p, op_str_c, 1)
                 p = mp_encode_uint(p, field_no)
@@ -439,9 +438,8 @@ cdef class WriteBuffer:
                 # + mp_sizeof_str(1)
                 # + mp_sizeof_uint(field_no)
                 extra_length = 1 + 2 + mp_sizeof_uint(field_no)
-                p = self._ensure_allocated(p, extra_length)
+                p = begin = self._ensure_allocated(p, extra_length)
 
-                begin = p
                 p = mp_encode_array(p, 3)
                 p = mp_encode_str(p, op_str_c, 1)
                 p = mp_encode_uint(p, field_no)
@@ -471,9 +469,8 @@ cdef class WriteBuffer:
                                 + mp_sizeof_uint(field_no) \
                                 + mp_sizeof_uint(splice_position) \
                                 + mp_sizeof_uint(splice_offset)
-                p = self._ensure_allocated(p, extra_length)
+                p = begin = self._ensure_allocated(p, extra_length)
 
-                begin = p
                 p = mp_encode_array(p, 5)
                 p = mp_encode_str(p, op_str_c, 1)
                 p = mp_encode_uint(p, field_no)
