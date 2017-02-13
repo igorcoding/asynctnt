@@ -24,8 +24,10 @@ event_loop = asyncio.get_event_loop()
 asyncio.set_event_loop(None)
 asyncio.get_child_watcher().attach_loop(event_loop)
 
-t = TarantoolDockerInstance(
-    version=1.6,
+t = TarantoolInstance(
+    host='unix/',
+    port='/tmp/_mytnt.sock',
+    console_host='127.0.0.1',
     loop=event_loop,
     applua=open('../tests/files/app.lua').read())
 try:

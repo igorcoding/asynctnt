@@ -30,14 +30,17 @@ async def main(loop):
     tnt = TarantoolInstance(
         applua=read_applua(),
         cleanup=True,
+        host='unix/',
+        port='/tmp/_mytnt.sock',
+        console_host='127.0.0.1',
         loop=loop
     )
 
-    # await tnt.start()
+    await tnt.start()
     conn = None
     try:
         coro = asyncio.ensure_future(
-            asynctnt.connect(host=tnt.host, port=3303,
+            asynctnt.connect(host=tnt.host, port=tnt.port,
                              username='t1', password='t1',
                              fetch_schema=True,
                              auto_refetch_schema=True,
@@ -65,7 +68,9 @@ async def main(loop):
         # print(res.body2yaml())
         # res = await conn.select('tester')
         # print(res.body)
-        # res = await conn.eval('return box.cfg')
+        res = await conn.eval('return box.cfg')
+        print(res.body)
+        return
         # res = await conn.call('test', timeout=0)
         res = await conn.call('long', [5])
         print(res)

@@ -134,11 +134,22 @@ class TarantoolTestCase(TestCase):
                 loop=cls.loop
             )
         else:
-            tnt = TarantoolInstance(
-                applua=cls.read_applua(),
-                cleanup=cls.TNT_CLEANUP,
-                loop=cls.loop
-            )
+            unix_path = os.getenv('TARANTOOL_LISTEN_UNIX_PATH')
+            if not unix_path:
+                tnt = TarantoolInstance(
+                    applua=cls.read_applua(),
+                    cleanup=cls.TNT_CLEANUP,
+                    loop=cls.loop
+                )
+            else:
+                tnt = TarantoolInstance(
+                    host='unix/',
+                    port=unix_path,
+                    console_host='127.0.0.1',
+                    applua=cls.read_applua(),
+                    cleanup=cls.TNT_CLEANUP,
+                    loop=cls.loop
+                )
         cls.loop.run_until_complete(tnt.start())
         cls.tnt = tnt
 

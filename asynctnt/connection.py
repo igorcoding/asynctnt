@@ -140,7 +140,7 @@ class Connection:
                     unix_path = self._port
                     assert unix_path, \
                         'No unix file path specified'
-                    assert os.path.isfile(unix_path), \
+                    assert os.path.exists(unix_path), \
                         'Unix socket `{}` not found'.format(unix_path)
 
                     conn = self._loop.create_unix_connection(

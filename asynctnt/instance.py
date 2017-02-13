@@ -75,6 +75,7 @@ class TarantoolInstance:
     def __init__(self, *,
                  host='127.0.0.1',
                  port=3301,
+                 console_host=None,
                  console_port=3302,
                  replication_source=None,
                  title=None,
@@ -98,6 +99,9 @@ class TarantoolInstance:
                      to be listening on (default = 127.0.0.1)
         :param port: The port which Tarantool instance is going
                      to be listening on (default = 3301)
+        :param console_host: The host which Tarantool console is going
+                             to be listening on (to execute admin commands)
+                             (default = host)
         :param console_port: The port which Tarantool console is going
                              to be listening on (to execute admin commands)
                              (default = 3302)
@@ -129,6 +133,7 @@ class TarantoolInstance:
 
         self._host = host
         self._port = port
+        self._console_host = console_host or host
         self._console_port = console_port
         self._replication_source = replication_source
         self._title = title or self._generate_title()
@@ -169,8 +174,8 @@ class TarantoolInstance:
         cwd = os.getcwd()
         path = None
         while path is None or os.path.isdir(path):
-            folder_name = '__tnt__' + self._host + '_' + str(self._port) + \
-                          '_' + self._random_string(10)
+            folder_name = '__tnt__' + \
+                          self._random_string(10)
             path = os.path.join(cwd, folder_name)
         return path
 
@@ -187,7 +192,7 @@ class TarantoolInstance:
             }
             box.schema.user.grant("guest", "read,write,execute", "universe",
                                   nil, {if_not_exists = true})
-            require('console').listen("${host}:${console_port}")
+            require('console').listen("${console_host}:${console_port}")
             ${applua}
         """
 
@@ -196,6 +201,7 @@ class TarantoolInstance:
         d = {
             'host': self._host,
             'port': self._port,
+            'console_host': self._console_host,
             'console_port': self._console_port,
             'wal_mode': self._wal_mode,
             'custom_proc_title': self._title,
@@ -262,7 +268,7 @@ class TarantoolInstance:
 
     async def command(self, cmd, print_greeting=True):
         reader, writer = await asyncio.open_connection(
-            self._host, self._console_port, loop=self._loop
+            self._console_host, self._console_port, loop=self._loop
         )
 
         greeting = (await reader.read(128)).decode()
@@ -351,7 +357,7 @@ class TarantoolInstance:
 
     def cleanup(self):
         return_code = self._protocol.returncode
-        self._logger.info('Finished with return code %d'.format(return_code))
+        self._logger.info('Finished with return code %d', return_code)
 
         self._is_running = False
         self._is_stopping = False
