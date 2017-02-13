@@ -38,6 +38,7 @@ cdef inline uint32_t nearest_power_of_2(uint32_t v):
 cdef class ReadBuffer:
     def __cinit__(self):
         self.buf = NULL
+        self.initial_buffer_size = 0
         self.len = 0
         self.use = 0
         self.encoding = None
@@ -51,6 +52,7 @@ cdef class ReadBuffer:
         if b.buf is NULL:
             raise MemoryError
 
+        b.initial_buffer_size = initial_buffer_size
         b.len = initial_buffer_size
         b.use = 0
         b.encoding = encoding
@@ -60,6 +62,7 @@ cdef class ReadBuffer:
         if self.buf is not NULL:
             PyMem_Free(self.buf)
             self.buf = NULL
+        self.initial_buffer_size = 0
         self.len = 0
         self.use = 0
 
@@ -71,6 +74,7 @@ cdef class ReadBuffer:
         if new_buf is NULL:
             PyMem_Free(self.buf)
             self.buf = NULL
+            self.initial_buffer_size = 0
             self.len = 0
             self.use = 0
             raise MemoryError
@@ -78,12 +82,18 @@ cdef class ReadBuffer:
         self.len = new_size
 
     cdef int extend(self, const char *data, size_t len) except -1:
-        cdef size_t new_size
+        cdef:
+            size_t new_size
+            size_t dealloc_threshold
         new_size = self.use + len
+        dealloc_threshold = self.len // _DEALLOCATE_RATIO
         if new_size > self.len:
             self._reallocate(
                 size_t_max(nearest_power_of_2(new_size), self.len << 1)
             )
+        elif dealloc_threshold >= self.initial_buffer_size \
+                and new_size < dealloc_threshold:
+            self._reallocate(dealloc_threshold)
 
         memcpy(&self.buf[self.use], data, len)
         self.use += len
@@ -94,8 +104,18 @@ cdef class ReadBuffer:
         memmove(self.buf, &self.buf[pos], delta)
         self.use = delta
 
-    cdef void move_ptr(self, const char *src, size_t size):
-        memmove(self.buf, src, size)
+    cdef void move_offset(self, ssize_t offset, size_t size) except *:
+        cdef size_t dealloc_threshold = self.len // _DEALLOCATE_RATIO
+        if offset == 0:
+            return
+        assert offset > 0, \
+            'Offset incorrect. Got: {}. use:{}, len:{}'.format(
+                offset, self.use, self.len
+            )
+        if size < dealloc_threshold:
+            self._reallocate(dealloc_threshold)
+        else:
+            memmove(self.buf, &self.buf[offset], size)
 
     cdef bytes get_slice(self, size_t begin, size_t end):
         cdef:

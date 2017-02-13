@@ -95,8 +95,8 @@ cdef object _decode_obj(const char** p, bytes encoding):
             else:
                 mp_next(p)  # skip current key
                 mp_next(p)  # skip value
-                logger.warning(
-                    'Unexpected key type in map: {}'.format(map_key_type))
+                logger.warning('Unexpected key type in map: %s',
+                               map_key_type)
 
             map[map_key] = _decode_obj(p, encoding)
 
@@ -106,7 +106,7 @@ cdef object _decode_obj(const char** p, bytes encoding):
         return None
     else:
         mp_next(p)
-        logger.warning('Unexpected obj type: {}'.format(obj_type))
+        logger.warning('Unexpected obj type: %s', obj_type)
         return None
 
 

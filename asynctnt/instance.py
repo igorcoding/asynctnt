@@ -44,7 +44,7 @@ class TarantoolInstanceProtocol(asyncio.SubprocessProtocol):
             line = line.replace('\n', '')
             line = line.strip()
             if line:
-                self.logger.info('=> {}'.format(line))
+                self.logger.info('=> %s', line)
 
     def process_exited(self):
         return_code = self._transport.get_returncode()
@@ -185,8 +185,8 @@ class TarantoolInstance:
               work_dir = ${work_dir},
               log_level = ${log_level}
             }
-            box.schema.user.grant("guest", "read,write,execute", "universe", nil,
-                                  {if_not_exists = true})
+            box.schema.user.grant("guest", "read,write,execute", "universe",
+                                  nil, {if_not_exists = true})
             require('console').listen("${host}:${console_port}")
             ${applua}
         """
@@ -201,7 +201,7 @@ class TarantoolInstance:
             'custom_proc_title': self._title,
             'slab_alloc_arena': self._slab_alloc_arena,
             'replication_source': 'nil' if not self._replication_source else '"{}"'.format(self._replication_source),  # nopep8
-            'work_dir': '"' + self._root + '"' if self._specify_work_dir else 'nil',
+            'work_dir': '"' + self._root + '"' if self._specify_work_dir else 'nil',  # nopep8
             'log_level': self._log_level,
             'applua': self._applua if self._applua else ''
         }
@@ -280,8 +280,7 @@ class TarantoolInstance:
             writer.close()
 
     async def start(self):
-        self._logger.info(
-            'Starting Tarantool instance ({})'.format(self._title))
+        self._logger.info('Starting Tarantool instance (%s)', self._title)
         initlua_path = self.prepare()
         self._logger.info('Launching process')
 
@@ -352,7 +351,7 @@ class TarantoolInstance:
 
     def cleanup(self):
         return_code = self._protocol.returncode
-        self._logger.info('Finished with return code {}'.format(return_code))
+        self._logger.info('Finished with return code %d'.format(return_code))
 
         self._is_running = False
         self._is_stopping = False
@@ -363,8 +362,7 @@ class TarantoolInstance:
         self._stop_event.clear()
         if self._cleanup:
             shutil.rmtree(self._root, ignore_errors=True)
-        self._logger.info(
-            'Destroyed Tarantool instance ({})'.format(self._title))
+        self._logger.info('Destroyed Tarantool instance (%s)', self._title)
 
     def __del__(self):
         self.terminate()

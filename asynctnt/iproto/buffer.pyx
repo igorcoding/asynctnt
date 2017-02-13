@@ -70,7 +70,8 @@ cdef class WriteBuffer:
         if new_size > self._size:
             self._reallocate(new_size)
 
-    cdef char *_ensure_allocated(self, char *p, ssize_t extra_length) except NULL:
+    cdef char *_ensure_allocated(self, char *p,
+                                 ssize_t extra_length) except NULL:
         cdef:
             ssize_t new_size
 
@@ -735,7 +736,6 @@ cdef class WriteBuffer:
 
         p = self._encode_uint(p, key_of_operations)
         p = self._encode_update_ops(p, operations)
-
 
     cdef void encode_request_upsert(self, uint32_t space,
                                     list t, list operations) except *:

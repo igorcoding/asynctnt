@@ -1,5 +1,8 @@
 import logging
 
+import asynctnt
+from asynctnt.exceptions import TarantoolNotConnectedError
+
 from tests import BaseTarantoolTestCase
 from tests.util import get_complex_param, get_big_param
 
@@ -80,6 +83,24 @@ class CommonTestCase(BaseTarantoolTestCase):
 
         self.assertDictEqual(res.body[0][0], cmp, 'Body ok')
 
+    async def test__read_buffer_deallocate_ok(self):
+        size = 100 * 1000
+        await self.tnt_reconnect(initial_read_buffer_size=size)
+
+        # Waiting big response, so ReadBuffer grows to hold it
+        p = get_big_param(size=size * 3)
+        try:
+            res = await self.conn.call('func_param', [p])
+        except Exception as e:
+            self.fail(e)
+
+        # Waiting small response, so ReadBuffer deallocates memory
+        p = get_big_param(size=10)
+        try:
+            res = await self.conn.call('func_param', [p])
+        except Exception as e:
+            self.fail(e)
+
     async def test__write_buffer_reallocate(self):
         p = get_big_param(size=100*1024)
         try:
@@ -88,3 +109,14 @@ class CommonTestCase(BaseTarantoolTestCase):
             self.fail(e)
 
         self.assertDictEqual(res.body[0][0], p, 'Body ok')
+
+    async def test__ensure_no_attribute_error_on_not_connected(self):
+        await self.tnt_disconnect()
+
+        self.conn = asynctnt.Connection(
+            host=self.tnt.host,
+            port=self.tnt.port,
+            loop=self.loop)
+
+        with self.assertRaises(TarantoolNotConnectedError):
+            await self.conn.ping()

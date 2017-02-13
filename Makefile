@@ -12,6 +12,7 @@ clean:
 	rm -rf asynctnt/iproto/*.c asynctnt/iproto/*.so asynctnt/iproto/*.html
 	rm -rf build *.egg-info
 	find . -name '__pycache__' | xargs rm -rf
+	rm -rf htmlcov
 
 
 annotate:
@@ -42,15 +43,11 @@ test:
 
 
 test_16:
-	TARANTOOL_DOCKER_VERSION=1.6 PYTHONASYNCIODEBUG=1 $(PYTHON) -m unittest discover -s tests
 	TARANTOOL_DOCKER_VERSION=1.6 $(PYTHON) -m unittest discover -s tests
-	#TARANTOOL_DOCKER_VERSION=1.6 USE_UVLOOP=1 $(PYTHON) -m unittest discover -s tests
 
 
 test_17:
-	TARANTOOL_DOCKER_VERSION=1.7 PYTHONASYNCIODEBUG=1 $(PYTHON) -m unittest discover -s tests
 	TARANTOOL_DOCKER_VERSION=1.7 $(PYTHON) -m unittest discover -s tests
-	#TARANTOOL_DOCKER_VERSION=1.7 USE_UVLOOP=1 $(PYTHON) -m unittest discover -s tests
 
 
 coverage: debug

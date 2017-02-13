@@ -69,7 +69,7 @@ class Connection:
 
         self._transport = None
         self._protocol = None
-        self._db = None
+        self._db = DbMock()
 
         self._state = ConnectionState.DISCONNECTED
         self._state_prev = ConnectionState.DISCONNECTED
@@ -78,9 +78,7 @@ class Connection:
 
     def _set_state(self, new_state):
         if self._state != new_state:
-            logger.debug(
-                'Changing state {} -> {}'.format(repr(self._state),
-                                                 repr(new_state)))
+            logger.debug('Changing state %r -> %r', self._state, new_state)
             self._state_prev = self._state
             self._state = new_state
             return True
@@ -98,7 +96,7 @@ class Connection:
                 and self._state != ConnectionState.DISCONNECTING:
             self._set_state(ConnectionState.DISCONNECTING)
             self._set_state(ConnectionState.RECONNECTING)
-            logger.info('{} Started reconnecting'.format(self.fingerprint))
+            logger.info('%s Started reconnecting', self.fingerprint)
             self._reconnect_coro = \
                 asyncio.ensure_future(self._connect(return_exceptions=False),
                                       loop=self._loop)
@@ -170,8 +168,7 @@ class Connection:
                     self._set_state(ConnectionState.DISCONNECTING)
                     raise
 
-                logger.info(
-                    '{} Connected successfully'.format(self.fingerprint))
+                logger.info('%s Connected successfully', self.fingerprint)
                 self._set_state(ConnectionState.CONNECTED)
 
                 self._transport = tr
@@ -206,11 +203,10 @@ class Connection:
 
     async def _do_reconnect(self, exc=None):
         self._set_state(ConnectionState.RECONNECTING)
-        logger.warning(
-            'Connect to {} failed: {}. Retrying in {} seconds'.format(
-                self.fingerprint, repr(exc) if exc else '',
-                self._reconnect_timeout
-            ))
+        logger.warning('Connect to %s failed: %s. Retrying in %f seconds',
+                       self.fingerprint,
+                       repr(exc) if exc else '',
+                       self._reconnect_timeout)
 
         await asyncio.sleep(self._reconnect_timeout,
                             loop=self._loop)
@@ -224,7 +220,7 @@ class Connection:
             return
         self._set_state(ConnectionState.DISCONNECTING)
 
-        logger.info('{} Disconnecting...'.format(self.fingerprint))
+        logger.info('%s Disconnecting...', self.fingerprint)
         waiter = _create_future(self._loop)
         if self._reconnect_coro:
             self._reconnect_coro.cancel()
@@ -235,7 +231,7 @@ class Connection:
             self._transport.close()
             self._transport = None
             self._protocol = None
-            self._db = None
+            self._db = DbMock()
         else:
             waiter.set_result(True)
             self._set_state(ConnectionState.DISCONNECTED)
@@ -380,6 +376,11 @@ def _create_future(loop):
         return loop.create_future()
     except AttributeError:
         return asyncio.Future(loop=loop)
+
+
+class DbMock:
+    def __getattr__(self, item):
+        raise TarantoolNotConnectedError('Tarantool is not connected')
 
 
 async def connect(**kwargs):

@@ -123,7 +123,7 @@ cdef class CoreProtocol:
 
                 req_p = cpython.dict.PyDict_GetItem(self.reqs, sync_obj)
                 if req_p is NULL:
-                    logger.warning('sync {} not found'.format(resp.sync))
+                    logger.warning('sync %d not found', resp.sync)
                     continue
 
                 req = <Request>req_p
@@ -145,7 +145,7 @@ cdef class CoreProtocol:
 
             self.rbuf.use = end - p
             if self.rbuf.use > 0:
-                self.rbuf.move_ptr(p, self.rbuf.use)
+                self.rbuf.move_offset(p - self.rbuf.buf, self.rbuf.use)
         else:
             # TODO: raise exception
             pass

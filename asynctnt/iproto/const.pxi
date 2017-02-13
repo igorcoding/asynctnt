@@ -2,6 +2,8 @@ DEF _BUFFER_FREELIST_SIZE = 256
 DEF _BUFFER_INITIAL_SIZE = 1024
 DEF _BUFFER_MAX_GROW = 65536
 
+DEF _DEALLOCATE_RATIO = 4
+
 # Header length description:
 # pkt_len +
 # mp_sizeof_map(2) +

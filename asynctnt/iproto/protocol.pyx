@@ -115,20 +115,16 @@ cdef class BaseProtocol(CoreProtocol):
                 return
             e = f.exception()
             if not e:
-                logger.debug(
-                    'Tarantool[{}:{}] Authorized successfully'.format(
-                        self.host, self.port)
-                )
+                logger.debug('Tarantool[%s:%s] Authorized successfully',
+                             self.host, self.port)
 
                 if self.fetch_schema:
                     self._do_fetch_schema()
                 else:
                     self._set_connection_ready()
             else:
-                logger.error(
-                    'Tarantool[{}:{}] Authorization failed: {}'.format(
-                        self.host, self.port, str(e))
-                )
+                logger.error('Tarantool[%s:%s] Authorization failed: %s',
+                             self.host, self.port, str(e))
                 self._set_connection_error(e)
 
         fut.add_done_callback(on_authorized)
@@ -143,12 +139,10 @@ cdef class BaseProtocol(CoreProtocol):
             e = f.exception()
             if not e:
                 spaces, indexes = f.result()
-                logger.debug(
-                    'Tarantool[{}:{}] Schema fetch succeeded. '
-                    'Spaces: {}, Indexes: {}.'.format(
-                        self.host, self.port,
-                        len(spaces.body), len(indexes.body))
-                )
+                logger.debug('Tarantool[%s:%s] Schema fetch succeeded. '
+                             'Spaces: %d, Indexes: %d.',
+                             self.host, self.port,
+                             len(spaces.body), len(indexes.body))
                 self._schema = parse_schema(spaces.schema_id,
                                             spaces.body, indexes.body)
                 if self.auto_refetch_schema:
@@ -160,10 +154,8 @@ cdef class BaseProtocol(CoreProtocol):
                 self._set_connection_ready()
                 fut.set_result(self._schema)
             else:
-                logger.error(
-                    'Tarantool[{}:{}] Schema fetch failed: {}'.format(
-                        self.host, self.port, str(e))
-                )
+                logger.error('Tarantool[%s:%s] Schema fetch failed: %s',
+                             self.host, self.port, str(e))
                 if isinstance(e, asyncio.TimeoutError):
                     e = asyncio.TimeoutError('Schema fetch timeout')
                 self._set_connection_error(e)
