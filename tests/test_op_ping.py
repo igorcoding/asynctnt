@@ -22,8 +22,7 @@ class PingTestCase(BaseTarantoolTestCase):
         self.assertIsNone(res.body, 'No body for ping')
 
     async def test__ping_timeout_on_conn(self):
-        await self.tnt_disconnect()
-        await self.tnt_connect(request_timeout=self.SMALL_TIMEOUT)
+        await self.tnt_reconnect(request_timeout=self.SMALL_TIMEOUT)
 
         try:
             await self.conn.ping(timeout=1)

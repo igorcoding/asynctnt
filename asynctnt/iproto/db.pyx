@@ -181,32 +181,32 @@ cdef class Db:
 
     # public methods
 
-    def ping(self, timeout=0):
+    def ping(self, timeout=-1):
         return self.execute(
             self._ping(),
             timeout
         )
 
-    def call16(self, func_name, args=None, timeout=0):
+    def call16(self, func_name, args=None, timeout=-1):
         return self.execute(
             self._call16(func_name, args),
             timeout
         )
 
-    def call(self, func_name, args=None, timeout=0):
+    def call(self, func_name, args=None, timeout=-1):
         return self.execute(
             self._call(func_name, args),
             timeout
         )
 
-    def eval(self, expression, args=None, timeout=0):
+    def eval(self, expression, args=None, timeout=-1):
         return self.execute(
             self._eval(expression, args),
             timeout
         )
 
     def select(self, space, key=None,
-                 offset=0, limit=0xffffffff, index=0, iterator=0, timeout=0):
+                 offset=0, limit=0xffffffff, index=0, iterator=0, timeout=-1):
         space = self._protocol.transform_space(space)
         index = self._protocol.transform_index(space, index)
         iterator = self._protocol.transform_iterator(iterator)
@@ -216,7 +216,7 @@ cdef class Db:
             timeout
         )
 
-    def insert(self, space, t, replace=False, timeout=0):
+    def insert(self, space, t, replace=False, timeout=-1):
         space = self._protocol.transform_space(space)
 
         return self.execute(
@@ -224,10 +224,10 @@ cdef class Db:
             timeout
         )
 
-    def replace(self, space, t, timeout=0):
+    def replace(self, space, t, timeout=-1):
         return self.insert(space, t, replace=True, timeout=timeout)
 
-    def delete(self, space, key, index=0, timeout=0):
+    def delete(self, space, key, index=0, timeout=-1):
         space = self._protocol.transform_space(space)
         index = self._protocol.transform_index(space, index)
 
@@ -236,7 +236,7 @@ cdef class Db:
             timeout
         )
 
-    def update(self, space, key, operations, index=0, timeout=0):
+    def update(self, space, key, operations, index=0, timeout=-1):
         space = self._protocol.transform_space(space)
         index = self._protocol.transform_index(space, index)
 
@@ -245,7 +245,7 @@ cdef class Db:
             timeout
         )
 
-    def upsert(self, space, t, operations, timeout=0):
+    def upsert(self, space, t, operations, timeout=-1):
         space = self._protocol.transform_space(space)
 
         return self.execute(

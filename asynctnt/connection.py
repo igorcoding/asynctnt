@@ -39,7 +39,7 @@ class Connection:
                  fetch_schema=True,
                  auto_refetch_schema=True,
                  connect_timeout=60,
-                 request_timeout=None,
+                 request_timeout=-1,
                  reconnect_timeout=1. / 3.,
                  encoding=None,
                  initial_read_buffer_size=None,
@@ -459,14 +459,14 @@ class Connection:
         """
         return self._protocol.refetch_schema()
 
-    def ping(self, *, timeout=0):
+    def ping(self, *, timeout=-1):
         """
             Ping request coroutine
         :param timeout: Request timeout
         """
         return self._db.ping(timeout=timeout)
 
-    def call16(self, func_name, args=None, *, timeout=0):
+    def call16(self, func_name, args=None, *, timeout=-1):
         """
             Call16 request coroutine. It is a call with an old behaviour
             (return result of a Tarantool procedure is wrapped into a tuple,
@@ -478,7 +478,7 @@ class Connection:
         return self._db.call16(func_name, args,
                                timeout=timeout)
 
-    def call(self, func_name, args=None, *, timeout=0):
+    def call(self, func_name, args=None, *, timeout=-1):
         """
             Call request coroutine. It is a call with a new behaviour
             (return result of a Tarantool procedure is not wrapped into
@@ -492,7 +492,7 @@ class Connection:
         return self._db.call(func_name, args,
                              timeout=timeout)
 
-    def eval(self, expression, args=None, *, timeout=0):
+    def eval(self, expression, args=None, *, timeout=-1):
         """
             Eval request coroutine.
 
@@ -522,7 +522,7 @@ class Connection:
         """
         return self._db.select(space, key, **kwargs)
 
-    def insert(self, space, t, *, replace=False, timeout=0):
+    def insert(self, space, t, *, replace=False, timeout=-1):
         """
             Insert request coroutine.
 
@@ -534,7 +534,7 @@ class Connection:
         return self._db.insert(space, t,
                                replace=replace, timeout=timeout)
 
-    def replace(self, space, t, *, timeout=0):
+    def replace(self, space, t, *, timeout=-1):
         """
             Replace request coroutine.
 
