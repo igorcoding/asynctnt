@@ -14,9 +14,12 @@ def get_complex_param(replace_bin=True, encoding='utf-8'):
         'f': [],
         'g': {},
         'h': 'some long text',
-        'i': 'русский текст'
+        'i': 'русский текст',
+        'j': False,
+        'k': True,
+        'l': None
     }
-    p_copy = copy.copy(p)
+    p_copy = copy.deepcopy(p)
     # tuples return as lists
     p_copy['d']['l'] = list(p_copy['d']['l'])
 

@@ -35,6 +35,12 @@ box.once('v1', function()
 end)
 
 
+function make_third_index(name)
+	local i = box.space.tester:create_index(name, {unique = true, parts = {3, B.types.unsigned}})
+	return {i.id}
+end
+
+
 function truncate()
     local keys = {}
     for _, el in box.space.tester:pairs() do

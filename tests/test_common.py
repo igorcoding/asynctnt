@@ -120,3 +120,10 @@ class CommonTestCase(BaseTarantoolTestCase):
 
         with self.assertRaises(TarantoolNotConnectedError):
             await self.conn.ping()
+
+    async def test__encode_unsupported_type(self):
+        class A:
+            pass
+        with self.assertRaisesRegex(TypeError,
+                                    'Type `(.+)` is not supported for encoding'):
+            self.conn.call('func_param', [{'a': A()}])

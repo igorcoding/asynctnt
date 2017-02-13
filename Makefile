@@ -50,8 +50,8 @@ test_17:
 	TARANTOOL_DOCKER_VERSION=1.7 $(PYTHON) -m unittest discover -s tests
 
 
-coverage: debug
-	pip install -e .
+coverage:
+	# pip install -e .
 	coverage run run_tests.py
 	./scripts/run_until_success.sh coverage report -m
 	./scripts/run_until_success.sh coverage html

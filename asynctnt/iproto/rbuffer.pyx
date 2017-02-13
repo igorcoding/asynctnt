@@ -112,7 +112,8 @@ cdef class ReadBuffer:
             'Offset incorrect. Got: {}. use:{}, len:{}'.format(
                 offset, self.use, self.len
             )
-        if size < dealloc_threshold:
+        if dealloc_threshold >= self.initial_buffer_size \
+                and size < dealloc_threshold:
             self._reallocate(dealloc_threshold)
         else:
             memmove(self.buf, &self.buf[offset], size)

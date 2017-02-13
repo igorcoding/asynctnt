@@ -42,11 +42,70 @@ class DeleteTestCase(BaseTarantoolTestCase):
         res = await self.conn.select(self.TESTER_SPACE_ID, [0])
         self.assertListEqual(res.body, [], 'Body ok')
 
+    async def test__delete_by_index_id(self):
+        index_name = 'temp_idx'
+        res = await self.tnt.command('make_third_index("{}")'.format(index_name))
+        index_id = res[0][0]
+
+        try:
+            await self.tnt_reconnect()
+
+            data = await self._fill_data()
+
+            res = await self.conn.delete(self.TESTER_SPACE_NAME, [data[1][2]],
+                                         index=index_id)
+            self.assertIsInstance(res, Response, 'Got response')
+            self.assertEqual(res.code, 0, 'success')
+            self.assertGreater(res.sync, 0, 'sync > 0')
+            self.assertListEqual(res.body, [data[1]], 'Body ok')
+
+            res = await self.conn.select(self.TESTER_SPACE_ID, [data[1][2]],
+                                         index=index_id)
+            self.assertListEqual(res.body, [], 'Body ok')
+        finally:
+            await self.tnt.command(
+                'box.space.{}.index.{}:drop()'.format(
+                    self.TESTER_SPACE_NAME, index_name)
+            )
+
+    async def test__delete_by_index_name(self):
+        index_name = 'temp_idx'
+        res = await self.tnt.command('make_third_index("{}")'.format(index_name))
+        index_id = res[0][0]
+
+        try:
+            await self.tnt_reconnect()
+
+            data = await self._fill_data()
+
+            res = await self.conn.delete(self.TESTER_SPACE_NAME, [data[1][2]],
+                                         index=index_name)
+            self.assertIsInstance(res, Response, 'Got response')
+            self.assertEqual(res.code, 0, 'success')
+            self.assertGreater(res.sync, 0, 'sync > 0')
+            self.assertListEqual(res.body, [data[1]], 'Body ok')
+
+            res = await self.conn.select(self.TESTER_SPACE_ID, [data[1][2]],
+                                         index=index_id)
+            self.assertListEqual(res.body, [], 'Body ok')
+        finally:
+            await self.tnt.command(
+                'box.space.{}.index.{}:drop()'.format(
+                    self.TESTER_SPACE_NAME, index_name)
+            )
+
     async def test__delete_by_name_no_schema(self):
         await self.tnt_reconnect(fetch_schema=False)
 
         with self.assertRaises(TarantoolSchemaError):
             await self.conn.delete(self.TESTER_SPACE_NAME, [0])
+
+    async def test__delete_by_index_name_no_schema(self):
+        await self.tnt_reconnect(fetch_schema=False)
+
+        with self.assertRaises(TarantoolSchemaError):
+            await self.conn.delete(self.TESTER_SPACE_ID, [0],
+                                   index='primary')
 
     async def test__delete_invalid_types(self):
         with self.assertRaisesRegex(
@@ -60,3 +119,4 @@ class DeleteTestCase(BaseTarantoolTestCase):
         with self.assertRaisesRegex(
                 TypeError, r'Expected list, got '):
             await self.conn.delete(self.TESTER_SPACE_ID, {})
+

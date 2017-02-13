@@ -10,8 +10,8 @@ from tests.util import get_complex_param
 class UpdateTestCase(BaseTarantoolTestCase):
     async def _fill_data(self):
         data = [
-            [0, 'a', 1],
-            [1, 'b', 0],
+            [0, 'a', 1, 5],
+            [1, 'b', 0, 6],
         ]
         for t in data:
             await self.conn.insert(self.TESTER_SPACE_ID, t)
@@ -157,6 +157,16 @@ class UpdateTestCase(BaseTarantoolTestCase):
         data[2] = 'h!!!'
         self.assertListEqual(res.body, [data], 'Body ok')
 
+    async def test__update_splice_bytes(self):
+        data = [1, 'hello', 'hi']
+        await self.conn.insert(self.TESTER_SPACE_ID, data)
+
+        res = await self.conn.update(self.TESTER_SPACE_ID,
+                                     [1], [[b':', 2, 1, 3, '!!!']])
+
+        data[2] = 'h!!!'
+        self.assertListEqual(res.body, [data], 'Body ok')
+
     async def test__update_splice_wrong_args(self):
         data = [1, 'hello', 'hi']
         await self.conn.insert(self.TESTER_SPACE_ID, data)
@@ -190,6 +200,27 @@ class UpdateTestCase(BaseTarantoolTestCase):
                 TypeError, r'Operation field_no must be of int type'):
             await self.conn.update(self.TESTER_SPACE_ID,
                                    [1], [[':', {}, {}, {}, ':::']])
+
+        with self.assertRaisesRegex(
+                TypeError, r'Unknown update operation type `yo`'):
+            await self.conn.update(self.TESTER_SPACE_ID,
+                                   [1], [['yo', 1, 2, 3]])
+
+        with self.assertRaisesRegex(
+                TypeError, r'Operation type must of a str or bytes type'):
+            await self.conn.update(self.TESTER_SPACE_ID,
+                                   [1], [[{}, 1, 2, 3]])
+
+        with self.assertRaisesRegex(
+                TypeError, r'Single operation must be a tuple or list'):
+            await self.conn.update(self.TESTER_SPACE_ID,
+                                   [1], [{}])
+
+        with self.assertRaisesRegex(
+                TypeError, r'int argument required for '
+                           r'Arithmetic and Delete operations'):
+            await self.conn.update(self.TESTER_SPACE_ID,
+                                   [1], [('+', 2, {})])
 
     async def test__update_multiple_operations(self):
         t = [1, '1', 1, 0, 3, 4, 8, 'hello']
@@ -237,28 +268,50 @@ class UpdateTestCase(BaseTarantoolTestCase):
                                    [1], [['=', 2, 2]])
 
     async def test__update_by_index_id(self):
-        data = await self._fill_data()
+        index_name = 'temp_idx'
+        res = await self.tnt.command('make_third_index("{}")'.format(index_name))
+        index_id = res[0][0]
 
-        res = await self.conn.update(self.TESTER_SPACE_ID, [0],
-                                     [['=', 2, 1]], index=0)
+        try:
+            await self.tnt_reconnect()
+            data = await self._fill_data()
 
-        data[0][2] = 1
-        self.assertIsInstance(res, Response, 'Got response')
-        self.assertEqual(res.code, 0, 'success')
-        self.assertGreater(res.sync, 0, 'sync > 0')
-        self.assertListEqual(res.body, [data[0]], 'Body ok')
+            res = await self.conn.update(self.TESTER_SPACE_ID, [data[0][2]],
+                                         [('=', 2, 1)], index=index_id)
+
+            data[0][2] = 1
+            self.assertIsInstance(res, Response, 'Got response')
+            self.assertEqual(res.code, 0, 'success')
+            self.assertGreater(res.sync, 0, 'sync > 0')
+            self.assertListEqual(res.body, [data[0]], 'Body ok')
+        finally:
+            await self.tnt.command(
+                'box.space.{}.index.{}:drop()'.format(
+                    self.TESTER_SPACE_NAME, index_name)
+            )
 
     async def test__select_by_index_name(self):
-        data = await self._fill_data()
+        index_name = 'temp_idx'
+        res = await self.tnt.command('make_third_index("{}")'.format(index_name))
+        index_id = res[0][0]
 
-        res = await self.conn.update(self.TESTER_SPACE_ID, [0],
-                                     [['=', 2, 1]], index=0)
+        try:
+            await self.tnt_reconnect()
+            data = await self._fill_data()
 
-        data[0][2] = 1
-        self.assertIsInstance(res, Response, 'Got response')
-        self.assertEqual(res.code, 0, 'success')
-        self.assertGreater(res.sync, 0, 'sync > 0')
-        self.assertListEqual(res.body, [data[0]], 'Body ok')
+            res = await self.conn.update(self.TESTER_SPACE_ID, [data[0][2]],
+                                         [['=', 2, 1]], index=index_name)
+
+            data[0][2] = 1
+            self.assertIsInstance(res, Response, 'Got response')
+            self.assertEqual(res.code, 0, 'success')
+            self.assertGreater(res.sync, 0, 'sync > 0')
+            self.assertListEqual(res.body, [data[0]], 'Body ok')
+        finally:
+            await self.tnt.command(
+                'box.space.{}.index.{}:drop()'.format(
+                    self.TESTER_SPACE_NAME, index_name)
+            )
 
     async def test__update_by_index_id_no_schema(self):
         await self._fill_data()
@@ -270,9 +323,15 @@ class UpdateTestCase(BaseTarantoolTestCase):
         except Exception as e:
             self.fail(e)
 
-    async def test__select_by_index_name_no_schema(self):
+    async def test__update_by_index_name_no_schema(self):
         await self.tnt_reconnect(fetch_schema=False)
 
         with self.assertRaises(TarantoolSchemaError):
             await self.conn.update(self.TESTER_SPACE_NAME, [0],
                                    [['=', 2, 1]], index='primary')
+
+    async def test__update_operations_none(self):
+        data = await self._fill_data()
+        res = await self.conn.update(self.TESTER_SPACE_NAME,
+                                     [data[0][0]], None)
+        self.assertListEqual(res.body, [data[0]], 'empty operations')

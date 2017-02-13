@@ -34,11 +34,12 @@ class InsertTestCase(BaseTarantoolTestCase):
             await self.conn.insert(self.TESTER_SPACE_NAME, data)
 
     async def test__insert_complex_tuple(self):
-        p, p_copy = get_complex_param(replace_bin=False)
+        p, p_cmp = get_complex_param(replace_bin=False)
         data = [1, 'hello', p]
+        data_cmp = [1, 'hello', p_cmp]
 
         res = await self.conn.insert(self.TESTER_SPACE_ID, data)
-        self.assertListEqual(res.body, [data], 'Body ok')
+        self.assertListEqual(res.body, [data_cmp], 'Body ok')
 
     async def test__insert_replace(self):
         data = [1, 'hello']
