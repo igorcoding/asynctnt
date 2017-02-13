@@ -23,8 +23,8 @@ class ConnectionState(enum.IntEnum):
 
 class Connection:
     __slots__ = (
-        '_host', '_port', '_username', '_password', '_fetch_schema',
-        '_auto_refetch_schema', '_initial_read_buffer_size',
+        '_host', '_port', '_username', '_password',
+        '_fetch_schema', '_auto_refetch_schema', '_initial_read_buffer_size',
         '_encoding', '_connect_timeout', '_reconnect_timeout',
         '_request_timeout', '_loop', '_state', '_state_prev',
         '_transport', '_protocol', '_db',
@@ -45,6 +45,44 @@ class Connection:
                  initial_read_buffer_size=None,
                  loop=None):
 
+        """
+            Connection constructor.
+        :param host:
+                Tarantool host (pass 'unix/' to connect to unix socket)
+        :param port:
+                Tarantool port
+                (pass '/path/to/sockfile' to connect ot unix socket)
+        :param username:
+                Username to use for auth
+                (if None you are connected as a guest)
+        :param password:
+                Password to use for auth
+        :param fetch_schema:
+                Pass True to be able to use spaces and indexes names in
+                data manipulation routines (default is True)
+        :param auto_refetch_schema:
+                If set to True then when ER_WRONG_SCHEMA_VERSION error occurs
+                on a request, schema is refetched and the initial request
+                is resent. If set to False then schema will not be checked by
+                Tarantool, so no errors will occur
+        :param connect_timeout:
+                Time in seconds how long to wait for connecting to socket
+        :param request_timeout:
+                Request timeout (in seconds) for all requests
+                (by default there is no timeout)
+        :param reconnect_timeout:
+                Time in seconds to wait before automatic reconnect
+                (set to 0 or None to disable auto reconnect)
+        :param encoding:
+                The encoding to use for all strings
+                encoding and decoding (default is 'utf-8')
+        :param initial_read_buffer_size:
+                Initial and minimum size of read buffer in bytes.
+                Higher value means less reallocations, but higher
+                memory usage. Lower values
+        :param loop:
+                Asyncio event loop to use
+        """
         self._host = host
         self._port = port
         self._username = username
@@ -78,7 +116,8 @@ class Connection:
 
     def _set_state(self, new_state):
         if self._state != new_state:
-            logger.debug('Changing state %r -> %r', self._state, new_state)
+            logger.debug('Changing state %s -> %s',
+                         self._state.name, new_state.name)
             self._state_prev = self._state
             self._state = new_state
             return True
@@ -212,9 +251,15 @@ class Connection:
                             loop=self._loop)
 
     def connect(self):
+        """
+            Connect coroutine
+        """
         return self._connect(return_exceptions=True)
 
     async def disconnect(self):
+        """
+            Disconnect coroutine
+        """
         if self._state in \
                 {ConnectionState.DISCONNECTING, ConnectionState.DISCONNECTED}:
             return
@@ -237,7 +282,35 @@ class Connection:
             self._set_state(ConnectionState.DISCONNECTED)
         return await waiter
 
+    def close(self):
+        """
+            Same as disconnect, but not a coroutine, i.e. it does not wait
+            for disconnect to finish.
+        """
+        if self._state in \
+                {ConnectionState.DISCONNECTING, ConnectionState.DISCONNECTED}:
+            return
+        self._set_state(ConnectionState.DISCONNECTING)
+        logger.info('%s Disconnecting...', self.fingerprint)
+
+        if self._reconnect_coro:
+            self._reconnect_coro.cancel()
+            self._reconnect_coro = None
+
+        if self._transport:
+            self._disconnect_waiter = None
+            self._transport.close()
+            self._transport = None
+            self._protocol = None
+            self._db = DbMock()
+        else:
+            self._set_state(ConnectionState.DISCONNECTED)
+
     async def reconnect(self):
+        """
+            Reconnect coroutine.
+            Just calls disconnect() and connect()
+        """
         await self.disconnect()
         await self.connect()
 
@@ -247,123 +320,268 @@ class Connection:
 
     @property
     def host(self):
+        """
+            Tarantool host
+        """
         return self._host
 
     @property
     def port(self):
+        """
+            Tarantool port
+        """
         return self._port
 
     @property
     def username(self):
+        """
+            Tarantool username
+        """
         return self._username
 
     @property
     def password(self):
+        """
+            Tarantool password
+        """
         return self._password
 
     @property
     def fetch_schema(self):
+        """
+            fetch_schema flag
+        """
         return self._fetch_schema
 
     @property
     def auto_refetch_schema(self):
+        """
+            auto_refetch_schema flag
+        """
         return self._auto_refetch_schema
 
     @property
     def encoding(self):
+        """
+            Connection encoding
+        """
         return self._encoding
 
     @property
     def reconnect_timeout(self):
+        """
+            Reconnect timeout value
+        """
         return self._reconnect_timeout
 
     @property
     def connect_timeout(self):
+        """
+            Connect timeout value
+        """
         return self._connect_timeout
 
     @property
     def request_timeout(self):
+        """
+            Request timeout value
+        """
         return self._request_timeout
 
     @property
     def version(self):
+        """
+            Protocol version tuple. ex.: (1, 6, 7)
+        """
         if self._protocol is None:
             return None
         return self._protocol.get_version()
 
     @property
     def loop(self):
+        """
+            Asyncio event loop
+        """
         return self._loop
 
     @property
     def state(self):
+        """
+            Current connection state
+            :rtype: ConnectionState
+        """
         return self._state
 
     @property
     def is_connected(self):
+        """
+            Check if connection is active
+        """
         if self._protocol is None:
             return False
         return self._protocol.is_connected()
 
     @property
     def schema(self):
+        """
+            asynctnt.Schema object
+        """
         if self._protocol is None:
             return None
         return self._protocol.schema
 
     @property
     def schema_id(self):
+        """
+            Tarantool's current schema id
+        """
         if self._protocol is None:
             return None
         return self._protocol.schema_id
 
     @property
     def encoding(self):
+        """
+            Connection encoding
+        """
         return self._encoding
 
     @property
     def initial_read_buffer_size(self):
+        """
+            initial_read_buffer_size value
+        """
         return self._initial_read_buffer_size
 
     def refetch_schema(self):
+        """
+            Coroutine to force refetch schema
+        """
         return self._protocol.refetch_schema()
 
-    # def __getattr__(self, item):
-    #     return self._db.__getattribute__(item)
-
     def ping(self, *, timeout=0):
+        """
+            Ping request coroutine
+        :param timeout: Request timeout
+        """
         return self._db.ping(timeout=timeout)
 
     def call16(self, func_name, args=None, *, timeout=0):
+        """
+            Call16 request coroutine. It is a call with an old behaviour
+            (return result of a Tarantool procedure is wrapped into a tuple,
+            if needed)
+        :param func_name: function name to call
+        :param args: arguments to pass to the function (list object)
+        :param timeout: Request timeout
+        """
         return self._db.call16(func_name, args,
                                timeout=timeout)
 
     def call(self, func_name, args=None, *, timeout=0):
+        """
+            Call request coroutine. It is a call with a new behaviour
+            (return result of a Tarantool procedure is not wrapped into
+            an extra tuple). If you're connecting to Tarantool with
+            version < 1.7, then this call method acts like a call16 method
+
+        :param func_name: function name to call
+        :param args: arguments to pass to the function (list object)
+        :param timeout: Request timeout
+        """
         return self._db.call(func_name, args,
                              timeout=timeout)
 
     def eval(self, expression, args=None, *, timeout=0):
+        """
+            Eval request coroutine.
+
+        :param expression: expression to execute
+        :param args: arguments to pass to the function, that will
+                     execute your expression (list object)
+        :param timeout: Request timeout
+        """
         return self._db.eval(expression, args,
                              timeout=timeout)
 
     def select(self, space, key=None, **kwargs):
+        """
+            Select request coroutine.
+
+        :param space: space id or space name.
+        :param key: key to select
+        :param offset: offset to use
+        :param limit: limit to use
+        :param index: index id or name
+        :param iterator:
+                one of the following:
+                    * iterator id (int number),
+                    * asynctnt.Iterator object
+                    * string with an iterator name
+        :param timeout: Request timeout
+        """
         return self._db.select(space, key, **kwargs)
 
     def insert(self, space, t, *, replace=False, timeout=0):
+        """
+            Insert request coroutine.
+
+        :param space: space id or space name.
+        :param t: tuple to insert (list object)
+        :param replace: performs replace request instead of insert
+        :param timeout: Request timeout
+        """
         return self._db.insert(space, t,
                                replace=replace, timeout=timeout)
 
     def replace(self, space, t, *, timeout=0):
+        """
+            Replace request coroutine.
+
+        :param space: space id or space name.
+        :param t: tuple to insert (list object)
+        :param timeout: Request timeout
+        """
         return self._db.replace(space, t,
                                 timeout=timeout)
 
     def delete(self, space, key, **kwargs):
+        """
+            Delete request coroutine.
+
+        :param space: space id or space name.
+        :param key: key to delete
+        :param index: index id or name
+        :param timeout: Request timeout
+        """
         return self._db.delete(space, key, **kwargs)
 
     def update(self, space, key, operations, **kwargs):
+        """
+            Update request coroutine.
+
+        :param space: space id or space name.
+        :param key: key to update
+        :param operations:
+                Operations list. Please refer to
+                https://tarantool.org/doc/book/box/box_space.html?highlight=update#lua-function.space_object.update
+        :param index: index id or name
+        :param timeout: Request timeout
+        """
         return self._db.update(space, key, operations, **kwargs)
 
     def upsert(self, space, t, operations, **kwargs):
+        """
+            Update request coroutine.
+
+        :param space: space id or space name.
+        :param t: tuple to insert if it's not in space
+        :param operations:
+                Operations list to use for update if tuple is already in space.
+                Please refer to
+                https://tarantool.org/doc/book/box/box_space.html?highlight=update#lua-function.space_object.update
+        :param timeout: Request timeout
+        """
         return self._db.upsert(space, t, operations, **kwargs)
 
     def _normalize_api(self):
@@ -384,6 +602,10 @@ class DbMock:
 
 
 async def connect(**kwargs):
+    """
+        connect shorthand. See Connect.__doc__ for kwargs details
+    :return: asynctnt.Connection object
+    """
     c = Connection(**kwargs)
     await c.connect()
     return c
