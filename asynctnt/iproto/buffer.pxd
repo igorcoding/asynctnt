@@ -16,6 +16,10 @@ cdef class WriteBuffer:
 
         bytes _encoding
 
+        ssize_t __op_offset
+        ssize_t __sync_offset
+        ssize_t __schema_id_offset
+
     @staticmethod
     cdef WriteBuffer new(bytes encoding=*)
 
@@ -28,6 +32,7 @@ cdef class WriteBuffer:
     cdef void write_buffer(self, WriteBuffer buf) except *
     cdef void write_header(self, uint64_t sync, tnt.tp_request_type op,
                            int64_t schema_id=*) except *
+    cdef void change_schema_id(self, int64_t new_schema_id)
     cdef void write_length(self)
 
     cdef char *_encode_nil(self, char *p) except NULL

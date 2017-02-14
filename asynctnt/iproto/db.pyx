@@ -30,116 +30,171 @@ cdef class Db:
 
                 # Retry request with updated schema_id
                 req.schema_id = self._protocol._schema_id
+                req.buf.change_schema_id(req.schema_id)
                 return await self._protocol.execute(req, timeout)
             raise
 
     cdef Request _ping(self):
-        return Request.new(tnt.TP_PING,
-                           self.next_sync(),
-                           self._protocol._schema_id,
-                           None)
+        cdef:
+            tnt.tp_request_type op
+            uint64_t sync
+            int64_t schema_id
+            WriteBuffer buf
+
+        op = tnt.TP_PING
+        sync = self.next_sync()
+        schema_id = self._protocol._schema_id
+        buf = WriteBuffer.new(self._encoding)
+        buf.write_header(sync, op, schema_id)
+        buf.write_length()
+        return Request.new(op, sync, schema_id, buf)
 
     cdef Request _call16(self, str func_name, list args):
         cdef:
+            tnt.tp_request_type op
+            uint64_t sync
+            int64_t schema_id
             WriteBuffer buf
 
+        op = tnt.TP_CALL_16
+        sync = self.next_sync()
+        schema_id = self._protocol._schema_id
         buf = WriteBuffer.new(self._encoding)
+        buf.write_header(sync, op, schema_id)
         buf.encode_request_call(func_name, args)
-        return Request.new(tnt.TP_CALL_16,
-                           self.next_sync(),
-                           self._protocol._schema_id,
-                           buf)
+        buf.write_length()
+        return Request.new(op, sync, schema_id, buf)
 
     cdef Request _call(self, str func_name, list args):
         cdef:
+            tnt.tp_request_type op
+            uint64_t sync
+            int64_t schema_id
             WriteBuffer buf
 
+        op = tnt.TP_CALL
+        sync = self.next_sync()
+        schema_id = self._protocol._schema_id
         buf = WriteBuffer.new(self._encoding)
+        buf.write_header(sync, op, schema_id)
         buf.encode_request_call(func_name, args)
-        return Request.new(tnt.TP_CALL,
-                           self.next_sync(),
-                           self._protocol._schema_id,
-                           buf)
+        buf.write_length()
+        return Request.new(op, sync, schema_id, buf)
 
     cdef Request _eval(self, str expression, list args):
         cdef:
+            tnt.tp_request_type op
+            uint64_t sync
+            int64_t schema_id
             WriteBuffer buf
 
+        op = tnt.TP_EVAL
+        sync = self.next_sync()
+        schema_id = self._protocol._schema_id
         buf = WriteBuffer.new(self._encoding)
+        buf.write_header(sync, op, schema_id)
         buf.encode_request_eval(expression, args)
-        return Request.new(tnt.TP_EVAL,
-                           self.next_sync(),
-                           self._protocol._schema_id,
-                           buf)
+        buf.write_length()
+        return Request.new(op, sync, schema_id, buf)
 
     cdef Request _select(self, uint32_t space, uint32_t index, list key,
                          uint64_t offset, uint64_t limit, uint32_t iterator):
         cdef:
+            tnt.tp_request_type op
+            uint64_t sync
+            int64_t schema_id
             WriteBuffer buf
 
+        op = tnt.TP_SELECT
+        sync = self.next_sync()
+        schema_id = self._protocol._schema_id
         buf = WriteBuffer.new(self._encoding)
+        buf.write_header(sync, op, schema_id)
         buf.encode_request_select(space, index, key,
                                   offset, limit, iterator)
-        return Request.new(tnt.TP_SELECT,
-                           self.next_sync(),
-                           self._protocol._schema_id,
-                           buf)
+        buf.write_length()
+        return Request.new(op, sync, schema_id, buf)
 
     cdef Request _insert(self, uint32_t space, list t, bint replace):
         cdef:
             tnt.tp_request_type op
+            uint64_t sync
+            int64_t schema_id
             WriteBuffer buf
 
         op = tnt.TP_INSERT if not replace else tnt.TP_REPLACE
+        sync = self.next_sync()
+        schema_id = self._protocol._schema_id
         buf = WriteBuffer.new(self._encoding)
+        buf.write_header(sync, op, schema_id)
         buf.encode_request_insert(space, t)
-        return Request.new(op,
-                           self.next_sync(),
-                           self._protocol._schema_id,
-                           buf)
+        buf.write_length()
+        return Request.new(op, sync, schema_id, buf)
 
     cdef Request _delete(self, uint32_t space, uint32_t index, list key):
         cdef:
+            tnt.tp_request_type op
+            uint64_t sync
+            int64_t schema_id
             WriteBuffer buf
 
+        op = tnt.TP_DELETE
+        sync = self.next_sync()
+        schema_id = self._protocol._schema_id
         buf = WriteBuffer.new(self._encoding)
+        buf.write_header(sync, op, schema_id)
         buf.encode_request_delete(space, index, key)
-        return Request.new(tnt.TP_DELETE,
-                           self.next_sync(),
-                           self._protocol._schema_id,
-                           buf)
+        buf.write_length()
+        return Request.new(op, sync, schema_id, buf)
 
     cdef Request _update(self, uint32_t space, uint32_t index,
                          list key, list operations):
         cdef:
+            tnt.tp_request_type op
+            uint64_t sync
+            int64_t schema_id
             WriteBuffer buf
 
+        op = tnt.TP_UPDATE
+        sync = self.next_sync()
+        schema_id = self._protocol._schema_id
         buf = WriteBuffer.new(self._encoding)
+        buf.write_header(sync, op, schema_id)
         buf.encode_request_update(space, index, key, operations)
-        return Request.new(tnt.TP_UPDATE,
-                           self.next_sync(),
-                           self._protocol._schema_id,
-                           buf)
+        buf.write_length()
+        return Request.new(op, sync, schema_id, buf)
 
     cdef Request _upsert(self, uint32_t space, list t, list operations):
         cdef:
+            tnt.tp_request_type op
+            uint64_t sync
+            int64_t schema_id
             WriteBuffer buf
 
+        op = tnt.TP_UPSERT
+        sync = self.next_sync()
+        schema_id = self._protocol._schema_id
         buf = WriteBuffer.new(self._encoding)
+        buf.write_header(sync, op, schema_id)
         buf.encode_request_upsert(space, t, operations)
-        return Request.new(tnt.TP_UPSERT,
-                           self.next_sync(),
-                           self._protocol._schema_id,
-                           buf)
+        buf.write_length()
+        return Request.new(op, sync, schema_id, buf)
 
     cdef Request _auth(self, bytes salt, str username, str password):
         cdef:
+            tnt.tp_request_type op
+            uint64_t sync
+            int64_t schema_id
             WriteBuffer buf
 
             bytes username_bytes, password_bytes
             bytes hash1, hash2, scramble
 
+        op = tnt.TP_AUTH
+        sync = self.next_sync()
+        schema_id = self._protocol._schema_id
         buf = WriteBuffer.new(self._encoding)
+        buf.write_header(sync, op, schema_id)
 
         username_bytes = encode_unicode_string(username, self._encoding)
         password_bytes = encode_unicode_string(password, self._encoding)
@@ -150,10 +205,9 @@ cdef class Db:
         scramble = Db._strxor(hash1, scramble)
 
         buf.encode_request_auth(username_bytes, scramble)
-        return Request.new(tnt.TP_AUTH,
-                           self.next_sync(),
-                           self._protocol._schema_id,
-                           buf)
+
+        buf.write_length()
+        return Request.new(op, sync, schema_id, buf)
 
     @staticmethod
     cdef bytes _sha1(tuple values):

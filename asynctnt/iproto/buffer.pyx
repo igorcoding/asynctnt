@@ -27,6 +27,9 @@ cdef class WriteBuffer:
         self._size = _BUFFER_INITIAL_SIZE
         self._length = 0
         self._encoding = None
+        self.__op_offset = -1
+        self.__sync_offset = -1
+        self.__schema_id_offset = -1
 
     def __dealloc__(self):
         if self._buf is not NULL and not self._smallbuf_inuse:
@@ -137,15 +140,25 @@ cdef class WriteBuffer:
         p = begin = &self._buf[self._length]
         p = mp_encode_map(&p[5], map_size)
         p = mp_encode_uint(p, tnt.TP_CODE)
+        self.__op_offset = (p - begin)  # save op position
         p = mp_encode_uint(p, <uint32_t>op)
         p = mp_encode_uint(p, tnt.TP_SYNC)
+        self.__sync_offset = (p - begin)  # save sync position
         p = mp_encode_uint(p, sync)
 
         if schema_id > 0:
             p = mp_encode_uint(p, tnt.TP_SCHEMA_ID)
+            self.__schema_id_offset = (p - begin)  # save sync position
             p = mp_encode_uint(p, schema_id)
 
         self._length += (p - begin)
+
+    cdef void change_schema_id(self, int64_t new_schema_id):
+        cdef char *p
+
+        if self.__schema_id_offset > 0 and new_schema_id > 0:
+            p = &self._buf[self.__schema_id_offset]
+            mp_encode_uint(p, new_schema_id)
 
     cdef void write_length(self):
         cdef:

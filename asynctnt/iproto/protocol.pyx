@@ -236,7 +236,7 @@ cdef class BaseProtocol(CoreProtocol):
             raise TarantoolNotConnectedError('Tarantool is not connected')
 
         cpython.dict.PyDict_SetItem(self.reqs, req.sync, req)
-        self._write(req.build())
+        self._write(req.buf)
 
         return self._new_waiter_for_request(req, timeout)
 
