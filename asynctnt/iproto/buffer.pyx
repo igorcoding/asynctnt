@@ -128,7 +128,7 @@ cdef class WriteBuffer:
         self._length += buf._length
 
     cdef void write_header(self, uint64_t sync, tnt.tp_request_type op,
-                           int64_t schema_id=-1) except *:
+                           int64_t schema_id) except *:
         cdef:
             char *begin = NULL
             char *p = NULL

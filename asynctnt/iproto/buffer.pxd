@@ -31,7 +31,7 @@ cdef class WriteBuffer:
     cdef void _reallocate(self, ssize_t new_size) except *
     cdef void write_buffer(self, WriteBuffer buf) except *
     cdef void write_header(self, uint64_t sync, tnt.tp_request_type op,
-                           int64_t schema_id=*) except *
+                           int64_t schema_id) except *
     cdef void change_schema_id(self, int64_t new_schema_id)
     cdef void write_length(self)
 

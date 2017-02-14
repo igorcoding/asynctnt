@@ -34,6 +34,34 @@ versions 1.6+.
 
 On all of the benchmarks below `wal_mode = none` 
 
+### Sequential
+
+RPS on running 40k requests (no `uvloop`):
+
+| Request       | aiotarantool  | asynctnt  |
+| ------------- |:-------------:| ---------:|
+| ping          | 5010.60       | 9037.07   |
+| call          | 4575.98       | 9113.32   |
+| eval          | 4096.32       | 8921.95   |
+| select        | 4063.15       | 9681.12   |
+| insert        | 4038.04       | 9332.21   |
+| update        | 3945.12       | 10532.75  |
+
+
+RPS on running 40k requests (with `uvloop`):
+
+| Request       | aiotarantool  | asynctnt  |
+| ------------- |:-------------:| ---------:|
+| ping          | 7204.31       | 20372.59  |
+| call          | 6723.58       | 17279.21  |
+| eval          | 7001.27       | 16642.67  |
+| select        | 7028.03       | 17730.24  |
+| insert        | 7054.06       | 17384.26  |
+| update        | 6618.01       | 15990.12  |
+
+
+### Parallel coroutines
+
 RPS on running 200k requests in 300 parallel coroutines (no `uvloop`):
 
 | Request       | aiotarantool  | asynctnt  |
