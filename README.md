@@ -1,7 +1,5 @@
 # asynctnt
 
-[![Build Status](https://travis-ci.com/igorcoding/asynctnt.svg?token=rFNDyy6cdNgiTQaxXzt8&branch=master)](https://travis-ci.com/igorcoding/asynctnt)
-
 asynctnt is a high-performance [Tarantool](https://tarantool.org/) database 
 connector library for Python/asyncio. It was highly inspired by 
 [asyncpg](https://github.com/MagicStack/asyncpg) module.
@@ -48,6 +46,7 @@ RPS on running 200k requests in 300 parallel coroutines (no `uvloop`):
 Let's enable uvloop. This is where asynctnt shines.
 RPS on running 200k requests in 300 parallel coroutines (with `uvloop`):
 
+
 | Request       | aiotarantool  | asynctnt  |
 | ------------- |:-------------:| ---------:|
 | ping          | 30050.55      | 131317.35 |
@@ -56,6 +55,7 @@ RPS on running 200k requests in 300 parallel coroutines (with `uvloop`):
 | select        | 22346.14      | 88748.47  |
 | insert        | 25811.84      | 82526.94  |
 | update        | 21914.15      | 80865.00  |
+
   
 ## Roadmap
 

@@ -1,0 +1,4 @@
+recursive-include tests *.py
+recursive-include asynctnt *.pyx *.pxd *.pxi *.py *.c *.h
+recursive-include third_party *
+include LICENSE.txt README.md Makefile

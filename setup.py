@@ -14,6 +14,13 @@ except ImportError:
 
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
 
+description = "A fast Tarantool Database connector for Python/asyncio."
+try:
+    import pypandoc
+    long_description = pypandoc.convert('README.md', 'rst')
+except (IOError, ImportError):
+    long_description = description
+
 
 def find_version():
     for line in open("asynctnt/__init__.py"):
@@ -176,8 +183,10 @@ setup(
     version=find_version(),
     author="igorcoding",
     author_email="igorcoding@gmail.com",
+    url='https://github.com/igorcoding/asynctnt',
+    license='Apache Software License',
     classifiers=[
-        "Programming Language :: Python :: Only",
+        "Programming Language :: Python :: 3 :: Only",
         "Programming Language :: Python :: 3.5",
         "Programming Language :: Python :: 3.6",
         "Intended Audience :: Developers",
@@ -188,7 +197,7 @@ setup(
     install_requires=[
         'PyYAML>=3.12'
     ],
-    description="A fast Tarantool Database connector for Python/asyncio.",
-    long_description=open("README.md").read(),
+    description=description,
+    long_description=long_description,
     test_suite='run_tests.discover_tests'
 )

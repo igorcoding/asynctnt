@@ -12,6 +12,7 @@ if [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then
     sudo apt-get -qq update
     sudo apt-get -y install tarantool
     sudo tarantoolctl stop example || exit 0
+    sudo apt-get install pandoc
 elif [[ "${TRAVIS_OS_NAME}" == "osx" ]]; then
     if [[ "${TARANTOOL_VERSION}" == "1_7" ]]; then
         brew install tarantool --HEAD

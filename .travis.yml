@@ -1,78 +1,82 @@
 language: python
-
 matrix:
   fast_finish: true
   include:
-    # osx
-    - os: osx
-      language: generic
-      env: BUILD=tests PYTHON_VERSION=3.5.2 TARANTOOL_VERSION=1_6
-
-    - os: osx
-      language: generic
-      env: BUILD=tests PYTHON_VERSION=3.6.0 TARANTOOL_VERSION=1_6
-
-    - os: osx
-      language: generic
-      env: BUILD=tests PYTHON_VERSION=3.5.2 TARANTOOL_VERSION=1_7
-
-    - os: osx
-      language: generic
-      env: BUILD=tests PYTHON_VERSION=3.6.0 TARANTOOL_VERSION=1_7
-
-    # precise
-    - os: linux
-      dist: precise
-      sudo: required
-      language: python
-      python: "3.5"
-      env: BUILD=quicktests TARANTOOL_VERSION=1_6
-
-    - os: linux
-      dist: precise
-      sudo: required
-      language: python
-      python: "3.5"
-      env: BUILD=quicktests TARANTOOL_VERSION=1_7
-
-    # trusty
-    - os: linux
-      dist: trusty
-      sudo: required
-      language: python
-      python: "3.5"
-      env: BUILD=quicktests TARANTOOL_VERSION=1_6
-
-    - os: linux
-      dist: trusty
-      sudo: required
-      language: python
-      python: "3.5"
-      env: BUILD=quicktests TARANTOOL_VERSION=1_7
-
-    # latest tarantool
-    - os: linux
-      dist: trusty
-      sudo: required
-      language: python
-      python: "3.5"
-      env: BUILD=tests TARANTOOL_VERSION=1_7
-
-    - os: linux
-      dist: trusty
-      sudo: required
-      language: python
-      python: "3.6"
-      env: BUILD=tests TARANTOOL_VERSION=1_7
+  - os: osx
+    language: generic
+    env: BUILD=tests PYTHON_VERSION=3.5.2 TARANTOOL_VERSION=1_6
+  - os: osx
+    language: generic
+    env: BUILD=tests PYTHON_VERSION=3.6.0 TARANTOOL_VERSION=1_6
+  - os: osx
+    language: generic
+    env: BUILD=tests PYTHON_VERSION=3.5.2 TARANTOOL_VERSION=1_7
+  - os: osx
+    language: generic
+    env: BUILD=tests PYTHON_VERSION=3.6.0 TARANTOOL_VERSION=1_7
+  - os: linux
+    dist: precise
+    sudo: required
+    language: python
+    python: '3.5'
+    env: BUILD=quicktests TARANTOOL_VERSION=1_6
+  - os: linux
+    dist: precise
+    sudo: required
+    language: python
+    python: '3.5'
+    env: BUILD=quicktests TARANTOOL_VERSION=1_7
+  - os: linux
+    dist: trusty
+    sudo: required
+    language: python
+    python: '3.5'
+    env: BUILD=quicktests TARANTOOL_VERSION=1_6
+  - os: linux
+    dist: trusty
+    sudo: required
+    language: python
+    python: '3.5'
+    env: BUILD=quicktests TARANTOOL_VERSION=1_7
+  - os: linux
+    dist: trusty
+    sudo: required
+    language: python
+    python: '3.5'
+    env: BUILD=tests TARANTOOL_VERSION=1_7
+  - os: linux
+    dist: trusty
+    sudo: required
+    language: python
+    python: '3.6'
+    env: BUILD=tests,release TARANTOOL_VERSION=1_7
 
 cache:
   - pip
 
 before_install:
-  - .ci/travis-before-install.sh
+  - ".ci/travis-before-install.sh"
 
 install:
-    - .ci/travis-install.sh
+  - ".ci/travis-install.sh"
 
 script:
-    - .ci/travis-tests.sh
+  - ".ci/travis-tests.sh"
+
+deploy:
+  - provider: releases
+    skip_cleanup: true
+    api_key:
+      secure: QldT0BfRC5AiavTIQqB9TkRK30J0UVd0yfLll2UjgJIB615jSbr/9NLLjI50x3TXyyeD80I9N+EvyGWl0sX1aWZE/sFYalbfCPFWfbpZ3XnsvNxgbzAhKrWbW0F7Vyb2hccq8fBuCo7m9WaTfFfTFe3ziEpFLDtZqkWKvv3GPqQxqrDW4tgq2dcyqZKTDX2XTN/SQNsHFZtaIvSyNRYCd1Z4ZrnOEnRZH7nxNKWR5lQ25o2Z9u4lukaq//M5rlphQQU74y3O8oYq/FiR6PzmSoH2+AKzJ2MiLqdbH/VhmAU+nsMwLPbSM8YnIICJh4lRVw7Ug5YNUogXHWyiCg6ztOQhPAL8v4/TTMteGT/8oMt7kc/w1EENaaMRhyfaLOC9glkJWcamnGBsJ2OJR1ogqNzmJvvWbSMHZB8fi/xWjWJ5YonGbR+MSh5h5q7h0yr7uO6M4PUVdpqKgQCfvowwyJPC5udgtGnBR3GE9g85jquVPdK+oCHZsJFBKB96Hci6AejlM0eRWV/RZI2fzv5/2UUkwQnnpF8pejtw9y3cG6kyJABdQSQjb/2illv8HXZe5m9orcSvjS2t6zpPYPWvqBJn2PTRwnq4Djl1Wo8PcwBLgjtN8JhM2NhXl3JrN7aLUtcBUqlmBgA5LWPHvaQtq6MA466rOV8x+pVNfEo0sL4=
+    file_glob: true
+    file: dist/asynctnt*.tar.gz
+    on:
+      repo: igorcoding/asynctnt
+      tags: true
+      condition: '"${BUILD}" == *release*'
+
+  - provider: script
+    script: .ci/travis-release.sh
+    on:
+      tags: true
+      condition: '"${BUILD}" == *release*'

@@ -58,7 +58,6 @@ async def bench_asynctnt(n, b, loop=None):
 
     async def bulk_f():
         for _ in range(n_requests_per_bulk):
-            await getattr(conn, method)(*args)
             await conn.ping()
             # await conn.call('test')
             # await conn.eval('return "hello"')
