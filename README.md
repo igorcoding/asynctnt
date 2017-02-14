@@ -1,5 +1,8 @@
 # asynctnt
 
+[![Build Status](https://travis-ci.org/igorcoding/asynctnt.svg?branch=master)](https://travis-ci.org/igorcoding/asynctnt)
+
+
 asynctnt is a high-performance [Tarantool](https://tarantool.org/) database 
 connector library for Python/asyncio. It was highly inspired by 
 [asyncpg](https://github.com/MagicStack/asyncpg) module.
