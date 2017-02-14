@@ -2,54 +2,47 @@ language: python
 matrix:
   fast_finish: true
   include:
-  - os: osx
-    language: generic
-    env: BUILD=tests PYTHON_VERSION=3.5.2 TARANTOOL_VERSION=1_6
-  - os: osx
-    language: generic
-    env: BUILD=tests PYTHON_VERSION=3.6.0 TARANTOOL_VERSION=1_6
-  - os: osx
-    language: generic
-    env: BUILD=tests PYTHON_VERSION=3.5.2 TARANTOOL_VERSION=1_7
-  - os: osx
-    language: generic
-    env: BUILD=tests PYTHON_VERSION=3.6.0 TARANTOOL_VERSION=1_7
-  - os: linux
-    dist: precise
-    sudo: required
-    language: python
-    python: '3.5'
-    env: BUILD=quicktests TARANTOOL_VERSION=1_6
-  - os: linux
-    dist: precise
-    sudo: required
-    language: python
-    python: '3.5'
-    env: BUILD=quicktests TARANTOOL_VERSION=1_7
-  - os: linux
-    dist: trusty
-    sudo: required
-    language: python
-    python: '3.5'
-    env: BUILD=quicktests TARANTOOL_VERSION=1_6
-  - os: linux
-    dist: trusty
-    sudo: required
-    language: python
-    python: '3.5'
-    env: BUILD=quicktests TARANTOOL_VERSION=1_7
-  - os: linux
-    dist: trusty
-    sudo: required
-    language: python
-    python: '3.5'
-    env: BUILD=tests TARANTOOL_VERSION=1_7
-  - os: linux
-    dist: trusty
-    sudo: required
-    language: python
-    python: '3.6'
-    env: BUILD=tests,release TARANTOOL_VERSION=1_7
+
+    # osx
+    - os: osx
+      language: generic
+      env: BUILD=tests PYTHON_VERSION=3.6.0 TARANTOOL_VERSION=1_6
+
+    - os: osx
+      language: generic
+      env: BUILD=tests PYTHON_VERSION=3.6.0 TARANTOOL_VERSION=1_7
+
+    # precise python3.5 Tarantool 1.6
+    - os: linux
+      dist: precise
+      sudo: required
+      language: python
+      python: '3.5'
+      env: BUILD=quicktests TARANTOOL_VERSION=1_6
+
+    # trusty python3.5 Tarantool 1.6
+    - os: linux
+      dist: trusty
+      sudo: required
+      language: python
+      python: '3.5'
+      env: BUILD=quicktests TARANTOOL_VERSION=1_6
+
+    # trusty python3.5 Tarantool 1.7
+    - os: linux
+      dist: trusty
+      sudo: required
+      language: python
+      python: '3.5'
+      env: BUILD=tests TARANTOOL_VERSION=1_7
+
+    # trusty python3.6 Tarantool 1.7 + deploy
+    - os: linux
+      dist: trusty
+      sudo: required
+      language: python
+      python: '3.6'
+      env: BUILD=tests,release TARANTOOL_VERSION=1_7
 
 cache:
   - pip
