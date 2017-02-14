@@ -2,7 +2,8 @@ import asyncio
 
 from asynctnt import Iterator
 from asynctnt import Response
-from asynctnt.exceptions import TarantoolSchemaError
+from asynctnt.exceptions import TarantoolSchemaError, TarantoolDatabaseError, \
+    ErrorCode
 from tests import BaseTarantoolTestCase
 from tests.util import get_complex_param
 
@@ -332,6 +333,13 @@ class UpdateTestCase(BaseTarantoolTestCase):
 
     async def test__update_operations_none(self):
         data = await self._fill_data()
-        res = await self.conn.update(self.TESTER_SPACE_NAME,
-                                     [data[0][0]], None)
+        try:
+            res = await self.conn.update(self.TESTER_SPACE_NAME,
+                                         [data[0][0]], None)
+        except TarantoolDatabaseError as e:
+            if self.conn.version < (1, 7):
+                if e.code == ErrorCode.ER_ILLEGAL_PARAMS:
+                    # success
+                    return
+            raise
         self.assertListEqual(res.body, [data[0]], 'empty operations')

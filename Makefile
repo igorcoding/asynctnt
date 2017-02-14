@@ -41,6 +41,9 @@ test:
 	$(PYTHON) -m unittest discover -s tests
 	#USE_UVLOOP=1 $(PYTHON) -m unittest discover -s tests
 
+quicktest:
+	$(PYTHON) -m unittest discover -s tests
+
 
 test_16:
 	TARANTOOL_DOCKER_VERSION=1.6 $(PYTHON) -m unittest discover -s tests

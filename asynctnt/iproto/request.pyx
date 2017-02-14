@@ -1,8 +1,11 @@
+cimport cython
 from libc.stdint cimport uint64_t, int64_t
 
 cimport tnt
 
 
+@cython.final
+@cython.freelist(_BUFFER_FREELIST_SIZE)
 cdef class Request:
     @staticmethod
     cdef inline Request new(tnt.tp_request_type op,

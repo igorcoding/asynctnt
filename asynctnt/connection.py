@@ -9,7 +9,7 @@ from asynctnt.iproto import protocol
 from asynctnt.log import logger
 
 __all__ = (
-    'Connection', 'connect'
+    'Connection', 'connect', 'ConnectionState'
 )
 
 

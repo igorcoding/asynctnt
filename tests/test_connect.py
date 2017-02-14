@@ -125,6 +125,7 @@ class ConnectTestCase(BaseTarantoolTestCase):
         coro = self.ensure_future(conn.connect())
         await self.sleep(0.3)
         await self.tnt.start()
+        await self.sleep(1)
         await coro
         self.assertEqual(conn.state, ConnectionState.CONNECTED)
         await conn.disconnect()

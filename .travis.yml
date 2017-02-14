@@ -1,23 +1,78 @@
 language: python
-python:
-  - 3.5
-  - 3.5-dev
-  - 3.6
-  - 3.6-dev
-  - 3.7-dev
-  - nightly
+
+matrix:
+  fast_finish: true
+  include:
+    # osx
+    - os: osx
+      language: generic
+      env: BUILD=tests PYTHON_VERSION=3.5.2 TARANTOOL_VERSION=1_6
+
+    - os: osx
+      language: generic
+      env: BUILD=tests PYTHON_VERSION=3.6.0 TARANTOOL_VERSION=1_6
+
+    - os: osx
+      language: generic
+      env: BUILD=tests PYTHON_VERSION=3.5.2 TARANTOOL_VERSION=1_7
+
+    - os: osx
+      language: generic
+      env: BUILD=tests PYTHON_VERSION=3.6.0 TARANTOOL_VERSION=1_7
+
+    # precise
+    - os: linux
+      dist: precise
+      sudo: required
+      language: python
+      python: "3.5"
+      env: BUILD=quicktests TARANTOOL_VERSION=1_6
+
+    - os: linux
+      dist: precise
+      sudo: required
+      language: python
+      python: "3.5"
+      env: BUILD=quicktests TARANTOOL_VERSION=1_7
+
+    # trusty
+    - os: linux
+      dist: trusty
+      sudo: required
+      language: python
+      python: "3.5"
+      env: BUILD=quicktests TARANTOOL_VERSION=1_6
+
+    - os: linux
+      dist: trusty
+      sudo: required
+      language: python
+      python: "3.5"
+      env: BUILD=quicktests TARANTOOL_VERSION=1_7
+
+    # latest tarantool
+    - os: linux
+      dist: trusty
+      sudo: required
+      language: python
+      python: "3.5"
+      env: BUILD=tests TARANTOOL_VERSION=1_7
+
+    - os: linux
+      dist: trusty
+      sudo: required
+      language: python
+      python: "3.6"
+      env: BUILD=tests TARANTOOL_VERSION=1_7
+
+cache:
+  - pip
+
 before_install:
-  - curl -L https://packagecloud.io/tarantool/1_7/gpgkey | sudo apt-key add -
-  - release=`lsb_release -c -s`
-  - sudo apt-get -y install apt-transport-https
-  - sudo rm -f /etc/apt/sources.list.d/*tarantool*.list
-  - echo "deb https://packagecloud.io/tarantool/1_7/ubuntu/ $release main" | sudo tee /etc/apt/sources.list.d/tarantool_1_7.list
-  - echo "deb-src https://packagecloud.io/tarantool/1_7/ubuntu/ $release main" | sudo tee -a /etc/apt/sources.list.d/tarantool_1_7.list
-  - sudo apt-get -qq update
-  - sudo apt-get -y install tarantool
-  - sudo tarantoolctl stop example
+  - .ci/travis-before-install.sh
+
 install:
-  - pip install -r requirements.txt
-  - pip install -e .
+    - .ci/travis-install.sh
+
 script:
-  - make test
+    - .ci/travis-tests.sh
