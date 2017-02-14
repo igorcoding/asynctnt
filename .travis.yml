@@ -56,6 +56,9 @@ install:
 script:
   - ".ci/travis-tests.sh"
 
+after_success:
+  - if [[ "${BUILD}" == *coverage* ]]; then coveralls; fi
+
 deploy:
   - provider: releases
     skip_cleanup: true

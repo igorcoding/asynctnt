@@ -19,5 +19,5 @@ else
 fi
 
 if [[ "${BUILD}" == *coverage* ]]; then
-    make debug && coverage run --source=asynctnt setup.py test && coveralls
+    make debug && coverage run --source=asynctnt setup.py test
 fi
