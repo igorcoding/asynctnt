@@ -42,7 +42,7 @@ matrix:
       sudo: required
       language: python
       python: '3.6'
-      env: BUILD=tests,release TARANTOOL_VERSION=1_7
+      env: BUILD=tests,coverage,release TARANTOOL_VERSION=1_7
 
 cache:
   - pip

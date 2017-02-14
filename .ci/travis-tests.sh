@@ -17,3 +17,7 @@ else
     make && make test
     make clean && make debug && make test
 fi
+
+if [[ "${BUILD}" == *coverage* ]]; then
+    make debug && coverage run --source=asynctnt setup.py test && coveralls
+fi
