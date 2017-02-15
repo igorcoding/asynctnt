@@ -15,6 +15,8 @@ class ConnectTestCase(BaseTarantoolTestCase):
         conn = asynctnt.Connection(host=self.tnt.host, port=self.tnt.port,
                                    reconnect_timeout=0,
                                    loop=self.loop)
+        self.assertEqual(conn.state, ConnectionState.IDLE)
+
         await conn.connect()
         self.assertIsNotNone(conn._transport)
         self.assertIsNotNone(conn._protocol)
@@ -149,3 +151,21 @@ class ConnectTestCase(BaseTarantoolTestCase):
         finally:
             await conn.disconnect()
 
+    async def test__connect_force_disconnect(self):
+        conn = asynctnt.Connection(host=self.tnt.host, port=44444,
+                                   reconnect_timeout=0.3,
+                                   loop=self.loop)
+        self.ensure_future(conn.connect())
+        await self.sleep(1)
+        await conn.disconnect()
+        self.assertEqual(conn.state, ConnectionState.DISCONNECTED)
+
+    async def test__close(self):
+        conn = asynctnt.Connection(host=self.tnt.host, port=self.tnt.port,
+                                   reconnect_timeout=0.3,
+                                   loop=self.loop)
+        await conn.connect()
+        await self.sleep(0.1)
+        conn.close()
+        await self.sleep(0.1)
+        self.assertEqual(conn.state, ConnectionState.DISCONNECTED)

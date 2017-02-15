@@ -14,11 +14,12 @@ __all__ = (
 
 
 class ConnectionState(enum.IntEnum):
-    CONNECTING = 0
-    CONNECTED = 1
-    RECONNECTING = 2
-    DISCONNECTING = 3
-    DISCONNECTED = 4
+    IDLE = 0
+    CONNECTING = 1
+    CONNECTED = 2
+    RECONNECTING = 3
+    DISCONNECTING = 4
+    DISCONNECTED = 5
 
 
 class Connection:
@@ -109,8 +110,8 @@ class Connection:
         self._protocol = None
         self._db = DbMock()
 
-        self._state = ConnectionState.DISCONNECTED
-        self._state_prev = ConnectionState.DISCONNECTED
+        self._state = ConnectionState.IDLE
+        self._state_prev = ConnectionState.IDLE
         self._disconnect_waiter = None
         self._reconnect_coro = None
 
@@ -167,6 +168,7 @@ class Connection:
                     ConnectionState.CONNECTING,
                     ConnectionState.CONNECTED,
                     ConnectionState.DISCONNECTING,
+                    ConnectionState.DISCONNECTED,
                 }
                 if self._state in ignore_states:
                     return
@@ -312,6 +314,7 @@ class Connection:
             Just calls disconnect() and connect()
         """
         await self.disconnect()
+        self._set_state(ConnectionState.IDLE)
         await self.connect()
 
     @property
@@ -463,6 +466,7 @@ class Connection:
         """
             Ping request coroutine
         :param timeout: Request timeout
+        :rtype: asynctnt.Response
         """
         return self._db.ping(timeout=timeout)
 
@@ -474,6 +478,7 @@ class Connection:
         :param func_name: function name to call
         :param args: arguments to pass to the function (list object)
         :param timeout: Request timeout
+        :rtype: asynctnt.Response
         """
         return self._db.call16(func_name, args,
                                timeout=timeout)
@@ -488,6 +493,7 @@ class Connection:
         :param func_name: function name to call
         :param args: arguments to pass to the function (list object)
         :param timeout: Request timeout
+        :rtype: asynctnt.Response
         """
         return self._db.call(func_name, args,
                              timeout=timeout)
@@ -500,6 +506,7 @@ class Connection:
         :param args: arguments to pass to the function, that will
                      execute your expression (list object)
         :param timeout: Request timeout
+        :rtype: asynctnt.Response
         """
         return self._db.eval(expression, args,
                              timeout=timeout)
@@ -519,6 +526,7 @@ class Connection:
                     * asynctnt.Iterator object
                     * string with an iterator name
         :param timeout: Request timeout
+        :rtype: asynctnt.Response
         """
         return self._db.select(space, key, **kwargs)
 
@@ -530,6 +538,7 @@ class Connection:
         :param t: tuple to insert (list object)
         :param replace: performs replace request instead of insert
         :param timeout: Request timeout
+        :rtype: asynctnt.Response
         """
         return self._db.insert(space, t,
                                replace=replace, timeout=timeout)
@@ -541,6 +550,7 @@ class Connection:
         :param space: space id or space name.
         :param t: tuple to insert (list object)
         :param timeout: Request timeout
+        :rtype: asynctnt.Response
         """
         return self._db.replace(space, t,
                                 timeout=timeout)
@@ -553,6 +563,7 @@ class Connection:
         :param key: key to delete
         :param index: index id or name
         :param timeout: Request timeout
+        :rtype: asynctnt.Response
         """
         return self._db.delete(space, key, **kwargs)
 
@@ -581,6 +592,7 @@ class Connection:
                 Please refer to
                 https://tarantool.org/doc/book/box/box_space.html?highlight=update#lua-function.space_object.update
         :param timeout: Request timeout
+        :rtype: asynctnt.Response
         """
         return self._db.upsert(space, t, operations, **kwargs)
 

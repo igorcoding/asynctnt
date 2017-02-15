@@ -119,11 +119,11 @@ cdef class CoreProtocol:
                 resp = response_parse(p, packet_len, self.encoding)
                 p = &p[packet_len]  # skip entire packet
 
-                sync_obj = <object>resp.sync
+                sync_obj = <object>resp._sync
 
                 req_p = cpython.dict.PyDict_GetItem(self.reqs, sync_obj)
                 if req_p is NULL:
-                    logger.warning('sync %d not found', resp.sync)
+                    logger.warning('sync %d not found', resp._sync)
                     continue
 
                 req = <Request>req_p
@@ -133,9 +133,9 @@ cdef class CoreProtocol:
                 waiter = req.waiter
                 if waiter is not None \
                         and not waiter.done():
-                    if resp.code != 0:
+                    if resp._code != 0:
                         waiter.set_exception(
-                            TarantoolDatabaseError(resp.code, resp.errmsg))
+                            TarantoolDatabaseError(resp._code, resp._errmsg))
                     else:
                         waiter.set_result(resp)
 

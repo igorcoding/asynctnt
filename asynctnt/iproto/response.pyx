@@ -9,29 +9,57 @@ import yaml
 
 
 cdef class Response:
+    def __cinit__(self):
+        self._sync = 0
+        self._code = 0
+        self._schema_id = -1
+        self._errmsg = None
+        self._body = None
+        self._encoding = None
+
     @staticmethod
     cdef inline Response new(bytes encoding):
         cdef Response resp
         resp = Response.__new__(Response)
-        resp.sync = 0
-        resp.code = 0
-        resp.schema_id = -1
-        resp.errmsg = None
-        resp.body = None
-        resp.encoding = encoding
+        resp._encoding = encoding
         return resp
 
-    cdef inline has_schema_id(self):
-        return self.schema_id != -1
-
     cdef inline is_error(self):
-        return self.code != 0
+        return self._code != 0
 
     def __repr__(self):
-        return '<Response: code={}, sync={}>'.format(self.code, self.sync)
+        body_len = None
+        if self._body is not None:
+            body_len = len(self._body)
+        return '<Response: code={}, sync={}, body_len={}>'.format(
+            self._code, self._sync, body_len)
 
     def body2yaml(self):
-        return yaml.dump(self.body, allow_unicode=True)
+        return yaml.dump(self._body, allow_unicode=True)
+
+    @property
+    def sync(self):
+        return self._sync
+
+    @property
+    def code(self):
+        return self._code
+
+    @property
+    def schema_id(self):
+        return self._schema_id
+
+    @property
+    def errmsg(self):
+        return self._errmsg
+
+    @property
+    def body(self):
+        return self._body
+
+    @property
+    def encoding(self):
+        return self._encoding
 
 
 cdef object _decode_obj(const char** p, bytes encoding):
@@ -152,18 +180,18 @@ cdef Response response_parse(const char *buf, uint32_t buf_len,
             if mp_typeof(b[0]) != MP_UINT:
                 raise TypeError('code type must be a MP_UINT')
 
-            resp.code = <uint32_t>mp_decode_uint(&b)
-            resp.code &= 0x7FFF
+            resp._code = <uint32_t>mp_decode_uint(&b)
+            resp._code &= 0x7FFF
         elif key == tnt.TP_SYNC:
             if mp_typeof(b[0]) != MP_UINT:
                 raise TypeError('sync type must be a MP_UINT')
 
-            resp.sync = mp_decode_uint(&b)
+            resp._sync = mp_decode_uint(&b)
         elif key == tnt.TP_SCHEMA_ID:
             if mp_typeof(b[0]) != MP_UINT:
                 raise TypeError('schema_id type must be a MP_UINT')
 
-            resp.schema_id = mp_decode_uint(&b)
+            resp._schema_id = mp_decode_uint(&b)
         else:
             logger.warning('Unknown argument in header. Skipping.')
             mp_next(&b)
@@ -189,10 +217,10 @@ cdef Response response_parse(const char *buf, uint32_t buf_len,
             s = NULL
             s_len = 0
             s = mp_decode_str(&b, &s_len)
-            resp.errmsg = s[:s_len].decode(encoding)
+            resp._errmsg = s[:s_len].decode(encoding)
         elif key == tnt.TP_DATA:
             if mp_typeof(b[0]) != MP_ARRAY:
                 raise TypeError('body data type must be a MP_ARRAY')
-            resp.body = _response_parse_body_data(b, encoding)
+            resp._body = _response_parse_body_data(b, encoding)
 
     return resp

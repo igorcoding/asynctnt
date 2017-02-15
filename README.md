@@ -68,10 +68,10 @@ RPS on running 200k requests in 300 parallel coroutines (no `uvloop`):
 | ------------- |:-------------:| ---------:|
 | ping          | 24961.12      | 28155.32  |
 | call          | 21748.06      | 22103.14  |
-| eval          | 20497.69      | 21456.38  |
-| select        | 19968.26      | 23558.00  |
+| eval          | 20497.69      | 24417.38  |
+| select        | 19968.26      | 26151.00  |
 | insert        | 20604.61      | 22256.69  |
-| update        | 18852.46      | 21988.80  |
+| update        | 18852.46      | 23175.80  |
 
 
 Let's enable uvloop. This is where asynctnt shines.
@@ -130,6 +130,9 @@ async def run():
         await conn.insert('tester', [i, 'hello{}'.format(i)])
         
     values = await conn.select('tester', [])
+    print('Code: {}'.format(values.code))
+    print('Data: {}'.format(values.body))
+    print(values.body2yaml())  # prints as yaml
     
     await conn.disconnect()
 
