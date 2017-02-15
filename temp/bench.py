@@ -46,7 +46,7 @@ async def bench_asynctnt(n, b, loop=None):
     loop = loop or asyncio.get_event_loop()
 
     conn = asynctnt.Connection(host='127.0.0.1',
-                               port=3303,
+                               port=3305,
                                username='t1',
                                password='t1',
                                reconnect_timeout=1, loop=loop)

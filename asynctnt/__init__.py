@@ -1,4 +1,4 @@
 from .connection import Connection, connect
 from .iproto.protocol import Iterator, Response
 
-__version__ = '0.0.8'
+__version__ = '0.0.9'

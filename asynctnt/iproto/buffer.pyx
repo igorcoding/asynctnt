@@ -27,6 +27,7 @@ cdef class WriteBuffer:
         self._size = _BUFFER_INITIAL_SIZE
         self._length = 0
         self._encoding = None
+        self._encoding_str = None
         self.__op_offset = -1
         self.__sync_offset = -1
         self.__schema_id_offset = -1
@@ -54,10 +55,11 @@ cdef class WriteBuffer:
         self._view_count -= 1
 
     @staticmethod
-    cdef WriteBuffer new(bytes encoding=None):
+    cdef WriteBuffer new(bytes encoding, str encoding_str):
         cdef WriteBuffer buf
         buf = WriteBuffer.__new__(WriteBuffer)
         buf._encoding = encoding
+        buf._encoding_str = encoding_str
         return buf
 
     cdef inline _check_readonly(self):
@@ -323,7 +325,7 @@ cdef class WriteBuffer:
             return self._encode_bin(p, o_string_str, <uint32_t>o_string_len)
 
         elif isinstance(o, str):
-            o_string_temp = encode_unicode_string(o, self._encoding)
+            o_string_temp = o.encode(self._encoding_str, 'strict')
             o_string_str = NULL
             o_string_len = 0
             cpython.bytes.PyBytes_AsStringAndSize(o_string_temp,

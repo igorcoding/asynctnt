@@ -40,7 +40,7 @@ async def main(loop):
     conn = None
     try:
         coro = asyncio.ensure_future(
-            asynctnt.connect(host='127.0.0.1', port=3303,
+            asynctnt.connect(host='127.0.0.1', port=3305,
                              username='t1', password='t1',
                              fetch_schema=True,
                              auto_refetch_schema=True,
@@ -69,23 +69,19 @@ async def main(loop):
         # res = await conn.select('tester')
         # print(res.body)
         # res = await conn.call('test', timeout=0)
-        res = await conn.call('long', [10])
+        class A():
+            def __init__(self, a):
+                super(A, self).__init__()
+                self.a = a
+
+            def __str__(self):
+                return "A({})".format(self.a)
+
+        res = await conn.call('func_param', [A(100)])
         print(res)
         print(res.body)
         print(res.schema_id)
         return
-
-        res = await conn.call('long', [2])
-        print(res)
-        if res is not None:
-            print(res.body)
-            print(res.schema_id)
-
-        res = await conn.call('long', [5])
-        print(res)
-        if res is not None:
-            print(res.body)
-            print(res.schema_id)
         # res = await conn.refetch_schema()
         # res = await conn.insert('tester', (2, 'hello', 3))
         # res = await conn.update('tester', [2], [(':', 1, 1, 3, 'yo!')])

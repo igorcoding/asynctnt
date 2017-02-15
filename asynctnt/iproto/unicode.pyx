@@ -11,3 +11,9 @@ cdef bytes encode_unicode_string(str s, bytes encoding=b'utf-8'):
         s, encoding, b'strict'
     )
     return b
+
+
+cdef str decode_string(bytes b, bytes encoding=b'utf-8'):
+    return <str><object>cpython.unicode.PyUnicode_FromEncodedObject(
+        b, encoding, b'strict'
+    )

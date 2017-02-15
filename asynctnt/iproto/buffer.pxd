@@ -15,13 +15,14 @@ cdef class WriteBuffer:
         int _view_count  # Number of memoryviews attached to the buffer
 
         bytes _encoding
+        str _encoding_str
 
         ssize_t __op_offset
         ssize_t __sync_offset
         ssize_t __schema_id_offset
 
     @staticmethod
-    cdef WriteBuffer new(bytes encoding=*)
+    cdef WriteBuffer new(bytes encoding, str encoding_str)
 
     cdef inline _check_readonly(self)
     cdef inline len(self)

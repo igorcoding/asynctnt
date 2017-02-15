@@ -1,5 +1,5 @@
 box.cfg{
-  listen = 3303,
+  listen = 3305,
   wal_mode = 'none'
 }
 

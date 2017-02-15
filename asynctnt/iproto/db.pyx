@@ -9,12 +9,14 @@ cdef class Db:
     def __cinit__(self):
         self._protocol = None
         self._encoding = None
+        self._encoding_str = None
 
     @staticmethod
     cdef inline Db new(BaseProtocol protocol):
         cdef Db db = Db.__new__(Db)
         db._protocol = protocol
         db._encoding = protocol.encoding
+        db._encoding_str = decode_string(db._encoding, b'ascii')
         return db
 
     cdef inline uint64_t next_sync(self):
@@ -44,7 +46,7 @@ cdef class Db:
         op = tnt.TP_PING
         sync = self.next_sync()
         schema_id = self._protocol._schema_id
-        buf = WriteBuffer.new(self._encoding)
+        buf = WriteBuffer.new(self._encoding, self._encoding_str)
         buf.write_header(sync, op, schema_id)
         buf.write_length()
         return Request.new(op, sync, schema_id, buf)
@@ -59,7 +61,7 @@ cdef class Db:
         op = tnt.TP_CALL_16
         sync = self.next_sync()
         schema_id = self._protocol._schema_id
-        buf = WriteBuffer.new(self._encoding)
+        buf = WriteBuffer.new(self._encoding, self._encoding_str)
         buf.write_header(sync, op, schema_id)
         buf.encode_request_call(func_name, args)
         buf.write_length()
@@ -75,7 +77,7 @@ cdef class Db:
         op = tnt.TP_CALL
         sync = self.next_sync()
         schema_id = self._protocol._schema_id
-        buf = WriteBuffer.new(self._encoding)
+        buf = WriteBuffer.new(self._encoding, self._encoding_str)
         buf.write_header(sync, op, schema_id)
         buf.encode_request_call(func_name, args)
         buf.write_length()
@@ -91,7 +93,7 @@ cdef class Db:
         op = tnt.TP_EVAL
         sync = self.next_sync()
         schema_id = self._protocol._schema_id
-        buf = WriteBuffer.new(self._encoding)
+        buf = WriteBuffer.new(self._encoding, self._encoding_str)
         buf.write_header(sync, op, schema_id)
         buf.encode_request_eval(expression, args)
         buf.write_length()
@@ -108,7 +110,7 @@ cdef class Db:
         op = tnt.TP_SELECT
         sync = self.next_sync()
         schema_id = self._protocol._schema_id
-        buf = WriteBuffer.new(self._encoding)
+        buf = WriteBuffer.new(self._encoding, self._encoding_str)
         buf.write_header(sync, op, schema_id)
         buf.encode_request_select(space, index, key,
                                   offset, limit, iterator)
@@ -125,7 +127,7 @@ cdef class Db:
         op = tnt.TP_INSERT if not replace else tnt.TP_REPLACE
         sync = self.next_sync()
         schema_id = self._protocol._schema_id
-        buf = WriteBuffer.new(self._encoding)
+        buf = WriteBuffer.new(self._encoding, self._encoding_str)
         buf.write_header(sync, op, schema_id)
         buf.encode_request_insert(space, t)
         buf.write_length()
@@ -141,7 +143,7 @@ cdef class Db:
         op = tnt.TP_DELETE
         sync = self.next_sync()
         schema_id = self._protocol._schema_id
-        buf = WriteBuffer.new(self._encoding)
+        buf = WriteBuffer.new(self._encoding, self._encoding_str)
         buf.write_header(sync, op, schema_id)
         buf.encode_request_delete(space, index, key)
         buf.write_length()
@@ -158,7 +160,7 @@ cdef class Db:
         op = tnt.TP_UPDATE
         sync = self.next_sync()
         schema_id = self._protocol._schema_id
-        buf = WriteBuffer.new(self._encoding)
+        buf = WriteBuffer.new(self._encoding, self._encoding_str)
         buf.write_header(sync, op, schema_id)
         buf.encode_request_update(space, index, key, operations)
         buf.write_length()
@@ -174,7 +176,7 @@ cdef class Db:
         op = tnt.TP_UPSERT
         sync = self.next_sync()
         schema_id = self._protocol._schema_id
-        buf = WriteBuffer.new(self._encoding)
+        buf = WriteBuffer.new(self._encoding, self._encoding_str)
         buf.write_header(sync, op, schema_id)
         buf.encode_request_upsert(space, t, operations)
         buf.write_length()
@@ -193,7 +195,7 @@ cdef class Db:
         op = tnt.TP_AUTH
         sync = self.next_sync()
         schema_id = self._protocol._schema_id
-        buf = WriteBuffer.new(self._encoding)
+        buf = WriteBuffer.new(self._encoding, self._encoding_str)
         buf.write_header(sync, op, schema_id)
 
         username_bytes = encode_unicode_string(username, self._encoding)

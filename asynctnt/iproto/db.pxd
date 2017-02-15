@@ -5,6 +5,7 @@ cdef class Db:
     cdef:
         BaseProtocol _protocol
         bytes _encoding
+        str _encoding_str
 
     @staticmethod
     cdef inline Db new(BaseProtocol protocol)
