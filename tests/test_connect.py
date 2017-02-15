@@ -3,6 +3,7 @@ import asyncio
 import logging
 
 from asynctnt.connection import ConnectionState
+from asynctnt.exceptions import TarantoolDatabaseError, ErrorCode
 from tests import BaseTarantoolTestCase
 
 import asynctnt
@@ -10,6 +11,7 @@ import asynctnt
 
 class ConnectTestCase(BaseTarantoolTestCase):
     DO_CONNECT = False
+    LOGGING_LEVEL = logging.DEBUG
 
     async def test__connect(self):
         conn = asynctnt.Connection(host=self.tnt.host, port=self.tnt.port,
@@ -122,13 +124,23 @@ class ConnectTestCase(BaseTarantoolTestCase):
         conn = asynctnt.Connection(host=self.tnt.host, port=self.tnt.port,
                                    username='t1', password='t1',
                                    fetch_schema=True,
-                                   reconnect_timeout=0.000001,
+                                   reconnect_timeout=0.000000001,
                                    loop=self.loop)
         coro = self.ensure_future(conn.connect())
         await self.sleep(0.3)
         await self.tnt.start()
         await self.sleep(1)
-        await coro
+        while True:
+            try:
+                await coro
+                break
+            except TarantoolDatabaseError as e:
+                if e.code == ErrorCode.ER_NO_SUCH_USER:
+                    # Try again
+                    coro = self.ensure_future(conn.connect())
+                    continue
+                raise
+
         self.assertEqual(conn.state, ConnectionState.CONNECTED)
         await conn.disconnect()
 
@@ -169,3 +181,48 @@ class ConnectTestCase(BaseTarantoolTestCase):
         conn.close()
         await self.sleep(0.1)
         self.assertEqual(conn.state, ConnectionState.DISCONNECTED)
+
+    async def test_reconnect_from_idle(self):
+        conn = asynctnt.Connection(host=self.tnt.host, port=self.tnt.port,
+                                   reconnect_timeout=0,
+                                   loop=self.loop)
+        await conn.reconnect()
+
+        self.assertEqual(conn.state, ConnectionState.CONNECTED)
+        await conn.disconnect()
+
+    async def test_reconnect_after_connect(self):
+        conn = asynctnt.Connection(host=self.tnt.host, port=self.tnt.port,
+                                   reconnect_timeout=0,
+                                   loop=self.loop)
+        await conn.connect()
+        await conn.reconnect()
+
+        self.assertEqual(conn.state, ConnectionState.CONNECTED)
+        await conn.disconnect()
+
+    async def test_manual_reconnect(self):
+        conn = asynctnt.Connection(host=self.tnt.host, port=self.tnt.port,
+                                   reconnect_timeout=0,
+                                   loop=self.loop)
+        await conn.connect()
+        await conn.disconnect()
+        await conn.connect()
+
+        self.assertEqual(conn.state, ConnectionState.CONNECTED)
+        await conn.disconnect()
+
+    async def test__connect_connection_lost(self):
+        conn = asynctnt.Connection(host=self.tnt.host, port=self.tnt.port,
+                                   reconnect_timeout=1/3,
+                                   loop=self.loop)
+        await conn.connect()
+        await self.tnt.stop()
+        await self.sleep(0.5)
+        await self.tnt.start()
+        await self.sleep(0.5)
+
+        self.assertEqual(conn.state, ConnectionState.CONNECTED)
+        self.assertTrue(conn.is_connected)
+
+        await conn.disconnect()

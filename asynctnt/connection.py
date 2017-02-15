@@ -134,17 +134,33 @@ class Connection:
 
         if self._reconnect_timeout > 0 \
                 and self._state != ConnectionState.DISCONNECTING:
+            if self._state == ConnectionState.RECONNECTING:
+                return
             self._set_state(ConnectionState.DISCONNECTING)
-            self._set_state(ConnectionState.RECONNECTING)
-            logger.info('%s Started reconnecting', self.fingerprint)
-            self._reconnect_coro = \
-                asyncio.ensure_future(self._connect(return_exceptions=False),
-                                      loop=self._loop)
+            self._start_reconnect(return_exceptions=False)
         else:
             self._set_state(ConnectionState.DISCONNECTED)
             if self._disconnect_waiter:
                 self._disconnect_waiter.set_result(True)
                 self._disconnect_waiter = None
+
+    def __create_reconnect_coro(self, return_exceptions=False):
+        if self._reconnect_coro:
+            self._reconnect_coro.cancel()
+        self._reconnect_coro = asyncio.ensure_future(
+            self._connect(return_exceptions=return_exceptions),
+            loop=self._loop
+        )
+        return self._reconnect_coro
+
+    def _start_reconnect(self, return_exceptions=False):
+        if self._state == ConnectionState.RECONNECTING:
+            logger.info('Already in reconnecting state')
+            return
+
+        logger.info('%s Started reconnecting', self.fingerprint)
+        self._set_state(ConnectionState.RECONNECTING)
+        self.__create_reconnect_coro(return_exceptions)
 
     def protocol_factory(self, connected_fut, cls=protocol.Protocol):
         return cls(host=self._host,
@@ -168,7 +184,6 @@ class Connection:
                     ConnectionState.CONNECTING,
                     ConnectionState.CONNECTED,
                     ConnectionState.DISCONNECTING,
-                    ConnectionState.DISCONNECTED,
                 }
                 if self._state in ignore_states:
                     return
@@ -222,7 +237,7 @@ class Connection:
                 if e.code in {ErrorCode.ER_LOADING}:
                     # If Tarantool is still loading then reconnect
                     if self._reconnect_timeout > 0:
-                        await self._do_reconnect(e)
+                        await self._wait_reconnect(e)
                         continue
                 if return_exceptions:
                     self._reconnect_coro = None
@@ -230,11 +245,11 @@ class Connection:
                 else:
                     logger.exception(e)
                     if self._reconnect_timeout > 0:
-                        await self._do_reconnect(e)
+                        await self._wait_reconnect(e)
                         continue
             except Exception as e:
                 if self._reconnect_timeout > 0:
-                    await self._do_reconnect(e)
+                    await self._wait_reconnect(e)
                     continue
                 if return_exceptions:
                     self._reconnect_coro = None
@@ -242,7 +257,7 @@ class Connection:
                 else:
                     logger.exception(e)
 
-    async def _do_reconnect(self, exc=None):
+    async def _wait_reconnect(self, exc=None):
         self._set_state(ConnectionState.RECONNECTING)
         logger.warning('Connect to %s failed: %s. Retrying in %f seconds',
                        self.fingerprint,
@@ -256,7 +271,7 @@ class Connection:
         """
             Connect coroutine
         """
-        return self._connect(return_exceptions=True)
+        return self.__create_reconnect_coro(True)
 
     async def disconnect(self):
         """
