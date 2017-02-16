@@ -71,13 +71,16 @@ class CallTestCase(BaseTarantoolTestCase):
             await self.conn.call('func_param', 220349)
 
         with self.assertRaises(TypeError):
-            await self.conn.call('func_param', (1, 2))
-
-        with self.assertRaises(TypeError):
             await self.conn.call('func_param', 'hey')
 
         with self.assertRaises(TypeError):
             await self.conn.call('func_param', {1: 1, 2: 2})
+
+    async def test__call_args_tuple(self):
+        try:
+            await self.conn.call('func_param', (1, 2))
+        except Exception as e:
+            self.fail(e)
 
     async def test__call_complex_param(self):
         p, cmp = get_complex_param(encoding=self.conn.encoding)
@@ -159,13 +162,16 @@ class Call16TestCase(BaseTarantoolTestCase):
             await self.conn.call16('func_param', 220349)
 
         with self.assertRaises(TypeError):
-            await self.conn.call16('func_param', (1, 2))
-
-        with self.assertRaises(TypeError):
             await self.conn.call16('func_param', 'hey')
 
         with self.assertRaises(TypeError):
             await self.conn.call16('func_param', {1: 1, 2: 2})
+
+    async def test__call16_args_tuple(self):
+        try:
+            await self.conn.call16('func_param', (1, 2))
+        except Exception as e:
+            self.fail(e)
 
     async def test__call16_complex_param(self):
         p, cmp = get_complex_param(encoding=self.conn.encoding)

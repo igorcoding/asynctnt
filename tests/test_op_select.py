@@ -173,17 +173,21 @@ class SelectTestCase(BaseTarantoolTestCase):
                                      iterator=Iterator.LE)
         self.assertListEqual(res.body, list(reversed(data))[1:3], 'Body ok')
 
+    async def test__select_key_tuple(self):
+        try:
+            await self.conn.select(self.TESTER_SPACE_ID, (1,))
+        except Exception as e:
+            self.fail(e)
+
     async def test__select_invalid_types(self):
         with self.assertRaisesRegex(
-                TypeError, r'missing 1 required positional argument: \'space\''):
+                TypeError,
+                r'missing 1 required positional argument: \'space\''):
             await self.conn.select()
 
         with self.assertRaisesRegex(
-                TypeError, r'Expected list, got tuple'):
-            await self.conn.select(self.TESTER_SPACE_ID, (1,))
-
-        with self.assertRaisesRegex(
-                TypeError, r'Expected list, got int'):
+                TypeError,
+                r'sequence must be either list or tuple, got: <class \'int\'>'):
             await self.conn.select(self.TESTER_SPACE_ID, 1)
 
         with self.assertRaisesRegex(

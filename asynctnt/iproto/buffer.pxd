@@ -50,26 +50,27 @@ cdef class WriteBuffer:
     cdef char *_encode_list(self, char *p, list arr) except NULL
     cdef char *_encode_tuple(self, char *p, tuple t) except NULL
     cdef char *_encode_dict(self, char *p, dict d) except NULL
+    cdef char *_encode_key_sequence(self, char *p, t) except NULL
     cdef char *_encode_obj(self, char *p, object o) except NULL
 
     cdef tnt.tnt_update_op_kind _op_type_to_kind(self, char *str, ssize_t len)
     cdef char *_encode_update_ops(self, char *p, list operations) except NULL
 
-    cdef void encode_request_call(self, str func_name, list args) except *
-    cdef void encode_request_eval(self, str expression, list args) except *
+    cdef void encode_request_call(self, str func_name, args) except *
+    cdef void encode_request_eval(self, str expression, args) except *
     cdef void encode_request_select(self, uint32_t space, uint32_t index,
-                                    list key, uint64_t offset, uint64_t limit,
+                                    key, uint64_t offset, uint64_t limit,
                                     uint32_t iterator) except *
-    cdef void encode_request_insert(self, uint32_t space, list t) except *
+    cdef void encode_request_insert(self, uint32_t space, t) except *
     cdef void encode_request_delete(self, uint32_t space, uint32_t index,
-                                    list key) except *
+                                    key) except *
     cdef void encode_request_update(self, uint32_t space, uint32_t index,
-                                    list key_tuple, list operations,
+                                    key_tuple, list operations,
                                     uint32_t key_of_tuple=*,
                                     uint32_t key_of_operations=*
                                     ) except *
     cdef void encode_request_upsert(self, uint32_t space,
-                                    list t, list operations) except *
+                                    t, list operations) except *
     cdef void encode_request_auth(self,
                                   bytes username,
                                   bytes scramble) except *

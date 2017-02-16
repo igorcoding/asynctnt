@@ -53,13 +53,16 @@ class EvalTestCase(BaseTarantoolTestCase):
             await self.conn.eval('return {...}', 220349)
 
         with self.assertRaises(TypeError):
-            await self.conn.eval('return {...}', (1, 2))
-
-        with self.assertRaises(TypeError):
             await self.conn.eval('return {...}', 'hey')
 
         with self.assertRaises(TypeError):
             await self.conn.eval('return {...}', {1: 1, 2: 2})
+
+    async def test__eval_args_tuple(self):
+        try:
+            await self.conn.eval('return {...}', (1, 2))
+        except Exception as e:
+            self.fail(e)
 
     async def test__eval_complex_param(self):
         p, cmp = get_complex_param(encoding=self.conn.encoding)

@@ -295,6 +295,18 @@ cdef class WriteBuffer:
 
         return p
 
+
+    cdef char *_encode_key_sequence(self, char *p, t) except NULL:
+        if isinstance(t, list) or t is None:
+            return self._encode_list(p, <list>t)
+        elif isinstance(t, tuple):
+            return self._encode_tuple(p, <tuple>t)
+        else:
+            raise TypeError(
+                'sequence must be either list or tuple, '
+                'got: {}'.format(type(t))
+            )
+
     cdef char *_encode_obj(self, char *p, object o) except NULL:
         cdef:
             bytes o_string_temp
@@ -499,7 +511,7 @@ cdef class WriteBuffer:
                     'Unknown update operation type `{}`'.format(op_type_str))
         return p
 
-    cdef void encode_request_call(self, str func_name, list args) except *:
+    cdef void encode_request_call(self, str func_name, args) except *:
         cdef:
             char *begin
             char *p
@@ -537,9 +549,9 @@ cdef class WriteBuffer:
 
         p = mp_encode_uint(p, tnt.TP_TUPLE)
         self._length += (p - begin)
-        p = self._encode_list(p, args)
+        p = self._encode_key_sequence(p, args)
 
-    cdef void encode_request_eval(self, str expression, list args) except *:
+    cdef void encode_request_eval(self, str expression, args) except *:
         cdef:
             char *begin
             char *p
@@ -577,10 +589,10 @@ cdef class WriteBuffer:
 
         p = mp_encode_uint(p, tnt.TP_TUPLE)
         self._length += (p - begin)
-        p = self._encode_list(p, args)
+        p = self._encode_key_sequence(p, args)
 
     cdef void encode_request_select(self, uint32_t space, uint32_t index,
-                                    list key, uint64_t offset, uint64_t limit,
+                                    key, uint64_t offset, uint64_t limit,
                                     uint32_t iterator) except *:
         cdef:
             char *begin
@@ -637,9 +649,9 @@ cdef class WriteBuffer:
 
         p = mp_encode_uint(p, tnt.TP_KEY)
         self._length += (p - begin)
-        p = self._encode_list(p, key)
+        p = self._encode_key_sequence(p, key)
 
-    cdef void encode_request_insert(self, uint32_t space, list t) except *:
+    cdef void encode_request_insert(self, uint32_t space, t) except *:
         cdef:
             char *begin
             char *p
@@ -666,10 +678,10 @@ cdef class WriteBuffer:
 
         p = mp_encode_uint(p, tnt.TP_TUPLE)
         self._length += (p - begin)
-        p = self._encode_list(p, t)
+        p = self._encode_key_sequence(p, t)
 
     cdef void encode_request_delete(self, uint32_t space, uint32_t index,
-                                    list key) except *:
+                                    key) except *:
         cdef:
             char *p
             uint32_t body_map_sz
@@ -704,10 +716,10 @@ cdef class WriteBuffer:
 
         p = mp_encode_uint(p, tnt.TP_KEY)
         self._length += (p - begin)
-        p = self._encode_list(p, key)
+        p = self._encode_key_sequence(p, key)
 
     cdef void encode_request_update(self, uint32_t space, uint32_t index,
-                                    list key_tuple, list operations,
+                                    key_tuple, list operations,
                                     uint32_t key_of_tuple=tnt.TP_KEY,
                                     uint32_t key_of_operations=tnt.TP_TUPLE
                                     ) except *:
@@ -747,13 +759,13 @@ cdef class WriteBuffer:
         self._length += (p - begin)
 
         p = self._encode_uint(p, key_of_tuple)
-        p = self._encode_list(p, key_tuple)
+        p = self._encode_key_sequence(p, key_tuple)
 
         p = self._encode_uint(p, key_of_operations)
         p = self._encode_update_ops(p, operations)
 
     cdef void encode_request_upsert(self, uint32_t space,
-                                    list t, list operations) except *:
+                                    t, list operations) except *:
         self.encode_request_update(space, 0, t, operations,
                                    tnt.TP_TUPLE, tnt.TP_OPERATIONS)
 

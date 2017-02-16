@@ -458,13 +458,6 @@ class Connection:
         return self._protocol.schema_id
 
     @property
-    def encoding(self):
-        """
-            Connection encoding
-        """
-        return self._encoding
-
-    @property
     def initial_read_buffer_size(self):
         """
             initial_read_buffer_size value

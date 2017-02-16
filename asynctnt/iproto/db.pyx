@@ -51,7 +51,7 @@ cdef class Db:
         buf.write_length()
         return Request.new(op, sync, schema_id, buf)
 
-    cdef Request _call16(self, str func_name, list args):
+    cdef Request _call16(self, str func_name, args):
         cdef:
             tnt.tp_request_type op
             uint64_t sync
@@ -67,7 +67,7 @@ cdef class Db:
         buf.write_length()
         return Request.new(op, sync, schema_id, buf)
 
-    cdef Request _call(self, str func_name, list args):
+    cdef Request _call(self, str func_name, args):
         cdef:
             tnt.tp_request_type op
             uint64_t sync
@@ -83,7 +83,7 @@ cdef class Db:
         buf.write_length()
         return Request.new(op, sync, schema_id, buf)
 
-    cdef Request _eval(self, str expression, list args):
+    cdef Request _eval(self, str expression, args):
         cdef:
             tnt.tp_request_type op
             uint64_t sync
@@ -99,7 +99,7 @@ cdef class Db:
         buf.write_length()
         return Request.new(op, sync, schema_id, buf)
 
-    cdef Request _select(self, uint32_t space, uint32_t index, list key,
+    cdef Request _select(self, uint32_t space, uint32_t index, key,
                          uint64_t offset, uint64_t limit, uint32_t iterator):
         cdef:
             tnt.tp_request_type op
@@ -117,7 +117,7 @@ cdef class Db:
         buf.write_length()
         return Request.new(op, sync, schema_id, buf)
 
-    cdef Request _insert(self, uint32_t space, list t, bint replace):
+    cdef Request _insert(self, uint32_t space, t, bint replace):
         cdef:
             tnt.tp_request_type op
             uint64_t sync
@@ -133,7 +133,7 @@ cdef class Db:
         buf.write_length()
         return Request.new(op, sync, schema_id, buf)
 
-    cdef Request _delete(self, uint32_t space, uint32_t index, list key):
+    cdef Request _delete(self, uint32_t space, uint32_t index, key):
         cdef:
             tnt.tp_request_type op
             uint64_t sync
@@ -150,7 +150,7 @@ cdef class Db:
         return Request.new(op, sync, schema_id, buf)
 
     cdef Request _update(self, uint32_t space, uint32_t index,
-                         list key, list operations):
+                         key, list operations):
         cdef:
             tnt.tp_request_type op
             uint64_t sync
@@ -166,7 +166,7 @@ cdef class Db:
         buf.write_length()
         return Request.new(op, sync, schema_id, buf)
 
-    cdef Request _upsert(self, uint32_t space, list t, list operations):
+    cdef Request _upsert(self, uint32_t space, t, list operations):
         cdef:
             tnt.tp_request_type op
             uint64_t sync

@@ -1,6 +1,7 @@
 # asynctnt
 
 [![Build Status](https://travis-ci.org/igorcoding/asynctnt.svg?branch=master)](https://travis-ci.org/igorcoding/asynctnt)
+[![PyPI](https://img.shields.io/pypi/v/asynctnt.svg)](https://pypi.python.org/pypi/asynctnt)
 
 
 asynctnt is a high-performance [Tarantool](https://tarantool.org/) database 

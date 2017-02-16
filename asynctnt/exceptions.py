@@ -14,7 +14,6 @@ class TarantoolDatabaseError(TarantoolError):
     def __init__(self, code, message):
         super(TarantoolDatabaseError, self).__init__(code, message)
         self.code = code
-        self.error_code = ErrorCode(code)
         self.message = message
 
 
