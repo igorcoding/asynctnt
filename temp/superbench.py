@@ -5,6 +5,11 @@ import logging
 import math
 import sys
 
+HOST = '127.0.0.1'
+PORT = 3305
+USERNAME = 't1'
+PASSWORD = 't1'
+
 
 def main():
     logging.basicConfig(level=logging.WARNING, stream=sys.stdout)
@@ -50,10 +55,10 @@ async def bench_asynctnt(n, b, method, args=[], loop=None):
 
     loop = loop or asyncio.get_event_loop()
 
-    conn = asynctnt.Connection(host='127.0.0.1',
-                               port=3303,
-                               username='t1',
-                               password='t1',
+    conn = asynctnt.Connection(host=HOST,
+                               port=PORT,
+                               username=USERNAME,
+                               password=PASSWORD,
                                reconnect_timeout=1, loop=loop)
     await conn.connect()
 
@@ -82,8 +87,9 @@ async def bench_aiotarantool(n, b, method, args=[], loop=None):
     import aiotarantool
 
     loop = loop or asyncio.get_event_loop()
-    conn = aiotarantool.connect('127.0.0.1', 3303,
-                                user='t1', password='t1',
+    conn = aiotarantool.connect(HOST, PORT,
+                                user=USERNAME,
+                                password=PASSWORD,
                                 loop=loop)
 
     n_requests_per_bulk = math.ceil(n / b)

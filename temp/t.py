@@ -57,7 +57,7 @@ async def main(loop):
         # print(conn._protocol.schema)
         # print(conn._protocol._con_state)
         #
-        res = await conn.call16('long', [5])
+        # res = await conn.call16('long', [5])
         # res = await conn.auth('tt', 'ttp')d
 
         # await tnt.stop()
@@ -69,18 +69,18 @@ async def main(loop):
         # res = await conn.select('tester')
         # print(res.body)
         # res = await conn.call('test', timeout=0)
-        # class A():
-        #     def __init__(self, a):
-        #         super(A, self).__init__()
-        #         self.a = a
-        #
-        #     def __str__(self):
-        #         return "A({})".format(self.a)
-        #
-        # res = await conn.call('func_param', [A(100)])
-        # print(res)
-        # print(res.body)
-        # print(res.schema_id)
+        class A(str):
+            def __init__(self, a):
+                super(A, self).__init__()
+                self.a = a
+
+            def __str__(self):
+                return "A({})".format(self.a)
+
+        res = await conn.call('func_param', [A(100)])
+        print(res)
+        print(res.body)
+        print(res.schema_id)
         return
         # res = await conn.refetch_schema()
         # res = await conn.insert('tester', (2, 'hello', 3))

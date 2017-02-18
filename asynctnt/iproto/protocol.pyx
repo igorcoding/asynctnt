@@ -143,7 +143,7 @@ cdef class BaseProtocol(CoreProtocol):
                              'Spaces: %d, Indexes: %d.',
                              self.host, self.port,
                              len(spaces.body), len(indexes.body))
-                self._schema = parse_schema(spaces.schema_id,
+                self._schema = Schema.parse(spaces.schema_id,
                                             spaces.body, indexes.body)
                 if self.auto_refetch_schema:
                     # if no refetch, them we should not

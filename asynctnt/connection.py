@@ -440,15 +440,6 @@ class Connection:
         return self._protocol.is_connected()
 
     @property
-    def schema(self):
-        """
-            asynctnt.Schema object
-        """
-        if self._protocol is None:
-            return None
-        return self._protocol.schema
-
-    @property
     def schema_id(self):
         """
             Tarantool's current schema id

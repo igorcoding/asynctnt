@@ -1,20 +1,46 @@
-from libc.stdint cimport int64_t
+from libc.stdint cimport int64_t, uint32_t
+
+
+cdef class TntField:
+    cdef:
+        uint32_t id
+        str name
+        str type
+
+    @staticmethod
+    cdef TntField new(uint32_t id, str name, str type)
 
 
 cdef class SchemaIndex:
-    cdef public int sid
-    cdef public int iid
-    cdef public str name
-    cdef public str index_type
-    cdef public object unique
-    cdef public list parts
+    cdef:
+        int sid
+        int iid
+        str name
+        str index_type
+        object unique
+        list parts
+
+        list fields_names
+
+    @staticmethod
+    cdef SchemaIndex new()
 
 
 cdef class SchemaSpace:
-    cdef public int sid
-    cdef public int arity
-    cdef public str name
-    cdef public dict indexes
+    cdef:
+        int sid
+        int owner
+        str name
+        str engine
+        int field_count
+        object flags
+
+        dict fields_map
+        list fields_names
+        dict indexes
+
+    @staticmethod
+    cdef SchemaSpace new(list space_row)
 
     cdef add_index(self, SchemaIndex idx)
 
@@ -24,11 +50,16 @@ cdef class Schema:
         dict schema
         int64_t id
 
-    cpdef get_id(self)
-    cpdef SchemaSpace get_space(self, space)
-    cpdef SchemaIndex get_index(self, space, index)
+    @staticmethod
+    cdef Schema new(int64_t schema_id)
+
+    cdef SchemaSpace get_space(self, space)
+    cdef SchemaIndex get_index(self, space, index)
+
+    cdef SchemaSpace parse_space(self, list index_row)
+    cdef SchemaIndex parse_index(self, list index_row)
 
     cdef inline clear(self)
 
-
-cdef Schema parse_schema(int64_t schema_id, spaces, indexes)
+    @staticmethod
+    cdef Schema parse(int64_t schema_id, spaces, indexes)
