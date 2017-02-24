@@ -58,7 +58,6 @@ cdef class CoreProtocol:
         return self.version
 
     cdef void _write(self, buf):
-        # return
         self.transport.write(memoryview(buf))
 
     cdef void _on_data_received(self, data):

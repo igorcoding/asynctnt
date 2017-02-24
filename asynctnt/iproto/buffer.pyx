@@ -149,7 +149,7 @@ cdef class WriteBuffer:
 
         if schema_id > 0:
             p = mp_encode_uint(p, tnt.TP_SCHEMA_ID)
-            self.__schema_id_offset = (p - begin)  # save sync position
+            self.__schema_id_offset = (p - begin)  # save schema_id position
             p = mp_encode_uint(p, schema_id)
 
         self._length += (p - begin)

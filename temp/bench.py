@@ -11,6 +11,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--asynctnt', type=bool, default=False)
     parser.add_argument('--aiotnt', type=bool, default=False)
+    parser.add_argument('--tarantool', type=bool, default=False)
     parser.add_argument('--uvloop', type=bool, default=False)
     parser.add_argument('-n', type=int, default=50000,
                         help='number of executed requests')
@@ -33,6 +34,8 @@ def main():
         loop.run_until_complete(
             bench_aiotarantool(args.n, args.b, loop=loop)
         )
+    elif args.tarantool:
+        bench_tarantool(args.n, 1)
     else:
         loop.run_until_complete(
             bench_asynctnt(args.n, args.b, loop=loop)
@@ -54,8 +57,6 @@ async def bench_asynctnt(n, b, loop=None):
 
     n_requests_per_bulk = math.ceil(n / b)
 
-    start = datetime.datetime.now()
-
     async def bulk_f():
         for _ in range(n_requests_per_bulk):
             await conn.ping()
@@ -65,14 +66,12 @@ async def bench_asynctnt(n, b, loop=None):
             # await conn.replace('tester', [2, 'hhhh'])
             # await conn.update('tester', [2], [(':', 1, 1, 3, 'yo!')])
 
-    coros = []
-    for b in range(b):
-        coros.append(asyncio.ensure_future(bulk_f(), loop=loop))
+    coros = [bulk_f() for _ in range(b)]
 
-    if coros:
-        await asyncio.wait(coros, loop=loop)
-
+    start = datetime.datetime.now()
+    await asyncio.wait(coros, loop=loop)
     end = datetime.datetime.now()
+
     elapsed = end - start
     print('Elapsed: {}, RPS: {}'.format(elapsed, n / elapsed.total_seconds()))
 
@@ -81,12 +80,11 @@ async def bench_aiotarantool(n, b, loop=None):
     import aiotarantool
 
     loop = loop or asyncio.get_event_loop()
-    conn = aiotarantool.connect('127.0.0.1', 3303,
+    conn = aiotarantool.connect('127.0.0.1', 3305,
                                 user='t1', password='t1',
                                 loop=loop)
 
     n_requests_per_bulk = math.ceil(n / b)
-    start = datetime.datetime.now()
 
     async def bulk_f():
         for _ in range(n_requests_per_bulk):
@@ -97,12 +95,35 @@ async def bench_aiotarantool(n, b, loop=None):
             # await conn.replace('tester', [2, 'hhhh'])
             # await conn.update('tester', [2], [(':', 1, 1, 3, 'yo!')])
 
-    coros = []
-    for b in range(b):
-        coros.append(asyncio.ensure_future(bulk_f(), loop=loop))
+    coros = [bulk_f() for _ in range(b)]
 
-    if coros:
-        await asyncio.wait(coros, loop=loop)
+    start = datetime.datetime.now()
+    await asyncio.wait(coros, loop=loop)
+    end = datetime.datetime.now()
+
+    elapsed = end - start
+    print('Elapsed: {}, RPS: {}'.format(elapsed, n / elapsed.total_seconds()))
+
+
+def bench_tarantool(n, b, loop=None):
+    import tarantool
+
+    conn = tarantool.Connection(host='127.0.0.1',
+                                port=3305,
+                                user='t1',
+                                password='t1')
+    conn.connect()
+    b = 1
+    n_requests_per_bulk = math.ceil(n / b)
+
+    start = datetime.datetime.now()
+    for _ in range(n_requests_per_bulk):
+        # conn.ping()
+        # await conn.call('test')
+        # await conn.eval('return "hello"')
+        conn.select(512)
+        # await conn.replace('tester', [2, 'hhhh'])
+        # await conn.update('tester', [2], [(':', 1, 1, 3, 'yo!')])
 
     end = datetime.datetime.now()
     elapsed = end - start

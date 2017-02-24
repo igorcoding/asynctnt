@@ -30,7 +30,7 @@ def main():
         ['update', ['tester', [2], [(':', 1, 1, 3, 'yo!')]]],
     ]
 
-    for use_uvloop in [False, True]:
+    for use_uvloop in [True, False]:
         if use_uvloop:
             import uvloop
             asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
@@ -40,76 +40,60 @@ def main():
 
         print('--------- uvloop: {} --------- '.format(use_uvloop))
 
-        for bench in [bench_aiotarantool, bench_asynctnt]:
+        for name, conn_creator in [
+                    ('asynctnt', create_asynctnt),
+                    ('aiotarantool', create_aiotarantool),
+                ]:
             for scenario in scenarios:
                 loop.run_until_complete(
-                    bench(args.n, args.b,
-                          scenario[0], scenario[1],
-                          loop=loop)
+                    async_bench(name, conn_creator,
+                                args.n, args.b,
+                                scenario[0], scenario[1],
+                                loop=loop)
                 )
 
 
-async def bench_asynctnt(n, b, method, args=[], loop=None):
+async def async_bench(name, connector_creator,
+                      n, b, method, args=[], loop=None):
+    conn = await connector_creator(loop=loop)
+
+    n_requests_per_bulk = math.ceil(n / b)
+
+    async def bulk_f():
+        for _ in range(n_requests_per_bulk):
+            await getattr(conn, method)(*args)
+
+    start = datetime.datetime.now()
+    coros = [bulk_f() for _ in range(b)]
+
+    await asyncio.wait(coros, loop=loop)
+    end = datetime.datetime.now()
+
+    elapsed = end - start
+    print('{} [{}] Elapsed: {}, RPS: {}'.format(
+        name, method, elapsed, n / elapsed.total_seconds()))
+
+
+async def create_asynctnt(loop):
     import asynctnt
-    from asynctnt.iproto.protocol import Iterator
-
-    loop = loop or asyncio.get_event_loop()
-
     conn = asynctnt.Connection(host=HOST,
                                port=PORT,
                                username=USERNAME,
                                password=PASSWORD,
-                               reconnect_timeout=1, loop=loop)
+                               reconnect_timeout=1,
+                               loop=loop)
     await conn.connect()
-
-    n_requests_per_bulk = math.ceil(n / b)
-
-    start = datetime.datetime.now()
-
-    async def bulk_f():
-        for _ in range(n_requests_per_bulk):
-            await getattr(conn, method)(*args)
-
-    coros = []
-    for b in range(b):
-        coros.append(asyncio.ensure_future(bulk_f(), loop=loop))
-
-    if coros:
-        await asyncio.wait(coros, loop=loop)
-
-    end = datetime.datetime.now()
-    elapsed = end - start
-    print('asynctnt [{}] Elapsed: {}, RPS: {}'.format(
-        method, elapsed, n / elapsed.total_seconds()))
+    return conn
 
 
-async def bench_aiotarantool(n, b, method, args=[], loop=None):
+async def create_aiotarantool(loop):
     import aiotarantool
-
-    loop = loop or asyncio.get_event_loop()
     conn = aiotarantool.connect(HOST, PORT,
                                 user=USERNAME,
                                 password=PASSWORD,
                                 loop=loop)
-
-    n_requests_per_bulk = math.ceil(n / b)
-    start = datetime.datetime.now()
-
-    async def bulk_f():
-        for _ in range(n_requests_per_bulk):
-            await getattr(conn, method)(*args)
-
-    coros = []
-    for b in range(b):
-        coros.append(asyncio.ensure_future(bulk_f(), loop=loop))
-
-    if coros:
-        await asyncio.wait(coros, loop=loop)
-
-    end = datetime.datetime.now()
-    elapsed = end - start
-    print('aiotarantool [{}] Elapsed: {}, RPS: {}'.format(
-        method, elapsed, n / elapsed.total_seconds()))
+    await conn.connect()
+    return conn
 
 
 if __name__ == '__main__':
