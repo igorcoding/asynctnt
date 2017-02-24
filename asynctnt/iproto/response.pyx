@@ -1,4 +1,6 @@
 cimport cpython.unicode
+cimport cpython.list
+cimport cpython.dict
 
 from libc.stdint cimport uint32_t, uint64_t, int64_t
 
@@ -16,6 +18,7 @@ cdef class Response:
         self._errmsg = None
         self._body = None
         self._encoding = None
+        self._req = None
 
     @staticmethod
     cdef inline Response new(bytes encoding):
@@ -62,7 +65,7 @@ cdef class Response:
         return self._encoding
 
 
-cdef object _decode_obj(const char** p, bytes encoding):
+cdef object _decode_obj(const char **p, bytes encoding):
     cdef:
         uint32_t i
         mp_type obj_type
@@ -89,7 +92,7 @@ cdef object _decode_obj(const char** p, bytes encoding):
         s = NULL
         s_len = 0
         s = mp_decode_str(p, &s_len)
-        return s[:s_len].decode(encoding)
+        return decode_string(s[:s_len], encoding)
     elif obj_type == MP_BIN:
         s = NULL
         s_len = 0
@@ -115,7 +118,9 @@ cdef object _decode_obj(const char** p, bytes encoding):
             if map_key_type == MP_STR:
                 map_key_len = 0
                 map_key_str = mp_decode_str(p, &map_key_len)
-                map_key = <object>(map_key_str[:map_key_len].decode(encoding))
+                map_key = <object>(
+                    decode_string(map_key_str[:map_key_len], encoding)
+                )
             elif map_key_type == MP_UINT:
                 map_key = <object>mp_decode_uint(p)
             elif map_key_type == MP_INT:
@@ -125,6 +130,7 @@ cdef object _decode_obj(const char** p, bytes encoding):
                 mp_next(p)  # skip value
                 logger.warning('Unexpected key type in map: %s',
                                map_key_type)
+                continue
 
             map[map_key] = _decode_obj(p, encoding)
 
@@ -138,36 +144,69 @@ cdef object _decode_obj(const char** p, bytes encoding):
         return None
 
 
-cdef list _response_parse_body_data(const char *b, bytes encoding):
+cdef list _response_parse_body_data(const char **b, Response resp):
     cdef:
         uint32_t size
-        uint32_t tuple_size
+        uint32_t tuple_size, max_tuple_size
         list tuples
         uint32_t i, k
 
-    size = mp_decode_array(&b)
+        Request req
+        dict d
+        str field_name
+        object value
+        list fields
+
+    size = mp_decode_array(b)
     tuples = []
-    for i in range(size):
-        tuples.append(_decode_obj(&b, encoding))
+    req = resp._req
+    if req is not None \
+            and req.tuple_as_dict \
+            and req.space is not None \
+            and req.space.fields is not None:
+        # decode as dicts
+
+        fields = req.space.fields
+        max_tuple_size = <uint32_t>cpython.list.PyList_GET_SIZE(fields)
+
+        for i in range(size):
+            if mp_typeof(b[0][0]) != MP_ARRAY:
+                raise TypeError(
+                    'Tuple must be an array when decoding as dict'
+                )
+            d = {}
+            unknown_fields = None
+            tuple_size = mp_decode_array(b)
+            for k in range(tuple_size):
+                value = _decode_obj(b, resp._encoding)
+                if k < max_tuple_size:
+                    field_name = <str>cpython.list.PyList_GET_ITEM(fields, k)
+                    d[field_name] = value
+                else:
+                    if unknown_fields is None:
+                        unknown_fields = []
+                    unknown_fields.append(value)
+
+            if unknown_fields is not None:
+                d[''] = unknown_fields
+            tuples.append(d)
+    else:
+        for i in range(size):
+            tuples.append(_decode_obj(b, resp._encoding))
 
     return tuples
 
 
-cdef Response response_parse(const char *buf, uint32_t buf_len,
-                             bytes encoding):
+cdef ssize_t response_parse_header(const char *buf, uint32_t buf_len,
+                                   Response resp) except -1:
     cdef:
         const char *b
         uint32_t size
         uint32_t key
-        uint32_t s_len
-        const char *s
-        Response resp
 
     b = <const char*>buf
     if mp_typeof(b[0]) != MP_MAP:
         raise TypeError('Response header must be a MP_MAP')
-
-    resp = Response.new(encoding)
 
     # parsing header
     size = mp_decode_map(&b)
@@ -196,10 +235,24 @@ cdef Response response_parse(const char *buf, uint32_t buf_len,
             logger.warning('Unknown argument in header. Skipping.')
             mp_next(&b)
 
+    return <ssize_t>(b - buf)
+
+
+cdef ssize_t response_parse_body(const char *buf, uint32_t buf_len,
+                                 Response resp) except -1:
+    cdef:
+        const char *b
+        uint32_t size
+        uint32_t key
+        uint32_t s_len
+        const char *s
+
+    b = <const char*>buf
+
     # parsing body
     if b == &buf[buf_len]:
         # buffer exceeded
-        return resp
+        return 0
 
     if mp_typeof(b[0]) != MP_MAP:
         raise TypeError('Response body must be a MP_MAP')
@@ -217,10 +270,10 @@ cdef Response response_parse(const char *buf, uint32_t buf_len,
             s = NULL
             s_len = 0
             s = mp_decode_str(&b, &s_len)
-            resp._errmsg = s[:s_len].decode(encoding)
+            resp._errmsg = decode_string(s[:s_len], resp._encoding)
         elif key == tnt.TP_DATA:
             if mp_typeof(b[0]) != MP_ARRAY:
                 raise TypeError('body data type must be a MP_ARRAY')
-            resp._body = _response_parse_body_data(b, encoding)
+            resp._body = _response_parse_body_data(&b, resp)
 
-    return resp
+    return <ssize_t>(b - buf)

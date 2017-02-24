@@ -270,7 +270,9 @@ class UpdateTestCase(BaseTarantoolTestCase):
 
     async def test__update_by_index_id(self):
         index_name = 'temp_idx'
-        res = await self.tnt.command('make_third_index("{}")'.format(index_name))
+        res = await self.tnt.command(
+            'make_third_index("{}")'.format(index_name)
+        )
         index_id = res[0][0]
 
         try:
@@ -293,7 +295,9 @@ class UpdateTestCase(BaseTarantoolTestCase):
 
     async def test__select_by_index_name(self):
         index_name = 'temp_idx'
-        res = await self.tnt.command('make_third_index("{}")'.format(index_name))
+        res = await self.tnt.command(
+            'make_third_index("{}")'.format(index_name)
+        )
         index_id = res[0][0]
 
         try:
@@ -352,3 +356,17 @@ class UpdateTestCase(BaseTarantoolTestCase):
         }, [['+', 3, 1]])
         data[0][3] += 1
         self.assertListEqual(res.body, [data[0]], 'Body ok')
+
+    async def test__update_dict_resp(self):
+        data = await self._fill_data()
+
+        res = await self.conn.update(self.TESTER_SPACE_ID, [0], [['+', 3, 1]],
+                                     tuple_as_dict=True)
+        data[0][3] += 1
+
+        self.assertListEqual(res.body, [{
+            'f1': data[0][0],
+            'f2': data[0][1],
+            'f3': data[0][2],
+            'f4': data[0][3]
+        }])

@@ -9,6 +9,7 @@ cdef class Response:
         str _errmsg
         list _body
         bytes _encoding
+        Request _req
 
     @staticmethod
     cdef inline Response new(bytes encoding)
@@ -16,4 +17,7 @@ cdef class Response:
     cdef inline is_error(self)
 
 
-cdef Response response_parse(const char *buf, uint32_t buf_len, bytes encoding)
+cdef ssize_t response_parse_header(const char *buf, uint32_t buf_len,
+                                   Response resp) except -1
+cdef ssize_t response_parse_body(const char *buf, uint32_t buf_len,
+                                 Response resp) except -1

@@ -24,4 +24,3 @@ class BaseTarantoolTestCase(TarantoolTestCase):
         if hasattr(self, 'conn'):
             self.loop.run_until_complete(self.truncate())
         super().tearDown()
-

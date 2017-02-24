@@ -19,7 +19,6 @@ cdef class CoreProtocol:
 
         ProtocolState state
         ConnectionState con_state
-        dict reqs
 
         ReadBuffer rbuf
         tuple version
@@ -32,5 +31,6 @@ cdef class CoreProtocol:
     cdef void _on_data_received(self, data)
     cdef void _process__greeting(self)
     cdef void _on_greeting_received(self)
+    cdef void _on_response_received(self, const char *buf, uint32_t buf_len)
     cdef void _on_connection_made(self)
     cdef void _on_connection_lost(self, exc)

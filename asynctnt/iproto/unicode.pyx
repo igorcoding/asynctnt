@@ -2,7 +2,7 @@ cimport cpython.unicode
 from cpython.ref cimport PyObject
 
 
-cdef bytes encode_unicode_string(object s, bytes encoding=b'utf-8'):
+cdef bytes encode_unicode_string(object s, bytes encoding):
     cdef:
         bytes b
         PyObject *p
@@ -13,7 +13,7 @@ cdef bytes encode_unicode_string(object s, bytes encoding=b'utf-8'):
     return b
 
 
-cdef str decode_string(bytes b, bytes encoding=b'utf-8'):
+cdef str decode_string(bytes b, bytes encoding):
     return <str><object>cpython.unicode.PyUnicode_FromEncodedObject(
         b, encoding, b'strict'
     )

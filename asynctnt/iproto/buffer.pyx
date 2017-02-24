@@ -302,7 +302,7 @@ cdef class WriteBuffer:
             return self._encode_tuple(p, <tuple>t)
         elif isinstance(t, dict) and fields is not None:
             return self._encode_list(
-                p, dict_to_list_fields(fields, t, default_none)
+                p, dict_to_list_fields(fields, <dict>t, default_none)
             )
         else:
             if fields is not None:
@@ -354,13 +354,13 @@ cdef class WriteBuffer:
             return p
 
         elif isinstance(o, list):
-            return self._encode_list(p, o)
+            return self._encode_list(p, <list>o)
 
         elif isinstance(o, tuple):
-            return self._encode_tuple(p, o)
+            return self._encode_tuple(p, <tuple>o)
 
         elif isinstance(o, dict):
-            return self._encode_dict(p, o)
+            return self._encode_dict(p, <dict>o)
 
         else:
             raise TypeError(
@@ -432,7 +432,7 @@ cdef class WriteBuffer:
             if isinstance(op_type_str, str):
                 str_temp = encode_unicode_string(op_type_str, self._encoding)
             elif isinstance(op_type_str, bytes):
-                str_temp = op_type_str
+                str_temp = <bytes>op_type_str
             else:
                 raise TypeError(
                     'Operation type must of a str or bytes type')
@@ -792,7 +792,8 @@ cdef class WriteBuffer:
         self._length += (p - begin)
 
         p = self._encode_uint(p, key_of_tuple)
-        p = self._encode_key_sequence(p, key_tuple, fields, default_fields_none)
+        p = self._encode_key_sequence(p, key_tuple, fields,
+                                      default_fields_none)
 
         p = self._encode_uint(p, key_of_operations)
         p = self._encode_update_ops(p, operations)

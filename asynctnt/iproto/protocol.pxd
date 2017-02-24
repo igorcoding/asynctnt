@@ -21,16 +21,23 @@ cdef class BaseProtocol(CoreProtocol):
         str password
         bint fetch_schema
         bint auto_refetch_schema
+        bint tuple_as_dict
+        float request_timeout
+
         object connected_fut
-        object on_connected_lost_cb
+        object on_connection_made_cb
+        object on_connection_lost_cb
 
         object _on_request_completed_cb
         object _on_request_timeout_cb
 
+        dict _reqs
         uint64_t _sync
         Schema _schema
         int64_t _schema_id
         Db _db
+
+        object create_future
 
     cdef void _set_connection_ready(self)
     cdef void _set_connection_error(self, e)

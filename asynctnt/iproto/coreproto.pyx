@@ -38,7 +38,6 @@ cdef class CoreProtocol:
         self.rbuf = ReadBuffer.new(encoding, initial_read_buffer_size)
         self.state = PROTOCOL_IDLE
         self.con_state = CONNECTION_BAD
-        self.reqs = {}
 
         self.version = None
         self.salt = None
@@ -68,11 +67,6 @@ cdef class CoreProtocol:
             const char *p
             const char *q
             uint32_t packet_len
-            PyObject *req_p
-            Request req
-            Response resp
-            object waiter
-            object sync_obj
 
             char *data_str
             ssize_t data_len
@@ -116,28 +110,8 @@ cdef class CoreProtocol:
                     break
 
                 p = &p[5]  # skip length header
-                resp = response_parse(p, packet_len, self.encoding)
-                p = &p[packet_len]  # skip entire packet
-
-                sync_obj = <object>resp._sync
-
-                req_p = cpython.dict.PyDict_GetItem(self.reqs, sync_obj)
-                if req_p is NULL:
-                    logger.warning('sync %d not found', resp._sync)
-                    continue
-
-                req = <Request>req_p
-
-                cpython.dict.PyDict_DelItem(self.reqs, sync_obj)
-
-                waiter = req.waiter
-                if waiter is not None \
-                        and not waiter.done():
-                    if resp._code != 0:
-                        waiter.set_exception(
-                            TarantoolDatabaseError(resp._code, resp._errmsg))
-                    else:
-                        waiter.set_result(resp)
+                self._on_response_received(p, packet_len)
+                p = &p[packet_len]
 
                 if p == end:
                     self.rbuf.use = 0
@@ -167,33 +141,16 @@ cdef class CoreProtocol:
             ver = m.group(1)
             return tuple(map(int, ver.split('.')))
 
+    cdef void _on_greeting_received(self):
+        pass
+
+    cdef void _on_response_received(self, const char *buf, uint32_t buf_len):
+        pass
+
     cdef void _on_connection_made(self):
         pass
 
     cdef void _on_connection_lost(self, exc):
-        cdef:
-            Request req
-            PyObject *pkey
-            PyObject *pvalue
-            object key, value
-            Py_ssize_t pos
-
-        pos = 0
-        while cpython.dict.PyDict_Next(self.reqs, &pos, &pkey, &pvalue):
-            sync = <uint64_t><object>pkey
-            req = <Request>pvalue
-
-            waiter = req.waiter
-            if waiter and not waiter.done():
-                if exc is None:
-                    waiter.set_exception(
-                        TarantoolNotConnectedError(
-                            'Lost connection to Tarantool')
-                    )
-                else:
-                    waiter.set_exception(exc)
-
-    cdef void _on_greeting_received(self):
         pass
 
     # asyncio callbacks

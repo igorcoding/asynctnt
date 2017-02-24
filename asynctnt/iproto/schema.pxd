@@ -39,7 +39,6 @@ cdef class SchemaSpace:
         int field_count
         object flags
 
-        dict fields_map
         list fields
         dict indexes
 
@@ -63,7 +62,6 @@ cdef class Schema:
     cdef Schema new(int64_t schema_id)
 
     cdef SchemaSpace get_space(self, space)
-    cdef SchemaIndex get_index(self, space, index)
     cdef SchemaSpace create_dummy_space(self, int space_id)
     cdef SchemaSpace get_or_create_space(self, space)
 

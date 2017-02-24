@@ -77,4 +77,17 @@ class UpsertTestCase(BaseTarantoolTestCase):
         self.assertListEqual(res.body, [], 'Body ok')
 
         res = await self.conn.select(self.TESTER_SPACE_ID, [0])
-        self.assertListEqual(res.body, [[0, 'hello', 1, None, None]], 'Body ok')
+        self.assertListEqual(res.body,
+                             [[0, 'hello', 1, None, None]],
+                             'Body ok')
+
+    async def test__update_dict_resp_no_effect(self):
+        data = {
+            'f1': 0,
+            'f3': 1,
+            'f2': 'hello'
+        }
+
+        res = await self.conn.upsert(self.TESTER_SPACE_ID,
+                                     data, [['=', 2, 2]], tuple_as_dict=True)
+        self.assertListEqual(res.body, [], 'Body ok')

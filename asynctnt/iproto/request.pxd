@@ -8,10 +8,12 @@ cdef class Request:
         uint64_t sync
         int64_t schema_id
         WriteBuffer buf
+        bint tuple_as_dict
+        SchemaSpace space
         object waiter
         object timeout_handle
 
     @staticmethod
     cdef inline Request new(tnt.tp_request_type op,
                             uint64_t sync, int64_t schema_id,
-                            WriteBuffer buf)
+                            WriteBuffer buf, SchemaSpace space)

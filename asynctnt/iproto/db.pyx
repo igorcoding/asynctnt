@@ -20,8 +20,12 @@ cdef class Db:
     cdef inline uint64_t next_sync(self):
         return self._protocol.next_sync()
 
-    async def execute(self, Request req, float timeout):
+    async def execute(self, Request req, float timeout, bint tuple_as_dict):
         cdef object fut
+
+        if tuple_as_dict is None:
+            tuple_as_dict = self._protocol.tuple_as_dict
+        req.tuple_as_dict = tuple_as_dict
         try:
             return await self._protocol.execute(req, timeout)
         except TarantoolDatabaseError as e:
@@ -47,7 +51,7 @@ cdef class Db:
         buf = WriteBuffer.new(self._encoding)
         buf.write_header(sync, op, schema_id)
         buf.write_length()
-        return Request.new(op, sync, schema_id, buf)
+        return Request.new(op, sync, schema_id, buf, None)
 
     cdef Request _call16(self, str func_name, args):
         cdef:
@@ -63,7 +67,7 @@ cdef class Db:
         buf.write_header(sync, op, schema_id)
         buf.encode_request_call(func_name, args)
         buf.write_length()
-        return Request.new(op, sync, schema_id, buf)
+        return Request.new(op, sync, schema_id, buf, None)
 
     cdef Request _call(self, str func_name, args):
         cdef:
@@ -79,7 +83,7 @@ cdef class Db:
         buf.write_header(sync, op, schema_id)
         buf.encode_request_call(func_name, args)
         buf.write_length()
-        return Request.new(op, sync, schema_id, buf)
+        return Request.new(op, sync, schema_id, buf, None)
 
     cdef Request _eval(self, str expression, args):
         cdef:
@@ -95,7 +99,7 @@ cdef class Db:
         buf.write_header(sync, op, schema_id)
         buf.encode_request_eval(expression, args)
         buf.write_length()
-        return Request.new(op, sync, schema_id, buf)
+        return Request.new(op, sync, schema_id, buf, None)
 
     cdef Request _select(self, SchemaSpace space, SchemaIndex index, key,
                          uint64_t offset, uint64_t limit, uint32_t iterator):
@@ -113,7 +117,7 @@ cdef class Db:
         buf.encode_request_select(space, index, key,
                                   offset, limit, iterator)
         buf.write_length()
-        return Request.new(op, sync, schema_id, buf)
+        return Request.new(op, sync, schema_id, buf, space)
 
     cdef Request _insert(self, SchemaSpace space, t, bint replace):
         cdef:
@@ -129,7 +133,7 @@ cdef class Db:
         buf.write_header(sync, op, schema_id)
         buf.encode_request_insert(space, t)
         buf.write_length()
-        return Request.new(op, sync, schema_id, buf)
+        return Request.new(op, sync, schema_id, buf, space)
 
     cdef Request _delete(self, SchemaSpace space, SchemaIndex index, key):
         cdef:
@@ -145,7 +149,7 @@ cdef class Db:
         buf.write_header(sync, op, schema_id)
         buf.encode_request_delete(space, index, key)
         buf.write_length()
-        return Request.new(op, sync, schema_id, buf)
+        return Request.new(op, sync, schema_id, buf, space)
 
     cdef Request _update(self, SchemaSpace space, SchemaIndex index,
                          key, list operations):
@@ -162,7 +166,7 @@ cdef class Db:
         buf.write_header(sync, op, schema_id)
         buf.encode_request_update(space, index, key, operations)
         buf.write_length()
-        return Request.new(op, sync, schema_id, buf)
+        return Request.new(op, sync, schema_id, buf, space)
 
     cdef Request _upsert(self, SchemaSpace space, t, list operations):
         cdef:
@@ -178,7 +182,7 @@ cdef class Db:
         buf.write_header(sync, op, schema_id)
         buf.encode_request_upsert(space, t, operations)
         buf.write_length()
-        return Request.new(op, sync, schema_id, buf)
+        return Request.new(op, sync, schema_id, buf, space)
 
     cdef Request _auth(self, bytes salt, str username, str password):
         cdef:
@@ -207,7 +211,7 @@ cdef class Db:
         buf.encode_request_auth(username_bytes, scramble)
 
         buf.write_length()
-        return Request.new(op, sync, schema_id, buf)
+        return Request.new(op, sync, schema_id, buf, None)
 
     @staticmethod
     cdef bytes _sha1(tuple values):
@@ -238,29 +242,30 @@ cdef class Db:
     def ping(self, timeout=-1):
         return self.execute(
             self._ping(),
-            timeout
+            timeout, False
         )
 
     def call16(self, func_name, args=None, timeout=-1):
         return self.execute(
             self._call16(func_name, args),
-            timeout
+            timeout, False
         )
 
     def call(self, func_name, args=None, timeout=-1):
         return self.execute(
             self._call(func_name, args),
-            timeout
+            timeout, False
         )
 
     def eval(self, expression, args=None, timeout=-1):
         return self.execute(
             self._eval(expression, args),
-            timeout
+            timeout, False
         )
 
     def select(self, space, key=None,
-                 offset=0, limit=0xffffffff, index=0, iterator=0, timeout=-1):
+               offset=0, limit=0xffffffff, index=0, iterator=0,
+               timeout=-1, tuple_as_dict=None):
         cdef:
             SchemaSpace sp
             SchemaIndex idx
@@ -270,24 +275,31 @@ cdef class Db:
 
         return self.execute(
             self._select(sp, idx, key, offset, limit, iterator),
-            timeout
+            timeout, tuple_as_dict
         )
 
-    def insert(self, space, t, replace=False, timeout=-1):
+    def insert(self, space, t, replace=False,
+               timeout=-1, tuple_as_dict=None):
         cdef:
             SchemaSpace sp
-            SchemaIndex idx
         sp = self._protocol._schema.get_or_create_space(space)
 
         return self.execute(
             self._insert(sp, t, replace),
-            timeout
+            timeout, tuple_as_dict
         )
 
-    def replace(self, space, t, timeout=-1):
-        return self.insert(space, t, replace=True, timeout=timeout)
+    def replace(self, space, t, timeout=-1, tuple_as_dict=None):
+        cdef:
+            SchemaSpace sp
+        sp = self._protocol._schema.get_or_create_space(space)
 
-    def delete(self, space, key, index=0, timeout=-1):
+        return self.execute(
+            self._insert(sp, t, True),
+            timeout, tuple_as_dict
+        )
+
+    def delete(self, space, key, index=0, timeout=-1, tuple_as_dict=None):
         cdef:
             SchemaSpace sp
             SchemaIndex idx
@@ -296,10 +308,11 @@ cdef class Db:
 
         return self.execute(
             self._delete(sp, idx, key),
-            timeout
+            timeout, tuple_as_dict
         )
 
-    def update(self, space, key, operations, index=0, timeout=-1):
+    def update(self, space, key, operations, index=0,
+               timeout=-1, tuple_as_dict=None):
         cdef:
             SchemaSpace sp
             SchemaIndex idx
@@ -308,15 +321,15 @@ cdef class Db:
 
         return self.execute(
             self._update(sp, idx, key, operations),
-            timeout
+            timeout, tuple_as_dict
         )
 
-    def upsert(self, space, t, operations, timeout=-1):
+    def upsert(self, space, t, operations, timeout=-1, tuple_as_dict=None):
         cdef:
             SchemaSpace sp
         sp = self._protocol._schema.get_or_create_space(space)
 
         return self.execute(
             self._upsert(sp, t, operations),
-            timeout
+            timeout, tuple_as_dict
         )

@@ -21,6 +21,7 @@ annotate:
 
 style:
 	pep8 asynctnt
+	pep8 tests
 	flake8 --config=.flake8.cython
 
 

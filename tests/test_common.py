@@ -124,6 +124,6 @@ class CommonTestCase(BaseTarantoolTestCase):
     async def test__encode_unsupported_type(self):
         class A:
             pass
-        with self.assertRaisesRegex(TypeError,
-                                    'Type `(.+)` is not supported for encoding'):
+        with self.assertRaisesRegex(
+                TypeError, 'Type `(.+)` is not supported for encoding'):
             self.conn.call('func_param', [{'a': A()}])

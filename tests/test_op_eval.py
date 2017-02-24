@@ -88,4 +88,3 @@ class EvalTestCase(BaseTarantoolTestCase):
         """
         with self.assertRaises(asyncio.TimeoutError):
             await self.conn.eval(cmd, [0.3], timeout=0.1)
-

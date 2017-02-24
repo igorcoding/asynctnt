@@ -56,7 +56,8 @@ class InsertTestCase(BaseTarantoolTestCase):
 
     async def test__insert_invalid_types(self):
         with self.assertRaisesRegex(
-                TypeError, r'missing 2 required positional arguments: \'space\' and \'t\''):
+                TypeError, r'missing 2 required positional arguments: '
+                           r'\'space\' and \'t\''):
             await self.conn.insert()
 
         with self.assertRaisesRegex(
@@ -100,3 +101,27 @@ class InsertTestCase(BaseTarantoolTestCase):
         data_cmp = [1, 'hello', None, 'wow', None]
         res = await self.conn.insert(self.TESTER_SPACE_ID, data)
         self.assertListEqual(res.body, [data_cmp], 'Body ok')
+
+    async def test__insert_dict_resp(self):
+        data = [0, 'hello', 0, 'wow']
+        res = await self.conn.insert(self.TESTER_SPACE_ID, data,
+                                     tuple_as_dict=True)
+        self.assertListEqual(res.body, [{
+            'f1': 0,
+            'f2': 'hello',
+            'f3': 0,
+            'f4': 'wow'
+        }])
+
+    async def test__insert_dict_resp_extra(self):
+        data = [0, 'hello', 5, 'wow', 'help', 'common', 'yo']
+        res = await self.conn.insert(self.TESTER_SPACE_ID, data,
+                                     tuple_as_dict=True)
+        self.assertListEqual(res.body, [{
+            'f1': 0,
+            'f2': 'hello',
+            'f3': 5,
+            'f4': 'wow',
+            'f5': 'help',
+            '': ['common', 'yo']
+        }])

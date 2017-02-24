@@ -45,6 +45,7 @@ cdef class BaseProtocol(CoreProtocol):
                  loop,
                  request_timeout=None,
                  encoding=None,
+                 tuple_as_dict=False,
                  initial_read_buffer_size=None):
         CoreProtocol.__init__(self, host, port, encoding,
                               initial_read_buffer_size)
@@ -55,7 +56,13 @@ cdef class BaseProtocol(CoreProtocol):
         self.password = password
         self.fetch_schema = fetch_schema
         self.auto_refetch_schema = auto_refetch_schema
+
+        if tuple_as_dict is None:
+            tuple_as_dict = False
+        self.tuple_as_dict = tuple_as_dict
+
         self.request_timeout = request_timeout or 0
+
         self.connected_fut = connected_fut
         self.on_connection_made_cb = on_connection_made
         self.on_connection_lost_cb = on_connection_lost
@@ -63,6 +70,7 @@ cdef class BaseProtocol(CoreProtocol):
         self._on_request_completed_cb = self._on_request_completed
         self._on_request_timeout_cb = self._on_request_timeout
 
+        self._reqs = {}
         self._sync = 0
         self._schema_id = -1
         self._schema = Schema.new(self._schema_id)
@@ -101,6 +109,45 @@ cdef class BaseProtocol(CoreProtocol):
             self._do_fetch_schema()
         else:
             self._set_connection_ready()
+
+    cdef void _on_response_received(self, const char *buf, uint32_t buf_len):
+        cdef:
+            PyObject *req_p
+            Request req
+            Response resp
+            object waiter
+            object sync_obj
+
+            ssize_t l
+        resp = Response.new(self.encoding)
+        l = response_parse_header(buf, buf_len, resp)
+        buf_len -= l
+        buf = &buf[l]  # skip header
+
+        sync_obj = <object>resp._sync
+
+        req_p = cpython.dict.PyDict_GetItem(self._reqs, sync_obj)
+        if req_p is NULL:
+            logger.warning('sync %d not found', resp._sync)
+            return
+
+        req = <Request>req_p
+        resp._req = req
+
+        cpython.dict.PyDict_DelItem(self._reqs, sync_obj)
+
+        l = response_parse_body(buf, buf_len, resp)
+        buf_len -= l
+        buf = &buf[l]
+
+        waiter = req.waiter
+        if waiter is not None \
+                and not waiter.done():
+            if resp._code != 0:
+                waiter.set_exception(
+                    TarantoolDatabaseError(resp._code, resp._errmsg))
+            else:
+                waiter.set_result(resp)
 
     cdef void _do_auth(self, str username, str password):
         # No extra error handling from Db.execute
@@ -162,8 +209,12 @@ cdef class BaseProtocol(CoreProtocol):
                 fut.set_exception(e)
 
         self._schema_id = -1
-        fut_vspace = self._db.select(SPACE_VSPACE, timeout=0)
-        fut_vindex = self._db.select(SPACE_VINDEX, timeout=0)
+        fut_vspace = self._db.select(SPACE_VSPACE,
+                                     timeout=0,
+                                     tuple_as_dict=False)
+        fut_vindex = self._db.select(SPACE_VINDEX,
+                                     timeout=0,
+                                     tuple_as_dict=False)
         gather_fut = asyncio.gather(fut_vspace, fut_vindex,
                                     return_exceptions=False,
                                     loop=self.loop)
@@ -177,7 +228,27 @@ cdef class BaseProtocol(CoreProtocol):
             self.on_connection_made_cb()
 
     cdef void _on_connection_lost(self, exc):
-        CoreProtocol._on_connection_lost(self, exc)
+        cdef:
+            Request req
+            PyObject *pkey
+            PyObject *pvalue
+            object key, value
+            Py_ssize_t pos
+
+        pos = 0
+        while cpython.dict.PyDict_Next(self._reqs, &pos, &pkey, &pvalue):
+            sync = <uint64_t><object>pkey
+            req = <Request>pvalue
+
+            waiter = req.waiter
+            if waiter and not waiter.done():
+                if exc is None:
+                    waiter.set_exception(
+                        TarantoolNotConnectedError(
+                            'Lost connection to Tarantool')
+                    )
+                else:
+                    waiter.set_exception(exc)
 
         if self.on_connection_lost_cb:
             self.on_connection_lost_cb(exc)
@@ -235,7 +306,7 @@ cdef class BaseProtocol(CoreProtocol):
         if self.con_state == CONNECTION_BAD:
             raise TarantoolNotConnectedError('Tarantool is not connected')
 
-        cpython.dict.PyDict_SetItem(self.reqs, req.sync, req)
+        cpython.dict.PyDict_SetItem(self._reqs, req.sync, req)
         self._write(req.buf)
 
         return self._new_waiter_for_request(req, timeout)

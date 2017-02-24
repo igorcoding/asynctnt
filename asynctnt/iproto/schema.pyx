@@ -2,6 +2,9 @@ from asynctnt.exceptions import TarantoolSchemaError
 from asynctnt.log import logger
 from cpython.mem cimport PyMem_Malloc, PyMem_Free
 from libc.stdint cimport int32_t
+cimport cpython.dict
+cimport cpython.list
+from cpython.ref cimport PyObject
 
 cdef class TntField:
     @staticmethod
@@ -54,28 +57,30 @@ cdef class SchemaSpace:
         sp.field_count = 0
         sp.flags = None
 
-        sp.fields_map = {}
         sp.fields = []
         sp.indexes = {}
         return sp
 
     cdef add_index(self, SchemaIndex idx):
-        self.indexes[idx.iid] = idx
+        cpython.dict.PyDict_SetItem(self.indexes, idx.iid, idx)
         if idx.name:
-            self.indexes[idx.name] = idx
+            cpython.dict.PyDict_SetItem(self.indexes, idx.name, idx)
 
     cdef SchemaIndex get_index(self, index, create_dummy=True):
         cdef:
             SchemaIndex idx
             bint is_str, is_int
+            PyObject *obj_p
         is_str = isinstance(index, str)
         is_int = isinstance(index, int)
         if not is_str and not is_int:
             raise TypeError(
                 'Index must be either str or int, got: {}'.format(type(index)))
-        try:
-            return self.indexes[index]
-        except KeyError as e:
+
+        obj_p = cpython.dict.PyDict_GetItem(self.indexes, index)
+        if obj_p is not NULL:
+            return <SchemaIndex>obj_p
+        else:
             if is_int and create_dummy:
                 logger.warning(
                     'Index %s not found in space %s/%s. Creating dummy.',
@@ -85,14 +90,14 @@ cdef class SchemaSpace:
                 idx.iid = index
                 idx.sid = self.sid
                 idx.name = str(index)
-                self.indexes[index] = idx
+                cpython.dict.PyDict_SetItem(self.indexes, index, idx)
                 return idx
             else:
                 raise TarantoolSchemaError(
                     'Index {} not found in space {}/{}'.format(
                         index, self.sid, self.name
                     )
-                ) from None
+                )
 
     def __repr__(self):
         return '<{} id={}, name={}, arity={}>'.format(
@@ -115,38 +120,31 @@ cdef class Schema:
         return s
 
     cdef SchemaSpace get_space(self, space):
-        try:
-            return self.schema[space]
-        except KeyError:
+        cdef PyObject *obj_p = \
+            cpython.dict.PyDict_GetItem(self.schema, space)
+        if obj_p is NULL:
             return None
-
-    cdef SchemaIndex get_index(self, space, index):
-        sp = self.get_space(space)
-        if sp is None:
-            return None
-        try:
-            return sp.indexes[index]
-        except KeyError:
-            return None
+        return <SchemaSpace>obj_p
 
     cdef SchemaSpace get_or_create_space(self, space):
         cdef:
             bint is_str, is_int
+            PyObject *obj_p
         is_str = isinstance(space, str)
         is_int = isinstance(space, int)
         if not is_str and not is_int:
             raise TypeError(
                 'Space must be either str or int, got: {}'.format(type(space)))
 
-        try:
-            return self.schema[space]
-        except KeyError:
+        obj_p = cpython.dict.PyDict_GetItem(self.schema, space)
+        if obj_p is NULL:
             if is_str:
                 raise TarantoolSchemaError(
                     'Space {} not found'.format(space)
-                ) from None
+                )
             else:
                 return self.create_dummy_space(space)
+        return <SchemaSpace>obj_p
 
     cdef SchemaSpace create_dummy_space(self, int space_id):
         cdef SchemaSpace s
@@ -154,7 +152,7 @@ cdef class Schema:
         s = SchemaDummySpace.new()
         s.sid = space_id
         s.name = str(space_id)
-        self.schema[space_id] = s
+        cpython.dict.PyDict_SetItem(self.schema, space_id, s)
         return s
 
     cdef inline clear(self):
@@ -168,38 +166,40 @@ cdef class Schema:
             list format_list
             TntField f
 
+        assert space_row is not None
+
         sp = SchemaSpace.new()
-        row_len = len(space_row)
+        row_len = <size_t>cpython.list.PyList_GET_SIZE(space_row)
 
         k = 0
-        sp.sid = space_row[k]
+        sp.sid = <int><object>cpython.list.PyList_GET_ITEM(space_row, k)
         k += 1
         if k < row_len:
-            sp.owner = space_row[k]
+            sp.owner = <int><object>cpython.list.PyList_GET_ITEM(space_row, k)
         k += 1
         if k < row_len:
-            sp.name = space_row[k]
+            sp.name = <str>cpython.list.PyList_GET_ITEM(space_row, k)
         k += 1
         if k < row_len:
-            sp.engine = space_row[k]
+            sp.engine = <str>cpython.list.PyList_GET_ITEM(space_row, k)
         k += 1
         if k < row_len:
-            sp.field_count = space_row[k]
+            sp.field_count = <int><object>cpython.list.PyList_GET_ITEM(
+                space_row, k)
         k += 1
         if k < row_len:
-            sp.flags = space_row[k]
+            sp.flags = <object>cpython.list.PyList_GET_ITEM(space_row, k)
         k += 1
         if k < row_len:
             # format
-            format_list = space_row[k]
+            format_list = <list>cpython.list.PyList_GET_ITEM(space_row, k)
             for i in range(len(format_list)):
                 field_id = i
                 field_name = format_list[i]['name']
                 field_type = format_list[i]['type']
                 f = TntField.new(field_id, field_name, field_type)
 
-                sp.fields_map[field_name] = f
-                sp.fields.append(field_name)
+                cpython.list.PyList_Append(sp.fields, field_name)
 
         return sp
 
@@ -207,13 +207,16 @@ cdef class Schema:
         cdef:
             SchemaIndex idx
             SchemaSpace sp
+            uint32_t i
+
+        assert index_row is not None
 
         idx = SchemaIndex.new()
-        idx.sid = index_row[0]
-        idx.iid = index_row[1]
-        idx.name = index_row[2]
-        idx.index_type = index_row[3]
-        idx.unique = index_row[4]
+        idx.sid = <int><object>cpython.list.PyList_GetItem(index_row, 0)
+        idx.iid = <int><object>cpython.list.PyList_GetItem(index_row, 1)
+        idx.name = <str>cpython.list.PyList_GetItem(index_row, 2)
+        idx.index_type = <str>cpython.list.PyList_GetItem(index_row, 3)
+        idx.unique = <object>cpython.list.PyList_GetItem(index_row, 4)
         idx.parts = []
         idx.fields = []
 
@@ -225,11 +228,15 @@ cdef class Schema:
         parts = index_row[5]
         if isinstance(parts, (list, tuple)):
             for field_id, field_type in parts:
-                idx.parts.append((field_id, field_type))
+                cpython.list.PyList_Append(
+                    idx.parts,
+                    (field_id, field_type)
+                )
 
                 if field_id < len(sp.fields):
-                    idx.fields.append(
-                        <TntField>sp.fields[field_id]
+                    cpython.list.PyList_Append(
+                        idx.fields,
+                        <str>cpython.list.PyList_GetItem(sp.fields, field_id)
                     )
                 else:
                     logger.warning(
@@ -240,11 +247,15 @@ cdef class Schema:
                 field_id = index_row[5 + 1 + i * 2]
                 field_type = index_row[5 + 2 + i * 2]
 
-                idx.parts.append((field_id, field_type))
+                cpython.list.PyList_Append(
+                    idx.parts,
+                    (field_id, field_type)
+                )
 
                 if field_id < len(sp.fields):
-                    idx.fields.append(
-                        <TntField>sp.fields[field_id]
+                    cpython.list.PyList_Append(
+                        idx.fields,
+                        <str>cpython.list.PyList_GetItem(sp.fields, field_id)
                     )
                 else:
                     logger.warning(
@@ -263,9 +274,9 @@ cdef class Schema:
         s = Schema.new(schema_id)
         for space_row in spaces:
             sp = s.parse_space(space_row)
-            s.schema[sp.sid] = sp
+            cpython.dict.PyDict_SetItem(s.schema, sp.sid, sp)
             if sp.name:
-                s.schema[sp.name] = sp
+                cpython.dict.PyDict_SetItem(s.schema, sp.name, sp)
 
         for index_row in indexes:
             idx = s.parse_index(index_row)
@@ -283,26 +294,36 @@ cdef list dict_to_list_fields(list fields, dict d, bint default_none):
         dict used
         object value, field
         int32_t used_count
+        uint32_t fields_count, field_id
+        PyObject *obj_p
+
+    assert d is not None
 
     l = []
-    used_count = len(d)
+    used_count = <int32_t>cpython.dict.PyDict_Size(d)
+    fields_count = <uint32_t>cpython.list.PyList_GET_SIZE(fields)
 
-    for field in fields:
-        try:
-            value = d[field]
+    for field_id in range(fields_count):
+        field = <object>cpython.list.PyList_GetItem(fields, field_id)
+
+        obj_p = cpython.dict.PyDict_GetItem(d, field)
+        if obj_p is not NULL:
+            value = <object>obj_p
             used_count -= 1
             l.append(value)
-        except KeyError as e:
+        else:
             if default_none:
                 l.append(None)
 
     # Warn user if he used any of unknown fields
     if used_count != 0:
         used = {}
-        for field in fields:
-            if field in d:
+        for field_id in range(fields_count):
+            field = <object>cpython.list.PyList_GetItem(fields, field_id)
+
+            if <bint>cpython.dict.PyDict_Contains(d, field):
                 used[field] = None
-        if '' in d:
+        if <bint>cpython.dict.PyDict_Contains(d, ''):
             used[''] = None
 
         for field in d:
@@ -313,4 +334,3 @@ cdef list dict_to_list_fields(list fields, dict d, bint default_none):
                     field
                 )
     return l
-

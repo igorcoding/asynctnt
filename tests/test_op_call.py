@@ -192,5 +192,3 @@ class Call16TestCase(BaseTarantoolTestCase):
     async def test__call_timeout_late(self):
         with self.assertRaises(asyncio.TimeoutError):
             await self.conn.call16('func_long', [0.3], timeout=0.1)
-
-

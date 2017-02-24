@@ -4,7 +4,7 @@ import functools
 import os
 
 from asynctnt.exceptions import TarantoolDatabaseError, \
-    ErrorCode, TarantoolNotConnectedError
+    ErrorCode, TarantoolNotConnectedError, TarantoolError
 from asynctnt.iproto import protocol
 from asynctnt.log import logger
 
@@ -27,7 +27,7 @@ class Connection:
         '_host', '_port', '_username', '_password',
         '_fetch_schema', '_auto_refetch_schema', '_initial_read_buffer_size',
         '_encoding', '_connect_timeout', '_reconnect_timeout',
-        '_request_timeout', '_loop', '_state', '_state_prev',
+        '_request_timeout', '_tuple_as_dict', '_loop', '_state', '_state_prev',
         '_transport', '_protocol', '_db',
         '_disconnect_waiter', '_reconnect_coro'
     )
@@ -42,6 +42,7 @@ class Connection:
                  connect_timeout=60,
                  request_timeout=-1,
                  reconnect_timeout=1. / 3.,
+                 tuple_as_dict=False,
                  encoding=None,
                  initial_read_buffer_size=None,
                  loop=None):
@@ -74,6 +75,11 @@ class Connection:
         :param reconnect_timeout:
                 Time in seconds to wait before automatic reconnect
                 (set to 0 or None to disable auto reconnect)
+        :param tuple_as_dict:
+                Bool value indicating whether or not to use spaces schema to
+                decode response tuples by default. You can always change
+                this behaviour in the request itself.
+                Note: fetch_schema must be True
         :param encoding:
                 The encoding to use for all strings
                 encoding and decoding (default is 'utf-8')
@@ -99,6 +105,12 @@ class Connection:
             self._auto_refetch_schema = False
         self._initial_read_buffer_size = initial_read_buffer_size
         self._encoding = encoding or 'utf-8'
+        if tuple_as_dict and not self._fetch_schema:
+            raise TarantoolError(
+                'fetch_schema must be True to be able to use '
+                'unpacking tuples to dict'
+            )
+        self._tuple_as_dict = tuple_as_dict
 
         self._connect_timeout = connect_timeout
         self._reconnect_timeout = reconnect_timeout or 0
@@ -172,6 +184,7 @@ class Connection:
                    request_timeout=self._request_timeout,
                    initial_read_buffer_size=self._initial_read_buffer_size,
                    encoding=self._encoding,
+                   tuple_as_dict=self._tuple_as_dict,
                    connected_fut=connected_fut,
                    on_connection_made=self.connection_made,
                    on_connection_lost=self.connection_lost,
@@ -521,10 +534,12 @@ class Connection:
                     * asynctnt.Iterator object
                     * string with an iterator name
         :param timeout: Request timeout
+        :param tuple_as_dict: Decode tuple according to schema
         """
         return self._db.select(space, key, **kwargs)
 
-    def insert(self, space, t, *, replace=False, timeout=-1):
+    def insert(self, space, t, *,
+               replace=False, timeout=-1, tuple_as_dict=None):
         """
             Insert request coroutine.
 
@@ -532,20 +547,25 @@ class Connection:
         :param t: tuple to insert (list object)
         :param replace: performs replace request instead of insert
         :param timeout: Request timeout
+        :param tuple_as_dict: Decode tuple according to schema
         """
         return self._db.insert(space, t,
-                               replace=replace, timeout=timeout)
+                               replace=replace,
+                               timeout=timeout,
+                               tuple_as_dict=tuple_as_dict)
 
-    def replace(self, space, t, *, timeout=-1):
+    def replace(self, space, t, *, timeout=-1, tuple_as_dict=None):
         """
             Replace request coroutine.
 
         :param space: space id or space name.
         :param t: tuple to insert (list object)
         :param timeout: Request timeout
+        :param tuple_as_dict: Decode tuple according to schema
         """
         return self._db.replace(space, t,
-                                timeout=timeout)
+                                timeout=timeout,
+                                tuple_as_dict=tuple_as_dict)
 
     def delete(self, space, key, **kwargs):
         """
@@ -555,6 +575,7 @@ class Connection:
         :param key: key to delete
         :param index: index id or name
         :param timeout: Request timeout
+        :param tuple_as_dict: Decode tuple according to schema
         """
         return self._db.delete(space, key, **kwargs)
 
@@ -569,6 +590,7 @@ class Connection:
                 https://tarantool.org/doc/book/box/box_space.html?highlight=update#lua-function.space_object.update
         :param index: index id or name
         :param timeout: Request timeout
+        :param tuple_as_dict: Decode tuple according to schema
         """
         return self._db.update(space, key, operations, **kwargs)
 

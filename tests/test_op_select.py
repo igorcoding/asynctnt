@@ -19,6 +19,18 @@ class SelectTestCase(BaseTarantoolTestCase):
             await self.conn.insert(self.TESTER_SPACE_ID, t)
         return data
 
+    async def _fill_data_dict(self, count=3):
+        data = []
+        for i in range(count):
+            t = {
+                'f1': i,
+                'f2': str(i)
+            }
+            t = await self.conn.insert(self.TESTER_SPACE_ID, t,
+                                       tuple_as_dict=True)
+            data.append(t.body[0])
+        return data
+
     async def test__select_by_id_empty_space(self):
         res = await self.conn.select(self.TESTER_SPACE_ID)
 
@@ -234,3 +246,23 @@ class SelectTestCase(BaseTarantoolTestCase):
             'f2': data[0][1]
         }, index='txt')
         self.assertListEqual(res.body, [data[0]], 'Body ok')
+
+    async def test__select_dict_resp(self):
+        data = await self._fill_data_dict()
+        res = await  self.conn.select(self.TESTER_SPACE_ID, [],
+                                      tuple_as_dict=True)
+        self.assertListEqual(res.body, data)
+
+    async def test__select_dict_resp_default_from_conn_true(self):
+        await self.tnt_reconnect(tuple_as_dict=True)
+        data = await self._fill_data()
+        res = await self.conn.select(self.TESTER_SPACE_ID, [],
+                                     tuple_as_dict=False)
+        self.assertListEqual(res.body, data)
+
+    async def test__select_dict_resp_default_from_conn_false(self):
+        await self.tnt_reconnect(tuple_as_dict=False)
+        data = await self._fill_data_dict()
+        res = await self.conn.select(self.TESTER_SPACE_ID, [],
+                                     tuple_as_dict=True)
+        self.assertListEqual(res.body, data)

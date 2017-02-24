@@ -3,7 +3,8 @@ import asyncio
 import logging
 
 from asynctnt.connection import ConnectionState
-from asynctnt.exceptions import TarantoolDatabaseError, ErrorCode
+from asynctnt.exceptions import TarantoolDatabaseError, ErrorCode, \
+    TarantoolError
 from tests import BaseTarantoolTestCase
 
 import asynctnt
@@ -226,3 +227,15 @@ class ConnectTestCase(BaseTarantoolTestCase):
         self.assertTrue(conn.is_connected)
 
         await conn.disconnect()
+
+    async def test__connect_tuple_as_dict_invalid(self):
+        with self.assertRaisesRegex(
+                TarantoolError,
+                'fetch_schema must be True to be able to use '
+                'unpacking tuples to dict'):
+            asynctnt.Connection(host=self.tnt.host,
+                                port=self.tnt.port,
+                                fetch_schema=False,
+                                auto_refetch_schema=False,
+                                tuple_as_dict=True,
+                                loop=self.loop)
