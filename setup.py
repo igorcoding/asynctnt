@@ -174,7 +174,8 @@ setup(
         Extension("asynctnt.iproto.protocol",
                   sources=[
                       "asynctnt/iproto/protocol.pyx",
-                      "third_party/msgpuck/msgpuck.c"
+                      "third_party/msgpuck/msgpuck.c",
+                      "third_party/msgpuck/hints.c",
                   ],
                   include_dirs=[
                       '-Ithird_party'
