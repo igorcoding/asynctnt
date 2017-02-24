@@ -1,5 +1,7 @@
 import asyncio
 
+import logging
+
 from asynctnt import Iterator
 from asynctnt import Response
 from asynctnt.exceptions import TarantoolSchemaError, TarantoolDatabaseError, \
@@ -9,6 +11,8 @@ from tests.util import get_complex_param
 
 
 class UpdateTestCase(BaseTarantoolTestCase):
+    LOGGING_LEVEL = logging.DEBUG
+
     async def _fill_data(self):
         data = [
             [0, 'a', 1, 5],
@@ -54,6 +58,23 @@ class UpdateTestCase(BaseTarantoolTestCase):
                                      [1], [['+', 2, 3]])
         data[1][2] += 3
         self.assertListEqual(res.body, [data[1]], 'Body ok')
+
+    async def test__update_one_plus_str_field(self):
+        data = await self._fill_data()
+
+        res = await self.conn.update(self.TESTER_SPACE_ID,
+                                     [1], [['+', 'f3', 3]])
+        data[1][2] += 3
+        self.assertListEqual(res.body, [data[1]], 'Body ok')
+
+    async def test__update_one_plus_str_field_unknown(self):
+        data = await self._fill_data()
+
+        with self.assertRaisesRegex(TarantoolSchemaError,
+                                    r'Field with name \'f10\' not found '
+                                    r'in space \'tester\''):
+            await self.conn.update(self.TESTER_SPACE_ID,
+                                   [1], [['+', 'f10', 3]])
 
     async def test__update_one_plus_negative(self):
         data = await self._fill_data()
@@ -198,7 +219,8 @@ class UpdateTestCase(BaseTarantoolTestCase):
                                    [1], [[':', 2, {}, {}, ':::']])
 
         with self.assertRaisesRegex(
-                TypeError, r'Operation field_no must be of int type'):
+                TypeError, r'Operation field_no must be '
+                           r'of either int or str type'):
             await self.conn.update(self.TESTER_SPACE_ID,
                                    [1], [[':', {}, {}, {}, ':::']])
 

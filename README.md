@@ -26,6 +26,12 @@ versions 1.6+.
 * **Auto reconnect**. If connection is lost for some reason - asynctnt will 
   start automatic reconnection procedure (with authorization and schema 
   fetching, of course).
+* Ability to use **dicts for tuples** with field names as keys in DML requests 
+  (select, insert, replace, delete, update, upsert). This is possible only 
+  if space.format is specified in Tarantool. Field names can also be used 
+  in update operations instead of field numbers. Moreover, tuples can be 
+  decoded into dicts instead of arrays if `tuple_as_dict` is True either in
+  `Connection` or a specific request.
 * All requests support specification of `timeout` value, so if request is 
   executed for too long, asyncio.TimeoutError is raised. It drastically
   simplifies your code, as you don't need to use `asyncio.wait_for(...)`
@@ -88,10 +94,6 @@ RPS on running 200k requests in 300 parallel coroutines (with `uvloop`):
 | insert        | 25811.84      | 82526.94  |
 | update        | 21914.15      | 80865.00  |
 
-  
-## Roadmap
-
-* Add support for field names in all operations
   
 ## Installation
 Use pip to install:

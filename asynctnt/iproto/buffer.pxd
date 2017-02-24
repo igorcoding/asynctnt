@@ -55,7 +55,8 @@ cdef class WriteBuffer:
     cdef char *_encode_obj(self, char *p, object o) except NULL
 
     cdef tnt.tnt_update_op_kind _op_type_to_kind(self, char *str, ssize_t len)
-    cdef char *_encode_update_ops(self, char *p, list operations) except NULL
+    cdef char *_encode_update_ops(self, char *p, list operations,
+                                  SchemaSpace space) except NULL
 
     cdef void encode_request_call(self, str func_name, args) except *
     cdef void encode_request_eval(self, str expression, args) except *

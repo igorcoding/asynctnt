@@ -40,6 +40,7 @@ cdef class SchemaSpace:
         object flags
 
         list fields
+        dict fields_map
         dict indexes
 
     @staticmethod

@@ -586,8 +586,12 @@ class Connection:
         :param space: space id or space name.
         :param key: key to update
         :param operations:
-                Operations list. Please refer to
+                Operations list of the following format:
+                [ [op_type, field_no, ...], ... ]. Please refer to
                 https://tarantool.org/doc/book/box/box_space.html?highlight=update#lua-function.space_object.update
+                You can use field numbers as well as their names in space
+                format as a field_no (if only fetch_schema is True).
+                If field is unknown then TarantoolSchemaError is raised.
         :param index: index id or name
         :param timeout: Request timeout
         :param tuple_as_dict: Decode tuple according to schema
@@ -602,9 +606,15 @@ class Connection:
         :param t: tuple to insert if it's not in space
         :param operations:
                 Operations list to use for update if tuple is already in space.
-                Please refer to
+                It has the same format as in update requets:
+                [ [op_type, field_no, ...], ... ]. Please refer to
                 https://tarantool.org/doc/book/box/box_space.html?highlight=update#lua-function.space_object.update
+                You can use field numbers as well as their names in space
+                format as a field_no (if only fetch_schema is True).
+                If field is unknown then TarantoolSchemaError is raised.
         :param timeout: Request timeout
+        :param tuple_as_dict: Decode tuple according to schema. Has no effect
+                in upsert requests
         """
         return self._db.upsert(space, t, operations, **kwargs)
 

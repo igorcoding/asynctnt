@@ -2,6 +2,7 @@ from asynctnt.exceptions import TarantoolSchemaError
 from asynctnt.log import logger
 from cpython.mem cimport PyMem_Malloc, PyMem_Free
 from libc.stdint cimport int32_t
+cimport cpython
 cimport cpython.dict
 cimport cpython.list
 from cpython.ref cimport PyObject
@@ -58,6 +59,7 @@ cdef class SchemaSpace:
         sp.flags = None
 
         sp.fields = []
+        sp.fields_map = {}
         sp.indexes = {}
         return sp
 
@@ -82,7 +84,7 @@ cdef class SchemaSpace:
             return <SchemaIndex>obj_p
         else:
             if is_int and create_dummy:
-                logger.warning(
+                logger.debug(
                     'Index %s not found in space %s/%s. Creating dummy.',
                     index, self.sid, self.name
                 )
@@ -148,7 +150,7 @@ cdef class Schema:
 
     cdef SchemaSpace create_dummy_space(self, int space_id):
         cdef SchemaSpace s
-        logger.warning('Space %s not found. Creating dummy.', space_id)
+        logger.debug('Space %s not found. Creating dummy.', space_id)
         s = SchemaDummySpace.new()
         s.sid = space_id
         s.name = str(space_id)
@@ -200,6 +202,7 @@ cdef class Schema:
                 f = TntField.new(field_id, field_name, field_type)
 
                 cpython.list.PyList_Append(sp.fields, field_name)
+                cpython.dict.PyDict_SetItem(sp.fields_map, field_name, f)
 
         return sp
 

@@ -12,6 +12,7 @@ from cpython.ref cimport PyObject
 from libc.string cimport memcpy
 from libc.stdint cimport uint32_t, uint64_t, int64_t
 
+from asynctnt.exceptions import TarantoolSchemaError
 from asynctnt.log import logger
 
 
@@ -389,7 +390,8 @@ cdef class WriteBuffer:
         else:
             return tnt.OP_UPD_UNKNOWN
 
-    cdef char *_encode_update_ops(self, char *p, list operations) except NULL:
+    cdef char *_encode_update_ops(self, char *p, list operations,
+                                  SchemaSpace space) except NULL:
         cdef:
             char *begin
             uint32_t ops_len, op_len
@@ -404,6 +406,7 @@ cdef class WriteBuffer:
 
             tnt.tnt_update_op_kind op_kind
             uint64_t field_no
+            object field_no_obj
 
             uint32_t splice_position, splice_offset
 
@@ -441,10 +444,24 @@ cdef class WriteBuffer:
                                                   &op_str_c, &op_str_len)
 
             op_kind = self._op_type_to_kind(op_str_c, op_str_len)
-            if not isinstance(operation[1], int):
+            field_no_obj = operation[1]
+            if isinstance(field_no_obj, int):
+                field_no = <uint64_t>field_no_obj
+            elif isinstance(field_no_obj, str):
+                field_no_obj_p = cpython.dict.PyDict_GetItem(
+                    space.fields_map, field_no_obj
+                )
+                if field_no_obj_p is NULL:
+                    raise TarantoolSchemaError(
+                        'Field with name \'{}\' not found '
+                        'in space \'{}\''.format(
+                            field_no_obj, space.name
+                        )
+                    )
+                field_no = <uint64_t>(<TntField>field_no_obj_p).id
+            else:
                 raise TypeError(
-                    'Operation field_no must be of int type')
-            field_no = <uint64_t>int(operation[1])
+                    'Operation field_no must be of either int or str type')
 
             if op_kind == tnt.OP_UPD_ARITHMETIC \
                     or op_kind == tnt.OP_UPD_DELETE:
@@ -796,7 +813,7 @@ cdef class WriteBuffer:
                                       default_fields_none)
 
         p = self._encode_uint(p, key_of_operations)
-        p = self._encode_update_ops(p, operations)
+        p = self._encode_update_ops(p, operations, space)
 
     cdef void encode_request_upsert(self, SchemaSpace space, t,
                                     list operations) except *:
