@@ -74,9 +74,29 @@ class InsertTestCase(BaseTarantoolTestCase):
 
     async def test__replace_invalid_types(self):
         with self.assertRaisesRegex(
-                TypeError, r'missing 2 required positional arguments: \'space\' and \'t\''):
+                TypeError, r'missing 2 required positional arguments: '
+                           r'\'space\' and \'t\''):
             await self.conn.replace()
 
         with self.assertRaisesRegex(
                 TypeError, r'missing 1 required positional argument: \'t\''):
             await self.conn.replace(self.TESTER_SPACE_ID)
+
+    async def test__insert_dict_key(self):
+        data = {
+            'f1': 1,
+            'f2': 'hello'
+        }
+        data_cmp = [1, 'hello', None, None, None]
+        res = await self.conn.insert(self.TESTER_SPACE_ID, data)
+        self.assertListEqual(res.body, [data_cmp], 'Body ok')
+
+    async def test__insert_dict_key_holes(self):
+        data = {
+            'f1': 1,
+            'f2': 'hello',
+            'f4': 'wow'
+        }
+        data_cmp = [1, 'hello', None, 'wow', None]
+        res = await self.conn.insert(self.TESTER_SPACE_ID, data)
+        self.assertListEqual(res.body, [data_cmp], 'Body ok')

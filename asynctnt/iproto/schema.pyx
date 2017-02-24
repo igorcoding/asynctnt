@@ -1,5 +1,7 @@
+from asynctnt.exceptions import TarantoolSchemaError
 from asynctnt.log import logger
 from cpython.mem cimport PyMem_Malloc, PyMem_Free
+from libc.stdint cimport int32_t
 
 cdef class TntField:
     @staticmethod
@@ -17,27 +19,32 @@ cdef class SchemaIndex:
     cdef SchemaIndex new():
         cdef SchemaIndex idx
         idx = SchemaIndex.__new__(SchemaIndex)
-        idx.sid = -1
         idx.iid = -1
+        idx.sid = -1
         idx.name = None
         idx.index_type = None
         idx.unique = None
         idx.parts = []
-        idx.fields_names = []
+        idx.fields = []
         return idx
 
     def __repr__(self):
         return \
-            '<SchemaIndex sid={}, id={}, name={}, ' \
+            '<{} sid={}, id={}, name={}, ' \
             'type={}, unique={}>'.format(
+                self.__class__.__name__,
                 self.sid, self.iid, self.name, self.index_type, self.unique
             )
+
+
+cdef class SchemaDummyIndex(SchemaIndex):
+    pass
 
 
 cdef class SchemaSpace:
 
     @staticmethod
-    cdef SchemaSpace new(list space_row):
+    cdef SchemaSpace new():
         cdef SchemaSpace sp
         sp = SchemaSpace.__new__(SchemaSpace)
         sp.sid = -1
@@ -48,7 +55,7 @@ cdef class SchemaSpace:
         sp.flags = None
 
         sp.fields_map = {}
-        sp.fields_names = []
+        sp.fields = []
         sp.indexes = {}
         return sp
 
@@ -57,10 +64,45 @@ cdef class SchemaSpace:
         if idx.name:
             self.indexes[idx.name] = idx
 
+    cdef SchemaIndex get_index(self, index, create_dummy=True):
+        cdef:
+            SchemaIndex idx
+            bint is_str, is_int
+        is_str = isinstance(index, str)
+        is_int = isinstance(index, int)
+        if not is_str and not is_int:
+            raise TypeError(
+                'Index must be either str or int, got: {}'.format(type(index)))
+        try:
+            return self.indexes[index]
+        except KeyError as e:
+            if is_int and create_dummy:
+                logger.warning(
+                    'Index %s not found in space %s/%s. Creating dummy.',
+                    index, self.sid, self.name
+                )
+                idx = SchemaDummyIndex.new()
+                idx.iid = index
+                idx.sid = self.sid
+                idx.name = str(index)
+                self.indexes[index] = idx
+                return idx
+            else:
+                raise TarantoolSchemaError(
+                    'Index {} not found in space {}/{}'.format(
+                        index, self.sid, self.name
+                    )
+                ) from None
+
     def __repr__(self):
-        return '<SchemaSpace id={}, name={}, arity={}>'.format(
+        return '<{} id={}, name={}, arity={}>'.format(
+            self.__class__.__name__,
             self.sid, self.name, self.arity
         )
+
+
+cdef class SchemaDummySpace(SchemaSpace):
+    pass
 
 
 cdef class Schema:
@@ -87,6 +129,34 @@ cdef class Schema:
         except KeyError:
             return None
 
+    cdef SchemaSpace get_or_create_space(self, space):
+        cdef:
+            bint is_str, is_int
+        is_str = isinstance(space, str)
+        is_int = isinstance(space, int)
+        if not is_str and not is_int:
+            raise TypeError(
+                'Space must be either str or int, got: {}'.format(type(space)))
+
+        try:
+            return self.schema[space]
+        except KeyError:
+            if is_str:
+                raise TarantoolSchemaError(
+                    'Space {} not found'.format(space)
+                ) from None
+            else:
+                return self.create_dummy_space(space)
+
+    cdef SchemaSpace create_dummy_space(self, int space_id):
+        cdef SchemaSpace s
+        logger.warning('Space %s not found. Creating dummy.', space_id)
+        s = SchemaDummySpace.new()
+        s.sid = space_id
+        s.name = str(space_id)
+        self.schema[space_id] = s
+        return s
+
     cdef inline clear(self):
         self.schema.clear()
 
@@ -98,7 +168,7 @@ cdef class Schema:
             list format_list
             TntField f
 
-        sp = SchemaSpace.new(space_row)
+        sp = SchemaSpace.new()
         row_len = len(space_row)
 
         k = 0
@@ -129,7 +199,7 @@ cdef class Schema:
                 f = TntField.new(field_id, field_name, field_type)
 
                 sp.fields_map[field_name] = f
-                sp.fields_names.append(field_name)
+                sp.fields.append(field_name)
 
         return sp
 
@@ -145,20 +215,21 @@ cdef class Schema:
         idx.index_type = index_row[3]
         idx.unique = index_row[4]
         idx.parts = []
-        idx.fields_names = []
+        idx.fields = []
 
         sp = self.get_space(idx.sid)
         if sp is None:
-            raise KeyError('Space with id {} not found'.format(idx.sid))
+            raise TarantoolSchemaError(
+                'Space with id {} not found'.format(idx.sid))
 
         parts = index_row[5]
         if isinstance(parts, (list, tuple)):
             for field_id, field_type in parts:
                 idx.parts.append((field_id, field_type))
 
-                if field_id < len(sp.fields_names):
-                    idx.fields_names.append(
-                        <TntField>sp.fields_names[field_id]
+                if field_id < len(sp.fields):
+                    idx.fields.append(
+                        <TntField>sp.fields[field_id]
                     )
                 else:
                     logger.warning(
@@ -171,9 +242,9 @@ cdef class Schema:
 
                 idx.parts.append((field_id, field_type))
 
-                if field_id < len(sp.fields_names):
-                    idx.fields_names.append(
-                        <TntField>sp.fields_names[field_id]
+                if field_id < len(sp.fields):
+                    idx.fields.append(
+                        <TntField>sp.fields[field_id]
                     )
                 else:
                     logger.warning(
@@ -204,3 +275,42 @@ cdef class Schema:
 
     def __repr__(self):
         return '<Schema>'
+
+
+cdef list dict_to_list_fields(list fields, dict d, bint default_none):
+    cdef:
+        list l
+        dict used
+        object value, field
+        int32_t used_count
+
+    l = []
+    used_count = len(d)
+
+    for field in fields:
+        try:
+            value = d[field]
+            used_count -= 1
+            l.append(value)
+        except KeyError as e:
+            if default_none:
+                l.append(None)
+
+    # Warn user if he used any of unknown fields
+    if used_count != 0:
+        used = {}
+        for field in fields:
+            if field in d:
+                used[field] = None
+        if '' in d:
+            used[''] = None
+
+        for field in d:
+            if field not in used:
+                logger.warning(
+                    'Field \'%s\' in supplied dict is unknown as '
+                    'a tuple field for selected index. Skipping.',
+                    field
+                )
+    return l
+

@@ -20,10 +20,14 @@ cdef class SchemaIndex:
         object unique
         list parts
 
-        list fields_names
+        list fields
 
     @staticmethod
     cdef SchemaIndex new()
+
+
+cdef class SchemaDummyIndex(SchemaIndex):
+    pass
 
 
 cdef class SchemaSpace:
@@ -36,13 +40,18 @@ cdef class SchemaSpace:
         object flags
 
         dict fields_map
-        list fields_names
+        list fields
         dict indexes
 
     @staticmethod
-    cdef SchemaSpace new(list space_row)
+    cdef SchemaSpace new()
 
     cdef add_index(self, SchemaIndex idx)
+    cdef SchemaIndex get_index(self, index, create_dummy=*)
+
+
+cdef class SchemaDummySpace(SchemaSpace):
+    pass
 
 
 cdef class Schema:
@@ -55,6 +64,8 @@ cdef class Schema:
 
     cdef SchemaSpace get_space(self, space)
     cdef SchemaIndex get_index(self, space, index)
+    cdef SchemaSpace create_dummy_space(self, int space_id)
+    cdef SchemaSpace get_or_create_space(self, space)
 
     cdef SchemaSpace parse_space(self, list index_row)
     cdef SchemaIndex parse_index(self, list index_row)
@@ -63,3 +74,6 @@ cdef class Schema:
 
     @staticmethod
     cdef Schema parse(int64_t schema_id, spaces, indexes)
+
+
+cdef list dict_to_list_fields(list fields, dict d, bint default_none)

@@ -30,6 +30,13 @@ box.once('v1', function()
     box.schema.user.grant('t1', 'read,write,execute', 'universe')
 
     local s = box.schema.create_space('tester')
+	s:format({
+        {type=B.types.string, name='f1'},
+		{type=B.types.string, name='f2'},
+		{type=B.types.unsigned, name='f3'},
+		{type=B.types.unsigned, name='f4'},
+		{type=B.types.any, name='f5'},
+    })
     s:create_index('primary')
     s:create_index('txt', {unique = false, parts = {2, B.types.string}})
 end)

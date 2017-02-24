@@ -16,13 +16,13 @@ cdef class Db:
     cdef Request _call16(self, str func_name, args)
     cdef Request _call(self, str func_name, args)
     cdef Request _eval(self, str expression, args)
-    cdef Request _select(self, uint32_t space, uint32_t index, key,
+    cdef Request _select(self, SchemaSpace space, SchemaIndex index, key,
                          uint64_t offset, uint64_t limit, uint32_t iterator)
-    cdef Request _insert(self, uint32_t space, t, bint replace)
-    cdef Request _delete(self, uint32_t space, uint32_t index, key)
-    cdef Request _update(self, uint32_t space, uint32_t index,
-                         key, list operations)
-    cdef Request _upsert(self, uint32_t space, t, list operations)
+    cdef Request _insert(self, SchemaSpace space, t, bint replace)
+    cdef Request _delete(self, SchemaSpace space, SchemaIndex index, key)
+    cdef Request _update(self, SchemaSpace space, SchemaIndex index, key,
+                         list operations)
+    cdef Request _upsert(self, SchemaSpace space, t, list operations)
     cdef Request _auth(self, bytes salt, str username, str password)
 
     @staticmethod

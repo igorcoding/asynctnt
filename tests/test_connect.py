@@ -41,7 +41,7 @@ class ConnectTestCase(BaseTarantoolTestCase):
         self.assertTrue(conn.is_connected)
         self.assertTrue(conn._protocol.is_fully_connected())
         self.assertEqual(conn.state, ConnectionState.CONNECTED)
-        self.assertIsNone(conn._protocol.schema)
+        self.assertIsNotNone(conn._protocol.schema)
         await conn.disconnect()
 
     async def test__connect_auth(self):
@@ -71,7 +71,7 @@ class ConnectTestCase(BaseTarantoolTestCase):
         self.assertTrue(conn.is_connected)
         self.assertTrue(conn._protocol.is_fully_connected())
         self.assertEqual(conn.state, ConnectionState.CONNECTED)
-        self.assertIsNone(conn._protocol.schema)
+        self.assertIsNotNone(conn._protocol.schema)
         await conn.disconnect()
 
     async def test__disconnect(self):

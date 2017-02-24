@@ -64,8 +64,8 @@ cdef class BaseProtocol(CoreProtocol):
         self._on_request_timeout_cb = self._on_request_timeout
 
         self._sync = 0
-        self._schema = None
         self._schema_id = -1
+        self._schema = Schema.new(self._schema_id)
         self._db = self._create_db()
 
         try:
@@ -250,29 +250,6 @@ cdef class BaseProtocol(CoreProtocol):
         else:
             raise TypeError('Iterator is of unsupported type '
                             '(asynctnt.Iterator, int, str)')
-
-    cdef uint32_t transform_space(self, space) except *:
-        if isinstance(space, str):
-            if self._schema is None:
-                raise TarantoolSchemaError('Schema not fetched')
-
-            sp = self._schema.get_space(space)
-            if sp is None:
-                raise TarantoolSchemaError('Space {} not found'.format(space))
-            return sp.sid
-        return space
-
-    cdef uint32_t transform_index(self, space, index) except *:
-        if isinstance(index, str):
-            if self._schema is None:
-                raise TarantoolSchemaError('Schema not fetched')
-
-            idx = self._schema.get_index(space, index)
-            if idx is None:
-                raise TarantoolSchemaError(
-                    'Index {} for space {} not found'.format(index, space))
-            return idx.iid
-        return index
 
     def refetch_schema(self):
         return self._do_fetch_schema()

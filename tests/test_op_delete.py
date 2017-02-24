@@ -113,12 +113,16 @@ class DeleteTestCase(BaseTarantoolTestCase):
                 "missing 2 required positional arguments: 'space' and 'key'"):
             await self.conn.delete()
 
-        with self.assertRaisesRegex(
-                TypeError, r'sequence must be either list or tuple'):
-            await self.conn.delete(self.TESTER_SPACE_ID, {})
-
     async def test__delete_key_tuple(self):
         try:
             await self.conn.delete(self.TESTER_SPACE_ID, (1,))
         except Exception as e:
             self.fail(e)
+
+    async def test__delete_dict_key(self):
+        data = await self._fill_data()
+
+        res = await self.conn.delete(self.TESTER_SPACE_ID, {
+            'f1': 0
+        })
+        self.assertListEqual(res.body, [data[0]], 'Body ok')

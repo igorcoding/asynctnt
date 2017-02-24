@@ -293,15 +293,24 @@ cdef class WriteBuffer:
 
         return p
 
-    cdef char *_encode_key_sequence(self, char *p, t) except NULL:
+    cdef char *_encode_key_sequence(self, char *p, t,
+                                    list fields=None,
+                                    bint default_none=False) except NULL:
         if isinstance(t, list) or t is None:
             return self._encode_list(p, <list>t)
         elif isinstance(t, tuple):
             return self._encode_tuple(p, <tuple>t)
+        elif isinstance(t, dict) and fields is not None:
+            return self._encode_list(
+                p, dict_to_list_fields(fields, t, default_none)
+            )
         else:
+            if fields is not None:
+                msg = 'sequence must be either list, tuple or dict'
+            else:
+                msg = 'sequence must be either list or tuple'
             raise TypeError(
-                'sequence must be either list or tuple, '
-                'got: {}'.format(type(t))
+                '{}, got: {}'.format(msg, type(t))
             )
 
     cdef char *_encode_obj(self, char *p, object o) except NULL:
@@ -588,7 +597,7 @@ cdef class WriteBuffer:
         self._length += (p - begin)
         p = self._encode_key_sequence(p, args)
 
-    cdef void encode_request_select(self, uint32_t space, uint32_t index,
+    cdef void encode_request_select(self, SchemaSpace space, SchemaIndex index,
                                     key, uint64_t offset, uint64_t limit,
                                     uint32_t iterator) except *:
         cdef:
@@ -596,9 +605,13 @@ cdef class WriteBuffer:
             char *p
             uint32_t body_map_sz
             uint32_t max_body_len
+            uint32_t space_id, index_id
+
+        space_id = space.sid
+        index_id = index.iid
 
         body_map_sz = 3 \
-                      + <uint32_t>(index > 0) \
+                      + <uint32_t>(index_id > 0) \
                       + <uint32_t>(offset > 0) \
                       + <uint32_t>(iterator > 0)
         # Size description:
@@ -613,8 +626,8 @@ cdef class WriteBuffer:
                        + 1 \
                        + 9
 
-        if index > 0:
-            # mp_sizeof_uint(TP_INDEX) + mp_sizeof_uint(index)
+        if index_id > 0:
+            # mp_sizeof_uint(TP_INDEX) + mp_sizeof_uint(index_id)
             max_body_len += 1 + 9
         if offset > 0:
             # mp_sizeof_uint(TP_OFFSET) + mp_sizeof_uint(offset)
@@ -630,13 +643,13 @@ cdef class WriteBuffer:
         p = begin = &self._buf[self._length]
         p = mp_encode_map(p, body_map_sz)
         p = mp_encode_uint(p, tnt.TP_SPACE)
-        p = mp_encode_uint(p, space)
+        p = mp_encode_uint(p, space_id)
         p = mp_encode_uint(p, tnt.TP_LIMIT)
         p = mp_encode_uint(p, limit)
 
-        if index > 0:
+        if index_id > 0:
             p = mp_encode_uint(p, tnt.TP_INDEX)
-            p = mp_encode_uint(p, index)
+            p = mp_encode_uint(p, index_id)
         if offset > 0:
             p = mp_encode_uint(p, tnt.TP_OFFSET)
             p = mp_encode_uint(p, offset)
@@ -646,14 +659,17 @@ cdef class WriteBuffer:
 
         p = mp_encode_uint(p, tnt.TP_KEY)
         self._length += (p - begin)
-        p = self._encode_key_sequence(p, key)
+        p = self._encode_key_sequence(p, key, index.fields, False)
 
-    cdef void encode_request_insert(self, uint32_t space, t) except *:
+    cdef void encode_request_insert(self, SchemaSpace space, t) except *:
         cdef:
             char *begin
             char *p
             uint32_t body_map_sz
             uint32_t max_body_len
+            uint32_t space_id
+
+        space_id = space.sid
 
         body_map_sz = 2
         # Size description:
@@ -671,21 +687,25 @@ cdef class WriteBuffer:
         p = begin = &self._buf[self._length]
         p = mp_encode_map(p, body_map_sz)
         p = mp_encode_uint(p, tnt.TP_SPACE)
-        p = mp_encode_uint(p, space)
+        p = mp_encode_uint(p, space_id)
 
         p = mp_encode_uint(p, tnt.TP_TUPLE)
         self._length += (p - begin)
-        p = self._encode_key_sequence(p, t)
+        p = self._encode_key_sequence(p, t, space.fields, True)
 
-    cdef void encode_request_delete(self, uint32_t space, uint32_t index,
+    cdef void encode_request_delete(self, SchemaSpace space, SchemaIndex index,
                                     key) except *:
         cdef:
             char *p
             uint32_t body_map_sz
             uint32_t max_body_len
+            uint32_t space_id, index_id
+
+        space_id = space.sid
+        index_id = index.iid
 
         body_map_sz = 2 \
-                      + <uint32_t>(index > 0)
+                      + <uint32_t>(index_id > 0)
         # Size description:
         # mp_sizeof_map(body_map_sz)
         # + mp_sizeof_uint(TP_SPACE)
@@ -694,7 +714,7 @@ cdef class WriteBuffer:
                        + 1 \
                        + 9
 
-        if index > 0:
+        if index_id > 0:
             # mp_sizeof_uint(TP_INDEX) + mp_sizeof_uint(index)
             max_body_len += 1 + 9
 
@@ -705,28 +725,44 @@ cdef class WriteBuffer:
         p = begin = &self._buf[self._length]
         p = mp_encode_map(p, body_map_sz)
         p = mp_encode_uint(p, tnt.TP_SPACE)
-        p = mp_encode_uint(p, space)
+        p = mp_encode_uint(p, space_id)
 
-        if index > 0:
+        if index_id > 0:
             p = mp_encode_uint(p, tnt.TP_INDEX)
-            p = mp_encode_uint(p, index)
+            p = mp_encode_uint(p, index_id)
 
         p = mp_encode_uint(p, tnt.TP_KEY)
         self._length += (p - begin)
-        p = self._encode_key_sequence(p, key)
+        p = self._encode_key_sequence(p, key, index.fields, False)
 
-    cdef void encode_request_update(self, uint32_t space, uint32_t index,
+    cdef void encode_request_update(self, SchemaSpace space, SchemaIndex index,
                                     key_tuple, list operations,
-                                    uint32_t key_of_tuple=tnt.TP_KEY,
-                                    uint32_t key_of_operations=tnt.TP_TUPLE
-                                    ) except *:
+                                    bint is_upsert=False) except *:
         cdef:
             char *begin
             char *p
             uint32_t body_map_sz
             uint32_t max_body_len
+            uint32_t space_id, index_id
+            uint32_t key_of_tuple, key_of_operations
+            list fields
+            bint default_fields_none
 
-        body_map_sz = 3 + <uint32_t>(index > 0)
+        space_id = space.sid
+        index_id = index.iid
+
+        if not is_upsert:
+            key_of_tuple = tnt.TP_KEY
+            key_of_operations = tnt.TP_TUPLE
+            fields = index.fields
+            default_fields_none = False
+        else:
+            key_of_tuple = tnt.TP_TUPLE
+            key_of_operations = tnt.TP_OPERATIONS
+            fields = space.fields
+            default_fields_none = True
+
+        body_map_sz = 3 + <uint32_t>(index_id > 0)
         # Size description:
         # mp_sizeof_map(body_map_sz)
         # + mp_sizeof_uint(TP_SPACE)
@@ -735,7 +771,7 @@ cdef class WriteBuffer:
                        + 1 \
                        + 9
 
-        if index > 0:
+        if index_id > 0:
             # + mp_sizeof_uint(TP_INDEX)
             # + mp_sizeof_uint(index)
             max_body_len += 1 + 9
@@ -748,23 +784,23 @@ cdef class WriteBuffer:
         p = begin = &self._buf[self._length]
         p = mp_encode_map(p, body_map_sz)
         p = mp_encode_uint(p, tnt.TP_SPACE)
-        p = mp_encode_uint(p, space)
+        p = mp_encode_uint(p, space_id)
 
-        if index > 0:
+        if index_id > 0:
             p = mp_encode_uint(p, tnt.TP_INDEX)
-            p = mp_encode_uint(p, index)
+            p = mp_encode_uint(p, index_id)
         self._length += (p - begin)
 
         p = self._encode_uint(p, key_of_tuple)
-        p = self._encode_key_sequence(p, key_tuple)
+        p = self._encode_key_sequence(p, key_tuple, fields, default_fields_none)
 
         p = self._encode_uint(p, key_of_operations)
         p = self._encode_update_ops(p, operations)
 
-    cdef void encode_request_upsert(self, uint32_t space,
-                                    t, list operations) except *:
-        self.encode_request_update(space, 0, t, operations,
-                                   tnt.TP_TUPLE, tnt.TP_OPERATIONS)
+    cdef void encode_request_upsert(self, SchemaSpace space, t,
+                                    list operations) except *:
+        self.encode_request_update(space, space.get_index(0),
+                                   t, operations, True)
 
     cdef void encode_request_auth(self,
                                   bytes username,

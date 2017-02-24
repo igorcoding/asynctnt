@@ -97,7 +97,7 @@ cdef class Db:
         buf.write_length()
         return Request.new(op, sync, schema_id, buf)
 
-    cdef Request _select(self, uint32_t space, uint32_t index, key,
+    cdef Request _select(self, SchemaSpace space, SchemaIndex index, key,
                          uint64_t offset, uint64_t limit, uint32_t iterator):
         cdef:
             tnt.tp_request_type op
@@ -115,7 +115,7 @@ cdef class Db:
         buf.write_length()
         return Request.new(op, sync, schema_id, buf)
 
-    cdef Request _insert(self, uint32_t space, t, bint replace):
+    cdef Request _insert(self, SchemaSpace space, t, bint replace):
         cdef:
             tnt.tp_request_type op
             uint64_t sync
@@ -131,7 +131,7 @@ cdef class Db:
         buf.write_length()
         return Request.new(op, sync, schema_id, buf)
 
-    cdef Request _delete(self, uint32_t space, uint32_t index, key):
+    cdef Request _delete(self, SchemaSpace space, SchemaIndex index, key):
         cdef:
             tnt.tp_request_type op
             uint64_t sync
@@ -147,7 +147,7 @@ cdef class Db:
         buf.write_length()
         return Request.new(op, sync, schema_id, buf)
 
-    cdef Request _update(self, uint32_t space, uint32_t index,
+    cdef Request _update(self, SchemaSpace space, SchemaIndex index,
                          key, list operations):
         cdef:
             tnt.tp_request_type op
@@ -164,7 +164,7 @@ cdef class Db:
         buf.write_length()
         return Request.new(op, sync, schema_id, buf)
 
-    cdef Request _upsert(self, uint32_t space, t, list operations):
+    cdef Request _upsert(self, SchemaSpace space, t, list operations):
         cdef:
             tnt.tp_request_type op
             uint64_t sync
@@ -261,20 +261,26 @@ cdef class Db:
 
     def select(self, space, key=None,
                  offset=0, limit=0xffffffff, index=0, iterator=0, timeout=-1):
-        space = self._protocol.transform_space(space)
-        index = self._protocol.transform_index(space, index)
+        cdef:
+            SchemaSpace sp
+            SchemaIndex idx
+        sp = self._protocol._schema.get_or_create_space(space)
+        idx = sp.get_index(index)
         iterator = self._protocol.transform_iterator(iterator)
 
         return self.execute(
-            self._select(space, index, key, offset, limit, iterator),
+            self._select(sp, idx, key, offset, limit, iterator),
             timeout
         )
 
     def insert(self, space, t, replace=False, timeout=-1):
-        space = self._protocol.transform_space(space)
+        cdef:
+            SchemaSpace sp
+            SchemaIndex idx
+        sp = self._protocol._schema.get_or_create_space(space)
 
         return self.execute(
-            self._insert(space, t, replace),
+            self._insert(sp, t, replace),
             timeout
         )
 
@@ -282,27 +288,35 @@ cdef class Db:
         return self.insert(space, t, replace=True, timeout=timeout)
 
     def delete(self, space, key, index=0, timeout=-1):
-        space = self._protocol.transform_space(space)
-        index = self._protocol.transform_index(space, index)
+        cdef:
+            SchemaSpace sp
+            SchemaIndex idx
+        sp = self._protocol._schema.get_or_create_space(space)
+        idx = sp.get_index(index)
 
         return self.execute(
-            self._delete(space, index, key),
+            self._delete(sp, idx, key),
             timeout
         )
 
     def update(self, space, key, operations, index=0, timeout=-1):
-        space = self._protocol.transform_space(space)
-        index = self._protocol.transform_index(space, index)
+        cdef:
+            SchemaSpace sp
+            SchemaIndex idx
+        sp = self._protocol._schema.get_or_create_space(space)
+        idx = sp.get_index(index)
 
         return self.execute(
-            self._update(space, index, key, operations),
+            self._update(sp, idx, key, operations),
             timeout
         )
 
     def upsert(self, space, t, operations, timeout=-1):
-        space = self._protocol.transform_space(space)
+        cdef:
+            SchemaSpace sp
+        sp = self._protocol._schema.get_or_create_space(space)
 
         return self.execute(
-            self._upsert(space, t, operations),
+            self._upsert(sp, t, operations),
             timeout
         )

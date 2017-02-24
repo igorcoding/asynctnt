@@ -66,7 +66,7 @@ async def main(loop):
         # await asyncio.sleep(1, loop=loop)
 
         # print(res.body2yaml())
-        # res = await conn.select('tester')
+        res = await conn.select('tester')
         # print(res.body)
         # res = await conn.call('test', timeout=0)
         class A(str):

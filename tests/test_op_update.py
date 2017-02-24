@@ -343,3 +343,12 @@ class UpdateTestCase(BaseTarantoolTestCase):
                     return
             raise
         self.assertListEqual(res.body, [data[0]], 'empty operations')
+
+    async def test__update_dict_key(self):
+        data = await self._fill_data()
+
+        res = await self.conn.update(self.TESTER_SPACE_ID, {
+            'f1': 0
+        }, [['+', 3, 1]])
+        data[0][3] += 1
+        self.assertListEqual(res.body, [data[0]], 'Body ok')

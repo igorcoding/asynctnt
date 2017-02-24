@@ -1,5 +1,7 @@
 import asyncio
 
+import logging
+
 from asynctnt import Iterator
 from asynctnt import Response
 from asynctnt.exceptions import TarantoolSchemaError
@@ -8,6 +10,7 @@ from tests.util import get_complex_param
 
 
 class SelectTestCase(BaseTarantoolTestCase):
+    LOGGING_LEVEL = logging.INFO
     async def _fill_data(self, count=3):
         data = []
         for i in range(count):
@@ -187,11 +190,11 @@ class SelectTestCase(BaseTarantoolTestCase):
 
         with self.assertRaisesRegex(
                 TypeError,
-                r'sequence must be either list or tuple, got: <class \'int\'>'):
+                r'sequence must be either list, tuple or dict'):
             await self.conn.select(self.TESTER_SPACE_ID, 1)
 
         with self.assertRaisesRegex(
-                TypeError, r'an integer is required'):
+                TypeError, r'Index must be either str or int, got'):
             await self.conn.select(self.TESTER_SPACE_ID, [1],
                                    index=[1, 2])
 
@@ -210,3 +213,24 @@ class SelectTestCase(BaseTarantoolTestCase):
             await self.conn.select(self.TESTER_SPACE_ID, [1],
                                    index=1, limit=1, offset=1,
                                    iterator=[1, 2])
+
+    async def test__select_dict_key(self):
+        data = await self._fill_data()
+        res = await self.conn.select(self.TESTER_SPACE_ID, {
+            'f1': data[0][0]
+        })
+        self.assertListEqual(res.body, [data[0]], 'Body ok')
+
+    async def test__select_dict_key_wrong_field(self):
+        data = await self._fill_data()
+        res = await self.conn.select(self.TESTER_SPACE_ID, {
+            'f2': data[0][0]
+        })
+        self.assertListEqual(res.body, data, 'Body ok')
+
+    async def test__select_dict_key_other_index(self):
+        data = await self._fill_data()
+        res = await self.conn.select(self.TESTER_SPACE_ID, {
+            'f2': data[0][1]
+        }, index='txt')
+        self.assertListEqual(res.body, [data[0]], 'Body ok')

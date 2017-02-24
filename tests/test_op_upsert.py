@@ -64,3 +64,17 @@ class UpsertTestCase(BaseTarantoolTestCase):
         with self.assertRaises(TarantoolSchemaError):
             await self.conn.upsert(self.TESTER_SPACE_NAME,
                                    [0, 'hello', 1], [['=', 2, 2]])
+
+    async def test__upsert_dict_key(self):
+        data = {
+            'f1': 0,
+            'f3': 1,
+            'f2': 'hello'
+        }
+
+        res = await self.conn.upsert(self.TESTER_SPACE_ID,
+                                     data, [['=', 2, 2]])
+        self.assertListEqual(res.body, [], 'Body ok')
+
+        res = await self.conn.select(self.TESTER_SPACE_ID, [0])
+        self.assertListEqual(res.body, [[0, 'hello', 1, None, None]], 'Body ok')
