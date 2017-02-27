@@ -43,7 +43,7 @@ cdef class BaseProtocol(CoreProtocol):
     cdef void _set_connection_error(self, e)
 
     cdef void _do_auth(self, str username, str password)
-    cdef object _do_fetch_schema(self)
+    cdef void _do_fetch_schema(self, object fut)
 
     cdef uint64_t next_sync(self)
     cdef uint32_t transform_iterator(self, iterator) except *

@@ -3,7 +3,24 @@ import asyncio
 
 import logging
 
-from asynctnt.instance import TarantoolInstance, TarantoolDockerInstance
+import sys
+
+from asynctnt.instance import TarantoolAsyncInstance, TarantoolAsyncDockerInstance, \
+    TarantoolSyncInstance
+
+logging.basicConfig(level=logging.DEBUG)
+
+t = TarantoolSyncInstance(
+    host='unix/',
+    port='/tmp/_mytnt.sock',
+    console_host='127.0.0.1',
+    applua=open('../tests/files/app.lua').read())
+
+t.start()
+t.stop()
+
+
+sys.exit(0)
 
 
 async def main(t, loop):
@@ -18,13 +35,11 @@ async def main(t, loop):
     await t.stop()
     # await t.wait_stopped()
 
-
-logging.basicConfig(level=logging.DEBUG)
 event_loop = asyncio.get_event_loop()
 asyncio.set_event_loop(None)
 asyncio.get_child_watcher().attach_loop(event_loop)
 
-t = TarantoolInstance(
+t = TarantoolAsyncInstance(
     host='unix/',
     port='/tmp/_mytnt.sock',
     console_host='127.0.0.1',

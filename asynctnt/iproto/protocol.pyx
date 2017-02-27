@@ -106,7 +106,7 @@ cdef class BaseProtocol(CoreProtocol):
         if self.username and self.password:
             self._do_auth(self.username, self.password)
         elif self.fetch_schema:
-            self._do_fetch_schema()
+            self._do_fetch_schema(None)
         else:
             self._set_connection_ready()
 
@@ -166,7 +166,7 @@ cdef class BaseProtocol(CoreProtocol):
                              self.host, self.port)
 
                 if self.fetch_schema:
-                    self._do_fetch_schema()
+                    self._do_fetch_schema(None)
                 else:
                     self._set_connection_ready()
             else:
@@ -176,9 +176,7 @@ cdef class BaseProtocol(CoreProtocol):
 
         fut.add_done_callback(on_authorized)
 
-    cdef object _do_fetch_schema(self):
-        fut = self.create_future()
-
+    cdef void _do_fetch_schema(self, object fut):
         def on_fetch(f):
             if f.cancelled():
                 self._set_connection_error(asyncio.futures.CancelledError())
@@ -199,14 +197,16 @@ cdef class BaseProtocol(CoreProtocol):
                 else:
                     self._schema_id = -1
                 self._set_connection_ready()
-                fut.set_result(self._schema)
+                if fut is not None:
+                    fut.set_result(self._schema)
             else:
                 logger.error('Tarantool[%s:%s] Schema fetch failed: %s',
                              self.host, self.port, str(e))
                 if isinstance(e, asyncio.TimeoutError):
                     e = asyncio.TimeoutError('Schema fetch timeout')
                 self._set_connection_error(e)
-                fut.set_exception(e)
+                if fut is not None:
+                    fut.set_exception(e)
 
         self._schema_id = -1
         fut_vspace = self._db.select(SPACE_VSPACE,
@@ -219,7 +219,6 @@ cdef class BaseProtocol(CoreProtocol):
                                     return_exceptions=False,
                                     loop=self.loop)
         gather_fut.add_done_callback(on_fetch)
-        return fut
 
     cdef void _on_connection_made(self):
         CoreProtocol._on_connection_made(self)
@@ -323,7 +322,9 @@ cdef class BaseProtocol(CoreProtocol):
                             '(asynctnt.Iterator, int, str)')
 
     def refetch_schema(self):
-        return self._do_fetch_schema()
+        fut = self.create_future()
+        self._do_fetch_schema(fut)
+        return fut
 
 
 class Protocol(BaseProtocol, asyncio.Protocol):

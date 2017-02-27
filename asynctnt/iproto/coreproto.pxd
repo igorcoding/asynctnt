@@ -27,7 +27,7 @@ cdef class CoreProtocol:
     cdef bint _is_connected(self)
     cdef bint _is_fully_connected(self)
 
-    cdef void _write(self, buf)
+    cdef void _write(self, buf) except *
     cdef void _on_data_received(self, data)
     cdef void _process__greeting(self)
     cdef void _on_greeting_received(self)

@@ -44,7 +44,7 @@ class DeleteTestCase(BaseTarantoolTestCase):
 
     async def test__delete_by_index_id(self):
         index_name = 'temp_idx'
-        res = await self.tnt.command(
+        res = self.tnt.command(
             'make_third_index("{}")'.format(index_name)
         )
         index_id = res[0][0]
@@ -65,14 +65,14 @@ class DeleteTestCase(BaseTarantoolTestCase):
                                          index=index_id)
             self.assertListEqual(res.body, [], 'Body ok')
         finally:
-            await self.tnt.command(
+            self.tnt.command(
                 'box.space.{}.index.{}:drop()'.format(
                     self.TESTER_SPACE_NAME, index_name)
             )
 
     async def test__delete_by_index_name(self):
         index_name = 'temp_idx'
-        res = await self.tnt.command(
+        res = self.tnt.command(
             'make_third_index("{}")'.format(index_name)
         )
         index_id = res[0][0]
@@ -93,7 +93,7 @@ class DeleteTestCase(BaseTarantoolTestCase):
                                          index=index_id)
             self.assertListEqual(res.body, [], 'Body ok')
         finally:
-            await self.tnt.command(
+            self.tnt.command(
                 'box.space.{}.index.{}:drop()'.format(
                     self.TESTER_SPACE_NAME, index_name)
             )

@@ -121,7 +121,7 @@ class ConnectTestCase(BaseTarantoolTestCase):
         await conn.disconnect()
 
     async def test__connect_wait_tnt_started(self):
-        await self.tnt.stop()
+        self.tnt.stop()
         conn = asynctnt.Connection(host=self.tnt.host, port=self.tnt.port,
                                    username='t1', password='t1',
                                    fetch_schema=True,
@@ -129,7 +129,7 @@ class ConnectTestCase(BaseTarantoolTestCase):
                                    loop=self.loop)
         coro = self.ensure_future(conn.connect())
         await self.sleep(0.3)
-        await self.tnt.start()
+        self.tnt.start()
         await self.sleep(1)
         while True:
             try:
@@ -153,8 +153,8 @@ class ConnectTestCase(BaseTarantoolTestCase):
                                    loop=self.loop)
         await conn.connect()
 
-        await self.tnt.stop()
-        await self.tnt.start()
+        self.tnt.stop()
+        self.tnt.start()
         await self.sleep(0.5)
         try:
             await conn.ping()
@@ -218,9 +218,9 @@ class ConnectTestCase(BaseTarantoolTestCase):
                                    reconnect_timeout=1/3,
                                    loop=self.loop)
         await conn.connect()
-        await self.tnt.stop()
+        self.tnt.stop()
         await self.sleep(0.5)
-        await self.tnt.start()
+        self.tnt.start()
         await self.sleep(0.5)
 
         self.assertEqual(conn.state, ConnectionState.CONNECTED)

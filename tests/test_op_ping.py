@@ -30,12 +30,12 @@ class PingTestCase(BaseTarantoolTestCase):
             self.fail('Should not fail on timeout 1')
 
     async def test__ping_connection_lost(self):
-        await self.tnt.stop()
+        self.tnt.stop()
 
         with self.assertRaises(TarantoolNotConnectedError):
             await self.conn.ping()
 
-        await self.tnt.start()
+        self.tnt.start()
         await self.sleep(1)
 
         try:

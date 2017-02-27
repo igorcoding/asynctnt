@@ -15,16 +15,6 @@ clean:
 	rm -rf htmlcov
 
 
-annotate:
-	cython -a asynctnt/iproto/protocol.pyx
-
-
-style:
-	pep8 asynctnt
-	pep8 tests
-	flake8 --config=.flake8.cython
-
-
 build:
 	$(PYTHON) setup.py build_ext --inplace --cython-always
 
@@ -37,10 +27,15 @@ debug: clean
 		--define CYTHON_TRACE,CYTHON_TRACE_NOGIL
 
 
+annotate:
+	cython -a asynctnt/iproto/protocol.pyx
+
+
 test:
 	PYTHONASYNCIODEBUG=1 $(PYTHON) -m unittest discover -s tests
 	$(PYTHON) -m unittest discover -s tests
-	#USE_UVLOOP=1 $(PYTHON) -m unittest discover -s tests
+	USE_UVLOOP=1 $(PYTHON) -m unittest discover -s tests
+
 
 quicktest:
 	$(PYTHON) -m unittest discover -s tests
@@ -59,6 +54,12 @@ coverage:
 	coverage run run_tests.py
 	./scripts/run_until_success.sh coverage report -m
 	./scripts/run_until_success.sh coverage html
+
+
+style:
+	pep8 asynctnt
+	pep8 tests
+	flake8 --config=.flake8.cython
 
 
 sdist: clean build test

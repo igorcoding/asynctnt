@@ -1,3 +1,4 @@
+import abc
 import asyncio
 import asyncio.subprocess
 import logging
@@ -5,13 +6,26 @@ import math
 import os
 import random
 import shutil
+import socket
 import string
+import subprocess
 
 import functools
+
+import sys
+
+import time
+
+import select
+from threading import Thread
+
 import yaml
 
+
 __all__ = (
-    'TarantoolInstanceProtocol', 'TarantoolInstance'
+    'TarantoolInstanceProtocol', 'TarantoolInstance',
+    'TarantoolAsyncInstance', 'TarantoolSyncInstance',
+    'TarantoolSyncDockerInstance'
 )
 
 
@@ -71,7 +85,7 @@ class TarantoolInstanceProtocol(asyncio.SubprocessProtocol):
         self._transport.kill()
 
 
-class TarantoolInstance:
+class TarantoolInstance(metaclass=abc.ABCMeta):
     def __init__(self, *,
                  host='127.0.0.1',
                  port=3301,
@@ -90,9 +104,7 @@ class TarantoolInstance:
                  applua='-- app.lua --',
                  timeout=5.,
                  command_to_run='tarantool',
-                 command_args=None,
-                 loop=None
-                 ):
+                 command_args=None):
         """
 
         :param host: The host which Tarantool instance is going
@@ -127,9 +139,7 @@ class TarantoolInstance:
                         to become active
         :param command_to_run: command exe
         :param command_args: command args
-        :param loop: loop instance
         """
-        self._loop = loop or asyncio.get_event_loop()
 
         self._host = host
         self._port = port
@@ -146,25 +156,19 @@ class TarantoolInstance:
         self._cleanup = cleanup
 
         self._initlua_template = initlua_template or \
-            self._create_initlua_template()
+                                 self._create_initlua_template()
         self._applua = applua
         self._command_to_run = command_to_run
         self._command_args = command_args
 
         self._timeout = timeout
-
         self._is_running = False
-        self._is_stopping = False
-        self._transport = None
-        self._protocol = None
-        self._last_return_code = None
-        self._stop_event = asyncio.Event(loop=self._loop)
 
     def _random_string(self,
                        length, *,
                        source=string.ascii_uppercase +
-                       string.ascii_lowercase +
-                       string.digits):
+                              string.ascii_lowercase +
+                              string.digits):
         return ''.join(random.choice(source) for _ in range(length))
 
     def _generate_title(self):
@@ -206,8 +210,10 @@ class TarantoolInstance:
             'wal_mode': self._wal_mode,
             'custom_proc_title': self._title,
             'slab_alloc_arena': self._slab_alloc_arena,
-            'replication_source': 'nil' if not self._replication_source else '"{}"'.format(self._replication_source),  # nopep8
-            'work_dir': '"' + self._root + '"' if self._specify_work_dir else 'nil',  # nopep8
+            'replication_source': 'nil' if not self._replication_source else '"{}"'.format(
+                self._replication_source),  # nopep8
+            'work_dir': '"' + self._root + '"' if self._specify_work_dir else 'nil',
+        # nopep8
             'log_level': self._log_level,
             'applua': self._applua if self._applua else ''
         }
@@ -229,8 +235,6 @@ class TarantoolInstance:
         return 'Tarantool[{}:{}]'.format(self._host, self._port)
 
     def prepare(self):
-        self._last_return_code = None
-        self._stop_event.clear()
         os.mkdir(self._root)
         initlua = self._render_initlua()
         initlua_path = self._save_initlua(initlua)
@@ -253,8 +257,238 @@ class TarantoolInstance:
         return self._is_running
 
     @property
+    @abc.abstractmethod
+    def pid(self):
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def command(self, cmd, print_greeting=True):
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def start(self):
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def stop(self):
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def terminate(self):
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def kill(self):
+        raise NotImplementedError
+
+    def cleanup(self):
+        self._is_running = False
+        if self._cleanup:
+            shutil.rmtree(self._root, ignore_errors=True)
+        self._logger.info('Destroyed Tarantool instance (%s)', self._title)
+
+
+class TcpSocket:
+    BUFFER_SIZE = 1024
+
+    def __init__(self, host, port):
+        self._host = host
+        self._port = port
+        self._sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+    def connect(self):
+        self._sock.connect((self._host, self._port))
+
+    def close(self):
+        if self._sock is not None:
+            self._sock.close()
+
+    def __enter__(self):
+        self.connect()
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.close()
+
+    def write(self, data, flags=0):
+        self._sock.sendall(data, flags)
+
+    def read(self, n, flags=0):
+        buf = bytearray()
+        bytes_recd = 0
+
+        while bytes_recd < n:
+            chunk = self._sock.recv(self.BUFFER_SIZE, flags)
+            if chunk == b'':
+                raise RuntimeError("socket connection broken")
+            buf.extend(chunk)
+
+            bytes_recd += len(chunk)
+        return bytes(buf)
+
+    def read_until(self, separator=b'', flags=0):
+        buf = bytearray()
+        search_start = 0
+        while True:
+            chunk = self._sock.recv(self.BUFFER_SIZE, flags)
+            if chunk == b'':
+                raise RuntimeError("socket connection broken")
+            buf.extend(chunk)
+            pos = buf.find(separator, search_start)
+            if pos != -1:
+                return bytes(buf[:(pos + len(separator))])
+            search_start = len(buf) - len(separator) - 1
+
+
+class TarantoolSyncInstance(TarantoolInstance):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self._process = None
+        self._logger_thread = None
+
+    @property
+    def pid(self):
+        return self._process.pid if self._process is not None else None
+
+    def start(self):
+        self._logger.info('Starting Tarantool instance (%s)', self._title)
+        initlua_path = self.prepare()
+        self._logger.info('Launching process')
+
+        if not self._command_args:
+            args = [self._command_to_run, initlua_path]
+        else:
+            args = [self._command_to_run, *self._command_args]
+
+        flags = 0
+        if os.name == 'nt':
+            flags |= subprocess.CREATE_NEW_PROCESS_GROUP
+        self._process = subprocess.Popen(args,
+                                         stdout=subprocess.PIPE,
+                                         stderr=subprocess.PIPE,
+                                         creationflags=flags)
+        self._logger_thread = Thread(target=self._log_reader)
+        self._logger_thread.start()
+
+        interval = 0.1
+        attempts = math.ceil(self._timeout / interval)
+        while attempts > 0:
+            try:
+                status = self.command('box.info.status',  print_greeting=False)
+                if status:
+                    status = status[0]
+                    if status == 'running':
+                        self._logger.info('Moved to the running state')
+                        break
+            except (OSError, RuntimeError):
+                pass
+            time.sleep(interval)
+            attempts -= 1
+        else:
+            raise TimeoutError(
+                'Timeout while waiting for Tarantool to move to running state')
+        self._is_running = True
+
+    def _log_reader(self):
+        def check_io():
+            fds = []
+            for h in [self._process.stdout,
+                      self._process.stderr]:
+                if h is not None and not h.closed:
+                    fds.append(h)
+            if not fds:
+                return False
+            try:
+                ready_to_read = select.select(fds, [], [], 1000)[0]
+            except OSError:
+                # I/O operation on a closed socket
+                return False
+            for io in ready_to_read:
+                if io.closed:
+                    continue
+                try:
+                    line = io.readline()
+                except ValueError:
+                    # assuming it's just an fd error, so skip
+                    # PyMemoryView_FromBuffer(): info->buf must not be NULL
+                    continue
+                line = line.decode()
+                if len(line) > 0:
+                    self._logger.info(line[:-1])
+            return True
+
+        while self._process.poll() is None:
+            if not check_io():
+                break
+        check_io()
+
+    def stop(self):
+        if self._process is not None:
+            self._process.terminate()
+
+            self._logger.info('Waiting for process to complete')
+            self._process.wait()
+            self.cleanup()
+
+    def terminate(self):
+        if self._process is not None:
+            self._process.terminate()
+            self.cleanup()
+
+    def kill(self):
+        if self._process is not None:
+            self._process.kill()
+            self.cleanup()
+
+    def cleanup(self):
+        if self._process is not None:
+            for h in [self._process.stdout,
+                      self._process.stderr,
+                      self._process.stdin]:
+                if h is not None:
+                    h.close()
+        if self._logger_thread is not None:
+            self._logger_thread.join()
+        super().cleanup()
+
+    def command(self, cmd, print_greeting=True):
+        s = TcpSocket(self._console_host, self._console_port)
+        try:
+            s.connect()
+            greeting = s.read(128).decode()
+            if print_greeting:
+                self._logger.info(greeting)
+
+            if isinstance(cmd, str):
+                cmd = cmd.encode('utf-8')
+
+            s.write(cmd + b'\n')
+
+            data = s.read_until(b'...\n').decode()
+            data = yaml.load(data)
+            return data
+        finally:
+            s.close()
+
+
+class TarantoolAsyncInstance(TarantoolInstance):
+    def __init__(self, loop=None, **kwargs):
+        super().__init__(**kwargs)
+        self._loop = loop or asyncio.get_event_loop()
+
+        self._is_stopping = False
+        self._transport = None
+        self._protocol = None
+        self._last_return_code = None
+        self._stop_event = asyncio.Event(loop=self._loop)
+
+    @property
     def pid(self):
         return self._protocol.pid if self._protocol else None
+
+    def prepare(self):
+        self._last_return_code = None
+        return super().prepare()
 
     def _on_process_exit(self, return_code):
         self._last_return_code = return_code
@@ -287,6 +521,7 @@ class TarantoolInstance:
 
     async def start(self):
         self._logger.info('Starting Tarantool instance (%s)', self._title)
+        self._stop_event.clear()
         initlua_path = self.prepare()
         self._logger.info('Launching process')
 
@@ -333,7 +568,13 @@ class TarantoolInstance:
         if self._protocol is not None:
             self._is_stopping = True
             self._protocol.terminate()
-            await self._stop()
+
+            if not self._is_running:
+                return
+
+            self._logger.info('Waiting for process to complete')
+            await self._protocol.wait()
+            self.cleanup()
 
     def terminate(self):
         if self._protocol is not None:
@@ -347,38 +588,26 @@ class TarantoolInstance:
             self._protocol.kill()
             self.cleanup()
 
-    async def _stop(self):
-        if not self._is_running:
-            return
-
-        self._logger.info('Waiting for process to complete')
-        await self._protocol.wait()
-        self.cleanup()
-
     def cleanup(self):
         return_code = self._protocol.returncode
         self._logger.info('Finished with return code %d', return_code)
 
-        self._is_running = False
         self._is_stopping = False
         if self._transport:
             self._transport.close()
         self._transport = None
         self._protocol = None
         self._stop_event.clear()
-        if self._cleanup:
-            shutil.rmtree(self._root, ignore_errors=True)
-        self._logger.info('Destroyed Tarantool instance (%s)', self._title)
 
-    def __del__(self):
-        self.terminate()
+        super().cleanup()
 
 
-class TarantoolDockerInstance(TarantoolInstance):
+class TarantoolSyncDockerInstance(TarantoolSyncInstance):
     def __init__(self, *,
                  version='1.7',
                  host='0.0.0.0',
                  port=3301,
+                 console_host=None,
                  console_port=3302,
                  replication_source=None,
                  title=None,
@@ -388,17 +617,16 @@ class TarantoolDockerInstance(TarantoolInstance):
                  wal_mode='none',
                  initlua_template=None,
                  applua='-- app.lua --',
-                 timeout=10.,
-                 loop=None):
-        super().__init__(host=host, port=port, console_port=console_port,
+                 timeout=10.):
+        super().__init__(host=host, port=port, console_host=console_host,
+                         console_port=console_port,
                          replication_source=replication_source,
                          title=title, logger=logger, log_level=log_level,
                          slab_alloc_arena=slab_alloc_arena,
                          wal_mode=wal_mode,
                          root=None, specify_work_dir=False, cleanup=True,
                          initlua_template=initlua_template,
-                         applua=applua, timeout=timeout,
-                         loop=loop)
+                         applua=applua, timeout=timeout)
         self._docker_tarantool_version = version
 
         cmd = "docker run --rm " \

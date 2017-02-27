@@ -9,8 +9,11 @@ import unittest
 
 import sys
 
+import atexit
+
 import asynctnt
-from asynctnt.instance import TarantoolInstance, TarantoolDockerInstance
+from asynctnt.instance import \
+    TarantoolSyncInstance, TarantoolSyncDockerInstance
 
 __all__ = (
     'TestCase', 'TarantoolTestCase'
@@ -76,7 +79,6 @@ class TestCase(unittest.TestCase, metaclass=TestCaseMeta):
 
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(None)
-        asyncio.get_child_watcher().attach_loop(loop)
         cls.loop = loop
 
     @classmethod
@@ -128,35 +130,32 @@ class TarantoolTestCase(TestCase):
         if tarantool_docker_version:
             print('Running tarantool in docker. Version = {}'.format(
                 tarantool_docker_version))
-            tnt = TarantoolDockerInstance(
+            tnt = TarantoolSyncDockerInstance(
                 applua=cls.read_applua(),
-                version=tarantool_docker_version,
-                loop=cls.loop
+                version=tarantool_docker_version
             )
         else:
             unix_path = os.getenv('TARANTOOL_LISTEN_UNIX_PATH')
             if not unix_path:
-                tnt = TarantoolInstance(
+                tnt = TarantoolSyncInstance(
                     applua=cls.read_applua(),
-                    cleanup=cls.TNT_CLEANUP,
-                    loop=cls.loop
+                    cleanup=cls.TNT_CLEANUP
                 )
             else:
-                tnt = TarantoolInstance(
+                tnt = TarantoolSyncInstance(
                     host='unix/',
                     port=unix_path,
                     console_host='127.0.0.1',
                     applua=cls.read_applua(),
-                    cleanup=cls.TNT_CLEANUP,
-                    loop=cls.loop
+                    cleanup=cls.TNT_CLEANUP
                 )
-        cls.loop.run_until_complete(tnt.start())
+        tnt.start()
         cls.tnt = tnt
 
     @classmethod
     def tearDownClass(cls):
         if cls.tnt:
-            cls.loop.run_until_complete(cls.tnt.stop())
+            cls.tnt.stop()
         TestCase.tearDownClass()
 
     def setUp(self):
@@ -201,3 +200,4 @@ class TarantoolTestCase(TestCase):
     async def tnt_reconnect(self, **kwargs):
         await self.tnt_disconnect()
         await self.tnt_connect(**kwargs)
+
