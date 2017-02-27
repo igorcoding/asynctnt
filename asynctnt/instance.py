@@ -399,8 +399,8 @@ class TarantoolSyncInstance(TarantoolInstance):
             if not fds:
                 return False
             try:
-                ready_to_read = select.select(fds, [], [], 1000)[0]
-            except OSError:
+                ready_to_read = select.select(fds, [], [], 10)[0]
+            except (ValueError, OSError):
                 # I/O operation on a closed socket
                 return False
             for io in ready_to_read:
@@ -417,7 +417,7 @@ class TarantoolSyncInstance(TarantoolInstance):
                     self._logger.info(line[:-1])
             return True
 
-        while self._process.poll() is None:
+        while self._is_running and self._process.poll() is None:
             if not check_io():
                 break
         check_io()
@@ -447,6 +447,7 @@ class TarantoolSyncInstance(TarantoolInstance):
                       self._process.stdin]:
                 if h is not None:
                     h.close()
+        self._is_running = False
         if self._logger_thread is not None:
             self._logger_thread.join()
         super().cleanup()
