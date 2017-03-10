@@ -1,4 +1,5 @@
 import asyncio
+import os
 
 import sys
 
@@ -31,9 +32,19 @@ class PingTestCase(BaseTarantoolTestCase):
 
     async def test__ping_connection_lost(self):
         self.tnt.stop()
+        await self.sleep(0)
+
+        try:
+            os.kill(self.tnt.pid, 0)
+            running = True
+        except:
+            running = False
 
         with self.assertRaises(TarantoolNotConnectedError):
-            await self.conn.ping()
+            res = await self.conn.ping()
+            print(res)
+            print('running', running)
+            print(os.system('ps aux | grep tarantool'))
 
         self.tnt.start()
         await self.sleep(1)

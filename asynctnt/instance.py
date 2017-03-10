@@ -6,6 +6,7 @@ import math
 import os
 import random
 import shutil
+import signal
 import socket
 import string
 import subprocess
@@ -183,6 +184,12 @@ class TarantoolInstance(metaclass=abc.ABCMeta):
             path = os.path.join(cwd, folder_name)
         return path
 
+    @staticmethod
+    def get_random_port():
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        sock.bind(('', 0))
+        return sock.getsockname()[1]
+
     def _create_initlua_template(self):
         return """
             box.cfg{
@@ -341,6 +348,8 @@ class TcpSocket:
 
 
 class TarantoolSyncInstance(TarantoolInstance):
+    WAIT_TIMEOUT = 5
+
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self._process = None
@@ -425,20 +434,35 @@ class TarantoolSyncInstance(TarantoolInstance):
     def stop(self):
         if self._process is not None:
             self._process.terminate()
-
             self._logger.info('Waiting for process to complete')
-            self._process.wait()
+            self._wait(self.WAIT_TIMEOUT, wait=True)
             self.cleanup()
 
     def terminate(self):
         if self._process is not None:
             self._process.terminate()
+            self._wait(self.WAIT_TIMEOUT, wait=False)
             self.cleanup()
 
     def kill(self):
         if self._process is not None:
             self._process.kill()
             self.cleanup()
+
+    def _wait(self, timeout, wait=True):
+        if self._process:
+            if wait:
+                try:
+                    self._process.wait(timeout)
+                except subprocess.TimeoutExpired:
+                    pass
+
+            try:
+                os.kill(self._process.pid, 0)
+                self._process.kill()
+                self.logger.warning('Force killed %s', self.fingerprint)
+            except OSError:
+                pass
 
     def cleanup(self):
         if self._process is not None:

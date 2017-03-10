@@ -138,6 +138,8 @@ class TarantoolTestCase(TestCase):
             unix_path = os.getenv('TARANTOOL_LISTEN_UNIX_PATH')
             if not unix_path:
                 tnt = TarantoolSyncInstance(
+                    port=TarantoolSyncInstance.get_random_port(),
+                    console_port=TarantoolSyncInstance.get_random_port(),
                     applua=cls.read_applua(),
                     cleanup=cls.TNT_CLEANUP
                 )

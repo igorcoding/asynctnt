@@ -2,8 +2,8 @@ cimport cpython
 cimport tnt
 
 import hashlib
-from asynctnt.exceptions import TarantoolDatabaseError, ErrorCode
-
+from asynctnt.exceptions import TarantoolDatabaseError, ErrorCode, \
+    TarantoolNotConnectedError
 
 cdef class Db:
     def __cinit__(self):
@@ -28,6 +28,8 @@ cdef class Db:
         req.tuple_as_dict = tuple_as_dict
         try:
             return await self._protocol.execute(req, timeout)
+        except (ConnectionRefusedError, ConnectionResetError) as e:
+            raise TarantoolNotConnectedError('Lost connection') from e
         except TarantoolDatabaseError as e:
             if e.code == ErrorCode.ER_WRONG_SCHEMA_VERSION:
                 await self._protocol.refetch_schema()

@@ -32,13 +32,13 @@ annotate:
 
 
 test:
-	PYTHONASYNCIODEBUG=1 $(PYTHON) -m unittest discover -s tests
-	$(PYTHON) -m unittest discover -s tests
-	USE_UVLOOP=1 $(PYTHON) -m unittest discover -s tests
+	PYTHONASYNCIODEBUG=1 $(PYTHON) -m unittest discover -v -s tests
+	$(PYTHON) -m unittest discover -v -s tests
+	USE_UVLOOP=1 $(PYTHON) -m unittest discover -v -s tests
 
 
 quicktest:
-	$(PYTHON) -m unittest discover -s tests
+	$(PYTHON) -m unittest discover -v -s tests
 
 
 test_16:
