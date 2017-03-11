@@ -175,7 +175,7 @@ class ConnectTestCase(BaseTarantoolTestCase):
 
     async def test__close(self):
         conn = asynctnt.Connection(host=self.tnt.host, port=self.tnt.port,
-                                   reconnect_timeout=0.3,
+                                   reconnect_timeout=0,
                                    loop=self.loop)
         await conn.connect()
         await self.sleep(0.1)
