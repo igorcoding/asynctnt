@@ -333,8 +333,7 @@ class Connection:
             self._transport = None
             self._protocol = None
             self._db = DbMock()
-        else:
-            self._set_state(ConnectionState.DISCONNECTED)
+        self._set_state(ConnectionState.DISCONNECTED)
 
     async def reconnect(self):
         """

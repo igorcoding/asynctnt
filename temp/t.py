@@ -8,7 +8,7 @@ import sys
 
 from asynctnt import Iterator
 from asynctnt.exceptions import TarantoolConnectionLostError
-from asynctnt.instance import TarantoolInstance
+from asynctnt.instance import TarantoolInstance, TarantoolAsyncInstance
 
 logging.basicConfig(format='%(created)f [%(module)s:%(funcName)s:%(lineno)d] %(levelname)s: %(message)s',
                     level=logging.DEBUG, stream=sys.stdout)
@@ -27,7 +27,7 @@ def read_applua():
 
 
 async def main(loop):
-    tnt = TarantoolInstance(
+    tnt = TarantoolAsyncInstance(
         applua=read_applua(),
         cleanup=True,
         host='unix/',
@@ -52,6 +52,8 @@ async def main(loop):
         # await asyncio.sleep(1, loop=loop)
         # await tnt.start()
         conn = await coro
+        conn.close()
+        await conn.connect()
 
         print('connected')
         # print(conn._protocol.schema)
