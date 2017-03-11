@@ -188,7 +188,9 @@ class TarantoolInstance(metaclass=abc.ABCMeta):
     def get_random_port():
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         sock.bind(('', 0))
-        return sock.getsockname()[1]
+        port = sock.getsockname()[1]
+        sock.close()
+        return port
 
     def _create_initlua_template(self):
         return """
