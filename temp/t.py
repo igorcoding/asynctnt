@@ -53,6 +53,7 @@ async def main(loop):
         # await tnt.start()
         conn = await coro
         conn.close()
+
         await conn.connect()
 
         print('connected')
