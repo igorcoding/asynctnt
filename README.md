@@ -13,7 +13,7 @@ versions 1.6+.
 
 ## Documentation
 
-Documentation is available [here](https://igorcoding.github.io/asynctnt)
+Documentation is available [here](https://igorcoding.github.io/asynctnt).
 
 ## Key features
 

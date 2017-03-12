@@ -19,6 +19,8 @@ Connection
 .. autoclass:: asynctnt.Connection
    :members:
 
+   .. automethod:: __init__
+
 
 Response
 ========

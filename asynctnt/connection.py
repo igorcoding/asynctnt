@@ -51,23 +51,23 @@ class Connection:
             Connection constructor.
 
             :param host:
-                    Tarantool host (pass 'unix/' to connect to unix socket)
+                    Tarantool host (pass ``unix/`` to connect to unix socket)
             :param port:
                     Tarantool port
-                    (pass '/path/to/sockfile' to connect ot unix socket)
+                    (pass ``/path/to/sockfile`` to connect ot unix socket)
             :param username:
                     Username to use for auth
-                    (if None you are connected as a guest)
+                    (if ``None`` you are connected as a guest)
             :param password:
                     Password to use for auth
             :param fetch_schema:
-                    Pass True to be able to use spaces and indexes names in
-                    data manipulation routines (default is True)
+                    Pass ``True`` to be able to use spaces and indexes names in
+                    data manipulation routines (default is ``True``)
             :param auto_refetch_schema:
-                    If set to True then when ER_WRONG_SCHEMA_VERSION error
+                    If set to ``True`` then when ER_WRONG_SCHEMA_VERSION error
                     occurs on a request, schema is refetched and the initial
-                    request is resent. If set to False then schema will not be
-                    checked by Tarantool, so no errors will occur
+                    request is resent. If set to ``False`` then schema will not
+                    be checked by Tarantool, so no errors will occur
             :param connect_timeout:
                     Time in seconds how long to wait for connecting to socket
             :param request_timeout:
@@ -75,19 +75,19 @@ class Connection:
                     (by default there is no timeout)
             :param reconnect_timeout:
                     Time in seconds to wait before automatic reconnect
-                    (set to 0 or None to disable auto reconnect)
+                    (set to ``0`` or ``None`` to disable auto reconnect)
             :param tuple_as_dict:
                     Bool value indicating whether or not to use spaces
                     schema to decode response tuples by default. You can
                     always change this behaviour in the request itself.
-                    Note: fetch_schema must be True
+                    Note: fetch_schema must be ``True``
             :param encoding:
                     The encoding to use for all strings
-                    encoding and decoding (default is 'utf-8')
+                    encoding and decoding (default is ``utf-8``)
             :param initial_read_buffer_size:
                     Initial and minimum size of read buffer in bytes.
                     Higher value means less reallocations, but higher
-                    memory usage. Lower values
+                    memory usage.
             :param loop:
                     Asyncio event loop to use
         """
