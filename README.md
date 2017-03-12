@@ -31,7 +31,7 @@ versions 1.6+.
   if space.format is specified in Tarantool. Field names can also be used 
   in update operations instead of field numbers. Moreover, tuples can be 
   decoded into dicts instead of arrays if `tuple_as_dict` is True either in
-  `Connection` or a specific request.
+  `Connection` or a specific request. See below for examples.
 * All requests support specification of `timeout` value, so if request is 
   executed for too long, asyncio.TimeoutError is raised. It drastically
   simplifies your code, as you don't need to use `asyncio.wait_for(...)`
@@ -73,26 +73,26 @@ RPS on running 200k requests in 300 parallel coroutines (no `uvloop`):
 
 | Request       | aiotarantool  | asynctnt  |
 | ------------- |:-------------:| ---------:|
-| ping          | 24961.12      | 28155.32  |
-| call          | 21748.06      | 22103.14  |
-| eval          | 20497.69      | 24417.38  |
-| select        | 19968.26      | 26151.00  |
-| insert        | 20604.61      | 22256.69  |
-| update        | 18852.46      | 23175.80  |
+| ping          | 32946.25      | 44090.53  |
+| call          | 29005.93      | 41129.16  |
+| eval          | 28792.84      | 44097.02  |
+| select        | 26929.76      | 35853.33  |
+| insert        | 27142.52      | 31329.85  |
+| update        | 25330.98      | 36281.59  |
 
 
 Let's enable uvloop. This is where asynctnt shines.
 RPS on running 200k requests in 300 parallel coroutines (with `uvloop`):
 
 
-| Request       | aiotarantool  | asynctnt  |
-| ------------- |:-------------:| ---------:|
-| ping          | 30050.55      | 131317.35 |
-| call          | 27995.62      | 92207.33  |
-| eval          | 25378.59      | 80539.26  |
-| select        | 22346.14      | 88748.47  |
-| insert        | 25811.84      | 82526.94  |
-| update        | 21914.15      | 80865.00  |
+| Request       | aiotarantool  | asynctnt   |
+| ------------- |:-------------:| ----------:|
+| ping          | 38962.01      | 134043.41  |
+| call          | 32799.71      | 99866.28   |
+| eval          | 27608.09      | 91056.69   |
+| select        | 27436.98      | 108940.41  |
+| insert        | 33247.57      | 102971.13  |
+| update        | 28544.68      | 98643.46   |
 
   
 ## Installation
@@ -141,6 +141,77 @@ async def run():
 
 loop = asyncio.get_event_loop()
 loop.run_until_complete(run())
+```
+
+Stdout:
+```
+Code: 0
+Data: [[1, 'hello1'], [2, 'hello2'], [3, 'hello3'], [4, 'hello4']]
+- [1, hello1]
+- [2, hello2]
+- [3, hello3]
+- [4, hello4]
+```
+
+
+## Example of using space format information
+
+Tarantool config:
+
+```lua
+box.cfg {
+    listen = '127.0.0.1:3301'
+}
+
+box.once('v1', function()
+    box.schema.user.grant('guest', 'read,write,execute', 'universe')
+
+    local s = box.schema.create_space('tester')
+    s:create_index('primary')
+    s:format({  --   <--- Note this format() call
+        {name='id', type='unsigned'},
+        {name='text', type='string'},
+    })
+end)
+```
+
+
+Python code:
+```python
+import asyncio
+import asynctnt
+
+
+async def run():
+    conn = asynctnt.Connection(host='127.0.0.1', port=3301, 
+                               tuple_as_dict=True)  # <--- Note this flag
+    await conn.connect()
+
+    for i in range(1, 5):
+        await conn.insert('tester', {  # <--- Note using dict as a tuple
+            'id': i,
+            'text': 'hello{}'.format(i)
+        })
+
+    values = await conn.select('tester', [])
+    print('Code: {}'.format(values.code))
+    print('Data: {}'.format(values.body))
+    print(values.body2yaml())  # prints as yaml
+
+    await conn.disconnect()
+
+loop = asyncio.get_event_loop()
+loop.run_until_complete(run())
+```
+
+Stdout (now got dict tuples instead of plain arrays):
+```
+Code: 0
+Data: [{'id': 1, 'text': 'hello1'}, {'id': 2, 'text': 'hello2'}, {'id': 3, 'text': 'hello3'}, {'id': 4, 'text': 'hello4'}]
+- {id: 1, text: hello1}
+- {id: 2, text: hello2}
+- {id: 3, text: hello3}
+- {id: 4, text: hello4}
 ```
 
 ## License

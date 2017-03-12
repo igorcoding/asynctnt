@@ -20,12 +20,13 @@ cdef class Db:
     cdef inline uint64_t next_sync(self):
         return self._protocol.next_sync()
 
-    async def execute(self, Request req, float timeout, bint tuple_as_dict):
+    async def execute(self, Request req, float timeout, tuple_as_dict):
         cdef object fut
 
         if tuple_as_dict is None:
-            tuple_as_dict = self._protocol.tuple_as_dict
-        req.tuple_as_dict = tuple_as_dict
+            req.tuple_as_dict = self._protocol.tuple_as_dict
+        else:
+            req.tuple_as_dict = <bint>tuple_as_dict
         try:
             return await self._protocol.execute(req, timeout)
         except (ConnectionRefusedError, ConnectionResetError) as e:

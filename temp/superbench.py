@@ -30,7 +30,7 @@ def main():
         ['update', ['tester', [2], [(':', 1, 1, 3, 'yo!')]]],
     ]
 
-    for use_uvloop in [True, False]:
+    for use_uvloop in [False, True]:
         if use_uvloop:
             import uvloop
             asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
