@@ -11,6 +11,7 @@ fi
 
 SOURCE_BRANCH="master"
 TARGET_BRANCH="gh-pages"
+shopt -s dotglob
 
 function doCompile {
     pip install -r docs/requirements.txt
@@ -41,6 +42,8 @@ cd ..
 
 # Clean out existing contents
 rm -rf out/**/* || exit 0
+rm -rf out/* || exit 0
+rm -rf out/.* || exit 0
 
 # Run our compile script
 doCompile
