@@ -42,7 +42,7 @@ cd ..
 
 # Clean out existing contents
 cd out
-find . -path ./.git -prune -o -exec rm -rf {} \; 2> /dev/null
+find -not -path "./.git/*" -not -name ".git" -delete
 cd ..
 
 # Run our compile script
