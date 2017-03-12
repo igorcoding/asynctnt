@@ -11,6 +11,9 @@ import yaml
 
 
 cdef class Response:
+    """
+        Response object for all the requests to Tarantool
+    """
     def __cinit__(self):
         self._sync = 0
         self._code = 0
@@ -38,30 +41,52 @@ cdef class Response:
             self._code, self._sync, body_len)
 
     def body2yaml(self):
+        """
+            Dumps body to YAML (for pretty formatting)
+            :return: YAML-formatted string
+        """
         return yaml.dump(self._body, allow_unicode=True)
 
     @property
     def sync(self):
+        """
+            Response's sync (incremental id) for the corresponding request
+        """
         return self._sync
 
     @property
     def code(self):
+        """
+            Response code (0 - success)
+        """
         return self._code
 
     @property
     def schema_id(self):
+        """
+            Current scema id in Tarantool
+        """
         return self._schema_id
 
     @property
     def errmsg(self):
+        """
+            If self.code != 0 then errmsg contains an error message
+        """
         return self._errmsg
 
     @property
     def body(self):
+        """
+            Return body. Always a list.
+        """
         return self._body
 
     @property
     def encoding(self):
+        """
+            Response encoding
+        """
         return self._encoding
 
 

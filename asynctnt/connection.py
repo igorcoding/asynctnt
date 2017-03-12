@@ -49,46 +49,47 @@ class Connection:
 
         """
             Connection constructor.
-        :param host:
-                Tarantool host (pass 'unix/' to connect to unix socket)
-        :param port:
-                Tarantool port
-                (pass '/path/to/sockfile' to connect ot unix socket)
-        :param username:
-                Username to use for auth
-                (if None you are connected as a guest)
-        :param password:
-                Password to use for auth
-        :param fetch_schema:
-                Pass True to be able to use spaces and indexes names in
-                data manipulation routines (default is True)
-        :param auto_refetch_schema:
-                If set to True then when ER_WRONG_SCHEMA_VERSION error occurs
-                on a request, schema is refetched and the initial request
-                is resent. If set to False then schema will not be checked by
-                Tarantool, so no errors will occur
-        :param connect_timeout:
-                Time in seconds how long to wait for connecting to socket
-        :param request_timeout:
-                Request timeout (in seconds) for all requests
-                (by default there is no timeout)
-        :param reconnect_timeout:
-                Time in seconds to wait before automatic reconnect
-                (set to 0 or None to disable auto reconnect)
-        :param tuple_as_dict:
-                Bool value indicating whether or not to use spaces schema to
-                decode response tuples by default. You can always change
-                this behaviour in the request itself.
-                Note: fetch_schema must be True
-        :param encoding:
-                The encoding to use for all strings
-                encoding and decoding (default is 'utf-8')
-        :param initial_read_buffer_size:
-                Initial and minimum size of read buffer in bytes.
-                Higher value means less reallocations, but higher
-                memory usage. Lower values
-        :param loop:
-                Asyncio event loop to use
+
+            :param host:
+                    Tarantool host (pass 'unix/' to connect to unix socket)
+            :param port:
+                    Tarantool port
+                    (pass '/path/to/sockfile' to connect ot unix socket)
+            :param username:
+                    Username to use for auth
+                    (if None you are connected as a guest)
+            :param password:
+                    Password to use for auth
+            :param fetch_schema:
+                    Pass True to be able to use spaces and indexes names in
+                    data manipulation routines (default is True)
+            :param auto_refetch_schema:
+                    If set to True then when ER_WRONG_SCHEMA_VERSION error
+                    occurs on a request, schema is refetched and the initial
+                    request is resent. If set to False then schema will not be
+                    checked by Tarantool, so no errors will occur
+            :param connect_timeout:
+                    Time in seconds how long to wait for connecting to socket
+            :param request_timeout:
+                    Request timeout (in seconds) for all requests
+                    (by default there is no timeout)
+            :param reconnect_timeout:
+                    Time in seconds to wait before automatic reconnect
+                    (set to 0 or None to disable auto reconnect)
+            :param tuple_as_dict:
+                    Bool value indicating whether or not to use spaces
+                    schema to decode response tuples by default. You can
+                    always change this behaviour in the request itself.
+                    Note: fetch_schema must be True
+            :param encoding:
+                    The encoding to use for all strings
+                    encoding and decoding (default is 'utf-8')
+            :param initial_read_buffer_size:
+                    Initial and minimum size of read buffer in bytes.
+                    Higher value means less reallocations, but higher
+                    memory usage. Lower values
+            :param loop:
+                    Asyncio event loop to use
         """
         self._host = host
         self._port = port
@@ -120,7 +121,7 @@ class Connection:
 
         self._transport = None
         self._protocol = None
-        self._db = DbMock()
+        self._db = _DbMock()
 
         self._state = ConnectionState.IDLE
         self._state_prev = ConnectionState.IDLE
@@ -280,11 +281,11 @@ class Connection:
         await asyncio.sleep(self._reconnect_timeout,
                             loop=self._loop)
 
-    def connect(self):
+    async def connect(self):
         """
             Connect coroutine
         """
-        return self.__create_reconnect_coro(True)
+        await self.__create_reconnect_coro(True)
 
     async def disconnect(self):
         """
@@ -306,7 +307,7 @@ class Connection:
             self._transport.close()
             self._transport = None
             self._protocol = None
-            self._db = DbMock()
+            self._db = _DbMock()
         else:
             waiter.set_result(True)
             self._set_state(ConnectionState.DISCONNECTED)
@@ -332,7 +333,7 @@ class Connection:
             self._transport.close()
             self._transport = None
             self._protocol = None
-            self._db = DbMock()
+            self._db = _DbMock()
         self._set_state(ConnectionState.DISCONNECTED)
 
     async def reconnect(self):
@@ -438,6 +439,7 @@ class Connection:
     def state(self):
         """
             Current connection state
+
             :rtype: ConnectionState
         """
         return self._state
@@ -467,155 +469,310 @@ class Connection:
         """
         return self._initial_read_buffer_size
 
-    def refetch_schema(self):
+    async def refetch_schema(self):
         """
             Coroutine to force refetch schema
         """
-        return self._protocol.refetch_schema()
+        await self._protocol.refetch_schema()
 
-    def ping(self, *, timeout=-1):
+    async def ping(self, *, timeout=-1):
         """
             Ping request coroutine
-        :param timeout: Request timeout
-        """
-        return self._db.ping(timeout=timeout)
 
-    def call16(self, func_name, args=None, *, timeout=-1):
+            :param timeout: Request timeout
+
+            :rtype: asynctnt.Response
+        """
+        return await self._db.ping(timeout=timeout)
+
+    async def call16(self, func_name, args=None, *, timeout=-1):
         """
             Call16 request coroutine. It is a call with an old behaviour
             (return result of a Tarantool procedure is wrapped into a tuple,
             if needed)
-        :param func_name: function name to call
-        :param args: arguments to pass to the function (list object)
-        :param timeout: Request timeout
-        """
-        return self._db.call16(func_name, args,
-                               timeout=timeout)
 
-    def call(self, func_name, args=None, *, timeout=-1):
+            :param func_name: function name to call
+            :param args: arguments to pass to the function (list object)
+            :param timeout: Request timeout
+
+            :rtype: asynctnt.Response
+        """
+        return await self._db.call16(func_name, args,
+                                     timeout=timeout)
+
+    async def call(self, func_name, args=None, *, timeout=-1):
         """
             Call request coroutine. It is a call with a new behaviour
             (return result of a Tarantool procedure is not wrapped into
             an extra tuple). If you're connecting to Tarantool with
             version < 1.7, then this call method acts like a call16 method
 
-        :param func_name: function name to call
-        :param args: arguments to pass to the function (list object)
-        :param timeout: Request timeout
-        """
-        return self._db.call(func_name, args,
-                             timeout=timeout)
+            Examples:
 
-    def eval(self, expression, args=None, *, timeout=-1):
+            .. code-block:: pycon
+
+                # tarantool function:
+                # function f(...)
+                #     return ...
+                # end
+
+                >>> res = await conn.call('f')
+                >>> res.body
+                []
+
+                >>> res = await conn.call('f', [20, 42])
+                >>> res.body
+                [20, 42]
+
+            :param func_name: function name to call
+            :param args: arguments to pass to the function (list object)
+            :param timeout: Request timeout
+
+            :rtype: asynctnt.Response
+        """
+        return await self._db.call(func_name, args,
+                                   timeout=timeout)
+
+    async def eval(self, expression, args=None, *, timeout=-1):
         """
             Eval request coroutine.
 
-        :param expression: expression to execute
-        :param args: arguments to pass to the function, that will
-                     execute your expression (list object)
-        :param timeout: Request timeout
-        """
-        return self._db.eval(expression, args,
-                             timeout=timeout)
+            Examples:
 
-    def select(self, space, key=None, **kwargs):
+            .. code-block:: pycon
+
+                >>> res = await conn.eval('return 42')
+                >>> res.body
+                [42]
+
+                >>> res = await conn.eval('return box.info.version')
+                >>> res.body
+                ['1.7.3-354-ge7550da']
+
+            :param expression: expression to execute
+            :param args: arguments to pass to the function, that will
+                         execute your expression (list object)
+            :param timeout: Request timeout
+
+            :rtype: asynctnt.Response
+        """
+        return await self._db.eval(expression, args,
+                                   timeout=timeout)
+
+    async def select(self, space, key=None, **kwargs):
         """
             Select request coroutine.
 
-        :param space: space id or space name.
-        :param key: key to select
-        :param offset: offset to use
-        :param limit: limit to use
-        :param index: index id or name
-        :param iterator:
-                one of the following:
-                    * iterator id (int number),
-                    * asynctnt.Iterator object
-                    * string with an iterator name
-        :param timeout: Request timeout
-        :param tuple_as_dict: Decode tuple according to schema
-        """
-        return self._db.select(space, key, **kwargs)
+            Examples:
 
-    def insert(self, space, t, *,
-               replace=False, timeout=-1, tuple_as_dict=None):
+            .. code-block:: pycon
+
+                >>> await conn.select('tester')
+                <Response: code=0, sync=7, body_len=4>
+
+                >>> res = await conn.select('_space', {'tester'}, index='name')
+                >>> res.body
+                [[512, 1, 'tester', 'memtx', 0, {}, [{'name': 'id', 'type': 'unsigned'}, {'name': 'text', 'type': 'string'}]]]
+
+                >>> res = await conn.select('_space', {'tester'},
+                ...                         index='name',
+                ...                         tuple_as_dict=True)
+                >>> res.body2yaml()
+                - engine: memtx
+                  field_count: 0
+                  flags: {}
+                  format:
+                  - {name: id, type: unsigned}
+                  - {name: text, type: string}
+                  id: 512
+                  name: tester
+                  owner: 1
+
+
+            :param space: space id or space name.
+            :param key: key to select
+            :param offset: offset to use
+            :param limit: limit to use
+            :param index: index id or name
+            :param iterator: one of the following
+
+                        * iterator id (int number),
+                        * :class:`asynctnt.Iterator` object
+                        * string with an iterator name
+
+            :param timeout: Request timeout
+            :param tuple_as_dict: Decode tuple according to schema
+
+            :rtype: asynctnt.Response
+        """
+        return await self._db.select(space, key, **kwargs)
+
+    async def insert(self, space, t, *,
+                     replace=False, timeout=-1, tuple_as_dict=None):
         """
             Insert request coroutine.
 
-        :param space: space id or space name.
-        :param t: tuple to insert (list object)
-        :param replace: performs replace request instead of insert
-        :param timeout: Request timeout
-        :param tuple_as_dict: Decode tuple according to schema
-        """
-        return self._db.insert(space, t,
-                               replace=replace,
-                               timeout=timeout,
-                               tuple_as_dict=tuple_as_dict)
+            Examples:
 
-    def replace(self, space, t, *, timeout=-1, tuple_as_dict=None):
-        """
-            Replace request coroutine.
+            .. code-block:: pycon
 
-        :param space: space id or space name.
-        :param t: tuple to insert (list object)
-        :param timeout: Request timeout
-        :param tuple_as_dict: Decode tuple according to schema
-        """
-        return self._db.replace(space, t,
-                                timeout=timeout,
-                                tuple_as_dict=tuple_as_dict)
+                # Basic usage
+                >>> res = await conn.insert('tester', [0, 'hello'])
+                >>> res
+                <Response: code=0, sync=7, body_len=4>
+                >>> res.body
+                [[0, 'hello']]
 
-    def delete(self, space, key, **kwargs):
+                # Getting dict results
+                >>> res = await conn.insert('tester', [0, 'hello'],
+                ...                         tuple_as_dict=True)
+                >>> res.body
+                [{'id': 0, 'text': 'hello'}]
+
+                # Using dict as an argument tuple
+                >>> res = await conn.insert('tester', {
+                ...                             'id': 0
+                ...                             'text': 'hell0'
+                ...                         },
+                ...                         tuple_as_dict=True)
+                >>> res.body
+                [{'id': 0, 'text': 'hello'}]
+
+            :param space: space id or space name.
+            :param t: tuple to insert (list object)
+            :param replace: performs replace request instead of insert
+            :param timeout: Request timeout
+            :param tuple_as_dict: Decode tuple according to schema
+
+            :rtype: asynctnt.Response
+        """
+        return await self._db.insert(space, t,
+                                     replace=replace,
+                                     timeout=timeout,
+                                     tuple_as_dict=tuple_as_dict)
+
+    async def replace(self, space, t, *,
+                      timeout=-1, tuple_as_dict=None):
+        """
+            Replace request coroutine. Same as insert, but replace.
+
+            :param space: space id or space name.
+            :param t: tuple to insert (list object)
+            :param timeout: Request timeout
+            :param tuple_as_dict: Decode tuple according to schema
+
+            :rtype: asynctnt.Response
+        """
+        return await self._db.replace(space, t,
+                                      timeout=timeout,
+                                      tuple_as_dict=tuple_as_dict)
+
+    async def delete(self, space, key, **kwargs):
         """
             Delete request coroutine.
 
-        :param space: space id or space name.
-        :param key: key to delete
-        :param index: index id or name
-        :param timeout: Request timeout
-        :param tuple_as_dict: Decode tuple according to schema
-        """
-        return self._db.delete(space, key, **kwargs)
+            Examples:
 
-    def update(self, space, key, operations, **kwargs):
+            .. code-block:: pycon
+
+                # Assuming tuple [0, 'hello'] is in space tester
+
+                >>> res = await conn.delete('tester', [0])
+                >>> res.body
+                [[0, 'hello']]
+
+                >>> res = await conn.delete('tester', [0],
+                ...                         tuple_as_dict=True)
+                >>> res.body
+                [{'id': 0, 'text': 'hello'}]
+
+            :param space: space id or space name.
+            :param key: key to delete
+            :param index: index id or name
+            :param timeout: Request timeout
+            :param tuple_as_dict: Decode tuple according to schema
+
+            :rtype: asynctnt.Response
+        """
+        return await self._db.delete(space, key, **kwargs)
+
+    async def update(self, space, key, operations, **kwargs):
         """
             Update request coroutine.
 
-        :param space: space id or space name.
-        :param key: key to update
-        :param operations:
-                Operations list of the following format:
-                [ [op_type, field_no, ...], ... ]. Please refer to
-                https://tarantool.org/doc/book/box/box_space.html?highlight=update#lua-function.space_object.update
-                You can use field numbers as well as their names in space
-                format as a field_no (if only fetch_schema is True).
-                If field is unknown then TarantoolSchemaError is raised.
-        :param index: index id or name
-        :param timeout: Request timeout
-        :param tuple_as_dict: Decode tuple according to schema
-        """
-        return self._db.update(space, key, operations, **kwargs)
+            Examples:
 
-    def upsert(self, space, t, operations, **kwargs):
-        """
-            Update request coroutine.
+            .. code-block:: pycon
 
-        :param space: space id or space name.
-        :param t: tuple to insert if it's not in space
-        :param operations:
-                Operations list to use for update if tuple is already in space.
-                It has the same format as in update requets:
-                [ [op_type, field_no, ...], ... ]. Please refer to
-                https://tarantool.org/doc/book/box/box_space.html?highlight=update#lua-function.space_object.update
-                You can use field numbers as well as their names in space
-                format as a field_no (if only fetch_schema is True).
-                If field is unknown then TarantoolSchemaError is raised.
-        :param timeout: Request timeout
-        :param tuple_as_dict: Decode tuple according to schema. Has no effect
-                in upsert requests
+                # Assuming tuple [0, 'hello'] is in space tester
+
+                >>> res = await conn.update('tester', [0],
+                ...                         [ ['=', 1, 'hi!'] ])
+                >>> res.body
+                [[0, 'hi!']]
+
+                # you can use fields names as well
+                >>> res = await conn.update('tester', [0],
+                ...                         [ ['=', 'text', 'hola'] ])
+                >>> res.body
+                [[0, 'hola']]
+
+                # ... and retrieve tuples as dicts, of course
+                >>> res = await conn.update('tester', [0],
+                ...                         [ ['=', 'text', 'hola'] ],
+                ...                         tuple_as_dict=True)
+                >>> res.body
+                [{'id': 0, 'text': 'hola'}]
+
+            :param space: space id or space name.
+            :param key: key to update
+            :param operations:
+                    Operations list of the following format:
+                    [ [op_type, field_no, ...], ... ]. Please refer to
+                    https://tarantool.org/doc/book/box/box_space.html?highlight=update#lua-function.space_object.update
+                    You can use field numbers as well as their names in space
+                    format as a field_no (if only fetch_schema is True).
+                    If field is unknown then TarantoolSchemaError is raised.
+            :param index: index id or name
+            :param timeout: Request timeout
+            :param tuple_as_dict: Decode tuple according to schema
+
+            :rtype: asynctnt.Response
         """
-        return self._db.upsert(space, t, operations, **kwargs)
+        return await self._db.update(space, key, operations, **kwargs)
+
+    async def upsert(self, space, t, operations, **kwargs):
+        """
+            Update request coroutine. Performs either insert or update
+            (depending of either tuple exists or not)
+
+            Examples:
+
+            .. code-block:: pycon
+
+                # upsert does not return anything
+                >>> res = await conn.upsert('tester', [0, 'hello'],
+                ...                         [ ['=', 1, 'hi!'] ])
+                >>> res.body
+                []
+
+            :param space: space id or space name.
+            :param t: tuple to insert if it's not in space
+            :param operations:
+                    Operations list to use for update if tuple is already in
+                    space. It has the same format as in update requets:
+                    [ [op_type, field_no, ...], ... ]. Please refer to
+                    https://tarantool.org/doc/book/box/box_space.html?highlight=update#lua-function.space_object.update
+                    You can use field numbers as well as their names in space
+                    format as a field_no (if only fetch_schema is True).
+                    If field is unknown then TarantoolSchemaError is raised.
+            :param timeout: Request timeout
+            :param tuple_as_dict: Decode tuple according to schema.
+                    Has no effect in upsert requests
+
+            :rtype: asynctnt.Response
+        """
+        return await self._db.upsert(space, t, operations, **kwargs)
 
     def _normalize_api(self):
         if (1, 6) <= self.version < (1, 7):
@@ -629,15 +786,16 @@ def _create_future(loop):
         return asyncio.Future(loop=loop)
 
 
-class DbMock:
+class _DbMock:
     def __getattr__(self, item):
         raise TarantoolNotConnectedError('Tarantool is not connected')
 
 
 async def connect(**kwargs):
     """
-        connect shorthand. See Connect.__doc__ for kwargs details
-    :return: asynctnt.Connection object
+        connect shorthand. See :class:`asynctnt.Connection` for kwargs details
+
+        :return: :class:`asynctnt.Connection` object
     """
     c = Connection(**kwargs)
     await c.connect()

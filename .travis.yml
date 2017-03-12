@@ -1,4 +1,9 @@
 language: python
+env:
+  global:
+  - ENCRYPTION_LABEL: "8db6dbddd29a"
+  - COMMIT_AUTHOR_EMAIL: "igorcoding@gmail.com"
+
 matrix:
   fast_finish: true
   include:
@@ -42,7 +47,7 @@ matrix:
       sudo: required
       language: python
       python: '3.6'
-      env: BUILD=tests,coverage,release TARANTOOL_VERSION=1_7
+      env: BUILD=tests,docs,coverage,release TARANTOOL_VERSION=1_7
 
 cache:
   - pip
@@ -55,6 +60,7 @@ install:
 
 script:
   - ".ci/travis-tests.sh"
+  - ".ci/travis-build-docs.sh"
 
 after_success:
   - if [[ "${BUILD}" == *coverage* ]]; then coveralls; fi

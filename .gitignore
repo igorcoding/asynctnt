@@ -103,3 +103,5 @@ __tnt*
 !third_party/**/*
 vinyl.meta
 *.vymeta
+deploy_key*
+!.ci/deploy_key.enc

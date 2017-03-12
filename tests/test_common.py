@@ -126,4 +126,4 @@ class CommonTestCase(BaseTarantoolTestCase):
             pass
         with self.assertRaisesRegex(
                 TypeError, 'Type `(.+)` is not supported for encoding'):
-            self.conn.call('func_param', [{'a': A()}])
+            await self.conn.call('func_param', [{'a': A()}])

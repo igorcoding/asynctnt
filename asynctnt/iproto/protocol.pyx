@@ -21,6 +21,9 @@ include "coreproto.pyx"
 
 
 class Iterator(enum.IntEnum):
+    """
+        Available Iterator types
+    """
     EQ = 0
     REQ = 1
     ALL = 2

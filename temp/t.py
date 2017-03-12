@@ -7,7 +7,6 @@ import os
 import sys
 
 from asynctnt import Iterator
-from asynctnt.exceptions import TarantoolConnectionLostError
 from asynctnt.instance import TarantoolInstance, TarantoolAsyncInstance
 
 logging.basicConfig(format='%(created)f [%(module)s:%(funcName)s:%(lineno)d] %(levelname)s: %(message)s',

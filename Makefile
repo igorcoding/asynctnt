@@ -68,3 +68,7 @@ sdist: clean build test
 
 release: clean build test
 	$(PYTHON) setup.py sdist upload
+
+
+docs: build
+	$(MAKE) -C docs html

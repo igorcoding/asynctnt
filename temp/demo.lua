@@ -13,3 +13,8 @@ box.once('v1', function()
         {name='text', type='string'},
     })
 end)
+
+
+function f(...)
+    return ...
+end
