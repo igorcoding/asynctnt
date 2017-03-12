@@ -192,7 +192,7 @@
         <span class="s1">&#39;_disconnect_waiter&#39;</span><span class="p">,</span> <span class="s1">&#39;_reconnect_coro&#39;</span>
     <span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span>
+<div class="viewcode-block" id="Connection.__init__"><a class="viewcode-back" href="../../api.html#asynctnt.Connection.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span>
                  <span class="n">host</span><span class="o">=</span><span class="s1">&#39;127.0.0.1&#39;</span><span class="p">,</span>
                  <span class="n">port</span><span class="o">=</span><span class="mi">3301</span><span class="p">,</span>
                  <span class="n">username</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -211,23 +211,23 @@
 <span class="sd">            Connection constructor.</span>
 
 <span class="sd">            :param host:</span>
-<span class="sd">                    Tarantool host (pass &#39;unix/&#39; to connect to unix socket)</span>
+<span class="sd">                    Tarantool host (pass ``unix/`` to connect to unix socket)</span>
 <span class="sd">            :param port:</span>
 <span class="sd">                    Tarantool port</span>
-<span class="sd">                    (pass &#39;/path/to/sockfile&#39; to connect ot unix socket)</span>
+<span class="sd">                    (pass ``/path/to/sockfile`` to connect ot unix socket)</span>
 <span class="sd">            :param username:</span>
 <span class="sd">                    Username to use for auth</span>
-<span class="sd">                    (if None you are connected as a guest)</span>
+<span class="sd">                    (if ``None`` you are connected as a guest)</span>
 <span class="sd">            :param password:</span>
 <span class="sd">                    Password to use for auth</span>
 <span class="sd">            :param fetch_schema:</span>
-<span class="sd">                    Pass True to be able to use spaces and indexes names in</span>
-<span class="sd">                    data manipulation routines (default is True)</span>
+<span class="sd">                    Pass ``True`` to be able to use spaces and indexes names in</span>
+<span class="sd">                    data manipulation routines (default is ``True``)</span>
 <span class="sd">            :param auto_refetch_schema:</span>
-<span class="sd">                    If set to True then when ER_WRONG_SCHEMA_VERSION error</span>
+<span class="sd">                    If set to ``True`` then when ER_WRONG_SCHEMA_VERSION error</span>
 <span class="sd">                    occurs on a request, schema is refetched and the initial</span>
-<span class="sd">                    request is resent. If set to False then schema will not be</span>
-<span class="sd">                    checked by Tarantool, so no errors will occur</span>
+<span class="sd">                    request is resent. If set to ``False`` then schema will not</span>
+<span class="sd">                    be checked by Tarantool, so no errors will occur</span>
 <span class="sd">            :param connect_timeout:</span>
 <span class="sd">                    Time in seconds how long to wait for connecting to socket</span>
 <span class="sd">            :param request_timeout:</span>
@@ -235,19 +235,19 @@
 <span class="sd">                    (by default there is no timeout)</span>
 <span class="sd">            :param reconnect_timeout:</span>
 <span class="sd">                    Time in seconds to wait before automatic reconnect</span>
-<span class="sd">                    (set to 0 or None to disable auto reconnect)</span>
+<span class="sd">                    (set to ``0`` or ``None`` to disable auto reconnect)</span>
 <span class="sd">            :param tuple_as_dict:</span>
 <span class="sd">                    Bool value indicating whether or not to use spaces</span>
 <span class="sd">                    schema to decode response tuples by default. You can</span>
 <span class="sd">                    always change this behaviour in the request itself.</span>
-<span class="sd">                    Note: fetch_schema must be True</span>
+<span class="sd">                    Note: fetch_schema must be ``True``</span>
 <span class="sd">            :param encoding:</span>
 <span class="sd">                    The encoding to use for all strings</span>
-<span class="sd">                    encoding and decoding (default is &#39;utf-8&#39;)</span>
+<span class="sd">                    encoding and decoding (default is ``utf-8``)</span>
 <span class="sd">            :param initial_read_buffer_size:</span>
 <span class="sd">                    Initial and minimum size of read buffer in bytes.</span>
 <span class="sd">                    Higher value means less reallocations, but higher</span>
-<span class="sd">                    memory usage. Lower values</span>
+<span class="sd">                    memory usage.</span>
 <span class="sd">            :param loop:</span>
 <span class="sd">                    Asyncio event loop to use</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -286,7 +286,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_state</span> <span class="o">=</span> <span class="n">ConnectionState</span><span class="o">.</span><span class="n">IDLE</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_state_prev</span> <span class="o">=</span> <span class="n">ConnectionState</span><span class="o">.</span><span class="n">IDLE</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_disconnect_waiter</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_reconnect_coro</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_reconnect_coro</span> <span class="o">=</span> <span class="kc">None</span></div>
 
     <span class="k">def</span> <span class="nf">_set_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_state</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_state</span> <span class="o">!=</span> <span class="n">new_state</span><span class="p">:</span>
