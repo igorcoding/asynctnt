@@ -39,6 +39,7 @@ _ver = find_version()
 
 extensions = ['sphinx.ext.autodoc',
               'sphinx.ext.viewcode',
+              'sphinx.ext.githubpages',
               'sphinxcontrib.asyncio']
 
 templates_path = ['_templates']
