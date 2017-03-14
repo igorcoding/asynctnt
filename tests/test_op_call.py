@@ -105,6 +105,13 @@ class CallTestCase(BaseTarantoolTestCase):
         with self.assertRaises(asyncio.TimeoutError):
             await self.conn.call('func_long', [0.3], timeout=0.1)
 
+    async def test__call_raise(self):
+        with self.assertRaises(TarantoolDatabaseError) as e:
+            await self.conn.call('raise')
+
+        self.assertEqual(e.exception.code, 0, 'code by box.error{} is 0')
+        self.assertEqual(e.exception.message, 'my reason', 'Reason ok')
+
 
 class Call16TestCase(BaseTarantoolTestCase):
     async def test__call16_basic(self):

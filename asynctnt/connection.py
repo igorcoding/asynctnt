@@ -146,7 +146,8 @@ class Connection:
         self._transport = None
 
         if self._reconnect_timeout > 0 \
-                and self._state != ConnectionState.DISCONNECTING:
+                and self._state != ConnectionState.DISCONNECTING \
+                and self._state != ConnectionState.DISCONNECTED:
             if self._state == ConnectionState.RECONNECTING:
                 return
             self._set_state(ConnectionState.DISCONNECTING)

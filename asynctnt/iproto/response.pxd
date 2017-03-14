@@ -4,6 +4,7 @@ from libc.stdint cimport uint64_t, uint32_t, int64_t
 cdef class Response:
     cdef:
         uint32_t _code
+        uint32_t _return_code
         uint64_t _sync
         int64_t _schema_id
         str _errmsg

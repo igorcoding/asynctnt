@@ -6,6 +6,8 @@ import logging
 import os
 import sys
 
+import aiotarantool
+
 from asynctnt import Iterator
 from asynctnt.instance import TarantoolInstance, TarantoolAsyncInstance
 
@@ -37,6 +39,7 @@ async def main(loop):
 
     # await tnt.start()
     conn = None
+    conn2 = None
     try:
         coro = asyncio.ensure_future(
             asynctnt.connect(host='127.0.0.1', port=3305,
@@ -51,11 +54,14 @@ async def main(loop):
         # await asyncio.sleep(1, loop=loop)
         # await tnt.start()
         conn = await coro
-        conn.close()
+        conn2 = aiotarantool.connect('127.0.0.1', 3305)
+        await conn2.connect()
 
-        await conn.connect()
+        res = await conn.call('raise')
+        print(res)
 
         print('connected')
+        return
         # print(conn._protocol.schema)
         # print(conn._protocol._con_state)
         #

@@ -20,6 +20,7 @@ class PingTestCase(BaseTarantoolTestCase):
         self.assertIsInstance(res, Response)
         self.assertGreater(res.sync, 0, 'Sync is not 0')
         self.assertEqual(res.code, 0, 'Code is 0')
+        self.assertEqual(res.return_code, 0, 'Return code is 0')
         self.assertIsNone(res.body, 'No body for ping')
 
     async def test__ping_timeout_on_conn(self):

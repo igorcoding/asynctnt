@@ -146,9 +146,9 @@ cdef class BaseProtocol(CoreProtocol):
         waiter = req.waiter
         if waiter is not None \
                 and not waiter.done():
-            if resp._code != 0:
+            if resp.is_error():
                 waiter.set_exception(
-                    TarantoolDatabaseError(resp._code, resp._errmsg))
+                    TarantoolDatabaseError(resp._return_code, resp._errmsg))
             else:
                 waiter.set_result(resp)
 

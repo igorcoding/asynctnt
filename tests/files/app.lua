@@ -87,3 +87,7 @@ end
 function func_hello()
 	return {'hello'}
 end
+
+function raise()
+	box.error{reason='my reason'}
+end

@@ -17,6 +17,7 @@ cdef class Response:
     def __cinit__(self):
         self._sync = 0
         self._code = 0
+        self._return_code = 0
         self._schema_id = -1
         self._errmsg = None
         self._body = None
@@ -60,6 +61,13 @@ cdef class Response:
             Response code (0 - success)
         """
         return self._code
+
+    @property
+    def return_code(self):
+        """
+            Response return code (It's essentially a code & 0x7FFF)
+        """
+        return self._return_code
 
     @property
     def schema_id(self):
@@ -245,7 +253,7 @@ cdef ssize_t response_parse_header(const char *buf, uint32_t buf_len,
                 raise TypeError('code type must be a MP_UINT')
 
             resp._code = <uint32_t>mp_decode_uint(&b)
-            resp._code &= 0x7FFF
+            resp._return_code = resp._code & 0x7FFF
         elif key == tnt.TP_SYNC:
             if mp_typeof(b[0]) != MP_UINT:
                 raise TypeError('sync type must be a MP_UINT')

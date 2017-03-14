@@ -65,4 +65,8 @@ function func_param(p)
     return {p}
 end
 
+function raise()
+	box.error{reason='my reason'}
+end
+
 require('console').start()
