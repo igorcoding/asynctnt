@@ -1,7 +1,8 @@
 import logging
 
 import asynctnt
-from asynctnt.exceptions import TarantoolNotConnectedError
+from asynctnt.exceptions import TarantoolNotConnectedError, \
+    TarantoolDatabaseError
 
 from tests import BaseTarantoolTestCase
 from tests.util import get_complex_param, get_big_param
@@ -127,3 +128,23 @@ class CommonTestCase(BaseTarantoolTestCase):
         with self.assertRaisesRegex(
                 TypeError, 'Type `(.+)` is not supported for encoding'):
             await self.conn.call('func_param', [{'a': A()}])
+
+    async def test__schema_refetch_next_byte(self):
+        await self.tnt_reconnect(auto_refetch_schema=True)
+        await self.conn.call('func_hello')
+
+        # Changing scheme
+        try:
+            for _ in range(251):
+                await self.conn.eval(
+                    "s = box.schema.create_space('new_space');"
+                    "s:drop();"
+                )
+        except TarantoolDatabaseError as e:
+            self.fail(e)
+
+        try:
+            for i in range(1, 255):
+                await self.conn.call('func_hello')
+        except TarantoolDatabaseError as e:
+            self.fail(e)

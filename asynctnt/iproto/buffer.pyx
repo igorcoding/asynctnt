@@ -54,6 +54,10 @@ cdef class WriteBuffer:
     def __releasebuffer__(self, Py_buffer *buffer):
         self._view_count -= 1
 
+    def hex(self):
+        return ":".join("{:02x}".format(ord(<bytes>(self._buf[i])))
+                        for i in range(self._length))
+
     @staticmethod
     cdef WriteBuffer new(bytes encoding):
         cdef WriteBuffer buf
@@ -149,8 +153,9 @@ cdef class WriteBuffer:
 
         if schema_id > 0:
             p = mp_encode_uint(p, tnt.TP_SCHEMA_ID)
+            p = mp_store_u8(p, 0xce)
             self.__schema_id_offset = (p - begin)  # save schema_id position
-            p = mp_encode_uint(p, schema_id)
+            p = mp_store_u32(p, schema_id)
 
         self._length += (p - begin)
 
@@ -159,7 +164,7 @@ cdef class WriteBuffer:
 
         if self.__schema_id_offset > 0 and new_schema_id > 0:
             p = &self._buf[self.__schema_id_offset]
-            mp_encode_uint(p, new_schema_id)
+            p = mp_store_u32(p, new_schema_id)
 
     cdef void write_length(self):
         cdef:
