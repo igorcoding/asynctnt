@@ -482,7 +482,7 @@ class Connection:
 
             :param timeout: Request timeout
 
-            :rtype: asynctnt.Response
+            :returns: :class:`asynctnt.Response` instance 
         """
         return await self._db.ping(timeout=timeout)
 
@@ -496,7 +496,7 @@ class Connection:
             :param args: arguments to pass to the function (list object)
             :param timeout: Request timeout
 
-            :rtype: asynctnt.Response
+            :returns: :class:`asynctnt.Response` instance
         """
         return await self._db.call16(func_name, args,
                                      timeout=timeout)
@@ -529,7 +529,7 @@ class Connection:
             :param args: arguments to pass to the function (list object)
             :param timeout: Request timeout
 
-            :rtype: asynctnt.Response
+            :returns: :class:`asynctnt.Response` instance
         """
         return await self._db.call(func_name, args,
                                    timeout=timeout)
@@ -554,8 +554,8 @@ class Connection:
             :param args: arguments to pass to the function, that will
                          execute your expression (list object)
             :param timeout: Request timeout
-
-            :rtype: asynctnt.Response
+            
+            :returns: :class:`asynctnt.Response` instance
         """
         return await self._db.eval(expression, args,
                                    timeout=timeout)
@@ -604,7 +604,7 @@ class Connection:
             :param timeout: Request timeout
             :param tuple_as_dict: Decode tuple according to schema
 
-            :rtype: asynctnt.Response
+            :returns: :class:`asynctnt.Response` instance
         """
         return await self._db.select(space, key, **kwargs)
 
@@ -645,7 +645,7 @@ class Connection:
             :param timeout: Request timeout
             :param tuple_as_dict: Decode tuple according to schema
 
-            :rtype: asynctnt.Response
+            :returns: :class:`asynctnt.Response` instance
         """
         return await self._db.insert(space, t,
                                      replace=replace,
@@ -662,7 +662,7 @@ class Connection:
             :param timeout: Request timeout
             :param tuple_as_dict: Decode tuple according to schema
 
-            :rtype: asynctnt.Response
+            :returns: :class:`asynctnt.Response` instance
         """
         return await self._db.replace(space, t,
                                       timeout=timeout,
@@ -693,7 +693,7 @@ class Connection:
             :param timeout: Request timeout
             :param tuple_as_dict: Decode tuple according to schema
 
-            :rtype: asynctnt.Response
+            :returns: :class:`asynctnt.Response` instance
         """
         return await self._db.delete(space, key, **kwargs)
 
@@ -738,7 +738,7 @@ class Connection:
             :param timeout: Request timeout
             :param tuple_as_dict: Decode tuple according to schema
 
-            :rtype: asynctnt.Response
+            :returns: :class:`asynctnt.Response` instance
         """
         return await self._db.update(space, key, operations, **kwargs)
 
@@ -771,7 +771,7 @@ class Connection:
             :param tuple_as_dict: Decode tuple according to schema.
                     Has no effect in upsert requests
 
-            :rtype: asynctnt.Response
+            :returns: :class:`asynctnt.Response` instance
         """
         return await self._db.upsert(space, t, operations, **kwargs)
 
