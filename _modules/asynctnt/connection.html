@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>asynctnt.connection &mdash; asynctnt 0.1.6 documentation</title>
+  <title>asynctnt.connection &mdash; asynctnt 0.1.7 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="asynctnt 0.1.6 documentation" href="../../index.html"/>
+    <link rel="top" title="asynctnt 0.1.7 documentation" href="../../index.html"/>
         <link rel="up" title="Module code" href="../index.html"/> 
 
   
@@ -65,7 +65,7 @@
             
             
               <div class="version">
-                0.1.6
+                0.1.7
               </div>
             
           
@@ -642,7 +642,7 @@
 
 <span class="sd">            :param timeout: Request timeout</span>
 
-<span class="sd">            :rtype: asynctnt.Response</span>
+<span class="sd">            :returns: :class:`asynctnt.Response` instance </span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_db</span><span class="o">.</span><span class="n">ping</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">)</span></div>
 
@@ -656,7 +656,7 @@
 <span class="sd">            :param args: arguments to pass to the function (list object)</span>
 <span class="sd">            :param timeout: Request timeout</span>
 
-<span class="sd">            :rtype: asynctnt.Response</span>
+<span class="sd">            :returns: :class:`asynctnt.Response` instance</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_db</span><span class="o">.</span><span class="n">call16</span><span class="p">(</span><span class="n">func_name</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span>
                                      <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">)</span></div>
@@ -689,7 +689,7 @@
 <span class="sd">            :param args: arguments to pass to the function (list object)</span>
 <span class="sd">            :param timeout: Request timeout</span>
 
-<span class="sd">            :rtype: asynctnt.Response</span>
+<span class="sd">            :returns: :class:`asynctnt.Response` instance</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_db</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">func_name</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span>
                                    <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">)</span></div>
@@ -714,8 +714,8 @@
 <span class="sd">            :param args: arguments to pass to the function, that will</span>
 <span class="sd">                         execute your expression (list object)</span>
 <span class="sd">            :param timeout: Request timeout</span>
-
-<span class="sd">            :rtype: asynctnt.Response</span>
+<span class="sd">            </span>
+<span class="sd">            :returns: :class:`asynctnt.Response` instance</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_db</span><span class="o">.</span><span class="n">eval</span><span class="p">(</span><span class="n">expression</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span>
                                    <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">)</span></div>
@@ -764,7 +764,7 @@
 <span class="sd">            :param timeout: Request timeout</span>
 <span class="sd">            :param tuple_as_dict: Decode tuple according to schema</span>
 
-<span class="sd">            :rtype: asynctnt.Response</span>
+<span class="sd">            :returns: :class:`asynctnt.Response` instance</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_db</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">space</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
@@ -805,7 +805,7 @@
 <span class="sd">            :param timeout: Request timeout</span>
 <span class="sd">            :param tuple_as_dict: Decode tuple according to schema</span>
 
-<span class="sd">            :rtype: asynctnt.Response</span>
+<span class="sd">            :returns: :class:`asynctnt.Response` instance</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_db</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">space</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span>
                                      <span class="n">replace</span><span class="o">=</span><span class="n">replace</span><span class="p">,</span>
@@ -822,7 +822,7 @@
 <span class="sd">            :param timeout: Request timeout</span>
 <span class="sd">            :param tuple_as_dict: Decode tuple according to schema</span>
 
-<span class="sd">            :rtype: asynctnt.Response</span>
+<span class="sd">            :returns: :class:`asynctnt.Response` instance</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_db</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">space</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span>
                                       <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">,</span>
@@ -853,7 +853,7 @@
 <span class="sd">            :param timeout: Request timeout</span>
 <span class="sd">            :param tuple_as_dict: Decode tuple according to schema</span>
 
-<span class="sd">            :rtype: asynctnt.Response</span>
+<span class="sd">            :returns: :class:`asynctnt.Response` instance</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_db</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">space</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
@@ -898,7 +898,7 @@
 <span class="sd">            :param timeout: Request timeout</span>
 <span class="sd">            :param tuple_as_dict: Decode tuple according to schema</span>
 
-<span class="sd">            :rtype: asynctnt.Response</span>
+<span class="sd">            :returns: :class:`asynctnt.Response` instance</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_db</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">space</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">operations</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
@@ -931,7 +931,7 @@
 <span class="sd">            :param tuple_as_dict: Decode tuple according to schema.</span>
 <span class="sd">                    Has no effect in upsert requests</span>
 
-<span class="sd">            :rtype: asynctnt.Response</span>
+<span class="sd">            :returns: :class:`asynctnt.Response` instance</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_db</span><span class="o">.</span><span class="n">upsert</span><span class="p">(</span><span class="n">space</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">operations</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
@@ -997,7 +997,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'0.1.6',
+            VERSION:'0.1.7',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
