@@ -96,9 +96,10 @@ ENV/
 
 # Custom
 *.snap
+*.xlog
+*.xctl
 *.c
 asynctnt/iproto/*.html
-*.xlog
 __tnt*
 !third_party/**/*
 vinyl.meta
