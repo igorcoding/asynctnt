@@ -235,7 +235,7 @@ memory usage.</li>
 
 <dl class="method">
 <dt id="asynctnt.Connection.call">
-<em class="property">coroutine </em><code class="descname">call</code><span class="sig-paren">(</span><em>func_name</em>, <em>args=None</em>, <em>*</em>, <em>timeout=-1</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/asynctnt/connection.html#Connection.call"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#asynctnt.Connection.call" title="Permalink to this definition">¶</a></dt>
+<code class="descname">call</code><span class="sig-paren">(</span><em>func_name</em>, <em>args=None</em>, <em>*</em>, <em>timeout=-1</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/asynctnt/connection.html#Connection.call"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#asynctnt.Connection.call" title="Permalink to this definition">¶</a></dt>
 <dd><p>Call request coroutine. It is a call with a new behaviour
 (return result of a Tarantool procedure is not wrapped into
 an extra tuple). If you&#8217;re connecting to Tarantool with
@@ -275,7 +275,7 @@ version &lt; 1.7, then this call method acts like a call16 method</p>
 
 <dl class="method">
 <dt id="asynctnt.Connection.call16">
-<em class="property">coroutine </em><code class="descname">call16</code><span class="sig-paren">(</span><em>func_name</em>, <em>args=None</em>, <em>*</em>, <em>timeout=-1</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/asynctnt/connection.html#Connection.call16"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#asynctnt.Connection.call16" title="Permalink to this definition">¶</a></dt>
+<code class="descname">call16</code><span class="sig-paren">(</span><em>func_name</em>, <em>args=None</em>, <em>*</em>, <em>timeout=-1</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/asynctnt/connection.html#Connection.call16"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#asynctnt.Connection.call16" title="Permalink to this definition">¶</a></dt>
 <dd><p>Call16 request coroutine. It is a call with an old behaviour
 (return result of a Tarantool procedure is wrapped into a tuple,
 if needed)</p>
@@ -318,7 +318,7 @@ for disconnect to finish.</p>
 
 <dl class="method">
 <dt id="asynctnt.Connection.delete">
-<em class="property">coroutine </em><code class="descname">delete</code><span class="sig-paren">(</span><em>space</em>, <em>key</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/asynctnt/connection.html#Connection.delete"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#asynctnt.Connection.delete" title="Permalink to this definition">¶</a></dt>
+<code class="descname">delete</code><span class="sig-paren">(</span><em>space</em>, <em>key</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/asynctnt/connection.html#Connection.delete"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#asynctnt.Connection.delete" title="Permalink to this definition">¶</a></dt>
 <dd><p>Delete request coroutine.</p>
 <p>Examples:</p>
 <div class="highlight-pycon"><div class="highlight"><pre><span></span><span class="go"># Assuming tuple [0, &#39;hello&#39;] is in space tester</span>
@@ -367,7 +367,7 @@ for disconnect to finish.</p>
 
 <dl class="method">
 <dt id="asynctnt.Connection.eval">
-<em class="property">coroutine </em><code class="descname">eval</code><span class="sig-paren">(</span><em>expression</em>, <em>args=None</em>, <em>*</em>, <em>timeout=-1</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/asynctnt/connection.html#Connection.eval"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#asynctnt.Connection.eval" title="Permalink to this definition">¶</a></dt>
+<code class="descname">eval</code><span class="sig-paren">(</span><em>expression</em>, <em>args=None</em>, <em>*</em>, <em>timeout=-1</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/asynctnt/connection.html#Connection.eval"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#asynctnt.Connection.eval" title="Permalink to this definition">¶</a></dt>
 <dd><p>Eval request coroutine.</p>
 <p>Examples:</p>
 <div class="highlight-pycon"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">res</span> <span class="o">=</span> <span class="n">await</span> <span class="n">conn</span><span class="o">.</span><span class="n">eval</span><span class="p">(</span><span class="s1">&#39;return 42&#39;</span><span class="p">)</span>
@@ -418,7 +418,7 @@ execute your expression (list object)</li>
 
 <dl class="method">
 <dt id="asynctnt.Connection.insert">
-<em class="property">coroutine </em><code class="descname">insert</code><span class="sig-paren">(</span><em>space</em>, <em>t</em>, <em>*</em>, <em>replace=False</em>, <em>timeout=-1</em>, <em>tuple_as_dict=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/asynctnt/connection.html#Connection.insert"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#asynctnt.Connection.insert" title="Permalink to this definition">¶</a></dt>
+<code class="descname">insert</code><span class="sig-paren">(</span><em>space</em>, <em>t</em>, <em>*</em>, <em>replace=False</em>, <em>timeout=-1</em>, <em>tuple_as_dict=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/asynctnt/connection.html#Connection.insert"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#asynctnt.Connection.insert" title="Permalink to this definition">¶</a></dt>
 <dd><p>Insert request coroutine.</p>
 <p>Examples:</p>
 <div class="highlight-pycon"><div class="highlight"><pre><span></span><span class="go"># Basic usage</span>
@@ -484,7 +484,7 @@ execute your expression (list object)</li>
 
 <dl class="method">
 <dt id="asynctnt.Connection.ping">
-<em class="property">coroutine </em><code class="descname">ping</code><span class="sig-paren">(</span><em>*</em>, <em>timeout=-1</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/asynctnt/connection.html#Connection.ping"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#asynctnt.Connection.ping" title="Permalink to this definition">¶</a></dt>
+<code class="descname">ping</code><span class="sig-paren">(</span><em>*</em>, <em>timeout=-1</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/asynctnt/connection.html#Connection.ping"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#asynctnt.Connection.ping" title="Permalink to this definition">¶</a></dt>
 <dd><p>Ping request coroutine</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -525,7 +525,7 @@ Just calls disconnect() and connect()</p>
 
 <dl class="method">
 <dt id="asynctnt.Connection.replace">
-<em class="property">coroutine </em><code class="descname">replace</code><span class="sig-paren">(</span><em>space</em>, <em>t</em>, <em>*</em>, <em>timeout=-1</em>, <em>tuple_as_dict=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/asynctnt/connection.html#Connection.replace"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#asynctnt.Connection.replace" title="Permalink to this definition">¶</a></dt>
+<code class="descname">replace</code><span class="sig-paren">(</span><em>space</em>, <em>t</em>, <em>*</em>, <em>timeout=-1</em>, <em>tuple_as_dict=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/asynctnt/connection.html#Connection.replace"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#asynctnt.Connection.replace" title="Permalink to this definition">¶</a></dt>
 <dd><p>Replace request coroutine. Same as insert, but replace.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -560,7 +560,7 @@ Just calls disconnect() and connect()</p>
 
 <dl class="method">
 <dt id="asynctnt.Connection.select">
-<em class="property">coroutine </em><code class="descname">select</code><span class="sig-paren">(</span><em>space</em>, <em>key=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/asynctnt/connection.html#Connection.select"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#asynctnt.Connection.select" title="Permalink to this definition">¶</a></dt>
+<code class="descname">select</code><span class="sig-paren">(</span><em>space</em>, <em>key=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/asynctnt/connection.html#Connection.select"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#asynctnt.Connection.select" title="Permalink to this definition">¶</a></dt>
 <dd><p>Select request coroutine.</p>
 <p>Examples:</p>
 <div class="highlight-pycon"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">await</span> <span class="n">conn</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s1">&#39;tester&#39;</span><span class="p">)</span>
@@ -630,7 +630,7 @@ Just calls disconnect() and connect()</p>
 
 <dl class="method">
 <dt id="asynctnt.Connection.update">
-<em class="property">coroutine </em><code class="descname">update</code><span class="sig-paren">(</span><em>space</em>, <em>key</em>, <em>operations</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/asynctnt/connection.html#Connection.update"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#asynctnt.Connection.update" title="Permalink to this definition">¶</a></dt>
+<code class="descname">update</code><span class="sig-paren">(</span><em>space</em>, <em>key</em>, <em>operations</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/asynctnt/connection.html#Connection.update"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#asynctnt.Connection.update" title="Permalink to this definition">¶</a></dt>
 <dd><p>Update request coroutine.</p>
 <p>Examples:</p>
 <div class="highlight-pycon"><div class="highlight"><pre><span></span><span class="go"># Assuming tuple [0, &#39;hello&#39;] is in space tester</span>
@@ -682,7 +682,7 @@ If field is unknown then TarantoolSchemaError is raised.</li>
 
 <dl class="method">
 <dt id="asynctnt.Connection.upsert">
-<em class="property">coroutine </em><code class="descname">upsert</code><span class="sig-paren">(</span><em>space</em>, <em>t</em>, <em>operations</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/asynctnt/connection.html#Connection.upsert"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#asynctnt.Connection.upsert" title="Permalink to this definition">¶</a></dt>
+<code class="descname">upsert</code><span class="sig-paren">(</span><em>space</em>, <em>t</em>, <em>operations</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/asynctnt/connection.html#Connection.upsert"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#asynctnt.Connection.upsert" title="Permalink to this definition">¶</a></dt>
 <dd><p>Update request coroutine. Performs either insert or update
 (depending of either tuple exists or not)</p>
 <p>Examples:</p>
