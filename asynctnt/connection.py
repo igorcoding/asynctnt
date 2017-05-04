@@ -476,7 +476,7 @@ class Connection:
         """
         await self._protocol.refetch_schema()
 
-    async def ping(self, *, timeout=-1):
+    def ping(self, *, timeout=-1):
         """
             Ping request coroutine
 
@@ -484,9 +484,9 @@ class Connection:
 
             :returns: :class:`asynctnt.Response` instance 
         """
-        return await self._db.ping(timeout=timeout)
+        return self._db.ping(timeout=timeout)
 
-    async def call16(self, func_name, args=None, *, timeout=-1):
+    def call16(self, func_name, args=None, *, timeout=-1):
         """
             Call16 request coroutine. It is a call with an old behaviour
             (return result of a Tarantool procedure is wrapped into a tuple,
@@ -498,10 +498,10 @@ class Connection:
 
             :returns: :class:`asynctnt.Response` instance
         """
-        return await self._db.call16(func_name, args,
-                                     timeout=timeout)
+        return self._db.call16(func_name, args,
+                               timeout=timeout)
 
-    async def call(self, func_name, args=None, *, timeout=-1):
+    def call(self, func_name, args=None, *, timeout=-1):
         """
             Call request coroutine. It is a call with a new behaviour
             (return result of a Tarantool procedure is not wrapped into
@@ -531,10 +531,10 @@ class Connection:
 
             :returns: :class:`asynctnt.Response` instance
         """
-        return await self._db.call(func_name, args,
-                                   timeout=timeout)
+        return self._db.call(func_name, args,
+                             timeout=timeout)
 
-    async def eval(self, expression, args=None, *, timeout=-1):
+    def eval(self, expression, args=None, *, timeout=-1):
         """
             Eval request coroutine.
 
@@ -557,10 +557,10 @@ class Connection:
             
             :returns: :class:`asynctnt.Response` instance
         """
-        return await self._db.eval(expression, args,
-                                   timeout=timeout)
+        return self._db.eval(expression, args,
+                             timeout=timeout)
 
-    async def select(self, space, key=None, **kwargs):
+    def select(self, space, key=None, **kwargs):
         """
             Select request coroutine.
 
@@ -606,10 +606,10 @@ class Connection:
 
             :returns: :class:`asynctnt.Response` instance
         """
-        return await self._db.select(space, key, **kwargs)
+        return self._db.select(space, key, **kwargs)
 
-    async def insert(self, space, t, *,
-                     replace=False, timeout=-1, tuple_as_dict=None):
+    def insert(self, space, t, *,
+               replace=False, timeout=-1, tuple_as_dict=None):
         """
             Insert request coroutine.
 
@@ -647,13 +647,13 @@ class Connection:
 
             :returns: :class:`asynctnt.Response` instance
         """
-        return await self._db.insert(space, t,
-                                     replace=replace,
-                                     timeout=timeout,
-                                     tuple_as_dict=tuple_as_dict)
+        return self._db.insert(space, t,
+                               replace=replace,
+                               timeout=timeout,
+                               tuple_as_dict=tuple_as_dict)
 
-    async def replace(self, space, t, *,
-                      timeout=-1, tuple_as_dict=None):
+    def replace(self, space, t, *,
+                timeout=-1, tuple_as_dict=None):
         """
             Replace request coroutine. Same as insert, but replace.
 
@@ -664,11 +664,11 @@ class Connection:
 
             :returns: :class:`asynctnt.Response` instance
         """
-        return await self._db.replace(space, t,
-                                      timeout=timeout,
-                                      tuple_as_dict=tuple_as_dict)
+        return self._db.replace(space, t,
+                                timeout=timeout,
+                                tuple_as_dict=tuple_as_dict)
 
-    async def delete(self, space, key, **kwargs):
+    def delete(self, space, key, **kwargs):
         """
             Delete request coroutine.
 
@@ -695,9 +695,9 @@ class Connection:
 
             :returns: :class:`asynctnt.Response` instance
         """
-        return await self._db.delete(space, key, **kwargs)
+        return self._db.delete(space, key, **kwargs)
 
-    async def update(self, space, key, operations, **kwargs):
+    def update(self, space, key, operations, **kwargs):
         """
             Update request coroutine.
 
@@ -740,9 +740,9 @@ class Connection:
 
             :returns: :class:`asynctnt.Response` instance
         """
-        return await self._db.update(space, key, operations, **kwargs)
+        return self._db.update(space, key, operations, **kwargs)
 
-    async def upsert(self, space, t, operations, **kwargs):
+    def upsert(self, space, t, operations, **kwargs):
         """
             Update request coroutine. Performs either insert or update
             (depending of either tuple exists or not)
@@ -773,7 +773,7 @@ class Connection:
 
             :returns: :class:`asynctnt.Response` instance
         """
-        return await self._db.upsert(space, t, operations, **kwargs)
+        return self._db.upsert(space, t, operations, **kwargs)
 
     def _normalize_api(self):
         if (1, 6) <= self.version < (1, 7):

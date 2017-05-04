@@ -55,7 +55,7 @@ async def bench_asynctnt(n, b, loop=None):
                                reconnect_timeout=1, loop=loop)
     await conn.connect()
 
-    n_requests_per_bulk = math.ceil(n / b)
+    n_requests_per_bulk = int(math.ceil(n / b))
 
     async def bulk_f():
         for _ in range(n_requests_per_bulk):
@@ -84,7 +84,7 @@ async def bench_aiotarantool(n, b, loop=None):
                                 user='t1', password='t1',
                                 loop=loop)
 
-    n_requests_per_bulk = math.ceil(n / b)
+    n_requests_per_bulk = int(math.ceil(n / b))
 
     async def bulk_f():
         for _ in range(n_requests_per_bulk):
@@ -114,7 +114,7 @@ def bench_tarantool(n, b, loop=None):
                                 password='t1')
     conn.connect()
     b = 1
-    n_requests_per_bulk = math.ceil(n / b)
+    n_requests_per_bulk = int(math.ceil(n / b))
 
     start = datetime.datetime.now()
     for _ in range(n_requests_per_bulk):
