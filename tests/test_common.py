@@ -73,6 +73,29 @@ class CommonTestCase(BaseTarantoolTestCase):
         except Exception as e:
             self.fail(e)
 
+    async def test__parse_numeric_map_keys(self):
+        res = await self.conn.eval(
+            """return {
+                [1] = 1, 
+                [2] = 2, 
+                hello = 3, 
+                world = 4, 
+                [-3] = 5, 
+                [4.5] = 6
+            }"""
+        )
+
+        d = {
+            1: 1,
+            2: 2,
+            'hello': 3,
+            'world': 4,
+            -3: 5,
+            4.5: 6
+        }
+
+        self.assertDictEqual(res.body[0], d, 'Numeric keys parsed ok')
+
     async def test__read_buffer_reallocate_ok(self):
         await self.tnt_reconnect(initial_read_buffer_size=1)
 

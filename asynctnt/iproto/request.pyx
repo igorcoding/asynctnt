@@ -23,7 +23,7 @@ cdef class Request:
         req.timeout_handle = None
         return req
 
-    def __repr__(self):
+    def __repr__(self):  # pragma: no cover
         return '<Request op={}, sync={}, schema_id={}, len={}>'.format(
             self.op,
             self.sync,
