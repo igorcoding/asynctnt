@@ -17,8 +17,8 @@ elif [ "${TRAVIS_OS_NAME}" == "osx" ]; then
     pyenv rehash
 fi
 
-sudo pip install --upgrade pip wheel
-sudo pip install --upgrade setuptools
+pip install --upgrade pip wheel
+pip install --upgrade setuptools
 pip install -r requirements.txt
 pip install coveralls
 pip install -e .

@@ -12,10 +12,10 @@ if [ "${TRAVIS_OS_NAME}" == "osx" ]; then
 fi
 
 if [[ "${BUILD}" == *quicktests* ]]; then
-    make && make quicktest
+    make && make quicktest || exit 1
 else
     make && make test
-    make clean && make debug && make test
+    make clean && make debug && make test || exit 1
 fi
 
 if [[ "${BUILD}" == *coverage* ]]; then

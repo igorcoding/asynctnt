@@ -5,3 +5,6 @@ pep8==1.7.0
 flake8==3.2.1
 pypandoc
 twine
+Sphinx
+sphinx_rtd_theme
+sphinxcontrib-asyncio
