@@ -193,33 +193,33 @@
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>host</strong> &#8211; Tarantool host (pass <code class="docutils literal"><span class="pre">unix/</span></code> to connect to unix socket)</li>
-<li><strong>port</strong> &#8211; Tarantool port
+<li><strong>host</strong> – Tarantool host (pass <code class="docutils literal"><span class="pre">unix/</span></code> to connect to unix socket)</li>
+<li><strong>port</strong> – Tarantool port
 (pass <code class="docutils literal"><span class="pre">/path/to/sockfile</span></code> to connect ot unix socket)</li>
-<li><strong>username</strong> &#8211; Username to use for auth
+<li><strong>username</strong> – Username to use for auth
 (if <code class="docutils literal"><span class="pre">None</span></code> you are connected as a guest)</li>
-<li><strong>password</strong> &#8211; Password to use for auth</li>
-<li><strong>fetch_schema</strong> &#8211; Pass <code class="docutils literal"><span class="pre">True</span></code> to be able to use spaces and indexes names in
+<li><strong>password</strong> – Password to use for auth</li>
+<li><strong>fetch_schema</strong> – Pass <code class="docutils literal"><span class="pre">True</span></code> to be able to use spaces and indexes names in
 data manipulation routines (default is <code class="docutils literal"><span class="pre">True</span></code>)</li>
-<li><strong>auto_refetch_schema</strong> &#8211; If set to <code class="docutils literal"><span class="pre">True</span></code> then when ER_WRONG_SCHEMA_VERSION error
+<li><strong>auto_refetch_schema</strong> – If set to <code class="docutils literal"><span class="pre">True</span></code> then when ER_WRONG_SCHEMA_VERSION error
 occurs on a request, schema is refetched and the initial
 request is resent. If set to <code class="docutils literal"><span class="pre">False</span></code> then schema will not
 be checked by Tarantool, so no errors will occur</li>
-<li><strong>connect_timeout</strong> &#8211; Time in seconds how long to wait for connecting to socket</li>
-<li><strong>request_timeout</strong> &#8211; Request timeout (in seconds) for all requests
+<li><strong>connect_timeout</strong> – Time in seconds how long to wait for connecting to socket</li>
+<li><strong>request_timeout</strong> – Request timeout (in seconds) for all requests
 (by default there is no timeout)</li>
-<li><strong>reconnect_timeout</strong> &#8211; Time in seconds to wait before automatic reconnect
+<li><strong>reconnect_timeout</strong> – Time in seconds to wait before automatic reconnect
 (set to <code class="docutils literal"><span class="pre">0</span></code> or <code class="docutils literal"><span class="pre">None</span></code> to disable auto reconnect)</li>
-<li><strong>tuple_as_dict</strong> &#8211; Bool value indicating whether or not to use spaces
+<li><strong>tuple_as_dict</strong> – Bool value indicating whether or not to use spaces
 schema to decode response tuples by default. You can
 always change this behaviour in the request itself.
 Note: fetch_schema must be <code class="docutils literal"><span class="pre">True</span></code></li>
-<li><strong>encoding</strong> &#8211; The encoding to use for all strings
+<li><strong>encoding</strong> – The encoding to use for all strings
 encoding and decoding (default is <code class="docutils literal"><span class="pre">utf-8</span></code>)</li>
-<li><strong>initial_read_buffer_size</strong> &#8211; Initial and minimum size of read buffer in bytes.
+<li><strong>initial_read_buffer_size</strong> – Initial and minimum size of read buffer in bytes.
 Higher value means less reallocations, but higher
 memory usage.</li>
-<li><strong>loop</strong> &#8211; Asyncio event loop to use</li>
+<li><strong>loop</strong> – Asyncio event loop to use</li>
 </ul>
 </td>
 </tr>
@@ -238,7 +238,7 @@ memory usage.</li>
 <code class="descname">call</code><span class="sig-paren">(</span><em>func_name</em>, <em>args=None</em>, <em>*</em>, <em>timeout=-1</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/asynctnt/connection.html#Connection.call"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#asynctnt.Connection.call" title="Permalink to this definition">¶</a></dt>
 <dd><p>Call request coroutine. It is a call with a new behaviour
 (return result of a Tarantool procedure is not wrapped into
-an extra tuple). If you&#8217;re connecting to Tarantool with
+an extra tuple). If you’re connecting to Tarantool with
 version &lt; 1.7, then this call method acts like a call16 method</p>
 <p>Examples:</p>
 <div class="highlight-pycon"><div class="highlight"><pre><span></span><span class="go"># tarantool function:</span>
@@ -260,9 +260,9 @@ version &lt; 1.7, then this call method acts like a call16 method</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>func_name</strong> &#8211; function name to call</li>
-<li><strong>args</strong> &#8211; arguments to pass to the function (list object)</li>
-<li><strong>timeout</strong> &#8211; Request timeout</li>
+<li><strong>func_name</strong> – function name to call</li>
+<li><strong>args</strong> – arguments to pass to the function (list object)</li>
+<li><strong>timeout</strong> – Request timeout</li>
 </ul>
 </td>
 </tr>
@@ -284,9 +284,9 @@ if needed)</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>func_name</strong> &#8211; function name to call</li>
-<li><strong>args</strong> &#8211; arguments to pass to the function (list object)</li>
-<li><strong>timeout</strong> &#8211; Request timeout</li>
+<li><strong>func_name</strong> – function name to call</li>
+<li><strong>args</strong> – arguments to pass to the function (list object)</li>
+<li><strong>timeout</strong> – Request timeout</li>
 </ul>
 </td>
 </tr>
@@ -338,11 +338,11 @@ for disconnect to finish.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>space</strong> &#8211; space id or space name.</li>
-<li><strong>key</strong> &#8211; key to delete</li>
-<li><strong>index</strong> &#8211; index id or name</li>
-<li><strong>timeout</strong> &#8211; Request timeout</li>
-<li><strong>tuple_as_dict</strong> &#8211; Decode tuple according to schema</li>
+<li><strong>space</strong> – space id or space name.</li>
+<li><strong>key</strong> – key to delete</li>
+<li><strong>index</strong> – index id or name</li>
+<li><strong>timeout</strong> – Request timeout</li>
+<li><strong>tuple_as_dict</strong> – Decode tuple according to schema</li>
 </ul>
 </td>
 </tr>
@@ -384,10 +384,10 @@ for disconnect to finish.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>expression</strong> &#8211; expression to execute</li>
-<li><strong>args</strong> &#8211; arguments to pass to the function, that will
+<li><strong>expression</strong> – expression to execute</li>
+<li><strong>args</strong> – arguments to pass to the function, that will
 execute your expression (list object)</li>
-<li><strong>timeout</strong> &#8211; Request timeout</li>
+<li><strong>timeout</strong> – Request timeout</li>
 </ul>
 </td>
 </tr>
@@ -449,11 +449,11 @@ execute your expression (list object)</li>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>space</strong> &#8211; space id or space name.</li>
-<li><strong>t</strong> &#8211; tuple to insert (list object)</li>
-<li><strong>replace</strong> &#8211; performs replace request instead of insert</li>
-<li><strong>timeout</strong> &#8211; Request timeout</li>
-<li><strong>tuple_as_dict</strong> &#8211; Decode tuple according to schema</li>
+<li><strong>space</strong> – space id or space name.</li>
+<li><strong>t</strong> – tuple to insert (list object)</li>
+<li><strong>replace</strong> – performs replace request instead of insert</li>
+<li><strong>timeout</strong> – Request timeout</li>
+<li><strong>tuple_as_dict</strong> – Decode tuple according to schema</li>
 </ul>
 </td>
 </tr>
@@ -490,7 +490,7 @@ execute your expression (list object)</li>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>timeout</strong> &#8211; Request timeout</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>timeout</strong> – Request timeout</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><a class="reference internal" href="#asynctnt.Response" title="asynctnt.Response"><code class="xref py py-class docutils literal"><span class="pre">asynctnt.Response</span></code></a> instance</td>
 </tr>
@@ -532,10 +532,10 @@ Just calls disconnect() and connect()</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>space</strong> &#8211; space id or space name.</li>
-<li><strong>t</strong> &#8211; tuple to insert (list object)</li>
-<li><strong>timeout</strong> &#8211; Request timeout</li>
-<li><strong>tuple_as_dict</strong> &#8211; Decode tuple according to schema</li>
+<li><strong>space</strong> – space id or space name.</li>
+<li><strong>t</strong> – tuple to insert (list object)</li>
+<li><strong>timeout</strong> – Request timeout</li>
+<li><strong>tuple_as_dict</strong> – Decode tuple according to schema</li>
 </ul>
 </td>
 </tr>
@@ -555,7 +555,7 @@ Just calls disconnect() and connect()</p>
 <dl class="attribute">
 <dt id="asynctnt.Connection.schema_id">
 <code class="descname">schema_id</code><a class="headerlink" href="#asynctnt.Connection.schema_id" title="Permalink to this definition">¶</a></dt>
-<dd><p>Tarantool&#8217;s current schema id</p>
+<dd><p>Tarantool’s current schema id</p>
 </dd></dl>
 
 <dl class="method">
@@ -590,20 +590,20 @@ Just calls disconnect() and connect()</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>space</strong> &#8211; space id or space name.</li>
-<li><strong>key</strong> &#8211; key to select</li>
-<li><strong>offset</strong> &#8211; offset to use</li>
-<li><strong>limit</strong> &#8211; limit to use</li>
-<li><strong>index</strong> &#8211; index id or name</li>
-<li><strong>iterator</strong> &#8211; <p>one of the following</p>
+<li><strong>space</strong> – space id or space name.</li>
+<li><strong>key</strong> – key to select</li>
+<li><strong>offset</strong> – offset to use</li>
+<li><strong>limit</strong> – limit to use</li>
+<li><strong>index</strong> – index id or name</li>
+<li><strong>iterator</strong> – <p>one of the following</p>
 <ul>
 <li>iterator id (int number),</li>
 <li><a class="reference internal" href="#asynctnt.Iterator" title="asynctnt.Iterator"><code class="xref py py-class docutils literal"><span class="pre">asynctnt.Iterator</span></code></a> object</li>
 <li>string with an iterator name</li>
 </ul>
 </li>
-<li><strong>timeout</strong> &#8211; Request timeout</li>
-<li><strong>tuple_as_dict</strong> &#8211; Decode tuple according to schema</li>
+<li><strong>timeout</strong> – Request timeout</li>
+<li><strong>tuple_as_dict</strong> – Decode tuple according to schema</li>
 </ul>
 </td>
 </tr>
@@ -659,17 +659,17 @@ Just calls disconnect() and connect()</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>space</strong> &#8211; space id or space name.</li>
-<li><strong>key</strong> &#8211; key to update</li>
-<li><strong>operations</strong> &#8211; Operations list of the following format:
-[ [op_type, field_no, ...], ... ]. Please refer to
+<li><strong>space</strong> – space id or space name.</li>
+<li><strong>key</strong> – key to update</li>
+<li><strong>operations</strong> – Operations list of the following format:
+[ [op_type, field_no, …], … ]. Please refer to
 <a class="reference external" href="https://tarantool.org/doc/book/box/box_space.html?highlight=update#lua-function.space_object.update">https://tarantool.org/doc/book/box/box_space.html?highlight=update#lua-function.space_object.update</a>
 You can use field numbers as well as their names in space
 format as a field_no (if only fetch_schema is True).
 If field is unknown then TarantoolSchemaError is raised.</li>
-<li><strong>index</strong> &#8211; index id or name</li>
-<li><strong>timeout</strong> &#8211; Request timeout</li>
-<li><strong>tuple_as_dict</strong> &#8211; Decode tuple according to schema</li>
+<li><strong>index</strong> – index id or name</li>
+<li><strong>timeout</strong> – Request timeout</li>
+<li><strong>tuple_as_dict</strong> – Decode tuple according to schema</li>
 </ul>
 </td>
 </tr>
@@ -698,17 +698,17 @@ If field is unknown then TarantoolSchemaError is raised.</li>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>space</strong> &#8211; space id or space name.</li>
-<li><strong>t</strong> &#8211; tuple to insert if it&#8217;s not in space</li>
-<li><strong>operations</strong> &#8211; Operations list to use for update if tuple is already in
+<li><strong>space</strong> – space id or space name.</li>
+<li><strong>t</strong> – tuple to insert if it’s not in space</li>
+<li><strong>operations</strong> – Operations list to use for update if tuple is already in
 space. It has the same format as in update requets:
-[ [op_type, field_no, ...], ... ]. Please refer to
+[ [op_type, field_no, …], … ]. Please refer to
 <a class="reference external" href="https://tarantool.org/doc/book/box/box_space.html?highlight=update#lua-function.space_object.update">https://tarantool.org/doc/book/box/box_space.html?highlight=update#lua-function.space_object.update</a>
 You can use field numbers as well as their names in space
 format as a field_no (if only fetch_schema is True).
 If field is unknown then TarantoolSchemaError is raised.</li>
-<li><strong>timeout</strong> &#8211; Request timeout</li>
-<li><strong>tuple_as_dict</strong> &#8211; Decode tuple according to schema.
+<li><strong>timeout</strong> – Request timeout</li>
+<li><strong>tuple_as_dict</strong> – Decode tuple according to schema.
 Has no effect in upsert requests</li>
 </ul>
 </td>
@@ -775,7 +775,7 @@ Has no effect in upsert requests</li>
 <dl class="attribute">
 <dt id="asynctnt.Response.return_code">
 <code class="descname">return_code</code><a class="headerlink" href="#asynctnt.Response.return_code" title="Permalink to this definition">¶</a></dt>
-<dd><p>Response return code (It&#8217;s essentially a code &amp; 0x7FFF)</p>
+<dd><p>Response return code (It’s essentially a code &amp; 0x7FFF)</p>
 </dd></dl>
 
 <dl class="attribute">
@@ -787,7 +787,7 @@ Has no effect in upsert requests</li>
 <dl class="attribute">
 <dt id="asynctnt.Response.sync">
 <code class="descname">sync</code><a class="headerlink" href="#asynctnt.Response.sync" title="Permalink to this definition">¶</a></dt>
-<dd><p>Response&#8217;s sync (incremental id) for the corresponding request</p>
+<dd><p>Response’s sync (incremental id) for the corresponding request</p>
 </dd></dl>
 
 </dd></dl>

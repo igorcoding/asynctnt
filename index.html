@@ -178,7 +178,7 @@ details).</li>
 <li><strong>Schema fetching</strong> on connection establishment, so you can use
 spaces and indexes names rather than their ids.</li>
 <li>Schema <strong>auto refetching</strong>. Tarantool has an option to check if
-&#8220;your&#8221; schema is up to date, and if not - returns an error. If such
+“your” schema is up to date, and if not - returns an error. If such
 an error occurs on any request - new schema is refetched and the
 initial request is resent.</li>
 <li><strong>Auto reconnect</strong>. If connection is lost for some reason - asynctnt
@@ -193,7 +193,7 @@ Moreover, tuples can be decoded into dicts instead of arrays if
 request. See below for examples.</li>
 <li>All requests support specification of <code class="docutils literal"><span class="pre">timeout</span></code> value, so if
 request is executed for too long, asyncio.TimeoutError is raised. It
-drastically simplifies your code, as you don&#8217;t need to use
+drastically simplifies your code, as you don’t need to use
 <code class="docutils literal"><span class="pre">asyncio.wait_for(...)</span></code> stuff anymore.</li>
 </ul>
 </div>
