@@ -220,3 +220,9 @@ Data: [{'id': 1, 'text': 'hello1'}, {'id': 2, 'text': 'hello2'}, {'id': 3, 'text
 
 ## License
 asynctnt is developed and distributed under the Apache 2.0 license.
+
+
+## References
+1. [Tarantool](https://tarantool.org) - in-memory database and application server.
+2. [aiotarantool](https://github.com/shveenkov/aiotarantool) - alternative Python/asyncio connector
+3. [asynctnt-queue](https://github.com/igorcoding/asynctnt-queue) - bindings on top of `asynctnt` for [tarantool-queue](https://github.com/tarantool/queue)
