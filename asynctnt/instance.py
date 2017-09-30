@@ -194,6 +194,7 @@ class TarantoolInstance(metaclass=abc.ABCMeta):
 
     def _create_initlua_template(self):
         return """
+            
             box.cfg{
               listen = "${host}:${port}",
               wal_mode = "${wal_mode}",
@@ -385,7 +386,7 @@ class TarantoolSyncInstance(TarantoolInstance):
         attempts = math.ceil(self._timeout / interval)
         while attempts > 0:
             try:
-                status = self.command('box.info.status',  print_greeting=False)
+                status = self.command('box.info.status',  print_greeting=True)
                 if status:
                     status = status[0]
                     if status == 'running':

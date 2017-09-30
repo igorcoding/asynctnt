@@ -14,7 +14,7 @@ class SelectTestCase(BaseTarantoolTestCase):
     async def _fill_data(self, count=3):
         data = []
         for i in range(count):
-            t = [i, str(i)]
+            t = [i, str(i), 1, 2, 'something']
             data.append(t)
             await self.conn.insert(self.TESTER_SPACE_ID, t)
         return data
@@ -24,7 +24,10 @@ class SelectTestCase(BaseTarantoolTestCase):
         for i in range(count):
             t = {
                 'f1': i,
-                'f2': str(i)
+                'f2': str(i),
+                'f3': 1,
+                'f4': 2,
+                'f5': 'something',
             }
             t = await self.conn.insert(self.TESTER_SPACE_ID, t,
                                        tuple_as_dict=True)
@@ -125,8 +128,9 @@ class SelectTestCase(BaseTarantoolTestCase):
         data = await self._fill_data()
         next_id = data[-1][0] + 1
         next_txt = data[-1][1]
-        await self.conn.insert(self.TESTER_SPACE_ID, [next_id, next_txt])
-        data.append([next_id, next_txt])
+        await self.conn.insert(self.TESTER_SPACE_ID,
+                               [next_id, next_txt, 1, 2, 'text'])
+        data.append([next_id, next_txt, 1, 2, 'text'])
 
         res = await self.conn.select(self.TESTER_SPACE_NAME, [next_txt],
                                      index='txt')
@@ -172,7 +176,7 @@ class SelectTestCase(BaseTarantoolTestCase):
 
     async def test__select_complex(self):
         p, p_cmp = get_complex_param(replace_bin=False)
-        data = [1, 'hello', p_cmp]
+        data = [1, 'hello2', 1, 4, p_cmp]
 
         await self.conn.insert(self.TESTER_SPACE_ID, data)
 

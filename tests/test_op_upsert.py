@@ -19,7 +19,7 @@ class UpsertTestCase(BaseTarantoolTestCase):
         return data
 
     async def test__upsert_empty_one_assign(self):
-        data = [0, 'hello', 1]
+        data = [0, 'hello2', 1, 4, 'what is up']
 
         res = await self.conn.upsert(self.TESTER_SPACE_ID,
                                      data, [['=', 2, 2]])
@@ -32,7 +32,7 @@ class UpsertTestCase(BaseTarantoolTestCase):
         self.assertListEqual(res.body, [data], 'Body ok')
 
     async def test__upsert_update_one_assign(self):
-        data = [0, 'hello', 1]
+        data = [0, 'hello2', 1, 4, 'what is up']
 
         await self.conn.insert(self.TESTER_SPACE_ID, data)
         res = await self.conn.upsert(self.TESTER_SPACE_ID,
@@ -47,7 +47,7 @@ class UpsertTestCase(BaseTarantoolTestCase):
         self.assertListEqual(res.body, [data], 'Body ok')
 
     async def test__upsert_by_name(self):
-        data = [0, 'hello', 1]
+        data = [0, 'hello2', 1, 4, 'what is up']
 
         await self.conn.upsert(self.TESTER_SPACE_NAME,
                                data, [['=', 2, 2]])
@@ -68,8 +68,10 @@ class UpsertTestCase(BaseTarantoolTestCase):
     async def test__upsert_dict_key(self):
         data = {
             'f1': 0,
+            'f2': 'hello',
             'f3': 1,
-            'f2': 'hello'
+            'f4': 2,
+            'f5': 100,
         }
 
         res = await self.conn.upsert(self.TESTER_SPACE_ID,
@@ -78,14 +80,16 @@ class UpsertTestCase(BaseTarantoolTestCase):
 
         res = await self.conn.select(self.TESTER_SPACE_ID, [0])
         self.assertListEqual(res.body,
-                             [[0, 'hello', 1, None, None]],
+                             [[0, 'hello', 1, 2, 100]],
                              'Body ok')
 
     async def test__update_dict_resp_no_effect(self):
         data = {
             'f1': 0,
+            'f2': 'hello',
             'f3': 1,
-            'f2': 'hello'
+            'f4': 10,
+            'f5': 1000,
         }
 
         res = await self.conn.upsert(self.TESTER_SPACE_ID,

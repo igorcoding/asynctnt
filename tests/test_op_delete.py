@@ -10,8 +10,8 @@ from tests.util import get_complex_param
 class DeleteTestCase(BaseTarantoolTestCase):
     async def _fill_data(self):
         data = [
-            [0, 'a', 1],
-            [1, 'b', 0],
+            [0, 'a', 1, 2, 'hello my darling'],
+            [1, 'b', 3, 4, 'hello my darling, again'],
         ]
         for t in data:
             await self.conn.insert(self.TESTER_SPACE_ID, t)
@@ -132,7 +132,7 @@ class DeleteTestCase(BaseTarantoolTestCase):
         self.assertListEqual(res.body, [data[0]], 'Body ok')
 
     async def test__delete_dict_resp(self):
-        data = [0, 'hello', 0, 'wow']
+        data = [0, 'hello', 0, 1, 'wow']
         await self.conn.insert(self.TESTER_SPACE_ID, data)
 
         res = await self.conn.delete(self.TESTER_SPACE_ID, [0],
@@ -141,5 +141,6 @@ class DeleteTestCase(BaseTarantoolTestCase):
             'f1': 0,
             'f2': 'hello',
             'f3': 0,
-            'f4': 'wow'
+            'f4': 1,
+            'f5': 'wow'
         }])

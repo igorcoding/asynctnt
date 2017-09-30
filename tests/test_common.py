@@ -12,8 +12,8 @@ class CommonTestCase(BaseTarantoolTestCase):
     async def test__encoding_utf8(self):
         p, p_cmp = get_complex_param(replace_bin=False)
 
-        data = [1, 'hello', p]
-        data_cmp = [1, 'hello', p_cmp]
+        data = [1, 'hello', 1, 0, p]
+        data_cmp = [1, 'hello', 1, 0, p_cmp]
 
         res = await self.conn.insert(self.TESTER_SPACE_ID, data)
         self.assertListEqual(res.body, [data_cmp], 'Body ok')
@@ -25,8 +25,8 @@ class CommonTestCase(BaseTarantoolTestCase):
         await self.tnt_reconnect(encoding='cp1251')
         p, p_cmp = get_complex_param(replace_bin=False)
 
-        data = [1, 'hello', p]
-        data_cmp = [1, 'hello', p_cmp]
+        data = [1, 'hello', 1, 0, p]
+        data_cmp = [1, 'hello', 1, 0, p_cmp]
 
         res = await self.conn.insert(self.TESTER_SPACE_ID, data)
         self.assertListEqual(res.body, [data_cmp], 'Body ok')
@@ -46,6 +46,23 @@ class CommonTestCase(BaseTarantoolTestCase):
             "s = box.schema.create_space('new_space');"
             "s:drop();"
         )
+
+        try:
+            await self.conn.ping()
+        except Exception as e:
+            self.fail(e)
+
+        self.assertGreater(self.conn.schema_id, schema_before,
+                           'Schema changed')
+
+    async def test__schema_refetch_on_schema_change_format(self):
+        await self.tnt_reconnect(auto_refetch_schema=True, username='t1', password='t1')
+        self.assertTrue(self.conn.fetch_schema)
+        self.assertTrue(self.conn.auto_refetch_schema)
+        schema_before = self.conn.schema_id
+        self.assertNotEqual(schema_before, -1)
+
+        await self.conn.call('change_format')
 
         try:
             await self.conn.ping()

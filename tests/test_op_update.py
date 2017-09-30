@@ -15,8 +15,9 @@ class UpdateTestCase(BaseTarantoolTestCase):
 
     async def _fill_data(self):
         data = [
-            [0, 'a', 1, 5],
-            [1, 'b', 0, 6],
+            [0, 'a', 1, 5, 'data1'],
+            [1, 'b', 8, 6, 'data2'],
+            [2, 'c', 10, 12, 'data3', 'extra_field'],
         ]
         for t in data:
             await self.conn.insert(self.TESTER_SPACE_ID, t)
@@ -47,9 +48,9 @@ class UpdateTestCase(BaseTarantoolTestCase):
         data = await self._fill_data()
 
         res = await self.conn.update(self.TESTER_SPACE_ID,
-                                     [1], [['#', 2, 1]])
-        data[1].pop(2)
-        self.assertListEqual(res.body, [data[1]], 'Body ok')
+                                     [2], [['#', 5, 1]])
+        data[2].pop(5)
+        self.assertListEqual(res.body, [data[2]], 'Body ok')
 
     async def test__update_one_plus(self):
         data = await self._fill_data()
@@ -88,9 +89,9 @@ class UpdateTestCase(BaseTarantoolTestCase):
         data = await self._fill_data()
 
         res = await self.conn.update(self.TESTER_SPACE_ID,
-                                     [1], [['-', 2, 3]])
-        data[1][2] -= 3
-        self.assertListEqual(res.body, [data[1]], 'Body ok')
+                                     [0], [['-', 2, 1]])
+        data[0][2] -= 1
+        self.assertListEqual(res.body, [data[0]], 'Body ok')
 
     async def test__update_one_minus_negative(self):
         data = await self._fill_data()
@@ -170,27 +171,27 @@ class UpdateTestCase(BaseTarantoolTestCase):
         self.assertListEqual(res.body, [data[1]], 'Body ok')
 
     async def test__update_splice(self):
-        data = [1, 'hello', 'hi']
+        data = [1, 'hello2', 1, 4, 'what is up']
         await self.conn.insert(self.TESTER_SPACE_ID, data)
 
         res = await self.conn.update(self.TESTER_SPACE_ID,
-                                     [1], [[':', 2, 1, 3, '!!!']])
+                                     [1], [[':', 1, 1, 3, '!!!']])
 
-        data[2] = 'h!!!'
+        data[1] = 'h!!!o2'
         self.assertListEqual(res.body, [data], 'Body ok')
 
     async def test__update_splice_bytes(self):
-        data = [1, 'hello', 'hi']
+        data = [1, 'hello2', 1, 4, 'what is up']
         await self.conn.insert(self.TESTER_SPACE_ID, data)
 
         res = await self.conn.update(self.TESTER_SPACE_ID,
-                                     [1], [[b':', 2, 1, 3, '!!!']])
+                                     [1], [[b':', 1, 1, 3, '!!!']])
 
-        data[2] = 'h!!!'
+        data[1] = 'h!!!o2'
         self.assertListEqual(res.body, [data], 'Body ok')
 
     async def test__update_splice_wrong_args(self):
-        data = [1, 'hello', 'hi']
+        data = [1, 'hello2', 1, 4, 'what is up']
         await self.conn.insert(self.TESTER_SPACE_ID, data)
 
         with self.assertRaisesRegex(
@@ -246,23 +247,23 @@ class UpdateTestCase(BaseTarantoolTestCase):
                                    [1], [('+', 2, {})])
 
     async def test__update_multiple_operations(self):
-        t = [1, '1', 1, 0, 3, 4, 8, 'hello']
+        t = [1, '1', 1, 5, 'hello', 3, 4, 8]
         await self.conn.insert(self.TESTER_SPACE_ID, t)
 
         t[2] += 1
         t[3] -= 4
-        t[4] &= 5
-        t[5] |= 7
-        t[6] = 100
-        t[7] = 'h!!!o'
+        t[5] &= 5
+        t[6] |= 7
+        t[7] = 100
+        t[4] = 'h!!!o'
 
         operations = [
             ['+', 2, 1],
             ['-', 3, 4],
-            ['&', 4, 5],
-            ['|', 5, 7],
-            ['=', 6, 100],
-            [':', 7, 1, 3, '!!!'],
+            ['&', 5, 5],
+            ['|', 6, 7],
+            ['=', 7, 100],
+            [':', 4, 1, 3, '!!!'],
         ]
 
         res = await self.conn.update(self.TESTER_SPACE_ID,
@@ -390,5 +391,6 @@ class UpdateTestCase(BaseTarantoolTestCase):
             'f1': data[0][0],
             'f2': data[0][1],
             'f3': data[0][2],
-            'f4': data[0][3]
+            'f4': data[0][3],
+            'f5': data[0][4],
         }])

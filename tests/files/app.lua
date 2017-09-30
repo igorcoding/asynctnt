@@ -24,6 +24,19 @@ end
 
 _G.B = bootstrap()
 
+function change_format()
+	box.space.tester:format({
+        {type=B.types.unsigned, name='f1'},
+		{type=B.types.string, name='f2'},
+		{type=B.types.unsigned, name='f3'},
+		{type=B.types.unsigned, name='f4'},
+		{type=B.types.any, name='f5'},
+		{type=B.types.any, name='f6'},
+    })
+end
+
+box.schema.func.create('change_format', {setuid=true})
+
 
 box.once('v1', function()
     box.schema.user.create('t1', {password = 't1'})
@@ -31,7 +44,7 @@ box.once('v1', function()
 
     local s = box.schema.create_space('tester')
 	s:format({
-        {type=B.types.string, name='f1'},
+        {type=B.types.unsigned, name='f1'},
 		{type=B.types.string, name='f2'},
 		{type=B.types.unsigned, name='f3'},
 		{type=B.types.unsigned, name='f4'},
