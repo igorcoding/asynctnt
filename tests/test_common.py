@@ -56,7 +56,8 @@ class CommonTestCase(BaseTarantoolTestCase):
                            'Schema changed')
 
     async def test__schema_refetch_on_schema_change_format(self):
-        await self.tnt_reconnect(auto_refetch_schema=True, username='t1', password='t1')
+        await self.tnt_reconnect(auto_refetch_schema=True,
+                                 username='t1', password='t1')
         self.assertTrue(self.conn.fetch_schema)
         self.assertTrue(self.conn.auto_refetch_schema)
         schema_before = self.conn.schema_id

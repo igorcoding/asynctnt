@@ -41,6 +41,14 @@ matrix:
       python: '3.5'
       env: BUILD=tests TARANTOOL_VERSION=1_7
 
+    # trusty python3.6 Tarantool 1.8
+    - os: linux
+      dist: trusty
+      sudo: required
+      language: python
+      python: '3.6'
+      env: BUILD=tests TARANTOOL_VERSION=1_8
+
     # trusty python3.6 Tarantool 1.7 + deploy
     - os: linux
       dist: trusty
