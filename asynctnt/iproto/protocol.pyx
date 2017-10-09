@@ -191,8 +191,23 @@ cdef class BaseProtocol(CoreProtocol):
                              'Spaces: %d, Indexes: %d.',
                              self.host, self.port,
                              len(spaces.body), len(indexes.body))
-                self._schema = Schema.parse(spaces.schema_id,
-                                            spaces.body, indexes.body)
+                try:
+                    self._schema = Schema.parse(spaces.schema_id,
+                                                spaces.body, indexes.body)
+                except Exception as e:
+                    logger.exception(e)
+                    logger.error('Error happened while parsing schema. '
+                                 'Space, fields and index names currently '
+                                 'not working. Please file an issue at '
+                                 'https://github.com/igorcoding/asynctnt')
+                    self.auto_refetch_schema = False
+                    self.fetch_schema = False
+                    self._schema_id = -1
+                    self._set_connection_ready()
+                    if fut is not None:
+                        fut.set_result(None)
+                    return
+
                 if self.auto_refetch_schema:
                     # if no refetch, them we should not
                     # send schema_id at all (leave it -1)
