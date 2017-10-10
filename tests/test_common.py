@@ -9,6 +9,7 @@ from tests.util import get_complex_param, get_big_param
 
 
 class CommonTestCase(BaseTarantoolTestCase):
+
     async def test__encoding_utf8(self):
         p, p_cmp = get_complex_param(replace_bin=False)
 

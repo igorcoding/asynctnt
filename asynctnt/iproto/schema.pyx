@@ -211,6 +211,8 @@ cdef class Schema:
             SchemaIndex idx
             SchemaSpace sp
             uint32_t i
+            int field_id = -1
+            str field_type
 
         assert index_row is not None
 
@@ -230,7 +232,17 @@ cdef class Schema:
 
         parts = index_row[5]
         if isinstance(parts, (list, tuple)):
-            for field_id, field_type in parts:
+            for part in parts:
+                if isinstance(part, (list, tuple)):
+                    assert len(part) == 2, 'Part len must be 2'
+                    field_id = part[0]
+                    field_type = part[1]
+                elif isinstance(part, dict):
+                    field_id = part['field']
+                    field_type = part['type']
+                    # TODO: add is_nullable and collation if we really need it
+                    # TODO: in a python driver
+
                 cpython.list.PyList_Append(
                     idx.parts,
                     (field_id, field_type)
