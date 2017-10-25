@@ -34,14 +34,14 @@ cdef class Response:
     cdef inline is_error(self):
         return self._code != 0
 
-    def __repr__(self):  # pragma: no cover
+    def __repr__(self):  # pragma: nocover
         body_len = None
         if self._body is not None:
             body_len = len(self._body)
         return '<Response: code={}, sync={}, body_len={}>'.format(
             self._code, self._sync, body_len)
 
-    def body2yaml(self):  # pragma: no cover
+    def body2yaml(self):  # pragma: nocover
         """
             Dumps body to YAML (for pretty formatting)
             :return: YAML-formatted string
@@ -162,7 +162,7 @@ cdef object _decode_obj(const char **p, bytes encoding):
                 map_key = <object>mp_decode_float(p)
             elif map_key_type == MP_DOUBLE:
                 map_key = <object>mp_decode_double(p)
-            else:  # pragma: no cover
+            else:  # pragma: nocover
                 mp_next(p)  # skip current key
                 mp_next(p)  # skip value
                 logger.warning('Unexpected key type in map: %s',
@@ -175,7 +175,7 @@ cdef object _decode_obj(const char **p, bytes encoding):
     elif obj_type == MP_NIL:
         mp_next(p)
         return None
-    else:  # pragma: no cover
+    else:  # pragma: nocover
         mp_next(p)
         logger.warning('Unexpected obj type: %s', obj_type)
         return None
@@ -207,7 +207,7 @@ cdef list _response_parse_body_data(const char **b, Response resp):
         max_tuple_size = <uint32_t>cpython.list.PyList_GET_SIZE(fields)
 
         for i in range(size):
-            if mp_typeof(b[0][0]) != MP_ARRAY:  # pragma: no cover
+            if mp_typeof(b[0][0]) != MP_ARRAY:  # pragma: nocover
                 raise TypeError(
                     'Tuple must be an array when decoding as dict'
                 )
@@ -242,33 +242,33 @@ cdef ssize_t response_parse_header(const char *buf, uint32_t buf_len,
         uint32_t key
 
     b = <const char*>buf
-    if mp_typeof(b[0]) != MP_MAP:  # pragma: no cover
+    if mp_typeof(b[0]) != MP_MAP:  # pragma: nocover
         raise TypeError('Response header must be a MP_MAP')
 
     # parsing header
     size = mp_decode_map(&b)
     for _ in range(size):
-        if mp_typeof(b[0]) != MP_UINT:  # pragma: no cover
+        if mp_typeof(b[0]) != MP_UINT:  # pragma: nocover
             raise TypeError('Header key must be a MP_UINT')
 
         key = mp_decode_uint(&b)
         if key == tnt.TP_CODE:
-            if mp_typeof(b[0]) != MP_UINT:  # pragma: no cover
+            if mp_typeof(b[0]) != MP_UINT:  # pragma: nocover
                 raise TypeError('code type must be a MP_UINT')
 
             resp._code = <uint32_t>mp_decode_uint(&b)
             resp._return_code = resp._code & 0x7FFF
         elif key == tnt.TP_SYNC:
-            if mp_typeof(b[0]) != MP_UINT:  # pragma: no cover
+            if mp_typeof(b[0]) != MP_UINT:  # pragma: nocover
                 raise TypeError('sync type must be a MP_UINT')
 
             resp._sync = mp_decode_uint(&b)
         elif key == tnt.TP_SCHEMA_ID:
-            if mp_typeof(b[0]) != MP_UINT:  # pragma: no cover
+            if mp_typeof(b[0]) != MP_UINT:  # pragma: nocover
                 raise TypeError('schema_id type must be a MP_UINT')
 
             resp._schema_id = mp_decode_uint(&b)
-        else:  # pragma: no cover
+        else:  # pragma: nocover
             logger.warning(
                 'Unknown key with code \'%d\' in header. Skipping.', key)
             mp_next(&b)
@@ -292,17 +292,17 @@ cdef ssize_t response_parse_body(const char *buf, uint32_t buf_len,
         # buffer exceeded
         return 0
 
-    if mp_typeof(b[0]) != MP_MAP:  # pragma: no cover
+    if mp_typeof(b[0]) != MP_MAP:  # pragma: nocover
         raise TypeError('Response body must be a MP_MAP')
 
     size = mp_decode_map(&b)
     for _ in range(size):
-        if mp_typeof(b[0]) != MP_UINT:  # pragma: no cover
+        if mp_typeof(b[0]) != MP_UINT:  # pragma: nocover
             raise TypeError('Header key must be a MP_UINT')
 
         key = mp_decode_uint(&b)
         if key == tnt.TP_ERROR:
-            if mp_typeof(b[0]) != MP_STR:  # pragma: no cover
+            if mp_typeof(b[0]) != MP_STR:  # pragma: nocover
                 raise TypeError('errstr type must be a MP_STR')
 
             s = NULL
@@ -310,7 +310,7 @@ cdef ssize_t response_parse_body(const char *buf, uint32_t buf_len,
             s = mp_decode_str(&b, &s_len)
             resp._errmsg = decode_string(s[:s_len], resp._encoding)
         elif key == tnt.TP_DATA:
-            if mp_typeof(b[0]) != MP_ARRAY:  # pragma: no cover
+            if mp_typeof(b[0]) != MP_ARRAY:  # pragma: nocover
                 raise TypeError('body data type must be a MP_ARRAY')
             resp._body = _response_parse_body_data(&b, resp)
 

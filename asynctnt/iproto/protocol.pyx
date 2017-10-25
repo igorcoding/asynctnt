@@ -84,7 +84,7 @@ cdef class BaseProtocol(CoreProtocol):
         except AttributeError:
             self.create_future = self._create_future_fallback
 
-    def _create_future_fallback(self):  # pragma: no cover
+    def _create_future_fallback(self):  # pragma: nocover
         return asyncio.Future(loop=self.loop)
 
     @property
