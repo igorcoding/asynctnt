@@ -120,6 +120,7 @@ cdef class BaseProtocol(CoreProtocol):
             Response resp
             object waiter
             object sync_obj
+            object err
 
             ssize_t l
         resp = Response.new(self.encoding)
@@ -139,18 +140,27 @@ cdef class BaseProtocol(CoreProtocol):
 
         cpython.dict.PyDict_DelItem(self._reqs, sync_obj)
 
-        l = response_parse_body(buf, buf_len, resp)
+        err = None
+        try:
+            l = response_parse_body(buf, buf_len, resp)
+        except Exception as e:
+            err = e
+
         buf_len -= l
         buf = &buf[l]
 
         waiter = req.waiter
         if waiter is not None \
                 and not waiter.done():
-            if resp.is_error():
-                waiter.set_exception(
-                    TarantoolDatabaseError(resp._return_code, resp._errmsg))
+            if err is not None:
+                waiter.set_exception(err)
             else:
-                waiter.set_result(resp)
+                if resp.is_error():
+                    waiter.set_exception(
+                        TarantoolDatabaseError(resp._return_code,
+                                               resp._errmsg))
+                else:
+                    waiter.set_result(resp)
 
     cdef void _do_auth(self, str username, str password):
         # No extra error handling from Db.execute

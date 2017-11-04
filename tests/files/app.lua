@@ -1,3 +1,5 @@
+local uuid = require 'uuid'
+
 local function bootstrap()
 	local b = {
 		tarantool_ver = box.info.version,
@@ -99,6 +101,13 @@ end
 
 function func_hello()
 	return {'hello'}
+end
+
+function func_load_bin_str()
+	local bin_data = uuid.bin()
+	return box.space.tester:insert({
+		100, bin_data, 12, 15, 'hello'
+	})
 end
 
 function raise()

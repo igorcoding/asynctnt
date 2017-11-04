@@ -31,7 +31,7 @@ cdef class Response:
         resp._encoding = encoding
         return resp
 
-    cdef inline is_error(self):
+    cdef inline bint is_error(self):
         return self._code != 0
 
     def __repr__(self):  # pragma: nocover
@@ -125,7 +125,10 @@ cdef object _decode_obj(const char **p, bytes encoding):
         s = NULL
         s_len = 0
         s = mp_decode_str(p, &s_len)
-        return decode_string(s[:s_len], encoding)
+        try:
+            return decode_string(s[:s_len], encoding)
+        except UnicodeDecodeError:
+            return <bytes>s[:s_len]
     elif obj_type == MP_BIN:
         s = NULL
         s_len = 0

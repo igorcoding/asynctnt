@@ -254,7 +254,7 @@ cdef class Schema:
                         <str>cpython.list.PyList_GetItem(sp.fields, field_id)
                     )
                 else:
-                    logger.warning(
+                    logger.debug(
                         'Field #%d of space %s is not '
                         'in space format definition', field_id, sp.name)
         else:
@@ -273,7 +273,7 @@ cdef class Schema:
                         <str>cpython.list.PyList_GetItem(sp.fields, field_id)
                     )
                 else:
-                    logger.warning(
+                    logger.debug(
                         'Field #%d of space %s is not '
                         'in space format definition', field_id, sp.name)
 

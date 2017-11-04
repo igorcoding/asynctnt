@@ -1,4 +1,5 @@
 import asyncio
+import uuid
 
 from asynctnt import Iterator
 from asynctnt import Response
@@ -133,3 +134,9 @@ class InsertTestCase(BaseTarantoolTestCase):
             'f5': 'help',
             '': ['common', 'yo']
         }])
+
+    async def test__insert_bin_as_str(self):
+        try:
+            (await self.conn.call('func_load_bin_str')).body[0]
+        except UnicodeDecodeError as e:
+            self.fail(e)

@@ -15,7 +15,7 @@ cdef class Response:
     @staticmethod
     cdef inline Response new(bytes encoding)
 
-    cdef inline is_error(self)
+    cdef inline bint is_error(self)
 
 
 cdef ssize_t response_parse_header(const char *buf, uint32_t buf_len,
