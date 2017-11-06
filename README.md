@@ -3,6 +3,9 @@
 [![Build Status](https://travis-ci.org/igorcoding/asynctnt.svg?branch=master)](https://travis-ci.org/igorcoding/asynctnt)
 [![PyPI](https://img.shields.io/pypi/v/asynctnt.svg)](https://pypi.python.org/pypi/asynctnt)
 
+<a href="http://tarantool.org">
+	<img src="https://avatars2.githubusercontent.com/u/2344919?v=2&s=250" align="right">
+</a>
 
 asynctnt is a high-performance [Tarantool](https://tarantool.org/) database 
 connector library for Python/asyncio. It was highly inspired by 
