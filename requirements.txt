@@ -1,6 +1,6 @@
-PyYAML>=3.12
+PyYAML>=3.13
 uvloop>=0.6.7
-cython==0.25.2
+Cython==0.28.4
 pep8==1.7.0
 flake8==3.2.1
 pypandoc

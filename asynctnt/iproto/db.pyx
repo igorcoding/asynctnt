@@ -20,6 +20,7 @@ cdef class Db:
     cdef inline uint64_t next_sync(self):
         return self._protocol.next_sync()
 
+    @cython.iterable_coroutine
     async def execute(self, Request req, float timeout, tuple_as_dict):
         cdef object fut
 

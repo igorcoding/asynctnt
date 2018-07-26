@@ -11,11 +11,19 @@ matrix:
     # osx
     - os: osx
       language: generic
-      env: BUILD=tests PYTHON_VERSION=3.6.0 TARANTOOL_VERSION=1_6
+      env: BUILD=tests PYTHON_VERSION=3.6.0 TARANTOOL_VERSION=1_9
 
     - os: osx
       language: generic
-      env: BUILD=tests PYTHON_VERSION=3.6.0 TARANTOOL_VERSION=1_7
+      env: BUILD=tests PYTHON_VERSION=3.6.0 TARANTOOL_VERSION=1_9
+
+    - os: osx
+      language: generic
+      env: BUILD=tests PYTHON_VERSION=3.7.0 TARANTOOL_VERSION=1_9
+
+    - os: osx
+      language: generic
+      env: BUILD=tests PYTHON_VERSION=3.7.0 TARANTOOL_VERSION=1_9
 
     # precise python3.5 Tarantool 1.6
     - os: linux
@@ -41,21 +49,37 @@ matrix:
       python: '3.5'
       env: BUILD=tests TARANTOOL_VERSION=1_7
 
-    # trusty python3.6 Tarantool 1.8
+    # trusty python3.5 Tarantool 1.9
     - os: linux
       dist: trusty
       sudo: required
       language: python
-      python: '3.6'
-      env: BUILD=tests TARANTOOL_VERSION=1_8
+      python: '3.5'
+      env: BUILD=tests TARANTOOL_VERSION=1_9
 
-    # trusty python3.6 Tarantool 1.7 + deploy
+    # trusty python3.6 Tarantool 1.9
     - os: linux
       dist: trusty
       sudo: required
       language: python
       python: '3.6'
-      env: BUILD=tests,docs,coverage,release TARANTOOL_VERSION=1_7
+      env: BUILD=tests TARANTOOL_VERSION=1_9
+
+    # trusty python3.7 Tarantool 1.9
+    - os: linux
+      dist: trusty
+      sudo: required
+      language: python
+      python: '3.7'
+      env: BUILD=tests TARANTOOL_VERSION=1_9
+
+    # trusty python3.6 Tarantool 1.9 + deploy
+    - os: linux
+      dist: trusty
+      sudo: required
+      language: python
+      python: '3.6'
+      env: BUILD=tests,docs,coverage,release TARANTOOL_VERSION=1_9
 
 cache:
   - pip
