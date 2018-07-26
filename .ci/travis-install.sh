@@ -12,6 +12,7 @@ if ! (pyenv versions | grep "${PYTHON_VERSION}$"); then
 fi
 pyenv global ${PYTHON_VERSION}
 pyenv rehash
+eval "$(pyenv init -)"
 
 pip install --upgrade pip wheel
 pip install --upgrade setuptools
