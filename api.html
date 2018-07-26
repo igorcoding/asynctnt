@@ -24,26 +24,18 @@
 
   
 
-  
-  
-    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-  
-
-  
-
-  
-        <link rel="index" title="Index"
-              href="genindex.html"/>
-        <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="asynctnt 0.1.11 documentation" href="index.html"/>
-        <link rel="prev" title="Examples" href="examples.html"/> 
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Examples" href="examples.html" /> 
 
   
   <script src="_static/js/modernizr.min.js"></script>
 
 </head>
 
-<body class="wy-body-for-nav" role="document">
+<body class="wy-body-for-nav">
 
    
   <div class="wy-grid-for-nav">
@@ -111,7 +103,7 @@
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
 
       
-      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+      <nav class="wy-nav-top" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="index.html">asynctnt</a>
@@ -119,9 +111,10 @@
       </nav>
 
 
-      
       <div class="wy-nav-content">
+        
         <div class="rst-content">
+        
           
 
 
@@ -170,12 +163,12 @@
 <dl class="function">
 <dt id="asynctnt.connect">
 <code class="descclassname">asynctnt.</code><code class="descname">connect</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/asynctnt/connection.html#connect"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#asynctnt.connect" title="Permalink to this definition">¶</a></dt>
-<dd><p>connect shorthand. See <a class="reference internal" href="#asynctnt.Connection" title="asynctnt.Connection"><code class="xref py py-class docutils literal"><span class="pre">asynctnt.Connection</span></code></a> for kwargs details</p>
+<dd><p>connect shorthand. See <a class="reference internal" href="#asynctnt.Connection" title="asynctnt.Connection"><code class="xref py py-class docutils literal notranslate"><span class="pre">asynctnt.Connection</span></code></a> for kwargs details</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><a class="reference internal" href="#asynctnt.Connection" title="asynctnt.Connection"><code class="xref py py-class docutils literal"><span class="pre">asynctnt.Connection</span></code></a> object</td>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><a class="reference internal" href="#asynctnt.Connection" title="asynctnt.Connection"><code class="xref py py-class docutils literal notranslate"><span class="pre">asynctnt.Connection</span></code></a> object</td>
 </tr>
 </tbody>
 </table>
@@ -193,29 +186,29 @@
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>host</strong> – Tarantool host (pass <code class="docutils literal"><span class="pre">unix/</span></code> to connect to unix socket)</li>
+<li><strong>host</strong> – Tarantool host (pass <code class="docutils literal notranslate"><span class="pre">unix/</span></code> to connect to unix socket)</li>
 <li><strong>port</strong> – Tarantool port
-(pass <code class="docutils literal"><span class="pre">/path/to/sockfile</span></code> to connect ot unix socket)</li>
+(pass <code class="docutils literal notranslate"><span class="pre">/path/to/sockfile</span></code> to connect ot unix socket)</li>
 <li><strong>username</strong> – Username to use for auth
-(if <code class="docutils literal"><span class="pre">None</span></code> you are connected as a guest)</li>
+(if <code class="docutils literal notranslate"><span class="pre">None</span></code> you are connected as a guest)</li>
 <li><strong>password</strong> – Password to use for auth</li>
-<li><strong>fetch_schema</strong> – Pass <code class="docutils literal"><span class="pre">True</span></code> to be able to use spaces and indexes names in
-data manipulation routines (default is <code class="docutils literal"><span class="pre">True</span></code>)</li>
-<li><strong>auto_refetch_schema</strong> – If set to <code class="docutils literal"><span class="pre">True</span></code> then when ER_WRONG_SCHEMA_VERSION error
+<li><strong>fetch_schema</strong> – Pass <code class="docutils literal notranslate"><span class="pre">True</span></code> to be able to use spaces and indexes names in
+data manipulation routines (default is <code class="docutils literal notranslate"><span class="pre">True</span></code>)</li>
+<li><strong>auto_refetch_schema</strong> – If set to <code class="docutils literal notranslate"><span class="pre">True</span></code> then when ER_WRONG_SCHEMA_VERSION error
 occurs on a request, schema is refetched and the initial
-request is resent. If set to <code class="docutils literal"><span class="pre">False</span></code> then schema will not
+request is resent. If set to <code class="docutils literal notranslate"><span class="pre">False</span></code> then schema will not
 be checked by Tarantool, so no errors will occur</li>
 <li><strong>connect_timeout</strong> – Time in seconds how long to wait for connecting to socket</li>
 <li><strong>request_timeout</strong> – Request timeout (in seconds) for all requests
 (by default there is no timeout)</li>
 <li><strong>reconnect_timeout</strong> – Time in seconds to wait before automatic reconnect
-(set to <code class="docutils literal"><span class="pre">0</span></code> or <code class="docutils literal"><span class="pre">None</span></code> to disable auto reconnect)</li>
+(set to <code class="docutils literal notranslate"><span class="pre">0</span></code> or <code class="docutils literal notranslate"><span class="pre">None</span></code> to disable auto reconnect)</li>
 <li><strong>tuple_as_dict</strong> – Bool value indicating whether or not to use spaces
 schema to decode response tuples by default. You can
 always change this behaviour in the request itself.
-Note: fetch_schema must be <code class="docutils literal"><span class="pre">True</span></code></li>
+Note: fetch_schema must be <code class="docutils literal notranslate"><span class="pre">True</span></code></li>
 <li><strong>encoding</strong> – The encoding to use for all strings
-encoding and decoding (default is <code class="docutils literal"><span class="pre">utf-8</span></code>)</li>
+encoding and decoding (default is <code class="docutils literal notranslate"><span class="pre">utf-8</span></code>)</li>
 <li><strong>initial_read_buffer_size</strong> – Initial and minimum size of read buffer in bytes.
 Higher value means less reallocations, but higher
 memory usage.</li>
@@ -241,7 +234,7 @@ memory usage.</li>
 an extra tuple). If you’re connecting to Tarantool with
 version &lt; 1.7, then this call method acts like a call16 method</p>
 <p>Examples:</p>
-<div class="highlight-pycon"><div class="highlight"><pre><span></span><span class="go"># tarantool function:</span>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="go"># tarantool function:</span>
 <span class="go"># function f(...)</span>
 <span class="go">#     return ...</span>
 <span class="go"># end</span>
@@ -266,7 +259,7 @@ version &lt; 1.7, then this call method acts like a call16 method</p>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#asynctnt.Response" title="asynctnt.Response"><code class="xref py py-class docutils literal"><span class="pre">asynctnt.Response</span></code></a> instance</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#asynctnt.Response" title="asynctnt.Response"><code class="xref py py-class docutils literal notranslate"><span class="pre">asynctnt.Response</span></code></a> instance</p>
 </td>
 </tr>
 </tbody>
@@ -290,7 +283,7 @@ if needed)</p>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#asynctnt.Response" title="asynctnt.Response"><code class="xref py py-class docutils literal"><span class="pre">asynctnt.Response</span></code></a> instance</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#asynctnt.Response" title="asynctnt.Response"><code class="xref py py-class docutils literal notranslate"><span class="pre">asynctnt.Response</span></code></a> instance</p>
 </td>
 </tr>
 </tbody>
@@ -321,7 +314,7 @@ for disconnect to finish.</p>
 <code class="descname">delete</code><span class="sig-paren">(</span><em>space</em>, <em>key</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/asynctnt/connection.html#Connection.delete"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#asynctnt.Connection.delete" title="Permalink to this definition">¶</a></dt>
 <dd><p>Delete request coroutine.</p>
 <p>Examples:</p>
-<div class="highlight-pycon"><div class="highlight"><pre><span></span><span class="go"># Assuming tuple [0, &#39;hello&#39;] is in space tester</span>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="go"># Assuming tuple [0, &#39;hello&#39;] is in space tester</span>
 
 <span class="gp">&gt;&gt;&gt; </span><span class="n">res</span> <span class="o">=</span> <span class="n">await</span> <span class="n">conn</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="s1">&#39;tester&#39;</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">res</span><span class="o">.</span><span class="n">body</span>
@@ -346,7 +339,7 @@ for disconnect to finish.</p>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#asynctnt.Response" title="asynctnt.Response"><code class="xref py py-class docutils literal"><span class="pre">asynctnt.Response</span></code></a> instance</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#asynctnt.Response" title="asynctnt.Response"><code class="xref py py-class docutils literal notranslate"><span class="pre">asynctnt.Response</span></code></a> instance</p>
 </td>
 </tr>
 </tbody>
@@ -370,7 +363,7 @@ for disconnect to finish.</p>
 <code class="descname">eval</code><span class="sig-paren">(</span><em>expression</em>, <em>args=None</em>, <em>*</em>, <em>timeout=-1</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/asynctnt/connection.html#Connection.eval"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#asynctnt.Connection.eval" title="Permalink to this definition">¶</a></dt>
 <dd><p>Eval request coroutine.</p>
 <p>Examples:</p>
-<div class="highlight-pycon"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">res</span> <span class="o">=</span> <span class="n">await</span> <span class="n">conn</span><span class="o">.</span><span class="n">eval</span><span class="p">(</span><span class="s1">&#39;return 42&#39;</span><span class="p">)</span>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">res</span> <span class="o">=</span> <span class="n">await</span> <span class="n">conn</span><span class="o">.</span><span class="n">eval</span><span class="p">(</span><span class="s1">&#39;return 42&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">res</span><span class="o">.</span><span class="n">body</span>
 <span class="go">[42]</span>
 
@@ -391,7 +384,7 @@ execute your expression (list object)</li>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#asynctnt.Response" title="asynctnt.Response"><code class="xref py py-class docutils literal"><span class="pre">asynctnt.Response</span></code></a> instance</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#asynctnt.Response" title="asynctnt.Response"><code class="xref py py-class docutils literal notranslate"><span class="pre">asynctnt.Response</span></code></a> instance</p>
 </td>
 </tr>
 </tbody>
@@ -421,7 +414,7 @@ execute your expression (list object)</li>
 <code class="descname">insert</code><span class="sig-paren">(</span><em>space</em>, <em>t</em>, <em>*</em>, <em>replace=False</em>, <em>timeout=-1</em>, <em>tuple_as_dict=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/asynctnt/connection.html#Connection.insert"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#asynctnt.Connection.insert" title="Permalink to this definition">¶</a></dt>
 <dd><p>Insert request coroutine.</p>
 <p>Examples:</p>
-<div class="highlight-pycon"><div class="highlight"><pre><span></span><span class="go"># Basic usage</span>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="go"># Basic usage</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">res</span> <span class="o">=</span> <span class="n">await</span> <span class="n">conn</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="s1">&#39;tester&#39;</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;hello&#39;</span><span class="p">])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">res</span>
 <span class="go">&lt;Response: code=0, sync=7, body_len=4&gt;</span>
@@ -457,7 +450,7 @@ execute your expression (list object)</li>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#asynctnt.Response" title="asynctnt.Response"><code class="xref py py-class docutils literal"><span class="pre">asynctnt.Response</span></code></a> instance</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#asynctnt.Response" title="asynctnt.Response"><code class="xref py py-class docutils literal notranslate"><span class="pre">asynctnt.Response</span></code></a> instance</p>
 </td>
 </tr>
 </tbody>
@@ -492,7 +485,7 @@ execute your expression (list object)</li>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>timeout</strong> – Request timeout</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><a class="reference internal" href="#asynctnt.Response" title="asynctnt.Response"><code class="xref py py-class docutils literal"><span class="pre">asynctnt.Response</span></code></a> instance</td>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><a class="reference internal" href="#asynctnt.Response" title="asynctnt.Response"><code class="xref py py-class docutils literal notranslate"><span class="pre">asynctnt.Response</span></code></a> instance</td>
 </tr>
 </tbody>
 </table>
@@ -539,7 +532,7 @@ Just calls disconnect() and connect()</p>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#asynctnt.Response" title="asynctnt.Response"><code class="xref py py-class docutils literal"><span class="pre">asynctnt.Response</span></code></a> instance</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#asynctnt.Response" title="asynctnt.Response"><code class="xref py py-class docutils literal notranslate"><span class="pre">asynctnt.Response</span></code></a> instance</p>
 </td>
 </tr>
 </tbody>
@@ -563,7 +556,7 @@ Just calls disconnect() and connect()</p>
 <code class="descname">select</code><span class="sig-paren">(</span><em>space</em>, <em>key=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/asynctnt/connection.html#Connection.select"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#asynctnt.Connection.select" title="Permalink to this definition">¶</a></dt>
 <dd><p>Select request coroutine.</p>
 <p>Examples:</p>
-<div class="highlight-pycon"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">await</span> <span class="n">conn</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s1">&#39;tester&#39;</span><span class="p">)</span>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">await</span> <span class="n">conn</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s1">&#39;tester&#39;</span><span class="p">)</span>
 <span class="go">&lt;Response: code=0, sync=7, body_len=4&gt;</span>
 
 <span class="gp">&gt;&gt;&gt; </span><span class="n">res</span> <span class="o">=</span> <span class="n">await</span> <span class="n">conn</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s1">&#39;_space&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;tester&#39;</span><span class="p">},</span> <span class="n">index</span><span class="o">=</span><span class="s1">&#39;name&#39;</span><span class="p">)</span>
@@ -598,7 +591,7 @@ Just calls disconnect() and connect()</p>
 <li><strong>iterator</strong> – <p>one of the following</p>
 <ul>
 <li>iterator id (int number),</li>
-<li><a class="reference internal" href="#asynctnt.Iterator" title="asynctnt.Iterator"><code class="xref py py-class docutils literal"><span class="pre">asynctnt.Iterator</span></code></a> object</li>
+<li><a class="reference internal" href="#asynctnt.Iterator" title="asynctnt.Iterator"><code class="xref py py-class docutils literal notranslate"><span class="pre">asynctnt.Iterator</span></code></a> object</li>
 <li>string with an iterator name</li>
 </ul>
 </li>
@@ -607,7 +600,7 @@ Just calls disconnect() and connect()</p>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#asynctnt.Response" title="asynctnt.Response"><code class="xref py py-class docutils literal"><span class="pre">asynctnt.Response</span></code></a> instance</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#asynctnt.Response" title="asynctnt.Response"><code class="xref py py-class docutils literal notranslate"><span class="pre">asynctnt.Response</span></code></a> instance</p>
 </td>
 </tr>
 </tbody>
@@ -633,7 +626,7 @@ Just calls disconnect() and connect()</p>
 <code class="descname">update</code><span class="sig-paren">(</span><em>space</em>, <em>key</em>, <em>operations</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/asynctnt/connection.html#Connection.update"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#asynctnt.Connection.update" title="Permalink to this definition">¶</a></dt>
 <dd><p>Update request coroutine.</p>
 <p>Examples:</p>
-<div class="highlight-pycon"><div class="highlight"><pre><span></span><span class="go"># Assuming tuple [0, &#39;hello&#39;] is in space tester</span>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="go"># Assuming tuple [0, &#39;hello&#39;] is in space tester</span>
 
 <span class="gp">&gt;&gt;&gt; </span><span class="n">res</span> <span class="o">=</span> <span class="n">await</span> <span class="n">conn</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="s1">&#39;tester&#39;</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">],</span>
 <span class="gp">... </span>                        <span class="p">[</span> <span class="p">[</span><span class="s1">&#39;=&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;hi!&#39;</span><span class="p">]</span> <span class="p">])</span>
@@ -673,7 +666,7 @@ If field is unknown then TarantoolSchemaError is raised.</li>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#asynctnt.Response" title="asynctnt.Response"><code class="xref py py-class docutils literal"><span class="pre">asynctnt.Response</span></code></a> instance</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#asynctnt.Response" title="asynctnt.Response"><code class="xref py py-class docutils literal notranslate"><span class="pre">asynctnt.Response</span></code></a> instance</p>
 </td>
 </tr>
 </tbody>
@@ -686,7 +679,7 @@ If field is unknown then TarantoolSchemaError is raised.</li>
 <dd><p>Update request coroutine. Performs either insert or update
 (depending of either tuple exists or not)</p>
 <p>Examples:</p>
-<div class="highlight-pycon"><div class="highlight"><pre><span></span><span class="go"># upsert does not return anything</span>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="go"># upsert does not return anything</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">res</span> <span class="o">=</span> <span class="n">await</span> <span class="n">conn</span><span class="o">.</span><span class="n">upsert</span><span class="p">(</span><span class="s1">&#39;tester&#39;</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;hello&#39;</span><span class="p">],</span>
 <span class="gp">... </span>                        <span class="p">[</span> <span class="p">[</span><span class="s1">&#39;=&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;hi!&#39;</span><span class="p">]</span> <span class="p">])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">res</span><span class="o">.</span><span class="n">body</span>
@@ -713,7 +706,7 @@ Has no effect in upsert requests</li>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#asynctnt.Response" title="asynctnt.Response"><code class="xref py py-class docutils literal"><span class="pre">asynctnt.Response</span></code></a> instance</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#asynctnt.Response" title="asynctnt.Response"><code class="xref py py-class docutils literal notranslate"><span class="pre">asynctnt.Response</span></code></a> instance</p>
 </td>
 </tr>
 </tbody>
@@ -839,9 +832,7 @@ Has no effect in upsert requests</li>
 
 
            </div>
-           <div class="articleComments">
-            
-           </div>
+           
           </div>
           <footer>
   
@@ -861,7 +852,7 @@ Has no effect in upsert requests</li>
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -880,6 +871,7 @@ Has no effect in upsert requests</li>
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
             VERSION:'0.1.11',
+            LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
@@ -892,19 +884,13 @@ Has no effect in upsert requests</li>
 
   
 
-  
-  
-    <script type="text/javascript" src="_static/js/theme.js"></script>
-  
+  <script type="text/javascript" src="_static/js/theme.js"></script>
 
-  
-  
   <script type="text/javascript">
       jQuery(function () {
-          SphinxRtdTheme.StickyNav.enable();
+          SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-   
+  </script> 
 
 </body>
 </html>
