@@ -5,6 +5,12 @@ set -x
 echo "TRAVIS_OS_NAME = ${TRAVIS_OS_NAME}"
 
 if [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then
+    sudo systemctl mask apt-daily.service
+    sudo systemctl mask apt-daily.timer
+    sudo systemctl mask apt-daily-upgrade.service
+    sudo systemctl mask apt-daily-upgrade.timer
+    bash ./.ci/wait-for-apt.sh
+
     curl -L https://packagecloud.io/tarantool/${TARANTOOL_VERSION}/gpgkey | sudo apt-key add -
     release=`lsb_release -c -s`
     sudo apt-get -y install apt-transport-https
@@ -14,7 +20,7 @@ if [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then
     sudo apt-get -qq update
     sudo apt-get -y install tarantool
     sudo tarantoolctl stop example || exit 0
-    sudo apt-get install pandoc
+    sudo apt-get install pandoc libssl-dev openssl
 elif [[ "${TRAVIS_OS_NAME}" == "osx" ]]; then
     brew update
     if [[ "${TARANTOOL_VERSION}" == "2_0" ]]; then
