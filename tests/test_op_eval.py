@@ -6,7 +6,6 @@ from tests import BaseTarantoolTestCase
 
 
 class EvalTestCase(BaseTarantoolTestCase):
-
     async def test__eval_basic(self):
         res = await self.conn.eval('return "hola"')
 

@@ -32,6 +32,7 @@ def find_version():
             return re.match(
                 r"""__version__\s*=\s*(['"])([^'"]+)\1""", line).group(2)
 
+
 _ver = find_version()
 
 
@@ -119,6 +120,3 @@ texinfo_documents = [
      author, 'asynctnt', 'One line description of project.',
      'Miscellaneous'),
 ]
-
-
-

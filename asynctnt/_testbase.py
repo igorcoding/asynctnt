@@ -9,8 +9,6 @@ import unittest
 
 import sys
 
-import atexit
-
 import asynctnt
 from asynctnt.instance import \
     TarantoolSyncInstance, TarantoolSyncDockerInstance
@@ -202,4 +200,3 @@ class TarantoolTestCase(TestCase):
     async def tnt_reconnect(self, **kwargs):
         await self.tnt_disconnect()
         await self.tnt_connect(**kwargs)
-

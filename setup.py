@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 import os
 import re
-import unittest
 
 from setuptools import Extension
 
@@ -96,6 +95,7 @@ class build_ext(_build_ext.build_ext):
                 annotate=self.cython_annotate)
 
         super(build_ext, self).finalize_options()
+
 
 setup(
     name="asynctnt",

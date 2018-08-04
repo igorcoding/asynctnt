@@ -1,7 +1,5 @@
 import asyncio
 
-import logging
-
 from asynctnt.connection import ConnectionState
 from asynctnt.exceptions import TarantoolDatabaseError, ErrorCode, \
     TarantoolError, TarantoolNotConnectedError

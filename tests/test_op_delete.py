@@ -1,10 +1,6 @@
-import asyncio
-
-from asynctnt import Iterator
 from asynctnt import Response
 from asynctnt.exceptions import TarantoolSchemaError
 from tests import BaseTarantoolTestCase
-from tests.util import get_complex_param
 
 
 class DeleteTestCase(BaseTarantoolTestCase):

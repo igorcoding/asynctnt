@@ -1,18 +1,10 @@
-import asyncio
-
-import logging
-
-from asynctnt import Iterator
 from asynctnt import Response
 from asynctnt.exceptions import TarantoolSchemaError, TarantoolDatabaseError, \
     ErrorCode
 from tests import BaseTarantoolTestCase
-from tests.util import get_complex_param
 
 
 class UpdateTestCase(BaseTarantoolTestCase):
-    LOGGING_LEVEL = logging.DEBUG
-
     async def _fill_data(self):
         data = [
             [0, 'a', 1, 5, 'data1'],
@@ -69,7 +61,7 @@ class UpdateTestCase(BaseTarantoolTestCase):
         self.assertListEqual(res.body, [data[1]], 'Body ok')
 
     async def test__update_one_plus_str_field_unknown(self):
-        data = await self._fill_data()
+        await self._fill_data()
 
         with self.assertRaisesRegex(TarantoolSchemaError,
                                     r'Field with name \'f10\' not found '
@@ -321,7 +313,6 @@ class UpdateTestCase(BaseTarantoolTestCase):
         res = self.tnt.command(
             'make_third_index("{}")'.format(index_name)
         )
-        index_id = res[0][0]
 
         try:
             await self.tnt_reconnect()

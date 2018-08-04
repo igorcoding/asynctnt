@@ -1,7 +1,3 @@
-import asyncio
-
-import logging
-
 from asynctnt import Iterator
 from asynctnt import Response
 from asynctnt.exceptions import TarantoolSchemaError
@@ -10,7 +6,6 @@ from tests.util import get_complex_param
 
 
 class SelectTestCase(BaseTarantoolTestCase):
-    LOGGING_LEVEL = logging.INFO
     async def _fill_data(self, count=3):
         data = []
         for i in range(count):
@@ -253,8 +248,8 @@ class SelectTestCase(BaseTarantoolTestCase):
 
     async def test__select_dict_resp(self):
         data = await self._fill_data_dict()
-        res = await  self.conn.select(self.TESTER_SPACE_ID, [],
-                                      tuple_as_dict=True)
+        res = await self.conn.select(self.TESTER_SPACE_ID, [],
+                                     tuple_as_dict=True)
         self.assertListEqual(res.body, data)
 
     async def test__select_dict_resp_default_from_conn_true(self):

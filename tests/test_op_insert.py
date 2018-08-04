@@ -1,7 +1,3 @@
-import asyncio
-import uuid
-
-from asynctnt import Iterator
 from asynctnt import Response
 from asynctnt.exceptions import TarantoolSchemaError
 from tests import BaseTarantoolTestCase

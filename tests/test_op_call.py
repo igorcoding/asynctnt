@@ -1,7 +1,5 @@
 import asyncio
 
-import logging
-
 from asynctnt import Response
 from asynctnt.exceptions import TarantoolDatabaseError, ErrorCode
 from tests.util import get_complex_param
@@ -9,8 +7,6 @@ from tests import BaseTarantoolTestCase
 
 
 class CallTestCase(BaseTarantoolTestCase):
-    LOGGING_LEVEL = logging.DEBUG
-
     def has_new_call(self):
         return self.conn.version >= (1, 7)
 

@@ -57,9 +57,7 @@ coverage:
 
 
 style:
-	pep8 asynctnt
-	pep8 tests
-	flake8 --config=.flake8.cython
+	flake8 --config=.flake8
 
 
 sdist: clean build test

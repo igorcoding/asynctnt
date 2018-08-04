@@ -1,26 +1,20 @@
 import abc
 import asyncio
 import asyncio.subprocess
+import functools
 import logging
 import math
 import os
 import random
+import select
 import shutil
-import signal
 import socket
 import string
 import subprocess
-
-import functools
-
-import sys
-
 import time
-
-import select
-from threading import Thread
-
 import yaml
+
+from threading import Thread
 
 
 __all__ = (
@@ -212,6 +206,15 @@ class TarantoolInstance(metaclass=abc.ABCMeta):
 
     def _render_initlua(self):
         template = string.Template(self._initlua_template)
+        if not self._replication_source:
+            replication = 'nil'
+        else:
+            replication = '"{}"'.format(self._replication_source)
+
+        work_dir = 'nil'
+        if self._specify_work_dir:
+            work_dir = '"' + self._root + '"'
+
         d = {
             'host': self._host,
             'port': self._port,
@@ -220,10 +223,8 @@ class TarantoolInstance(metaclass=abc.ABCMeta):
             'wal_mode': self._wal_mode,
             'custom_proc_title': self._title,
             'slab_alloc_arena': self._slab_alloc_arena,
-            'replication_source': 'nil' if not self._replication_source else '"{}"'.format(
-                self._replication_source),  # nopep8
-            'work_dir': '"' + self._root + '"' if self._specify_work_dir else 'nil',
-        # nopep8
+            'replication_source': replication,
+            'work_dir': work_dir,
             'log_level': self._log_level,
             'applua': self._applua if self._applua else ''
         }
@@ -388,7 +389,7 @@ class TarantoolSyncInstance(TarantoolInstance):
         attempts = math.ceil(self._timeout / interval)
         while attempts > 0:
             try:
-                status = self.command('box.info.status',  print_greeting=True)
+                status = self.command('box.info.status', print_greeting=True)
                 if status:
                     status = status[0]
                     if status == 'running':
@@ -571,8 +572,7 @@ class TarantoolAsyncInstance(TarantoolInstance):
         interval = 0.1
         attempts = math.ceil(self._timeout / interval)
         while attempts > 0:
-            if self._protocol is None or \
-                            self._protocol.returncode is not None:
+            if self._protocol is None or self._protocol.returncode is not None:
                 raise RuntimeError(
                     '{} exited unexpectedly with exit code {}'.format(
                         self.fingerprint, self._last_return_code)

@@ -1,5 +1,3 @@
-import logging
-
 import asynctnt
 from asynctnt.exceptions import TarantoolNotConnectedError, \
     TarantoolDatabaseError
@@ -9,7 +7,6 @@ from tests.util import get_complex_param, get_big_param
 
 
 class CommonTestCase(BaseTarantoolTestCase):
-
     async def test__encoding_utf8(self):
         p, p_cmp = get_complex_param(replace_bin=False)
 
@@ -95,11 +92,11 @@ class CommonTestCase(BaseTarantoolTestCase):
     async def test__parse_numeric_map_keys(self):
         res = await self.conn.eval(
             """return {
-                [1] = 1, 
-                [2] = 2, 
-                hello = 3, 
-                world = 4, 
-                [-3] = 5, 
+                [1] = 1,
+                [2] = 2,
+                hello = 3,
+                world = 4,
+                [-3] = 5,
                 [4.5] = 6
             }"""
         )
@@ -133,14 +130,14 @@ class CommonTestCase(BaseTarantoolTestCase):
         # Waiting big response, so ReadBuffer grows to hold it
         p = get_big_param(size=size * 3)
         try:
-            res = await self.conn.call('func_param', [p])
+            await self.conn.call('func_param', [p])
         except Exception as e:
             self.fail(e)
 
         # Waiting small response, so ReadBuffer deallocates memory
         p = get_big_param(size=10)
         try:
-            res = await self.conn.call('func_param', [p])
+            await self.conn.call('func_param', [p])
         except Exception as e:
             self.fail(e)
 

@@ -225,13 +225,13 @@ class Connection:
 
                                 conn = self._loop.create_unix_connection(
                                     functools.partial(self.protocol_factory,
-                                                    connected_fut),
+                                                      connected_fut),
                                     unix_path
                                 )
                             else:
                                 conn = self._loop.create_connection(
                                     functools.partial(self.protocol_factory,
-                                                    connected_fut),
+                                                      connected_fut),
                                     self._host, self._port)
 
                             try:
@@ -601,7 +601,10 @@ class Connection:
 
                 >>> res = await conn.select('_space', {'tester'}, index='name')
                 >>> res.body
-                [[512, 1, 'tester', 'memtx', 0, {}, [{'name': 'id', 'type': 'unsigned'}, {'name': 'text', 'type': 'string'}]]]
+                [[512, 1, 'tester', 'memtx', 0, {}, [
+                    {'name': 'id', 'type': 'unsigned'},
+                    {'name': 'text', 'type': 'string'}]
+                ]]
 
                 >>> res = await conn.select('_space', {'tester'},
                 ...                         index='name',
