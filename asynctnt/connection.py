@@ -29,7 +29,7 @@ class Connection:
         '_encoding', '_connect_timeout', '_reconnect_timeout',
         '_request_timeout', '_tuple_as_dict', '_loop', '_state', '_state_prev',
         '_transport', '_protocol', '_db',
-        '_disconnect_waiter', '_reconnect_coro'
+        '_disconnect_waiter', '_reconnect_coro', '_connect_lock'
     )
 
     def __init__(self, *,
@@ -127,6 +127,7 @@ class Connection:
         self._state_prev = ConnectionState.IDLE
         self._disconnect_waiter = None
         self._reconnect_coro = None
+        self._connect_lock = asyncio.Lock(loop=self._loop)
 
     def _set_state(self, new_state):
         if self._state != new_state:
@@ -138,7 +139,7 @@ class Connection:
         return False
 
     def connection_made(self):
-        self._set_state(ConnectionState.CONNECTED)
+        pass
 
     def connection_lost(self, exc):
         if self._transport:
@@ -153,10 +154,11 @@ class Connection:
             self._set_state(ConnectionState.DISCONNECTING)
             self._start_reconnect(return_exceptions=False)
         else:
-            self._set_state(ConnectionState.DISCONNECTED)
-            if self._disconnect_waiter:
-                self._disconnect_waiter.set_result(True)
-                self._disconnect_waiter = None
+            if self._state != ConnectionState.CONNECTING:
+                self._set_state(ConnectionState.DISCONNECTED)
+                if self._disconnect_waiter:
+                    self._disconnect_waiter.set_result(True)
+                    self._disconnect_waiter = None
 
     def __create_reconnect_coro(self, return_exceptions=False):
         if self._reconnect_coro:
@@ -193,84 +195,110 @@ class Connection:
                    loop=self._loop)
 
     async def _connect(self, return_exceptions=True):
-        while True:
-            try:
-                ignore_states = {
-                    ConnectionState.CONNECTING,
-                    ConnectionState.CONNECTED,
-                    ConnectionState.DISCONNECTING,
-                }
-                if self._state in ignore_states:
+        async with self._connect_lock:
+            while True:
+                try:
+                    if self._state == ConnectionState.CONNECTED:
+                        self._reconnect_coro = None
+                        return
+
+                    ignore_states = {
+                        ConnectionState.CONNECTING,
+                        ConnectionState.DISCONNECTING,
+                    }
+                    if self._state in ignore_states:
+                        return
+
+                    self._set_state(ConnectionState.CONNECTING)
+
+                    async def full_connect():
+                        while True:
+                            connected_fut = _create_future(self._loop)
+
+                            if self._host.startswith('unix/'):
+                                unix_path = self._port
+                                assert unix_path, \
+                                    'No unix file path specified'
+                                assert os.path.exists(unix_path), \
+                                    'Unix socket `{}` not found'.format(
+                                        unix_path)
+
+                                conn = self._loop.create_unix_connection(
+                                    functools.partial(self.protocol_factory,
+                                                    connected_fut),
+                                    unix_path
+                                )
+                            else:
+                                conn = self._loop.create_connection(
+                                    functools.partial(self.protocol_factory,
+                                                    connected_fut),
+                                    self._host, self._port)
+
+                            try:
+                                tr, pr = await conn
+                            except:
+                                raise
+
+                            try:
+                                timeout = 0.05  # wait at least something
+                                if self._connect_timeout is not None:
+                                    timeout = self._connect_timeout/2
+
+                                await asyncio.wait_for(
+                                    connected_fut,
+                                    timeout=timeout,
+                                    loop=self._loop)
+                            except asyncio.TimeoutError:
+                                continue  # try to create connection again
+                            except:
+                                tr.close()
+                                # ignoring reconnect by on_connection_lost
+                                self._set_state(ConnectionState.DISCONNECTING)
+                                raise
+
+                            return tr, pr
+
+                    try:
+                        tr, pr = await asyncio.wait_for(
+                            full_connect(),
+                            timeout=self._connect_timeout,
+                            loop=self._loop
+                        )
+                    except:
+                        raise
+
+                    logger.info('%s Connected successfully', self.fingerprint)
+                    self._set_state(ConnectionState.CONNECTED)
+
+                    self._transport = tr
+                    self._protocol = pr
+                    self._db = self._protocol.get_common_db()
+                    self._reconnect_coro = None
+                    self._normalize_api()
                     return
-
-                self._set_state(ConnectionState.CONNECTING)
-
-                connected_fut = _create_future(self._loop)
-
-                if self._host.startswith('unix/'):
-                    unix_path = self._port
-                    assert unix_path, \
-                        'No unix file path specified'
-                    assert os.path.exists(unix_path), \
-                        'Unix socket `{}` not found'.format(unix_path)
-
-                    conn = self._loop.create_unix_connection(
-                        functools.partial(self.protocol_factory,
-                                          connected_fut),
-                        unix_path
-                    )
-                else:
-                    conn = self._loop.create_connection(
-                        functools.partial(self.protocol_factory,
-                                          connected_fut),
-                        self._host, self._port)
-
-                try:
-                    tr, pr = await asyncio.wait_for(
-                        conn, timeout=self._connect_timeout, loop=self._loop)
-                except (OSError, asyncio.TimeoutError):
-                    raise
-
-                try:
-                    await connected_fut
-                except:
-                    tr.close()
-                    # ignoring reconnect by on_connection_lost
-                    self._set_state(ConnectionState.DISCONNECTING)
-                    raise
-
-                logger.info('%s Connected successfully', self.fingerprint)
-                self._set_state(ConnectionState.CONNECTED)
-
-                self._transport = tr
-                self._protocol = pr
-                self._db = self._protocol.get_common_db()
-                self._reconnect_coro = None
-                self._normalize_api()
-                return
-            except TarantoolDatabaseError as e:
-                if e.code in {ErrorCode.ER_LOADING}:
-                    # If Tarantool is still loading then reconnect
+                except TarantoolDatabaseError as e:
+                    if e.code in {ErrorCode.ER_LOADING}:
+                        # If Tarantool is still loading then reconnect
+                        if self._reconnect_timeout > 0:
+                            await self._wait_reconnect(e)
+                            continue
+                    if return_exceptions:
+                        self._reconnect_coro = None
+                        raise e
+                    else:
+                        logger.exception(e)
+                        if self._reconnect_timeout > 0:
+                            await self._wait_reconnect(e)
+                            continue
+                except Exception as e:
                     if self._reconnect_timeout > 0:
                         await self._wait_reconnect(e)
                         continue
-                if return_exceptions:
-                    self._reconnect_coro = None
-                    raise e
-                else:
-                    logger.exception(e)
-                    if self._reconnect_timeout > 0:
-                        await self._wait_reconnect(e)
-                        continue
-            except Exception as e:
-                if self._reconnect_timeout > 0:
-                    await self._wait_reconnect(e)
-                    continue
-                if return_exceptions:
-                    self._reconnect_coro = None
-                    raise e
-                else:
-                    logger.exception(e)
+                    if return_exceptions:
+                        self._reconnect_coro = None
+                        raise e
+                    else:
+                        logger.exception(e)
 
     async def _wait_reconnect(self, exc=None):
         self._set_state(ConnectionState.RECONNECTING)
@@ -286,7 +314,7 @@ class Connection:
         """
             Connect coroutine
         """
-        await self.__create_reconnect_coro(True)
+        await self._connect(True)
 
     async def disconnect(self):
         """
@@ -482,7 +510,7 @@ class Connection:
 
             :param timeout: Request timeout
 
-            :returns: :class:`asynctnt.Response` instance 
+            :returns: :class:`asynctnt.Response` instance
         """
         return self._db.ping(timeout=timeout)
 
@@ -554,7 +582,7 @@ class Connection:
             :param args: arguments to pass to the function, that will
                          execute your expression (list object)
             :param timeout: Request timeout
-            
+
             :returns: :class:`asynctnt.Response` instance
         """
         return self._db.eval(expression, args,

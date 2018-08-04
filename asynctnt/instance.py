@@ -194,7 +194,7 @@ class TarantoolInstance(metaclass=abc.ABCMeta):
 
     def _create_initlua_template(self):
         return """
-            
+
             box.cfg{
               listen = "${host}:${port}",
               wal_mode = "${wal_mode}",
@@ -245,6 +245,8 @@ class TarantoolInstance(metaclass=abc.ABCMeta):
         return 'Tarantool[{}:{}]'.format(self._host, self._port)
 
     def prepare(self):
+        if os.path.exists(self._root):
+            shutil.rmtree(self._root, ignore_errors=True)
         os.mkdir(self._root)
         initlua = self._render_initlua()
         initlua_path = self._save_initlua(initlua)
