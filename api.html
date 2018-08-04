@@ -561,7 +561,10 @@ Just calls disconnect() and connect()</p>
 
 <span class="gp">&gt;&gt;&gt; </span><span class="n">res</span> <span class="o">=</span> <span class="n">await</span> <span class="n">conn</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s1">&#39;_space&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;tester&#39;</span><span class="p">},</span> <span class="n">index</span><span class="o">=</span><span class="s1">&#39;name&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">res</span><span class="o">.</span><span class="n">body</span>
-<span class="go">[[512, 1, &#39;tester&#39;, &#39;memtx&#39;, 0, {}, [{&#39;name&#39;: &#39;id&#39;, &#39;type&#39;: &#39;unsigned&#39;}, {&#39;name&#39;: &#39;text&#39;, &#39;type&#39;: &#39;string&#39;}]]]</span>
+<span class="go">[[512, 1, &#39;tester&#39;, &#39;memtx&#39;, 0, {}, [</span>
+<span class="go">    {&#39;name&#39;: &#39;id&#39;, &#39;type&#39;: &#39;unsigned&#39;},</span>
+<span class="go">    {&#39;name&#39;: &#39;text&#39;, &#39;type&#39;: &#39;string&#39;}]</span>
+<span class="go">]]</span>
 
 <span class="gp">&gt;&gt;&gt; </span><span class="n">res</span> <span class="o">=</span> <span class="n">await</span> <span class="n">conn</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s1">&#39;_space&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;tester&#39;</span><span class="p">},</span>
 <span class="gp">... </span>                        <span class="n">index</span><span class="o">=</span><span class="s1">&#39;name&#39;</span><span class="p">,</span>
