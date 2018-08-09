@@ -427,7 +427,12 @@
                     <span class="bp">self</span><span class="o">.</span><span class="n">_normalize_api</span><span class="p">()</span>
                     <span class="k">return</span>
                 <span class="k">except</span> <span class="n">TarantoolDatabaseError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-                    <span class="k">if</span> <span class="n">e</span><span class="o">.</span><span class="n">code</span> <span class="ow">in</span> <span class="p">{</span><span class="n">ErrorCode</span><span class="o">.</span><span class="n">ER_LOADING</span><span class="p">}:</span>
+                    <span class="n">skip_errors</span> <span class="o">=</span> <span class="p">{</span>
+                        <span class="n">ErrorCode</span><span class="o">.</span><span class="n">ER_LOADING</span><span class="p">,</span>
+                        <span class="n">ErrorCode</span><span class="o">.</span><span class="n">ER_NO_SUCH_SPACE</span><span class="p">,</span>
+                        <span class="n">ErrorCode</span><span class="o">.</span><span class="n">ER_NO_SUCH_INDEX</span>
+                    <span class="p">}</span>
+                    <span class="k">if</span> <span class="n">e</span><span class="o">.</span><span class="n">code</span> <span class="ow">in</span> <span class="n">skip_errors</span><span class="p">:</span>
                         <span class="c1"># If Tarantool is still loading then reconnect</span>
                         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_reconnect_timeout</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
                             <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_wait_reconnect</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
@@ -958,7 +963,14 @@
 
     <span class="k">def</span> <span class="nf">_normalize_api</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">version</span> <span class="o">&lt;</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">7</span><span class="p">):</span>
-            <span class="n">Connection</span><span class="o">.</span><span class="n">call</span> <span class="o">=</span> <span class="n">Connection</span><span class="o">.</span><span class="n">call16</span></div>
+            <span class="n">Connection</span><span class="o">.</span><span class="n">call</span> <span class="o">=</span> <span class="n">Connection</span><span class="o">.</span><span class="n">call16</span>
+
+    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;&lt;asynctnt.Connection host=</span><span class="si">{}</span><span class="s2"> port=</span><span class="si">{}</span><span class="s2"> state=</span><span class="si">{}</span><span class="s2">&gt;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">host</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="p">,</span>
+            <span class="nb">repr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="p">)</span>
+        <span class="p">)</span></div>
 
 
 <span class="k">def</span> <span class="nf">_create_future</span><span class="p">(</span><span class="n">loop</span><span class="p">):</span>
