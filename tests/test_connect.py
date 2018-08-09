@@ -3,6 +3,7 @@ import asyncio
 from asynctnt.connection import ConnectionState
 from asynctnt.exceptions import TarantoolDatabaseError, ErrorCode, \
     TarantoolError, TarantoolNotConnectedError
+from asynctnt.instance import TarantoolSyncInstance
 from tests import BaseTarantoolTestCase
 
 import asynctnt
@@ -141,6 +142,48 @@ class ConnectTestCase(BaseTarantoolTestCase):
 
         self.assertEqual(conn.state, ConnectionState.CONNECTED)
         await conn.disconnect()
+
+    async def test__connect_waiting_for_spaces(self):
+        self.tnt.stop()
+
+        tnt = TarantoolSyncInstance(
+            port=TarantoolSyncInstance.get_random_port(),
+            console_port=TarantoolSyncInstance.get_random_port(),
+            applua=self.read_applua(),
+            cleanup=self.TNT_CLEANUP
+        )
+        tnt.replication_source = ['x:1']
+        tnt.start(wait=False)
+
+        conn = asynctnt.Connection(host=self.tnt.host, port=self.tnt.port,
+                                   fetch_schema=True,
+                                   reconnect_timeout=0.1,
+                                   connect_timeout=10,
+                                   loop=self.loop)
+        try:
+            states = {}
+
+            async def state_checker():
+                while True:
+                    states[conn.state] = True
+                    await self.sleep(0.001)
+
+            checker = self.ensure_future(state_checker())
+
+            try:
+                await asyncio.wait_for(conn.connect(), 1, loop=self.loop)
+            except asyncio.TimeoutError:
+                self.assertTrue(True, 'connect cancelled')
+
+            checker.cancel()
+
+            self.assertTrue(states.get(ConnectionState.CONNECTING, False),
+                            'was in connecting')
+            self.assertTrue(states.get(ConnectionState.RECONNECTING, False),
+                            'was in reconnecting')
+        finally:
+            tnt.stop()
+            await conn.disconnect()
 
     async def test__connect_tnt_restarted(self):
         conn = asynctnt.Connection(host=self.tnt.host, port=self.tnt.port,

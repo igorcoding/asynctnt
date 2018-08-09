@@ -6,10 +6,11 @@ Changes:
   of cancelled coroutines if one tries to connect in parallel coroutines.
 
 Bugs fixed:
-* Connect hanged indefinetly if asynctnt was accidentally disconnected from
+* Connect hanged indefinitely if asynctnt was accidentally disconnected from
   Tarantool and TCP connection was still alive for a moment while trying to
-  reconnect.
-
+  reconnect (#8).
+* Connect to LOADING Tarantool instance without username/password resulted in
+  exception NO_SUCH_SPACE (#10).
 
 v0.1.12
 

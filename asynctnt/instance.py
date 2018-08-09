@@ -159,6 +159,14 @@ class TarantoolInstance(metaclass=abc.ABCMeta):
         self._timeout = timeout
         self._is_running = False
 
+    @property
+    def replication_source(self):
+        return self._replication_source
+
+    @replication_source.setter
+    def replication_source(self, value):
+        self._replication_source = value
+
     def _random_string(self,
                        length, *,
                        source=string.ascii_uppercase +
@@ -188,13 +196,13 @@ class TarantoolInstance(metaclass=abc.ABCMeta):
 
     def _create_initlua_template(self):
         return """
-
+            
             box.cfg{
               listen = "${host}:${port}",
               wal_mode = "${wal_mode}",
               custom_proc_title = "${custom_proc_title}",
               slab_alloc_arena = ${slab_alloc_arena},
-              replication_source = ${replication_source},
+              replication = ${replication_source},
               work_dir = ${work_dir},
               log_level = ${log_level}
             }
@@ -208,8 +216,14 @@ class TarantoolInstance(metaclass=abc.ABCMeta):
         template = string.Template(self._initlua_template)
         if not self._replication_source:
             replication = 'nil'
-        else:
+        elif isinstance(self._replication_source, str):
             replication = '"{}"'.format(self._replication_source)
+        elif isinstance(self._replication_source, (list, tuple)):
+            replication = ['"{}"'.format(e) for e in self._replication_source]
+            replication = ",".join(replication)
+            replication = "{" + replication + "}"
+        else:
+            raise TypeError('replication is of unsupported type')
 
         work_dir = 'nil'
         if self._specify_work_dir:
@@ -245,10 +259,11 @@ class TarantoolInstance(metaclass=abc.ABCMeta):
     def fingerprint(self):
         return 'Tarantool[{}:{}]'.format(self._host, self._port)
 
-    def prepare(self):
-        if os.path.exists(self._root):
+    def prepare(self, recreate):
+        if recreate and os.path.exists(self._root):
             shutil.rmtree(self._root, ignore_errors=True)
-        os.mkdir(self._root)
+        if not os.path.exists(self._root):
+            os.mkdir(self._root)
         initlua = self._render_initlua()
         initlua_path = self._save_initlua(initlua)
         return initlua_path
@@ -279,7 +294,7 @@ class TarantoolInstance(metaclass=abc.ABCMeta):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def start(self):
+    def start(self, *, wait=True, recreate=True):
         raise NotImplementedError
 
     @abc.abstractmethod
@@ -365,9 +380,9 @@ class TarantoolSyncInstance(TarantoolInstance):
     def pid(self):
         return self._process.pid if self._process is not None else None
 
-    def start(self):
+    def start(self, *, wait=True, recreate=True):
         self._logger.info('Starting Tarantool instance (%s)', self._title)
-        initlua_path = self.prepare()
+        initlua_path = self.prepare(recreate)
         self._logger.info('Launching process')
 
         if not self._command_args:
@@ -384,6 +399,10 @@ class TarantoolSyncInstance(TarantoolInstance):
                                          creationflags=flags)
         self._logger_thread = Thread(target=self._log_reader)
         self._logger_thread.start()
+
+        if not wait:
+            self._is_running = True
+            return
 
         interval = 0.1
         attempts = math.ceil(self._timeout / interval)
@@ -517,9 +536,9 @@ class TarantoolAsyncInstance(TarantoolInstance):
     def pid(self):
         return self._protocol.pid if self._protocol else None
 
-    def prepare(self):
+    def prepare(self, recreate):
         self._last_return_code = None
-        return super().prepare()
+        return super().prepare(recreate)
 
     def _on_process_exit(self, return_code):
         self._last_return_code = return_code
@@ -550,10 +569,10 @@ class TarantoolAsyncInstance(TarantoolInstance):
         finally:
             writer.close()
 
-    async def start(self):
+    async def start(self, *, wait=True, recreate=True):
         self._logger.info('Starting Tarantool instance (%s)', self._title)
         self._stop_event.clear()
-        initlua_path = self.prepare()
+        initlua_path = self.prepare(recreate)
         self._logger.info('Launching process')
 
         factory = functools.partial(
@@ -568,6 +587,10 @@ class TarantoolAsyncInstance(TarantoolInstance):
             stdin=None,
             stderr=asyncio.subprocess.PIPE
         )
+
+        if not wait:
+            self._is_running = True
+            return
 
         interval = 0.1
         attempts = math.ceil(self._timeout / interval)

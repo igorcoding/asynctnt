@@ -277,7 +277,12 @@ class Connection:
                     self._normalize_api()
                     return
                 except TarantoolDatabaseError as e:
-                    if e.code in {ErrorCode.ER_LOADING}:
+                    skip_errors = {
+                        ErrorCode.ER_LOADING,
+                        ErrorCode.ER_NO_SUCH_SPACE,
+                        ErrorCode.ER_NO_SUCH_INDEX
+                    }
+                    if e.code in skip_errors:
                         # If Tarantool is still loading then reconnect
                         if self._reconnect_timeout > 0:
                             await self._wait_reconnect(e)
@@ -809,6 +814,13 @@ class Connection:
     def _normalize_api(self):
         if (1, 6) <= self.version < (1, 7):
             Connection.call = Connection.call16
+
+    def __repr__(self):
+        return "<asynctnt.Connection host={} port={} state={}>".format(
+            self.host,
+            self.port,
+            repr(self.state)
+        )
 
 
 def _create_future(loop):
