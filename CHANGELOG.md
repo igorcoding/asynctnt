@@ -1,3 +1,14 @@
+v0.2.0
+
+Changes:
+* Improved and simplified connect/reconnect process
+* Added ContextManager async with protocol for Connection
+* Added `is_fully_connected` property to Connection
+* Added disconnect Lock
+
+Bugs Fixed:
+* Auto reconnect misbehaved on double on_connection_lost trigger (#11) 
+
 v0.1.13
 
 Changes:

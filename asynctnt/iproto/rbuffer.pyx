@@ -16,23 +16,6 @@ from libc.math cimport fmax
 from asynctnt.log import logger
 
 
-cdef inline size_t size_t_max(size_t a, size_t b):
-    if a > b:
-        return a
-    return b
-
-
-cdef inline uint32_t nearest_power_of_2(uint32_t v):
-    v -= 1
-    v |= v >> 1
-    v |= v >> 2
-    v |= v >> 4
-    v |= v >> 8
-    v |= v >> 16
-    v += 1
-    return v
-
-
 @cython.no_gc_clear
 @cython.final
 cdef class ReadBuffer:

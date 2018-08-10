@@ -3,35 +3,11 @@ env:
   global:
   - ENCRYPTION_LABEL: "8db6dbddd29a"
   - COMMIT_AUTHOR_EMAIL: "igorcoding@gmail.com"
+  - RELEASE_PYTHON_VERSIONS: "3.5 3.6 3.7"
 
 matrix:
   fast_finish: true
   include:
-
-    # osx
-    - os: osx
-      language: generic
-      env: BUILD=tests PYTHON_VERSION=3.6.0 TARANTOOL_VERSION=1_9
-
-    - os: osx
-      language: generic
-      env: BUILD=tests PYTHON_VERSION=3.6.0 TARANTOOL_VERSION=1_9
-
-    - os: osx
-      language: generic
-      env: BUILD=tests PYTHON_VERSION=3.7.0 TARANTOOL_VERSION=1_9
-
-    - os: osx
-      language: generic
-      env: BUILD=tests PYTHON_VERSION=3.7.0 TARANTOOL_VERSION=1_9
-
-    # precise python3.5 Tarantool 1.6
-    - os: linux
-      dist: precise
-      sudo: required
-      language: python
-      python: '3.5'
-      env: BUILD=quicktests TARANTOOL_VERSION=1_6
 
     # trusty python3.5 Tarantool 1.6
     - os: linux
@@ -47,7 +23,7 @@ matrix:
       sudo: required
       language: python
       python: '3.5'
-      env: BUILD=tests TARANTOOL_VERSION=1_7
+      env: BUILD=quicktests TARANTOOL_VERSION=1_7
 
     # trusty python3.5 Tarantool 1.9
     - os: linux
@@ -57,6 +33,22 @@ matrix:
       python: '3.5'
       env: BUILD=tests TARANTOOL_VERSION=1_9
 
+    # trusty python3.6 Tarantool 1.6
+    - os: linux
+      dist: trusty
+      sudo: required
+      language: python
+      python: '3.6'
+      env: BUILD=quicktests TARANTOOL_VERSION=1_6
+
+    # trusty python3.6 Tarantool 1.7
+    - os: linux
+      dist: trusty
+      sudo: required
+      language: python
+      python: '3.6'
+      env: BUILD=quicktests TARANTOOL_VERSION=1_7
+
     # trusty python3.6 Tarantool 1.9
     - os: linux
       dist: trusty
@@ -64,6 +56,22 @@ matrix:
       language: python
       python: '3.6'
       env: BUILD=tests TARANTOOL_VERSION=1_9
+
+    # xenial python3.7 Tarantool 1.6
+    - os: linux
+      dist: xenial
+      sudo: required
+      language: python
+      python: '3.7'
+      env: BUILD=quicktests TARANTOOL_VERSION=1_6
+
+    # xenial python3.7 Tarantool 1.7
+    - os: linux
+      dist: xenial
+      sudo: required
+      language: python
+      python: '3.7'
+      env: BUILD=quicktests TARANTOOL_VERSION=1_7
 
     # xenial python3.7 Tarantool 1.9
     - os: linux
@@ -73,13 +81,28 @@ matrix:
       python: '3.7'
       env: BUILD=tests TARANTOOL_VERSION=1_9
 
-    # trusty python3.6 Tarantool 1.9 + deploy
+    # deploy with Tarantool 1.9 and all pythons
     - os: linux
-      dist: trusty
+      dist: xenial
       sudo: required
       language: python
-      python: '3.6'
-      env: BUILD=tests,docs,coverage,release TARANTOOL_VERSION=1_9
+      python: '3.7'
+      env: BUILD=tests,wheel,docs,coverage,release TARANTOOL_VERSION=1_9
+      services:
+        - docker
+
+    # osx
+    - os: osx
+      language: generic
+      env: BUILD=tests,wheel PYTHON_VERSION=3.5.5 TARANTOOL_VERSION=1_9
+
+    - os: osx
+      language: generic
+      env: BUILD=tests,wheel PYTHON_VERSION=3.6.0 TARANTOOL_VERSION=1_9
+
+    - os: osx
+      language: generic
+      env: BUILD=tests,wheel PYTHON_VERSION=3.7.0 TARANTOOL_VERSION=1_9
 
 cache:
   - pip
@@ -93,6 +116,7 @@ install:
 script:
   - ".ci/travis-tests.sh"
   - ".ci/travis-build-docs.sh"
+  #- ".ci/travis-build-wheel.sh"
 
 after_success:
   - if [[ "${BUILD}" == *coverage* ]]; then coveralls; fi

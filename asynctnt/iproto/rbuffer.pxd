@@ -3,8 +3,21 @@ from libc.stdint cimport uint32_t, uint64_t, int64_t
 cimport tnt
 
 
-cdef inline size_t size_t_max(size_t a, size_t b)
-cdef inline uint32_t nearest_power_of_2(uint32_t v)
+cdef inline size_t size_t_max(size_t a, size_t b):
+    if a > b:
+        return a
+    return b
+
+
+cdef inline uint32_t nearest_power_of_2(uint32_t v):
+    v -= 1
+    v |= v >> 1
+    v |= v >> 2
+    v |= v >> 4
+    v |= v >> 8
+    v |= v >> 16
+    v += 1
+    return v
 
 
 cdef class ReadBuffer:

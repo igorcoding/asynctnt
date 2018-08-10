@@ -69,6 +69,7 @@ cdef class BaseProtocol(CoreProtocol):
         self.connected_fut = connected_fut
         self.on_connection_made_cb = on_connection_made
         self.on_connection_lost_cb = on_connection_lost
+        self._closing = False
 
         self._on_request_completed_cb = self._on_request_completed
         self._on_request_timeout_cb = self._on_request_timeout
@@ -262,6 +263,11 @@ cdef class BaseProtocol(CoreProtocol):
             object key, value
             Py_ssize_t pos
 
+        if self._closing:
+            return
+
+        self._closing = True
+
         pos = 0
         while cpython.dict.PyDict_Next(self._reqs, &pos, &pkey, &pvalue):
             sync = <uint64_t><object>pkey
@@ -283,6 +289,9 @@ cdef class BaseProtocol(CoreProtocol):
     cdef uint64_t next_sync(self):
         self._sync += 1
         return self._sync
+
+    cdef bint is_closing(self):
+        return self._closing
 
     def _on_request_timeout(self, waiter):
         cdef Request req

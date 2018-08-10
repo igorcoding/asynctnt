@@ -38,7 +38,6 @@ Python code:
         values = await conn.select('tester', [])
         print('Code: {}'.format(values.code))
         print('Data: {}'.format(values.body))
-        print(values.body2yaml())  # prints as yaml
 
         await conn.disconnect()
 
@@ -51,10 +50,6 @@ Stdout:
 
     Code: 0
     Data: [[1, 'hello1'], [2, 'hello2'], [3, 'hello3'], [4, 'hello4']]
-    - [1, hello1]
-    - [2, hello2]
-    - [3, hello3]
-    - [4, hello4]
 
 Example of using space format information
 -----------------------------------------
@@ -100,7 +95,6 @@ Python code:
         values = await conn.select('tester', [])
         print('Code: {}'.format(values.code))
         print('Data: {}'.format(values.body))
-        print(values.body2yaml())  # prints as yaml
 
         await conn.disconnect()
 
@@ -113,7 +107,21 @@ Stdout (now got dict tuples instead of plain arrays):
 
     Code: 0
     Data: [{'id': 1, 'text': 'hello1'}, {'id': 2, 'text': 'hello2'}, {'id': 3, 'text': 'hello3'}, {'id': 4, 'text': 'hello4'}]
-    - {id: 1, text: hello1}
-    - {id: 2, text: hello2}
-    - {id: 3, text: hello3}
-    - {id: 4, text: hello4}
+
+
+Using Connection context manager
+--------------------------------
+
+.. code:: python
+
+    import asyncio
+    import asynctnt
+
+
+    async def run():
+        async with asynctnt.Connection(port=3301) as conn:
+            res = await conn.call('box.info')
+            print(res.body)
+
+    loop = asyncio.get_event_loop()
+    loop.run_until_complete(run())

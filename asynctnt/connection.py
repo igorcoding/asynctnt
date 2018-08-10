@@ -14,7 +14,6 @@ __all__ = (
 
 
 class ConnectionState(enum.IntEnum):
-    IDLE = 0
     CONNECTING = 1
     CONNECTED = 2
     RECONNECTING = 3
@@ -29,7 +28,8 @@ class Connection:
         '_encoding', '_connect_timeout', '_reconnect_timeout',
         '_request_timeout', '_tuple_as_dict', '_loop', '_state', '_state_prev',
         '_transport', '_protocol', '_db',
-        '_disconnect_waiter', '_reconnect_coro', '_connect_lock'
+        '_disconnect_waiter', '_reconnect_coro',
+        '_connect_lock', '_disconnect_lock'
     )
 
     def __init__(self, *,
@@ -49,6 +49,25 @@ class Connection:
 
         """
             Connection constructor.
+
+            To manipulate a Connection instance there are several functions:
+
+                * await connect() - performs connecting, authorization and
+                                    schema fetching.
+
+                * await disconnect() - performs disconnection.
+
+                * close() - closes connection (not a coroutine)
+
+            Connection also supports context manager protocol, which connects
+            on entering and disconnecting on leaving a block.
+
+            So one can simply use it as follows:
+
+            .. code-block:: python
+
+                async with asynctnt.Connection() as conn:
+                    await conn.call('box.info')
 
             :param host:
                     Tarantool host (pass ``unix/`` to connect to unix socket)
@@ -123,11 +142,12 @@ class Connection:
         self._protocol = None
         self._db = _DbMock()
 
-        self._state = ConnectionState.IDLE
-        self._state_prev = ConnectionState.IDLE
+        self._state = ConnectionState.DISCONNECTED
+        self._state_prev = ConnectionState.DISCONNECTED
         self._disconnect_waiter = None
         self._reconnect_coro = None
         self._connect_lock = asyncio.Lock(loop=self._loop)
+        self._disconnect_lock = asyncio.Lock(loop=self._loop)
 
     def _set_state(self, new_state):
         if self._state != new_state:
@@ -138,45 +158,41 @@ class Connection:
             return True
         return False
 
-    def connection_made(self):
-        pass
-
     def connection_lost(self, exc):
         if self._transport:
             self._transport.close()
         self._transport = None
 
-        if self._reconnect_timeout > 0 \
-                and self._state != ConnectionState.DISCONNECTING \
-                and self._state != ConnectionState.DISCONNECTED:
-            if self._state == ConnectionState.RECONNECTING:
-                return
-            self._set_state(ConnectionState.DISCONNECTING)
+        if self._disconnect_waiter:
+            # disconnect() call happened
+            self._disconnect_waiter.set_result(True)
+            return
+
+        # connection lost
+
+        if self._reconnect_timeout > 0:
+            # should reconnect
             self._start_reconnect(return_exceptions=False)
         else:
-            if self._state != ConnectionState.CONNECTING:
-                self._set_state(ConnectionState.DISCONNECTED)
-                if self._disconnect_waiter:
-                    self._disconnect_waiter.set_result(True)
-                    self._disconnect_waiter = None
-
-    def __create_reconnect_coro(self, return_exceptions=False):
-        if self._reconnect_coro:
-            self._reconnect_coro.cancel()
-        self._reconnect_coro = asyncio.ensure_future(
-            self._connect(return_exceptions=return_exceptions),
-            loop=self._loop
-        )
-        return self._reconnect_coro
+            # should not reconnect, close everything
+            self.close()
 
     def _start_reconnect(self, return_exceptions=False):
-        if self._state == ConnectionState.RECONNECTING:
-            logger.info('Already in reconnecting state')
+        if self._state in [ConnectionState.CONNECTING,
+                           ConnectionState.RECONNECTING]:
+            logger.debug('%s Already reconnecting', self.fingerprint)
+            return
+
+        if self._reconnect_coro:
             return
 
         logger.info('%s Started reconnecting', self.fingerprint)
         self._set_state(ConnectionState.RECONNECTING)
-        self.__create_reconnect_coro(return_exceptions)
+
+        self._reconnect_coro = asyncio.ensure_future(
+            self._connect(return_exceptions=return_exceptions),
+            loop=self._loop
+        )
 
     def protocol_factory(self, connected_fut, cls=protocol.Protocol):
         return cls(host=self._host,
@@ -190,7 +206,7 @@ class Connection:
                    encoding=self._encoding,
                    tuple_as_dict=self._tuple_as_dict,
                    connected_fut=connected_fut,
-                   on_connection_made=self.connection_made,
+                   on_connection_made=None,
                    on_connection_lost=self.connection_lost,
                    loop=self._loop)
 
@@ -198,15 +214,13 @@ class Connection:
         async with self._connect_lock:
             while True:
                 try:
-                    if self._state == ConnectionState.CONNECTED:
-                        self._reconnect_coro = None
-                        return
-
                     ignore_states = {
-                        ConnectionState.CONNECTING,
-                        ConnectionState.DISCONNECTING,
+                        ConnectionState.CONNECTED,
+                        ConnectionState.DISCONNECTING,  # disconnect() called
                     }
+
                     if self._state in ignore_states:
+                        self._reconnect_coro = None
                         return
 
                     self._set_state(ConnectionState.CONNECTING)
@@ -234,38 +248,31 @@ class Connection:
                                                       connected_fut),
                                     self._host, self._port)
 
-                            try:
-                                tr, pr = await conn
-                            except:
-                                raise
+                            tr, pr = await conn
 
                             try:
                                 timeout = 0.05  # wait at least something
                                 if self._connect_timeout is not None:
-                                    timeout = self._connect_timeout/2
+                                    timeout = self._connect_timeout / 2
 
                                 await asyncio.wait_for(
                                     connected_fut,
                                     timeout=timeout,
                                     loop=self._loop)
                             except asyncio.TimeoutError:
+                                tr.close()
                                 continue  # try to create connection again
                             except:
                                 tr.close()
-                                # ignoring reconnect by on_connection_lost
-                                self._set_state(ConnectionState.DISCONNECTING)
                                 raise
 
                             return tr, pr
 
-                    try:
-                        tr, pr = await asyncio.wait_for(
-                            full_connect(),
-                            timeout=self._connect_timeout,
-                            loop=self._loop
-                        )
-                    except:
-                        raise
+                    tr, pr = await asyncio.wait_for(
+                        full_connect(),
+                        timeout=self._connect_timeout,
+                        loop=self._loop
+                    )
 
                     logger.info('%s Connected successfully', self.fingerprint)
                     self._set_state(ConnectionState.CONNECTED)
@@ -287,23 +294,32 @@ class Connection:
                         if self._reconnect_timeout > 0:
                             await self._wait_reconnect(e)
                             continue
+
                     if return_exceptions:
                         self._reconnect_coro = None
                         raise e
-                    else:
-                        logger.exception(e)
-                        if self._reconnect_timeout > 0:
-                            await self._wait_reconnect(e)
-                            continue
+
+                    logger.exception(e)
+                    if self._reconnect_timeout > 0:
+                        await self._wait_reconnect(e)
+                        continue
+
+                    return  # no reconnect, no return_exceptions
+                except asyncio.CancelledError:
+                    logger.debug("connect is cancelled")
+                    self._reconnect_coro = None
+                    raise
                 except Exception as e:
                     if self._reconnect_timeout > 0:
                         await self._wait_reconnect(e)
                         continue
+
                     if return_exceptions:
                         self._reconnect_coro = None
                         raise e
-                    else:
-                        logger.exception(e)
+
+                    logger.exception(e)
+                    return  # no reconnect, no return_exceptions
 
     async def _wait_reconnect(self, exc=None):
         self._set_state(ConnectionState.RECONNECTING)
@@ -320,41 +336,49 @@ class Connection:
             Connect coroutine
         """
         await self._connect(True)
+        return self
 
     async def disconnect(self):
         """
             Disconnect coroutine
         """
-        if self._state in \
-                {ConnectionState.DISCONNECTING, ConnectionState.DISCONNECTED}:
-            return
-        self._set_state(ConnectionState.DISCONNECTING)
 
-        logger.info('%s Disconnecting...', self.fingerprint)
-        waiter = _create_future(self._loop)
-        if self._reconnect_coro:
-            self._reconnect_coro.cancel()
-            self._reconnect_coro = None
+        async with self._disconnect_lock:
+            if self._state == ConnectionState.DISCONNECTED:
+                return
 
-        if self._transport:
-            self._disconnect_waiter = waiter
-            self._transport.close()
-            self._transport = None
-            self._protocol = None
+            self._set_state(ConnectionState.DISCONNECTING)
+
+            logger.info('%s Disconnecting...', self.fingerprint)
+            if self._reconnect_coro:
+                self._reconnect_coro.cancel()
+                self._reconnect_coro = None
+
             self._db = _DbMock()
-        else:
-            waiter.set_result(True)
-            self._set_state(ConnectionState.DISCONNECTED)
-        return await waiter
+            if self._transport:
+                self._disconnect_waiter = _create_future(self._loop)
+                self._transport.close()
+                self._transport = None
+                self._protocol = None
+
+                await self._disconnect_waiter
+                self._disconnect_waiter = None
+                self._set_state(ConnectionState.DISCONNECTED)
+            else:
+                self._transport = None
+                self._protocol = None
+                self._disconnect_waiter = None
+                self._set_state(ConnectionState.DISCONNECTED)
 
     def close(self):
         """
             Same as disconnect, but not a coroutine, i.e. it does not wait
             for disconnect to finish.
         """
-        if self._state in \
-                {ConnectionState.DISCONNECTING, ConnectionState.DISCONNECTED}:
+
+        if self._state == ConnectionState.DISCONNECTED:
             return
+
         self._set_state(ConnectionState.DISCONNECTING)
         logger.info('%s Disconnecting...', self.fingerprint)
 
@@ -363,11 +387,12 @@ class Connection:
             self._reconnect_coro = None
 
         if self._transport:
-            self._disconnect_waiter = None
             self._transport.close()
-            self._transport = None
-            self._protocol = None
-            self._db = _DbMock()
+
+        self._transport = None
+        self._protocol = None
+        self._disconnect_waiter = None
+        self._db = _DbMock()
         self._set_state(ConnectionState.DISCONNECTED)
 
     async def reconnect(self):
@@ -376,8 +401,22 @@ class Connection:
             Just calls disconnect() and connect()
         """
         await self.disconnect()
-        self._set_state(ConnectionState.IDLE)
         await self.connect()
+
+    async def __aenter__(self):
+        """
+            Executed on entering the async with section.
+            Connects to Tarantool instance.
+        """
+        await self.connect()
+        return self
+
+    async def __aexit__(self, exc_type, exc_val, exc_tb):
+        """
+            Executed on leaving the async with section.
+            Disconnects from Tarantool instance.
+        """
+        await self.disconnect()
 
     @property
     def fingerprint(self):
@@ -481,11 +520,21 @@ class Connection:
     @property
     def is_connected(self):
         """
-            Check if connection is active
+            Check if an underlying connection is active
         """
         if self._protocol is None:
             return False
         return self._protocol.is_connected()
+
+    @property
+    def is_fully_connected(self):
+        """
+            Check if connection is fully active (performed auth
+            and schema fetching)
+        """
+        if self._protocol is None:
+            return False
+        return self._protocol.is_fully_connected()
 
     @property
     def schema_id(self):
