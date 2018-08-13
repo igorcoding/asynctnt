@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>API Reference &mdash; asynctnt 0.1.13 documentation</title>
+  <title>API Reference &mdash; asynctnt 0.2.0 documentation</title>
   
 
   
@@ -57,7 +57,7 @@
             
             
               <div class="version">
-                0.1.13
+                0.2.0
               </div>
             
           
@@ -181,6 +181,25 @@
 <dt id="asynctnt.Connection.__init__">
 <code class="descname">__init__</code><span class="sig-paren">(</span><em>*</em>, <em>host='127.0.0.1'</em>, <em>port=3301</em>, <em>username=None</em>, <em>password=None</em>, <em>fetch_schema=True</em>, <em>auto_refetch_schema=True</em>, <em>connect_timeout=60</em>, <em>request_timeout=-1</em>, <em>reconnect_timeout=0.3333333333333333</em>, <em>tuple_as_dict=False</em>, <em>encoding=None</em>, <em>initial_read_buffer_size=None</em>, <em>loop=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/asynctnt/connection.html#Connection.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#asynctnt.Connection.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Connection constructor.</p>
+<p>To manipulate a Connection instance there are several functions:</p>
+<blockquote>
+<div><ul class="simple">
+<li><dl class="first docutils">
+<dt>await connect() - performs connecting, authorization and</dt>
+<dd>schema fetching.</dd>
+</dl>
+</li>
+<li>await disconnect() - performs disconnection.</li>
+<li>close() - closes connection (not a coroutine)</li>
+</ul>
+</div></blockquote>
+<p>Connection also supports context manager protocol, which connects
+on entering and disconnecting on leaving a block.</p>
+<p>So one can simply use it as follows:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">async</span> <span class="k">with</span> <span class="n">asynctnt</span><span class="o">.</span><span class="n">Connection</span><span class="p">()</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
+    <span class="n">await</span> <span class="n">conn</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s1">&#39;box.info&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -460,7 +479,14 @@ execute your expression (list object)</li>
 <dl class="attribute">
 <dt id="asynctnt.Connection.is_connected">
 <code class="descname">is_connected</code><a class="headerlink" href="#asynctnt.Connection.is_connected" title="Permalink to this definition">¶</a></dt>
-<dd><p>Check if connection is active</p>
+<dd><p>Check if an underlying connection is active</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="asynctnt.Connection.is_fully_connected">
+<code class="descname">is_fully_connected</code><a class="headerlink" href="#asynctnt.Connection.is_fully_connected" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if connection is fully active (performed auth
+and schema fetching)</p>
 </dd></dl>
 
 <dl class="attribute">
@@ -873,7 +899,7 @@ Has no effect in upsert requests</li>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0.1.13',
+            VERSION:'0.2.0',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',

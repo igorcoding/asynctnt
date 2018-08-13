@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>asynctnt.connection &mdash; asynctnt 0.1.13 documentation</title>
+  <title>asynctnt.connection &mdash; asynctnt 0.2.0 documentation</title>
   
 
   
@@ -56,7 +56,7 @@
             
             
               <div class="version">
-                0.1.13
+                0.2.0
               </div>
             
           
@@ -164,7 +164,6 @@
 
 
 <span class="k">class</span> <span class="nc">ConnectionState</span><span class="p">(</span><span class="n">enum</span><span class="o">.</span><span class="n">IntEnum</span><span class="p">):</span>
-    <span class="n">IDLE</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="n">CONNECTING</span> <span class="o">=</span> <span class="mi">1</span>
     <span class="n">CONNECTED</span> <span class="o">=</span> <span class="mi">2</span>
     <span class="n">RECONNECTING</span> <span class="o">=</span> <span class="mi">3</span>
@@ -179,7 +178,8 @@
         <span class="s1">&#39;_encoding&#39;</span><span class="p">,</span> <span class="s1">&#39;_connect_timeout&#39;</span><span class="p">,</span> <span class="s1">&#39;_reconnect_timeout&#39;</span><span class="p">,</span>
         <span class="s1">&#39;_request_timeout&#39;</span><span class="p">,</span> <span class="s1">&#39;_tuple_as_dict&#39;</span><span class="p">,</span> <span class="s1">&#39;_loop&#39;</span><span class="p">,</span> <span class="s1">&#39;_state&#39;</span><span class="p">,</span> <span class="s1">&#39;_state_prev&#39;</span><span class="p">,</span>
         <span class="s1">&#39;_transport&#39;</span><span class="p">,</span> <span class="s1">&#39;_protocol&#39;</span><span class="p">,</span> <span class="s1">&#39;_db&#39;</span><span class="p">,</span>
-        <span class="s1">&#39;_disconnect_waiter&#39;</span><span class="p">,</span> <span class="s1">&#39;_reconnect_coro&#39;</span><span class="p">,</span> <span class="s1">&#39;_connect_lock&#39;</span>
+        <span class="s1">&#39;_disconnect_waiter&#39;</span><span class="p">,</span> <span class="s1">&#39;_reconnect_coro&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;_connect_lock&#39;</span><span class="p">,</span> <span class="s1">&#39;_disconnect_lock&#39;</span>
     <span class="p">)</span>
 
 <div class="viewcode-block" id="Connection.__init__"><a class="viewcode-back" href="../../api.html#asynctnt.Connection.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span>
@@ -199,6 +199,25 @@
 
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Connection constructor.</span>
+
+<span class="sd">            To manipulate a Connection instance there are several functions:</span>
+
+<span class="sd">                * await connect() - performs connecting, authorization and</span>
+<span class="sd">                                    schema fetching.</span>
+
+<span class="sd">                * await disconnect() - performs disconnection.</span>
+
+<span class="sd">                * close() - closes connection (not a coroutine)</span>
+
+<span class="sd">            Connection also supports context manager protocol, which connects</span>
+<span class="sd">            on entering and disconnecting on leaving a block.</span>
+
+<span class="sd">            So one can simply use it as follows:</span>
+
+<span class="sd">            .. code-block:: python</span>
+
+<span class="sd">                async with asynctnt.Connection() as conn:</span>
+<span class="sd">                    await conn.call(&#39;box.info&#39;)</span>
 
 <span class="sd">            :param host:</span>
 <span class="sd">                    Tarantool host (pass ``unix/`` to connect to unix socket)</span>
@@ -273,11 +292,12 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_protocol</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_db</span> <span class="o">=</span> <span class="n">_DbMock</span><span class="p">()</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_state</span> <span class="o">=</span> <span class="n">ConnectionState</span><span class="o">.</span><span class="n">IDLE</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_state_prev</span> <span class="o">=</span> <span class="n">ConnectionState</span><span class="o">.</span><span class="n">IDLE</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_state</span> <span class="o">=</span> <span class="n">ConnectionState</span><span class="o">.</span><span class="n">DISCONNECTED</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_state_prev</span> <span class="o">=</span> <span class="n">ConnectionState</span><span class="o">.</span><span class="n">DISCONNECTED</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_disconnect_waiter</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_reconnect_coro</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_connect_lock</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Lock</span><span class="p">(</span><span class="n">loop</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_loop</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_connect_lock</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Lock</span><span class="p">(</span><span class="n">loop</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_loop</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_disconnect_lock</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Lock</span><span class="p">(</span><span class="n">loop</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_loop</span><span class="p">)</span></div>
 
     <span class="k">def</span> <span class="nf">_set_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_state</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_state</span> <span class="o">!=</span> <span class="n">new_state</span><span class="p">:</span>
@@ -288,45 +308,41 @@
             <span class="k">return</span> <span class="kc">True</span>
         <span class="k">return</span> <span class="kc">False</span>
 
-    <span class="k">def</span> <span class="nf">connection_made</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">pass</span>
-
     <span class="k">def</span> <span class="nf">connection_lost</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exc</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_transport</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_transport</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_transport</span> <span class="o">=</span> <span class="kc">None</span>
 
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_reconnect_timeout</span> <span class="o">&gt;</span> <span class="mi">0</span> \
-                <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_state</span> <span class="o">!=</span> <span class="n">ConnectionState</span><span class="o">.</span><span class="n">DISCONNECTING</span> \
-                <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_state</span> <span class="o">!=</span> <span class="n">ConnectionState</span><span class="o">.</span><span class="n">DISCONNECTED</span><span class="p">:</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_state</span> <span class="o">==</span> <span class="n">ConnectionState</span><span class="o">.</span><span class="n">RECONNECTING</span><span class="p">:</span>
-                <span class="k">return</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_set_state</span><span class="p">(</span><span class="n">ConnectionState</span><span class="o">.</span><span class="n">DISCONNECTING</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_disconnect_waiter</span><span class="p">:</span>
+            <span class="c1"># disconnect() call happened</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_disconnect_waiter</span><span class="o">.</span><span class="n">set_result</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="c1"># connection lost</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_reconnect_timeout</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="c1"># should reconnect</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_start_reconnect</span><span class="p">(</span><span class="n">return_exceptions</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_state</span> <span class="o">!=</span> <span class="n">ConnectionState</span><span class="o">.</span><span class="n">CONNECTING</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_set_state</span><span class="p">(</span><span class="n">ConnectionState</span><span class="o">.</span><span class="n">DISCONNECTED</span><span class="p">)</span>
-                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_disconnect_waiter</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_disconnect_waiter</span><span class="o">.</span><span class="n">set_result</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_disconnect_waiter</span> <span class="o">=</span> <span class="kc">None</span>
-
-    <span class="k">def</span> <span class="nf">__create_reconnect_coro</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">return_exceptions</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_reconnect_coro</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_reconnect_coro</span><span class="o">.</span><span class="n">cancel</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_reconnect_coro</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">ensure_future</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_connect</span><span class="p">(</span><span class="n">return_exceptions</span><span class="o">=</span><span class="n">return_exceptions</span><span class="p">),</span>
-            <span class="n">loop</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_loop</span>
-        <span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_reconnect_coro</span>
+            <span class="c1"># should not reconnect, close everything</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="nf">_start_reconnect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">return_exceptions</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_state</span> <span class="o">==</span> <span class="n">ConnectionState</span><span class="o">.</span><span class="n">RECONNECTING</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Already in reconnecting state&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_state</span> <span class="ow">in</span> <span class="p">[</span><span class="n">ConnectionState</span><span class="o">.</span><span class="n">CONNECTING</span><span class="p">,</span>
+                           <span class="n">ConnectionState</span><span class="o">.</span><span class="n">RECONNECTING</span><span class="p">]:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> Already reconnecting&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">fingerprint</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_reconnect_coro</span><span class="p">:</span>
             <span class="k">return</span>
 
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> Started reconnecting&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">fingerprint</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_set_state</span><span class="p">(</span><span class="n">ConnectionState</span><span class="o">.</span><span class="n">RECONNECTING</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">__create_reconnect_coro</span><span class="p">(</span><span class="n">return_exceptions</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_reconnect_coro</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">ensure_future</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_connect</span><span class="p">(</span><span class="n">return_exceptions</span><span class="o">=</span><span class="n">return_exceptions</span><span class="p">),</span>
+            <span class="n">loop</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_loop</span>
+        <span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">protocol_factory</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">connected_fut</span><span class="p">,</span> <span class="bp">cls</span><span class="o">=</span><span class="n">protocol</span><span class="o">.</span><span class="n">Protocol</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_host</span><span class="p">,</span>
@@ -340,7 +356,7 @@
                    <span class="n">encoding</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_encoding</span><span class="p">,</span>
                    <span class="n">tuple_as_dict</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_tuple_as_dict</span><span class="p">,</span>
                    <span class="n">connected_fut</span><span class="o">=</span><span class="n">connected_fut</span><span class="p">,</span>
-                   <span class="n">on_connection_made</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">connection_made</span><span class="p">,</span>
+                   <span class="n">on_connection_made</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                    <span class="n">on_connection_lost</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">connection_lost</span><span class="p">,</span>
                    <span class="n">loop</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_loop</span><span class="p">)</span>
 
@@ -348,15 +364,13 @@
         <span class="k">async</span> <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connect_lock</span><span class="p">:</span>
             <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
                 <span class="k">try</span><span class="p">:</span>
-                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_state</span> <span class="o">==</span> <span class="n">ConnectionState</span><span class="o">.</span><span class="n">CONNECTED</span><span class="p">:</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">_reconnect_coro</span> <span class="o">=</span> <span class="kc">None</span>
-                        <span class="k">return</span>
-
                     <span class="n">ignore_states</span> <span class="o">=</span> <span class="p">{</span>
-                        <span class="n">ConnectionState</span><span class="o">.</span><span class="n">CONNECTING</span><span class="p">,</span>
-                        <span class="n">ConnectionState</span><span class="o">.</span><span class="n">DISCONNECTING</span><span class="p">,</span>
+                        <span class="n">ConnectionState</span><span class="o">.</span><span class="n">CONNECTED</span><span class="p">,</span>
+                        <span class="n">ConnectionState</span><span class="o">.</span><span class="n">DISCONNECTING</span><span class="p">,</span>  <span class="c1"># disconnect() called</span>
                     <span class="p">}</span>
+
                     <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_state</span> <span class="ow">in</span> <span class="n">ignore_states</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_reconnect_coro</span> <span class="o">=</span> <span class="kc">None</span>
                         <span class="k">return</span>
 
                     <span class="bp">self</span><span class="o">.</span><span class="n">_set_state</span><span class="p">(</span><span class="n">ConnectionState</span><span class="o">.</span><span class="n">CONNECTING</span><span class="p">)</span>
@@ -384,38 +398,31 @@
                                                       <span class="n">connected_fut</span><span class="p">),</span>
                                     <span class="bp">self</span><span class="o">.</span><span class="n">_host</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_port</span><span class="p">)</span>
 
-                            <span class="k">try</span><span class="p">:</span>
-                                <span class="n">tr</span><span class="p">,</span> <span class="n">pr</span> <span class="o">=</span> <span class="k">await</span> <span class="n">conn</span>
-                            <span class="k">except</span><span class="p">:</span>
-                                <span class="k">raise</span>
+                            <span class="n">tr</span><span class="p">,</span> <span class="n">pr</span> <span class="o">=</span> <span class="k">await</span> <span class="n">conn</span>
 
                             <span class="k">try</span><span class="p">:</span>
                                 <span class="n">timeout</span> <span class="o">=</span> <span class="mf">0.05</span>  <span class="c1"># wait at least something</span>
                                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connect_timeout</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                                    <span class="n">timeout</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connect_timeout</span><span class="o">/</span><span class="mi">2</span>
+                                    <span class="n">timeout</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connect_timeout</span> <span class="o">/</span> <span class="mi">2</span>
 
                                 <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">wait_for</span><span class="p">(</span>
                                     <span class="n">connected_fut</span><span class="p">,</span>
                                     <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">,</span>
                                     <span class="n">loop</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_loop</span><span class="p">)</span>
                             <span class="k">except</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">TimeoutError</span><span class="p">:</span>
+                                <span class="n">tr</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
                                 <span class="k">continue</span>  <span class="c1"># try to create connection again</span>
                             <span class="k">except</span><span class="p">:</span>
                                 <span class="n">tr</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-                                <span class="c1"># ignoring reconnect by on_connection_lost</span>
-                                <span class="bp">self</span><span class="o">.</span><span class="n">_set_state</span><span class="p">(</span><span class="n">ConnectionState</span><span class="o">.</span><span class="n">DISCONNECTING</span><span class="p">)</span>
                                 <span class="k">raise</span>
 
                             <span class="k">return</span> <span class="n">tr</span><span class="p">,</span> <span class="n">pr</span>
 
-                    <span class="k">try</span><span class="p">:</span>
-                        <span class="n">tr</span><span class="p">,</span> <span class="n">pr</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">wait_for</span><span class="p">(</span>
-                            <span class="n">full_connect</span><span class="p">(),</span>
-                            <span class="n">timeout</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_connect_timeout</span><span class="p">,</span>
-                            <span class="n">loop</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_loop</span>
-                        <span class="p">)</span>
-                    <span class="k">except</span><span class="p">:</span>
-                        <span class="k">raise</span>
+                    <span class="n">tr</span><span class="p">,</span> <span class="n">pr</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">wait_for</span><span class="p">(</span>
+                        <span class="n">full_connect</span><span class="p">(),</span>
+                        <span class="n">timeout</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_connect_timeout</span><span class="p">,</span>
+                        <span class="n">loop</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_loop</span>
+                    <span class="p">)</span>
 
                     <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> Connected successfully&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">fingerprint</span><span class="p">)</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_set_state</span><span class="p">(</span><span class="n">ConnectionState</span><span class="o">.</span><span class="n">CONNECTED</span><span class="p">)</span>
@@ -437,23 +444,32 @@
                         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_reconnect_timeout</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
                             <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_wait_reconnect</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
                             <span class="k">continue</span>
+
                     <span class="k">if</span> <span class="n">return_exceptions</span><span class="p">:</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">_reconnect_coro</span> <span class="o">=</span> <span class="kc">None</span>
                         <span class="k">raise</span> <span class="n">e</span>
-                    <span class="k">else</span><span class="p">:</span>
-                        <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
-                        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_reconnect_timeout</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-                            <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_wait_reconnect</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
-                            <span class="k">continue</span>
+
+                    <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_reconnect_timeout</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_wait_reconnect</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+                        <span class="k">continue</span>
+
+                    <span class="k">return</span>  <span class="c1"># no reconnect, no return_exceptions</span>
+                <span class="k">except</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">CancelledError</span><span class="p">:</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;connect is cancelled&quot;</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_reconnect_coro</span> <span class="o">=</span> <span class="kc">None</span>
+                    <span class="k">raise</span>
                 <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
                     <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_reconnect_timeout</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
                         <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_wait_reconnect</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
                         <span class="k">continue</span>
+
                     <span class="k">if</span> <span class="n">return_exceptions</span><span class="p">:</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">_reconnect_coro</span> <span class="o">=</span> <span class="kc">None</span>
                         <span class="k">raise</span> <span class="n">e</span>
-                    <span class="k">else</span><span class="p">:</span>
-                        <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+
+                    <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+                    <span class="k">return</span>  <span class="c1"># no reconnect, no return_exceptions</span>
 
     <span class="k">async</span> <span class="k">def</span> <span class="nf">_wait_reconnect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exc</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_set_state</span><span class="p">(</span><span class="n">ConnectionState</span><span class="o">.</span><span class="n">RECONNECTING</span><span class="p">)</span>
@@ -469,42 +485,50 @@
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Connect coroutine</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connect</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span></div>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connect</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
 
 <div class="viewcode-block" id="Connection.disconnect"><a class="viewcode-back" href="../../api.html#asynctnt.Connection.disconnect">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">disconnect</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Disconnect coroutine</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_state</span> <span class="ow">in</span> \
-                <span class="p">{</span><span class="n">ConnectionState</span><span class="o">.</span><span class="n">DISCONNECTING</span><span class="p">,</span> <span class="n">ConnectionState</span><span class="o">.</span><span class="n">DISCONNECTED</span><span class="p">}:</span>
-            <span class="k">return</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_set_state</span><span class="p">(</span><span class="n">ConnectionState</span><span class="o">.</span><span class="n">DISCONNECTING</span><span class="p">)</span>
 
-        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> Disconnecting...&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">fingerprint</span><span class="p">)</span>
-        <span class="n">waiter</span> <span class="o">=</span> <span class="n">_create_future</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_loop</span><span class="p">)</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_reconnect_coro</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_reconnect_coro</span><span class="o">.</span><span class="n">cancel</span><span class="p">()</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_reconnect_coro</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">async</span> <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_disconnect_lock</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_state</span> <span class="o">==</span> <span class="n">ConnectionState</span><span class="o">.</span><span class="n">DISCONNECTED</span><span class="p">:</span>
+                <span class="k">return</span>
 
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_transport</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_disconnect_waiter</span> <span class="o">=</span> <span class="n">waiter</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_transport</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_transport</span> <span class="o">=</span> <span class="kc">None</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_protocol</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_set_state</span><span class="p">(</span><span class="n">ConnectionState</span><span class="o">.</span><span class="n">DISCONNECTING</span><span class="p">)</span>
+
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> Disconnecting...&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">fingerprint</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_reconnect_coro</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_reconnect_coro</span><span class="o">.</span><span class="n">cancel</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_reconnect_coro</span> <span class="o">=</span> <span class="kc">None</span>
+
             <span class="bp">self</span><span class="o">.</span><span class="n">_db</span> <span class="o">=</span> <span class="n">_DbMock</span><span class="p">()</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">waiter</span><span class="o">.</span><span class="n">set_result</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_set_state</span><span class="p">(</span><span class="n">ConnectionState</span><span class="o">.</span><span class="n">DISCONNECTED</span><span class="p">)</span>
-        <span class="k">return</span> <span class="k">await</span> <span class="n">waiter</span></div>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_transport</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_disconnect_waiter</span> <span class="o">=</span> <span class="n">_create_future</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_loop</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_transport</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_transport</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_protocol</span> <span class="o">=</span> <span class="kc">None</span>
+
+                <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_disconnect_waiter</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_disconnect_waiter</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_set_state</span><span class="p">(</span><span class="n">ConnectionState</span><span class="o">.</span><span class="n">DISCONNECTED</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_transport</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_protocol</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_disconnect_waiter</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_set_state</span><span class="p">(</span><span class="n">ConnectionState</span><span class="o">.</span><span class="n">DISCONNECTED</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Connection.close"><a class="viewcode-back" href="../../api.html#asynctnt.Connection.close">[docs]</a>    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Same as disconnect, but not a coroutine, i.e. it does not wait</span>
 <span class="sd">            for disconnect to finish.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_state</span> <span class="ow">in</span> \
-                <span class="p">{</span><span class="n">ConnectionState</span><span class="o">.</span><span class="n">DISCONNECTING</span><span class="p">,</span> <span class="n">ConnectionState</span><span class="o">.</span><span class="n">DISCONNECTED</span><span class="p">}:</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_state</span> <span class="o">==</span> <span class="n">ConnectionState</span><span class="o">.</span><span class="n">DISCONNECTED</span><span class="p">:</span>
             <span class="k">return</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">_set_state</span><span class="p">(</span><span class="n">ConnectionState</span><span class="o">.</span><span class="n">DISCONNECTING</span><span class="p">)</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> Disconnecting...&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">fingerprint</span><span class="p">)</span>
 
@@ -513,11 +537,12 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_reconnect_coro</span> <span class="o">=</span> <span class="kc">None</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_transport</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_disconnect_waiter</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_transport</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_transport</span> <span class="o">=</span> <span class="kc">None</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_protocol</span> <span class="o">=</span> <span class="kc">None</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_db</span> <span class="o">=</span> <span class="n">_DbMock</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_transport</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_protocol</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_disconnect_waiter</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_db</span> <span class="o">=</span> <span class="n">_DbMock</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_set_state</span><span class="p">(</span><span class="n">ConnectionState</span><span class="o">.</span><span class="n">DISCONNECTED</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Connection.reconnect"><a class="viewcode-back" href="../../api.html#asynctnt.Connection.reconnect">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">reconnect</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -526,8 +551,22 @@
 <span class="sd">            Just calls disconnect() and connect()</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">disconnect</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_set_state</span><span class="p">(</span><span class="n">ConnectionState</span><span class="o">.</span><span class="n">IDLE</span><span class="p">)</span>
         <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span></div>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">__aenter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Executed on entering the async with section.</span>
+<span class="sd">            Connects to Tarantool instance.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">__aexit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exc_type</span><span class="p">,</span> <span class="n">exc_val</span><span class="p">,</span> <span class="n">exc_tb</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Executed on leaving the async with section.</span>
+<span class="sd">            Disconnects from Tarantool instance.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">disconnect</span><span class="p">()</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">fingerprint</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -631,11 +670,21 @@
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">is_connected</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">            Check if connection is active</span>
+<span class="sd">            Check if an underlying connection is active</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_protocol</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">False</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_protocol</span><span class="o">.</span><span class="n">is_connected</span><span class="p">()</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">is_fully_connected</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Check if connection is fully active (performed auth</span>
+<span class="sd">            and schema fetching)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_protocol</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_protocol</span><span class="o">.</span><span class="n">is_fully_connected</span><span class="p">()</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">schema_id</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -1028,7 +1077,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'0.1.13',
+            VERSION:'0.2.0',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',

@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Examples &mdash; asynctnt 0.1.13 documentation</title>
+  <title>Examples &mdash; asynctnt 0.2.0 documentation</title>
   
 
   
@@ -58,7 +58,7 @@
             
             
               <div class="version">
-                0.1.13
+                0.2.0
               </div>
             
           
@@ -88,6 +88,7 @@
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Examples</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#basic-usage">Basic Usage</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#example-of-using-space-format-information">Example of using space format information</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#using-connection-context-manager">Using Connection context manager</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">API Reference</a></li>
@@ -187,7 +188,6 @@
     <span class="n">values</span> <span class="o">=</span> <span class="k">await</span> <span class="n">conn</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s1">&#39;tester&#39;</span><span class="p">,</span> <span class="p">[])</span>
     <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Code: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">values</span><span class="o">.</span><span class="n">code</span><span class="p">))</span>
     <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Data: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">values</span><span class="o">.</span><span class="n">body</span><span class="p">))</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">values</span><span class="o">.</span><span class="n">body2yaml</span><span class="p">())</span>  <span class="c1"># prints as yaml</span>
 
     <span class="k">await</span> <span class="n">conn</span><span class="o">.</span><span class="n">disconnect</span><span class="p">()</span>
 
@@ -198,10 +198,6 @@
 <p>Stdout:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Code</span><span class="p">:</span> <span class="mi">0</span>
 <span class="n">Data</span><span class="p">:</span> <span class="p">[[</span><span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;hello1&#39;</span><span class="p">],</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;hello2&#39;</span><span class="p">],</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="s1">&#39;hello3&#39;</span><span class="p">],</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="s1">&#39;hello4&#39;</span><span class="p">]]</span>
-<span class="o">-</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="n">hello1</span><span class="p">]</span>
-<span class="o">-</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="n">hello2</span><span class="p">]</span>
-<span class="o">-</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="n">hello3</span><span class="p">]</span>
-<span class="o">-</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="n">hello4</span><span class="p">]</span>
 </pre></div>
 </div>
 </div>
@@ -243,7 +239,6 @@
     <span class="n">values</span> <span class="o">=</span> <span class="k">await</span> <span class="n">conn</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s1">&#39;tester&#39;</span><span class="p">,</span> <span class="p">[])</span>
     <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Code: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">values</span><span class="o">.</span><span class="n">code</span><span class="p">))</span>
     <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Data: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">values</span><span class="o">.</span><span class="n">body</span><span class="p">))</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">values</span><span class="o">.</span><span class="n">body2yaml</span><span class="p">())</span>  <span class="c1"># prints as yaml</span>
 
     <span class="k">await</span> <span class="n">conn</span><span class="o">.</span><span class="n">disconnect</span><span class="p">()</span>
 
@@ -254,10 +249,22 @@
 <p>Stdout (now got dict tuples instead of plain arrays):</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Code</span><span class="p">:</span> <span class="mi">0</span>
 <span class="n">Data</span><span class="p">:</span> <span class="p">[{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;text&#39;</span><span class="p">:</span> <span class="s1">&#39;hello1&#39;</span><span class="p">},</span> <span class="p">{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;text&#39;</span><span class="p">:</span> <span class="s1">&#39;hello2&#39;</span><span class="p">},</span> <span class="p">{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="s1">&#39;text&#39;</span><span class="p">:</span> <span class="s1">&#39;hello3&#39;</span><span class="p">},</span> <span class="p">{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span> <span class="s1">&#39;text&#39;</span><span class="p">:</span> <span class="s1">&#39;hello4&#39;</span><span class="p">}]</span>
-<span class="o">-</span> <span class="p">{</span><span class="nb">id</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="n">text</span><span class="p">:</span> <span class="n">hello1</span><span class="p">}</span>
-<span class="o">-</span> <span class="p">{</span><span class="nb">id</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="n">text</span><span class="p">:</span> <span class="n">hello2</span><span class="p">}</span>
-<span class="o">-</span> <span class="p">{</span><span class="nb">id</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="n">text</span><span class="p">:</span> <span class="n">hello3</span><span class="p">}</span>
-<span class="o">-</span> <span class="p">{</span><span class="nb">id</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span> <span class="n">text</span><span class="p">:</span> <span class="n">hello4</span><span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="using-connection-context-manager">
+<h2>Using Connection context manager<a class="headerlink" href="#using-connection-context-manager" title="Permalink to this headline">¶</a></h2>
+<div class="code python highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">asyncio</span>
+<span class="kn">import</span> <span class="nn">asynctnt</span>
+
+
+<span class="k">async</span> <span class="k">def</span> <span class="nf">run</span><span class="p">():</span>
+    <span class="k">async</span> <span class="k">with</span> <span class="n">asynctnt</span><span class="o">.</span><span class="n">Connection</span><span class="p">(</span><span class="n">port</span><span class="o">=</span><span class="mi">3301</span><span class="p">)</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="k">await</span> <span class="n">conn</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s1">&#39;box.info&#39;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">body</span><span class="p">)</span>
+
+<span class="n">loop</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">get_event_loop</span><span class="p">()</span>
+<span class="n">loop</span><span class="o">.</span><span class="n">run_until_complete</span><span class="p">(</span><span class="n">run</span><span class="p">())</span>
 </pre></div>
 </div>
 </div>
@@ -305,7 +312,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0.1.13',
+            VERSION:'0.2.0',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
