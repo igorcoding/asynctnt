@@ -22,6 +22,14 @@ Connection
    .. automethod:: __init__
 
 
+PushIterator
+============
+
+.. autoclass:: asynctnt.PushIterator
+   :members:
+
+   .. automethod:: __init__
+
 Response
 ========
 

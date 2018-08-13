@@ -12,9 +12,10 @@ import sys
 import asynctnt
 from asynctnt.instance import \
     TarantoolSyncInstance, TarantoolSyncDockerInstance
+from asynctnt import TarantoolTuple
 
 __all__ = (
-    'TestCase', 'TarantoolTestCase'
+    'TestCase', 'TarantoolTestCase', 'ensure_version', 'check_version'
 )
 
 
@@ -112,6 +113,7 @@ class TarantoolTestCase(TestCase):
     TNT_CLEANUP = True
 
     tnt = None
+    in_docker = False
 
     @classmethod
     def read_applua(cls):
@@ -124,14 +126,32 @@ class TarantoolTestCase(TestCase):
         TestCase.setUpClass()
         logging.basicConfig(level=cls.LOGGING_LEVEL,
                             stream=cls.LOGGING_STREAM)
-        tarantool_docker_version = os.getenv('TARANTOOL_DOCKER_VERSION')
-        if tarantool_docker_version:
-            print('Running tarantool in docker. Version = {}'.format(
-                tarantool_docker_version))
+        tnt, in_docker = cls._make_instance()
+        tnt.start()
+        cls.tnt = tnt
+        cls.in_docker = in_docker
+
+    @classmethod
+    def make_instance(cls):
+        obj, _ = cls._make_instance()
+        return obj
+
+    @classmethod
+    def _make_instance(cls, *args, **kwargs):
+        tarantool_docker_image = os.getenv('TARANTOOL_DOCKER_IMAGE')
+        tarantool_docker_tag = os.getenv('TARANTOOL_DOCKER_VERSION')
+        in_docker = False
+        if tarantool_docker_tag:
+            print('Running tarantool in docker: {}:{}'.format(
+                tarantool_docker_image or 'tarantool/tarantool',
+                tarantool_docker_tag))
+
             tnt = TarantoolSyncDockerInstance(
                 applua=cls.read_applua(),
-                version=tarantool_docker_version
+                docker_image=tarantool_docker_image,
+                docker_tag=tarantool_docker_tag
             )
+            in_docker = True
         else:
             unix_path = os.getenv('TARANTOOL_LISTEN_UNIX_PATH')
             if not unix_path:
@@ -149,8 +169,7 @@ class TarantoolTestCase(TestCase):
                     applua=cls.read_applua(),
                     cleanup=cls.TNT_CLEANUP
                 )
-        tnt.start()
-        cls.tnt = tnt
+        return tnt, in_docker
 
     @classmethod
     def tearDownClass(cls):
@@ -167,15 +186,18 @@ class TarantoolTestCase(TestCase):
         self.loop.run_until_complete(self.tnt_disconnect())
         super(TarantoolTestCase, self).tearDown()
 
+    @property
+    def conn(self) -> asynctnt.Connection:
+        return self._conn
+
     async def tnt_connect(self, *,
                           username=None, password=None,
                           fetch_schema=True,
                           auto_refetch_schema=False,
                           connect_timeout=None, reconnect_timeout=1/3,
                           request_timeout=None, encoding='utf-8',
-                          tuple_as_dict=False,
                           initial_read_buffer_size=None):
-        self.conn = asynctnt.Connection(
+        self._conn = asynctnt.Connection(
             host=self.tnt.host,
             port=self.tnt.port,
             username=username,
@@ -186,17 +208,66 @@ class TarantoolTestCase(TestCase):
             reconnect_timeout=reconnect_timeout,
             request_timeout=request_timeout,
             encoding=encoding,
-            tuple_as_dict=tuple_as_dict,
             initial_read_buffer_size=initial_read_buffer_size,
             loop=self.loop)
-        await self.conn.connect()
-        return self.conn
+        await self._conn.connect()
+        return self._conn
 
     async def tnt_disconnect(self):
         if hasattr(self, 'conn') and self.conn is not None:
-            await self.conn.disconnect()
-            self.conn = None
+            await self._conn.disconnect()
+            self._conn = None
 
     async def tnt_reconnect(self, **kwargs):
         await self.tnt_disconnect()
         await self.tnt_connect(**kwargs)
+
+    def assertResponseEqual(self, resp, target, *args):
+        tuples = []
+        for item in resp:
+            if isinstance(item, TarantoolTuple):
+                item = list(item)
+            tuples.append(item)
+        return self.assertListEqual(tuples, target, *args)
+
+    def assertResponseEqualKV(self, resp, target, *args):
+        tuples = []
+        for item in resp:
+            if isinstance(item, TarantoolTuple):
+                item = dict(item)
+            tuples.append(item)
+        return self.assertListEqual(tuples, target, *args)
+
+
+def ensure_version(*, min=None, max=None,
+                   min_included=False, max_included=False):
+    def check_version_wrap(f):
+        @functools.wraps(f)
+        async def wrap(self, *args, **kwargs):
+            if check_version(self, self.conn.version,
+                             min=min, max=max,
+                             min_included=min_included,
+                             max_included=max_included):
+                res = f(self, *args, **kwargs)
+                if inspect.isawaitable(res):
+                    return await res
+                return res
+        return wrap
+    return check_version_wrap
+
+
+def check_version(test, version, *, min=None, max=None,
+                  min_included=False, max_included=False):
+    if min and (version < min or (min_included and version <= min)):
+        test.skipTest(
+            'version mismatch - required min={} got={}'.format(
+                min, version))
+        return False
+
+    if max and (version > max or (max_included and version >= max)):
+        test.skipTest(
+            'version mismatch - required max={} got={}'.format(
+                max, version))
+        return False
+
+    return True

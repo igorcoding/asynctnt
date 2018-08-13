@@ -21,10 +21,10 @@ class DeleteTestCase(BaseTarantoolTestCase):
         self.assertIsInstance(res, Response, 'Got response')
         self.assertEqual(res.code, 0, 'success')
         self.assertGreater(res.sync, 0, 'sync > 0')
-        self.assertListEqual(res.body, [data[0]], 'Body ok')
+        self.assertResponseEqual(res, [data[0]], 'Body ok')
 
         res = await self.conn.select(self.TESTER_SPACE_ID, [0])
-        self.assertListEqual(res.body, [], 'Body ok')
+        self.assertResponseEqual(res, [], 'Body ok')
 
     async def test__delete_by_name(self):
         data = await self._fill_data()
@@ -33,10 +33,10 @@ class DeleteTestCase(BaseTarantoolTestCase):
         self.assertIsInstance(res, Response, 'Got response')
         self.assertEqual(res.code, 0, 'success')
         self.assertGreater(res.sync, 0, 'sync > 0')
-        self.assertListEqual(res.body, [data[0]], 'Body ok')
+        self.assertResponseEqual(res, [data[0]], 'Body ok')
 
         res = await self.conn.select(self.TESTER_SPACE_ID, [0])
-        self.assertListEqual(res.body, [], 'Body ok')
+        self.assertResponseEqual(res, [], 'Body ok')
 
     async def test__delete_by_index_id(self):
         index_name = 'temp_idx'
@@ -55,11 +55,11 @@ class DeleteTestCase(BaseTarantoolTestCase):
             self.assertIsInstance(res, Response, 'Got response')
             self.assertEqual(res.code, 0, 'success')
             self.assertGreater(res.sync, 0, 'sync > 0')
-            self.assertListEqual(res.body, [data[1]], 'Body ok')
+            self.assertResponseEqual(res, [data[1]], 'Body ok')
 
             res = await self.conn.select(self.TESTER_SPACE_ID, [data[1][2]],
                                          index=index_id)
-            self.assertListEqual(res.body, [], 'Body ok')
+            self.assertResponseEqual(res, [], 'Body ok')
         finally:
             self.tnt.command(
                 'box.space.{}.index.{}:drop()'.format(
@@ -83,11 +83,11 @@ class DeleteTestCase(BaseTarantoolTestCase):
             self.assertIsInstance(res, Response, 'Got response')
             self.assertEqual(res.code, 0, 'success')
             self.assertGreater(res.sync, 0, 'sync > 0')
-            self.assertListEqual(res.body, [data[1]], 'Body ok')
+            self.assertResponseEqual(res, [data[1]], 'Body ok')
 
             res = await self.conn.select(self.TESTER_SPACE_ID, [data[1][2]],
                                          index=index_id)
-            self.assertListEqual(res.body, [], 'Body ok')
+            self.assertResponseEqual(res, [], 'Body ok')
         finally:
             self.tnt.command(
                 'box.space.{}.index.{}:drop()'.format(
@@ -125,15 +125,14 @@ class DeleteTestCase(BaseTarantoolTestCase):
         res = await self.conn.delete(self.TESTER_SPACE_ID, {
             'f1': 0
         })
-        self.assertListEqual(res.body, [data[0]], 'Body ok')
+        self.assertResponseEqual(res, [data[0]], 'Body ok')
 
     async def test__delete_dict_resp(self):
         data = [0, 'hello', 0, 1, 'wow']
         await self.conn.insert(self.TESTER_SPACE_ID, data)
 
-        res = await self.conn.delete(self.TESTER_SPACE_ID, [0],
-                                     tuple_as_dict=True)
-        self.assertListEqual(res.body, [{
+        res = await self.conn.delete(self.TESTER_SPACE_ID, [0])
+        self.assertResponseEqualKV(res, [{
             'f1': 0,
             'f2': 'hello',
             'f3': 0,

@@ -4,6 +4,9 @@ DEF _BUFFER_MAX_GROW = 65536
 
 DEF _DEALLOCATE_RATIO = 4
 
+DEF TNT_FIELDS_FREELIST_SIZE = 128
+DEF REQUEST_FREELIST = 256
+
 # Header length description:
 # pkt_len +
 # mp_sizeof_map(2) +

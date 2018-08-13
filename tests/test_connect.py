@@ -1,12 +1,13 @@
 import asyncio
-
-from asynctnt.connection import ConnectionState
-from asynctnt.exceptions import TarantoolDatabaseError, ErrorCode, \
-    TarantoolError, TarantoolNotConnectedError
-from asynctnt.instance import TarantoolSyncInstance
-from tests import BaseTarantoolTestCase
+import uuid
 
 import asynctnt
+from asynctnt._testbase import check_version
+from asynctnt.connection import ConnectionState
+from asynctnt.exceptions import TarantoolDatabaseError, ErrorCode, \
+    TarantoolNotConnectedError
+from asynctnt.instance import TarantoolSyncInstance
+from tests import BaseTarantoolTestCase
 
 
 class ConnectTestCase(BaseTarantoolTestCase):
@@ -16,6 +17,23 @@ class ConnectTestCase(BaseTarantoolTestCase):
         conn = asynctnt.Connection(host=self.tnt.host, port=self.tnt.port,
                                    reconnect_timeout=0,
                                    loop=self.loop)
+        self.assertEqual(conn.host, self.tnt.host)
+        self.assertEqual(conn.port, self.tnt.port)
+        self.assertIsNone(conn.username)
+        self.assertIsNone(conn.password)
+        self.assertEqual(conn.reconnect_timeout, 0)
+        self.assertEqual(conn.connect_timeout, 3)
+        self.assertEqual(conn.loop, self.loop)
+        self.assertIsNone(conn.initial_read_buffer_size)
+        self.assertIsNone(conn.schema_id)
+        self.assertIsNone(conn.version)
+        self.assertEqual(
+            repr(conn),
+            "<asynctnt.Connection host={} port={} state={}>".format(
+                conn.host,
+                conn.port,
+                repr(conn.state)
+            ))
         self.assertEqual(conn.state, ConnectionState.DISCONNECTED)
 
         c = await conn.connect()
@@ -30,6 +48,69 @@ class ConnectTestCase(BaseTarantoolTestCase):
 
         await conn.call('box.info')
         await conn.disconnect()
+
+    async def test__connect_direct(self):
+        conn = await asynctnt.connect(host=self.tnt.host, port=self.tnt.port,
+                                      reconnect_timeout=0,
+                                      loop=self.loop)
+        self.assertEqual(conn.host, self.tnt.host)
+        self.assertEqual(conn.port, self.tnt.port)
+        self.assertIsNone(conn.username)
+        self.assertIsNone(conn.password)
+        self.assertEqual(conn.reconnect_timeout, 0)
+        self.assertEqual(conn.connect_timeout, 3)
+        self.assertEqual(conn.loop, self.loop)
+        self.assertIsNone(conn.initial_read_buffer_size)
+
+        self.assertIsNotNone(conn._transport)
+        self.assertIsNotNone(conn._protocol)
+        self.assertTrue(conn.is_connected)
+        self.assertTrue(conn.is_fully_connected)
+        self.assertEqual(conn.state, ConnectionState.CONNECTED)
+        self.assertIsNotNone(conn._protocol.schema)
+        self.assertIsNotNone(conn.version)
+
+        await conn.call('box.info')
+        await conn.disconnect()
+
+    async def test__connect_unix(self):
+        if self.in_docker:
+            self.skipTest('Skipping as running inside the docker')
+            return
+
+        tnt = TarantoolSyncInstance(
+            host='unix/',
+            port='/tmp/' + uuid.uuid4().hex,
+            console_host='127.0.0.1',
+            applua=self.read_applua(),
+            cleanup=self.TNT_CLEANUP
+        )
+        tnt.start()
+        try:
+            conn = await asynctnt.connect(host=tnt.host, port=tnt.port,
+                                          reconnect_timeout=0,
+                                          loop=self.loop)
+            self.assertEqual(conn.host, tnt.host)
+            self.assertEqual(conn.port, tnt.port)
+            self.assertIsNone(conn.username)
+            self.assertIsNone(conn.password)
+            self.assertEqual(conn.reconnect_timeout, 0)
+            self.assertEqual(conn.connect_timeout, 3)
+            self.assertEqual(conn.loop, self.loop)
+            self.assertIsNone(conn.initial_read_buffer_size)
+
+            self.assertIsNotNone(conn._transport)
+            self.assertIsNotNone(conn._protocol)
+            self.assertTrue(conn.is_connected)
+            self.assertTrue(conn.is_fully_connected)
+            self.assertEqual(conn.state, ConnectionState.CONNECTED)
+            self.assertIsNotNone(conn._protocol.schema)
+            self.assertIsNotNone(conn.version)
+
+            await conn.call('box.info')
+            await conn.disconnect()
+        finally:
+            tnt.stop()
 
     async def test__connect_contextmanager(self):
         conn = asynctnt.Connection(host=self.tnt.host, port=self.tnt.port,
@@ -114,6 +195,8 @@ class ConnectTestCase(BaseTarantoolTestCase):
                                    auto_refetch_schema=False,
                                    reconnect_timeout=0,
                                    loop=self.loop)
+        self.assertEqual(conn.username, 't1')
+        self.assertEqual(conn.password, 't1')
         async with conn:
             self.assertIsNotNone(conn._transport)
             self.assertIsNotNone(conn._protocol)
@@ -168,12 +251,35 @@ class ConnectTestCase(BaseTarantoolTestCase):
                                    username='t1', password='t1',
                                    reconnect_timeout=0.1,
                                    loop=self.loop)
+        self.assertEqual(conn.reconnect_timeout, 0.1)
         try:
             await conn.connect()
             self.tnt.stop()
             await self.sleep(0.5)
 
             await conn.disconnect()
+
+            self.assertFalse(conn.is_connected)
+            self.assertFalse(conn.is_fully_connected)
+            self.assertEqual(conn.state, ConnectionState.DISCONNECTED)
+
+            with self.assertRaises(TarantoolNotConnectedError):
+                await conn.call('box.info')
+        finally:
+            self.tnt.start()
+
+    async def test__close_while_reconnecting(self):
+        conn = asynctnt.Connection(host=self.tnt.host, port=self.tnt.port,
+                                   username='t1', password='t1',
+                                   reconnect_timeout=0.1,
+                                   loop=self.loop)
+        self.assertEqual(conn.reconnect_timeout, 0.1)
+        try:
+            await conn.connect()
+            self.tnt.stop()
+            await self.sleep(0.5)
+
+            conn.close()
 
             self.assertFalse(conn.is_connected)
             self.assertFalse(conn.is_fully_connected)
@@ -213,6 +319,14 @@ class ConnectTestCase(BaseTarantoolTestCase):
         finally:
             await conn.disconnect()
 
+    async def test__connect_error_no_reconnect(self):
+        conn = asynctnt.Connection(host="127.0.0.1", port=1,
+                                   fetch_schema=True,
+                                   reconnect_timeout=0,
+                                   loop=self.loop)
+        with self.assertRaises(ConnectionRefusedError):
+            await conn.connect()
+
     async def test__connect_wait_tnt_started(self):
         self.tnt.stop()
         conn = asynctnt.Connection(host=self.tnt.host, port=self.tnt.port,
@@ -243,45 +357,138 @@ class ConnectTestCase(BaseTarantoolTestCase):
             await conn.disconnect()
 
     async def test__connect_waiting_for_spaces(self):
-        tnt = TarantoolSyncInstance(
-            port=TarantoolSyncInstance.get_random_port(),
-            console_port=TarantoolSyncInstance.get_random_port(),
-            applua=self.read_applua(),
-            cleanup=self.TNT_CLEANUP
-        )
-        tnt.replication_source = ['x:1']
-        tnt.start(wait=False)
+        if self.in_docker:
+            self.skipTest('not running in docker')
+            return
 
-        conn = asynctnt.Connection(host=tnt.host, port=tnt.port,
-                                   fetch_schema=True,
-                                   reconnect_timeout=0.1,
-                                   connect_timeout=10,
-                                   loop=self.loop)
-        try:
-            states = {}
+        with self.make_instance() as tnt:
+            tnt.replication_source = ['x:1']
+            tnt.start(wait=False)
 
-            async def state_checker():
-                while True:
-                    states[conn.state] = True
-                    await self.sleep(0.001)
-
-            checker = self.ensure_future(state_checker())
-
+            conn = asynctnt.Connection(host=tnt.host, port=tnt.port,
+                                       fetch_schema=True,
+                                       reconnect_timeout=0.1,
+                                       connect_timeout=10,
+                                       loop=self.loop)
+            self.assertEqual(conn.connect_timeout, 10)
             try:
-                await asyncio.wait_for(conn.connect(), 1, loop=self.loop)
-            except asyncio.TimeoutError:
-                self.assertTrue(True, 'connect cancelled')
+                states = {}
 
-            checker.cancel()
+                async def state_checker():
+                    while True:
+                        states[conn.state] = True
+                        await self.sleep(0.001)
 
-            self.assertTrue(states.get(ConnectionState.CONNECTING, False),
-                            'was in connecting')
+                checker = self.ensure_future(state_checker())
 
-            with self.assertRaises(TarantoolNotConnectedError):
-                await conn.call('box.info')
-        finally:
-            tnt.stop()
-            await conn.disconnect()
+                try:
+                    await asyncio.wait_for(conn.connect(), 1, loop=self.loop)
+                except asyncio.TimeoutError:
+                    self.assertTrue(True, 'connect cancelled')
+
+                checker.cancel()
+
+                self.assertTrue(states.get(ConnectionState.CONNECTING, False),
+                                'was in connecting')
+
+                with self.assertRaises(TarantoolNotConnectedError):
+                    await conn.call('box.info')
+            finally:
+                await conn.disconnect()
+
+    async def test__connect_waiting_for_spaces_no_reconnect(self):
+        if self.in_docker:
+            self.skipTest('not running in docker')
+            return
+
+        with self.make_instance() as tnt:
+            tnt.replication_source = ['x:1']
+            tnt.start(wait=False)
+            await self.sleep(1)
+
+            if not check_version(self, tnt.version(), min=(1, 7)):
+                return
+
+            conn = asynctnt.Connection(host=tnt.host, port=tnt.port,
+                                       fetch_schema=True,
+                                       reconnect_timeout=0,
+                                       connect_timeout=10,
+                                       loop=self.loop)
+            try:
+                with self.assertRaises(TarantoolDatabaseError) as e:
+                    await conn.connect()
+
+                self.assertEqual(e.exception.code, ErrorCode.ER_NO_SUCH_SPACE)
+            finally:
+                await conn.disconnect()
+
+    async def test__connect_waiting_for_spaces_no_reconnect_1_6(self):
+        with self.make_instance() as tnt:
+            tnt.replication_source = ['x:1']
+            tnt.start(wait=False)
+            await self.sleep(1)
+
+            if not check_version(self, tnt.version(), max=(1, 7)):
+                return
+
+            conn = asynctnt.Connection(host=tnt.host, port=tnt.port,
+                                       fetch_schema=True,
+                                       reconnect_timeout=0,
+                                       connect_timeout=10,
+                                       loop=self.loop)
+            try:
+                with self.assertRaises(ConnectionRefusedError):
+                    await conn.connect()
+            finally:
+                await conn.disconnect()
+
+    async def test__connect_err_loading(self):
+        if self.in_docker:
+            self.skipTest('not running in docker')
+            return
+
+        with self.make_instance() as tnt:
+            tnt.replication_source = ['x:1']
+            tnt.start(wait=False)
+            await self.sleep(1)
+
+            if not check_version(self, tnt.version(), min=(1, 7)):
+                return
+
+            conn = asynctnt.Connection(host=tnt.host, port=tnt.port,
+                                       username='t1', password='t1',
+                                       fetch_schema=True,
+                                       reconnect_timeout=0,
+                                       connect_timeout=10,
+                                       loop=self.loop)
+            try:
+                with self.assertRaises(TarantoolDatabaseError) as e:
+                    await conn.connect()
+
+                self.assertEqual(e.exception.code, ErrorCode.ER_LOADING)
+            finally:
+                await conn.disconnect()
+
+    async def test__connect_err_loading_1_6(self):
+        with self.make_instance() as tnt:
+            tnt.replication_source = ['x:1']
+            tnt.start(wait=False)
+
+            await self.sleep(1)
+            if not check_version(self, tnt.version(), max=(1, 7)):
+                return
+
+            conn = asynctnt.Connection(host=tnt.host, port=tnt.port,
+                                       username='t1', password='t1',
+                                       fetch_schema=True,
+                                       reconnect_timeout=0,
+                                       connect_timeout=10,
+                                       loop=self.loop)
+            try:
+                with self.assertRaises(ConnectionRefusedError):
+                    await conn.connect()
+            finally:
+                await conn.disconnect()
 
     async def test__connect_tnt_restarted(self):
         conn = asynctnt.Connection(host=self.tnt.host, port=self.tnt.port,
@@ -383,18 +590,6 @@ class ConnectTestCase(BaseTarantoolTestCase):
             await conn.call('box.info')
         finally:
             await conn.disconnect()
-
-    async def test__connect_tuple_as_dict_invalid(self):
-        with self.assertRaisesRegex(
-                TarantoolError,
-                'fetch_schema must be True to be able to use '
-                'unpacking tuples to dict'):
-            asynctnt.Connection(host=self.tnt.host,
-                                port=self.tnt.port,
-                                fetch_schema=False,
-                                auto_refetch_schema=False,
-                                tuple_as_dict=True,
-                                loop=self.loop)
 
     async def test__connect_from_multiple_coroutines(self):
         conn = asynctnt.Connection(host=self.tnt.host, port=self.tnt.port,
@@ -502,5 +697,58 @@ class ConnectTestCase(BaseTarantoolTestCase):
             await conn.connect()  # this connect should reconnect easily
 
             await conn.call('box.info')
+        finally:
+            await conn.disconnect()
+
+    async def test__connect_invalid_user_no_reconnect(self):
+        conn = asynctnt.Connection(host=self.tnt.host, port=self.tnt.port,
+                                   username='fancy', password='man',
+                                   connect_timeout=1,
+                                   reconnect_timeout=0,
+                                   loop=self.loop)
+        with self.assertRaises(TarantoolDatabaseError) as e:
+            await conn.connect()
+
+        self.assertEqual(e.exception.code, ErrorCode.ER_NO_SUCH_USER)
+
+    async def test__connect_invalid_user_with_reconnect(self):
+        conn = asynctnt.Connection(host=self.tnt.host, port=self.tnt.port,
+                                   fetch_schema=True,
+                                   reconnect_timeout=0.1,
+                                   connect_timeout=10,
+                                   loop=self.loop)
+        await conn.connect()  # first connect successfully
+
+        # then change credentials
+        conn._username = 'fancy'
+        conn._password = 'man'
+
+        self.tnt.stop()
+        self.tnt.start()
+        await self.sleep(0.1)
+        try:
+            states = {}
+
+            async def state_checker():
+                while True:
+                    states[conn.state] = True
+                    await self.sleep(0.001)
+
+            checker = self.ensure_future(state_checker())
+
+            try:
+                await asyncio.wait_for(conn.connect(), 1, loop=self.loop)
+            except asyncio.TimeoutError:
+                self.assertTrue(True, 'connect cancelled')
+
+            checker.cancel()
+
+            self.assertTrue(states.get(ConnectionState.CONNECTING, False),
+                            'was in connecting')
+            self.assertTrue(states.get(ConnectionState.RECONNECTING, False),
+                            'was in connecting')
+
+            with self.assertRaises(TarantoolNotConnectedError):
+                await conn.call('box.info')
         finally:
             await conn.disconnect()

@@ -12,7 +12,7 @@ class EvalTestCase(BaseTarantoolTestCase):
         self.assertIsInstance(res, Response, 'Got eval response')
         self.assertEqual(res.code, 0, 'success')
         self.assertGreater(res.sync, 0, 'sync > 0')
-        self.assertListEqual(res.body, ['hola'], 'Body ok')
+        self.assertResponseEqual(res, ['hola'], 'Body ok')
 
     async def test__eval_basic_pack(self):
         res = await self.conn.eval('return {"hola"}')
@@ -20,19 +20,19 @@ class EvalTestCase(BaseTarantoolTestCase):
         self.assertIsInstance(res, Response, 'Got eval response')
         self.assertEqual(res.code, 0, 'success')
         self.assertGreater(res.sync, 0, 'sync > 0')
-        self.assertListEqual(res.body, [['hola']], 'Body ok')
+        self.assertResponseEqual(res, [['hola']], 'Body ok')
 
     async def test__eval_with_param(self):
         args = [1, 2, 3, 'hello']
         res = await self.conn.eval('return ...', args)
 
-        self.assertListEqual(res.body, args, 'Body ok')
+        self.assertResponseEqual(res, args, 'Body ok')
 
     async def test__eval_with_param_pack(self):
         args = [1, 2, 3, 'hello']
         res = await self.conn.eval('return {...}', args)
 
-        self.assertListEqual(res.body, [args], 'Body ok')
+        self.assertResponseEqual(res, [args], 'Body ok')
 
     async def test__eval_func_name_invalid_type(self):
         with self.assertRaises(TypeError):
@@ -66,7 +66,7 @@ class EvalTestCase(BaseTarantoolTestCase):
     async def test__eval_complex_param(self):
         p, cmp = get_complex_param(encoding=self.conn.encoding)
         res = await self.conn.eval('return {...}', [p])
-        self.assertDictEqual(res.body[0][0], cmp, 'Body ok')
+        self.assertDictEqual(res[0][0], cmp, 'Body ok')
 
     async def test__eval_timeout_in_time(self):
         try:

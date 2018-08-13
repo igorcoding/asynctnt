@@ -1,101 +1,172 @@
-cimport cpython.unicode
+import asyncio
+import collections
+from typing import Optional
+
+cimport cpython
 cimport cpython.list
 cimport cpython.dict
 
-from libc.stdint cimport uint32_t, uint64_t, int64_t
-
-cimport tnt
+from libc.stdint cimport uint32_t
+from libc cimport stdio
 
 from asynctnt.log import logger
-import yaml
 
 
+@cython.final
+@cython.freelist(REQUEST_FREELIST)
 cdef class Response:
     """
         Response object for all the requests to Tarantool
     """
-    def __cinit__(self):
+
+    def __cinit__(self, bytes encoding, bint push_subscribe, loop):
         self._sync = 0
-        self._code = 0
-        self._return_code = 0
+        self._code = -1
+        self._return_code = -1
         self._schema_id = -1
         self._errmsg = None
+        self._rowcount = 0
         self._body = None
-        self._encoding = None
-        self._req = None
+        self._encoding = encoding
+        self._fields = None
+        self._push_subscribe = push_subscribe
+        if push_subscribe:
+            self._q = collections.deque()
+            self._push_event = asyncio.Event(loop=loop)
 
-    @staticmethod
-    cdef inline Response new(bytes encoding):
-        cdef Response resp
-        resp = Response.__new__(Response)
-        resp._encoding = encoding
-        return resp
+            self._q_append = self._q.append
+            self._q_popleft = self._q.popleft
+            self._push_event_set = self._push_event.set
+            self._push_event_clear = self._push_event.clear
+        else:
+            self._q = None
+            self._push_event = None
 
     cdef inline bint is_error(self):
-        return self._code != 0
+        return self._code >= 0x8000
+
+    cdef inline void add_push(self, push):
+        if not self._push_subscribe:
+            return
+
+        self._q_append(push)
+        self.notify()
+
+    cdef inline object push_len(self):
+        return len(self._q)
+
+    cdef inline object pop_push(self):
+        if not self._push_subscribe:
+            raise RuntimeError('Cannot pop push from a non-async response')
+
+        push = self._q_popleft()
+        if len(self._q) == 0:
+            self._push_event_clear()
+        return push
+
+    cdef inline void set_data(self, list data):
+        self._body = data
+        self.notify()
+
+    cdef inline void set_exception(self, exc):
+        self._exception = exc
+        self.notify()
+
+    cdef inline object get_exception(self):
+        return self._exception
+
+    cdef inline void notify(self):
+        if self._push_subscribe:
+            self._push_event_set()  # Notify that there is no more data
 
     def __repr__(self):  # pragma: nocover
-        body_len = None
-        if self._body is not None:
-            body_len = len(self._body)
-        return '<Response: code={}, sync={}, body_len={}>'.format(
-            self._code, self._sync, body_len)
+        data = self._body
+        if data is not None:
+            if len(data) > 10:
+                parts = map(lambda x: ', '.join(map(repr, x)), [
+                    data[:5],
+                    data[-2:]
+                ])
 
-    def body2yaml(self):  # pragma: nocover
-        """
-            Dumps body to YAML (for pretty formatting)
-            :return: YAML-formatted string
-        """
-        return yaml.dump(self._body, allow_unicode=True)
+                data = ' ... '.join(parts)
+                data = '[' + data + ']'
+
+        return '<{} sync={} rowcount={} data={}>'.format(
+            self.__class__.__name__, self.sync, self.rowcount, data)
 
     @property
-    def sync(self):
+    def sync(self) -> int:
         """
             Response's sync (incremental id) for the corresponding request
         """
         return self._sync
 
     @property
-    def code(self):
+    def code(self) -> int:
         """
             Response code (0 - success)
         """
         return self._code
 
     @property
-    def return_code(self):
+    def return_code(self) -> int:
         """
             Response return code (It's essentially a code & 0x7FFF)
         """
         return self._return_code
 
     @property
-    def schema_id(self):
+    def schema_id(self) -> int:
         """
             Current scema id in Tarantool
         """
         return self._schema_id
 
     @property
-    def errmsg(self):
+    def errmsg(self) -> Optional[str]:
         """
             If self.code != 0 then errmsg contains an error message
         """
         return self._errmsg
 
     @property
-    def body(self):
+    def body(self) -> Optional[list]:
         """
-            Return body. Always a list.
+            Response body
         """
         return self._body
 
     @property
-    def encoding(self):
+    def encoding(self) -> str:
         """
             Response encoding
         """
         return self._encoding
+
+    @property
+    def rowcount(self) -> int:
+        if self._body is not None:
+            self_len = self._len()
+            if self_len > 0:
+                return self_len
+        return self._rowcount
+
+    def done(self):
+        return self._code >= 0
+
+    cdef inline uint32_t _len(self):
+        return <uint32_t>cpython.list.PyList_GET_SIZE(self._body)
+
+    def __len__(self) -> int:
+        if self._body is not None:
+            return <int>self._len()
+        return 0
+
+    def __getitem__(self, i):
+        return self._body[i]
+
+    def __iter__(self):
+        return iter(self._body)
 
 
 cdef object _decode_obj(const char **p, bytes encoding):
@@ -142,9 +213,11 @@ cdef object _decode_obj(const char **p, bytes encoding):
         return mp_decode_double(p)
     elif obj_type == MP_ARRAY:
         arr_size = mp_decode_array(p)
-        value = []
+        value = cpython.list.PyList_New(arr_size)
         for i in range(arr_size):
-            value.append(_decode_obj(p, encoding))
+            el = _decode_obj(p, encoding)
+            cpython.Py_INCREF(el)
+            cpython.list.PyList_SET_ITEM(value, i, el)
         return value
     elif obj_type == MP_MAP:
         map = {}
@@ -184,53 +257,42 @@ cdef object _decode_obj(const char **p, bytes encoding):
         return None
 
 
-cdef list _response_parse_body_data(const char **b, Response resp):
+cdef list _response_parse_body_data(const char **b,
+                                    Response resp, Request req):
     cdef:
         uint32_t size
-        uint32_t tuple_size, max_tuple_size
+        uint32_t tuple_size
         list tuples
-        uint32_t i, k
+        uint32_t i
 
-        Request req
-        dict d
-        str field_name
-        object value
-        list fields
+        TntFields fields
 
     size = mp_decode_array(b)
     tuples = []
-    req = resp._req
-    if req is not None \
-            and req.tuple_as_dict \
-            and req.space is not None \
-            and req.space.fields is not None:
-        # decode as dicts
 
-        fields = req.space.fields
-        max_tuple_size = <uint32_t>cpython.list.PyList_GET_SIZE(fields)
+    if req.parse_as_tuples:
+        # decode as TarantoolTuples
+
+        fields = resp._fields
+        if fields is None:
+            fields = req.fields()
 
         for i in range(size):
             if mp_typeof(b[0][0]) != MP_ARRAY:  # pragma: nocover
                 raise TypeError(
-                    'Tuple must be an array when decoding as dict'
+                    'Tuple must be an array when decoding as TarantoolTuple'
                 )
-            d = {}
-            unknown_fields = None
-            tuple_size = mp_decode_array(b)
-            for k in range(tuple_size):
-                value = _decode_obj(b, resp._encoding)
-                if k < max_tuple_size:
-                    field_name = <str>cpython.list.PyList_GET_ITEM(fields, k)
-                    d[field_name] = value
-                else:
-                    if unknown_fields is None:
-                        unknown_fields = []
-                    unknown_fields.append(value)
 
-            if unknown_fields is not None:
-                d[''] = unknown_fields
-            tuples.append(d)
+            tuple_size = mp_decode_array(b)
+            t = tupleobj.AtntTuple_New(fields, <int>tuple_size)
+            for i in range(tuple_size):
+                value = _decode_obj(b, resp._encoding)
+                cpython.Py_INCREF(value)
+                tupleobj.AtntTuple_SET_ITEM(t, i, value)
+
+            tuples.append(t)
     else:
+        # decode as raw objects
         for i in range(size):
             tuples.append(_decode_obj(b, resp._encoding))
 
@@ -238,13 +300,16 @@ cdef list _response_parse_body_data(const char **b, Response resp):
 
 
 cdef ssize_t response_parse_header(const char *buf, uint32_t buf_len,
-                                   Response resp) except -1:
+                                   Header *hdr) except -1:
     cdef:
         const char *b
         uint32_t size
         uint32_t key
 
     b = <const char*>buf
+    # mp_fprint(stdio.stdout, b)
+    # stdio.fprintf(stdio.stdout, "\n")
+
     if mp_typeof(b[0]) != MP_MAP:  # pragma: nocover
         raise TypeError('Response header must be a MP_MAP')
 
@@ -255,22 +320,22 @@ cdef ssize_t response_parse_header(const char *buf, uint32_t buf_len,
             raise TypeError('Header key must be a MP_UINT')
 
         key = mp_decode_uint(&b)
-        if key == tnt.TP_CODE:
+        if key == tarantool.IPROTO_REQUEST_TYPE:
             if mp_typeof(b[0]) != MP_UINT:  # pragma: nocover
                 raise TypeError('code type must be a MP_UINT')
 
-            resp._code = <uint32_t>mp_decode_uint(&b)
-            resp._return_code = resp._code & 0x7FFF
-        elif key == tnt.TP_SYNC:
+            hdr.code = <uint32_t>mp_decode_uint(&b)
+            hdr.return_code = hdr.code & 0x7FFF
+        elif key == tarantool.IPROTO_SYNC:
             if mp_typeof(b[0]) != MP_UINT:  # pragma: nocover
                 raise TypeError('sync type must be a MP_UINT')
 
-            resp._sync = mp_decode_uint(&b)
-        elif key == tnt.TP_SCHEMA_ID:
+            hdr.sync = mp_decode_uint(&b)
+        elif key == tarantool.IPROTO_SCHEMA_VERSION:
             if mp_typeof(b[0]) != MP_UINT:  # pragma: nocover
                 raise TypeError('schema_id type must be a MP_UINT')
 
-            resp._schema_id = mp_decode_uint(&b)
+            hdr.schema_id = mp_decode_uint(&b)
         else:  # pragma: nocover
             logger.warning(
                 'Unknown key with code \'%d\' in header. Skipping.', key)
@@ -280,20 +345,25 @@ cdef ssize_t response_parse_header(const char *buf, uint32_t buf_len,
 
 
 cdef ssize_t response_parse_body(const char *buf, uint32_t buf_len,
-                                 Response resp) except -1:
+                                 Response resp, Request req,
+                                 bint is_chunk) except -1:
     cdef:
         const char *b
         uint32_t size
+        uint32_t arr_size
+        uint32_t field_map_size
         uint32_t key
         uint32_t s_len
+        uint32_t i
         const char *s
+        list data
+        str field_name, field_type
 
     b = <const char*>buf
+    # mp_fprint(stdio.stdout, b)
+    # stdio.fprintf(stdio.stdout, "\n")
 
     # parsing body
-    if b == &buf[buf_len]:
-        # buffer exceeded
-        return 0
 
     if mp_typeof(b[0]) != MP_MAP:  # pragma: nocover
         raise TypeError('Response body must be a MP_MAP')
@@ -304,7 +374,7 @@ cdef ssize_t response_parse_body(const char *buf, uint32_t buf_len,
             raise TypeError('Header key must be a MP_UINT')
 
         key = mp_decode_uint(&b)
-        if key == tnt.TP_ERROR:
+        if key == tarantool.IPROTO_ERROR:
             if mp_typeof(b[0]) != MP_STR:  # pragma: nocover
                 raise TypeError('errstr type must be a MP_STR')
 
@@ -312,9 +382,72 @@ cdef ssize_t response_parse_body(const char *buf, uint32_t buf_len,
             s_len = 0
             s = mp_decode_str(&b, &s_len)
             resp._errmsg = decode_string(s[:s_len], resp._encoding)
-        elif key == tnt.TP_DATA:
+        elif key == tarantool.IPROTO_METADATA:
+            if not req.parse_metadata:
+                mp_next(&b)
+                continue
+
+            resp._fields = TntFields.__new__(TntFields)
+
+            arr_size = mp_decode_array(&b)
+            for i in range(arr_size):
+                field_map_size = mp_decode_map(&b)
+                if field_map_size == 0:
+                    raise RuntimeError('Field map must contain at least '
+                                       '1 element - field_name')
+
+                field_id = i
+                field_name = None
+                field_type = None
+                for _ in range(field_map_size):
+                    key = mp_decode_uint(&b)
+                    if key == tarantool.IPROTO_FIELD_NAME:
+                        s = NULL
+                        s_len = 0
+                        s = mp_decode_str(&b, &s_len)
+                        field_name = \
+                            decode_string(s[:s_len], resp._encoding)
+                    elif key == tarantool.IPROTO_FIELD_TYPE:
+                        s = NULL
+                        s_len = 0
+                        s = mp_decode_str(&b, &s_len)
+                        field_type = \
+                            decode_string(s[:s_len], resp._encoding)
+                    else:
+                        logger.warning(
+                            'unknown key in metadata decoding: %d', key)
+                        mp_next(&b)
+
+                if field_name is None:
+                    raise RuntimeError('field_name must not be None')
+
+                resp._fields.add(field_id, field_name)
+
+        elif key == tarantool.IPROTO_SQL_INFO:
+            field_map_size = mp_decode_map(&b)
+            if field_map_size == 0:
+                raise RuntimeError('Field map must contain at least '
+                                   '1 element - rowcount')
+
+            for _ in range(field_map_size):
+                key = mp_decode_uint(&b)
+                if key == tarantool.SQL_INFO_ROW_COUNT:
+                    resp._rowcount = mp_decode_uint(&b)
+                else:
+                    logger.warning('unknown key in sql info decoding: %d', key)
+                    mp_next(&b)
+
+        elif key == tarantool.IPROTO_DATA:
             if mp_typeof(b[0]) != MP_ARRAY:  # pragma: nocover
                 raise TypeError('body data type must be a MP_ARRAY')
-            resp._body = _response_parse_body_data(&b, resp)
+            data = _response_parse_body_data(&b, resp, req)
+            if is_chunk:
+                resp.add_push(data)
+            else:
+                resp.set_data(data)
+
+        else:
+            logger.warning('unknown key in body map: %d', int(key))
+            mp_next(&b)
 
     return <ssize_t>(b - buf)

@@ -1,15 +1,19 @@
+cimport asynctnt.iproto.tupleobj as tupleobj
+cimport asynctnt.iproto.tarantool as tarantool
+
 include "const.pxi"
 
 include "cmsgpuck.pxd"
 include "python.pxd"
 
-include "unicode.pxd"
+include "unicodeutil.pxd"
+include "schema.pxd"
 include "buffer.pxd"
 include "rbuffer.pxd"
 include "request.pxd"
 include "response.pxd"
-include "schema.pxd"
 include "db.pxd"
+include "push.pxd"
 
 include "coreproto.pxd"
 
@@ -21,7 +25,6 @@ cdef class BaseProtocol(CoreProtocol):
         str password
         bint fetch_schema
         bint auto_refetch_schema
-        bint tuple_as_dict
         float request_timeout
 
         object connected_fut
@@ -35,6 +38,8 @@ cdef class BaseProtocol(CoreProtocol):
         uint64_t _sync
         Schema _schema
         int64_t _schema_id
+        bint _schema_fetch_in_progress
+        object _refetch_schema_future
         Db _db
 
         object create_future
@@ -44,11 +49,11 @@ cdef class BaseProtocol(CoreProtocol):
 
     cdef void _do_auth(self, str username, str password)
     cdef void _do_fetch_schema(self, object fut)
+    cdef object _refetch_schema(self)
 
-    cdef uint64_t next_sync(self)
-    cdef bint is_closing(self)
+    cdef inline uint64_t next_sync(self)
     cdef uint32_t transform_iterator(self, iterator) except *
 
     cdef object _new_waiter_for_request(self, Request req, float timeout)
     cdef Db _create_db(self)
-    cdef object execute(self, Request req, float timeout)
+    cdef object execute(self, Request req, WriteBuffer buf, float timeout)

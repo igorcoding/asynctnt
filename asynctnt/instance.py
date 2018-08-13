@@ -6,22 +6,26 @@ import logging
 import math
 import os
 import random
+import re
 import select
 import shutil
 import socket
 import string
 import subprocess
 import time
+from typing import Optional
+
 import yaml
 
 from threading import Thread
-
 
 __all__ = (
     'TarantoolInstanceProtocol', 'TarantoolInstance',
     'TarantoolAsyncInstance', 'TarantoolSyncInstance',
     'TarantoolSyncDockerInstance'
 )
+
+VERSION_STRING_REGEX = re.compile(r'\s*([\d.]+).*')
 
 
 class TarantoolInstanceProtocol(asyncio.SubprocessProtocol):
@@ -169,9 +173,9 @@ class TarantoolInstance(metaclass=abc.ABCMeta):
 
     def _random_string(self,
                        length, *,
-                       source=string.ascii_uppercase +
-                              string.ascii_lowercase +
-                              string.digits):
+                       source=string.ascii_uppercase
+                              + string.ascii_lowercase
+                              + string.digits):
         return ''.join(random.choice(source) for _ in range(length))
 
     def _generate_title(self):
@@ -196,19 +200,68 @@ class TarantoolInstance(metaclass=abc.ABCMeta):
 
     def _create_initlua_template(self):
         return """
-            
-            box.cfg{
+            local function check_version(expected, version)
+                -- from tarantool/queue compat.lua
+                local fun = require 'fun'
+                local iter, op  = fun.iter, fun.operator
+                local function split(self, sep)
+                    local sep, fields = sep or ":", {}
+                    local pattern = string.format("([^%s]+)", sep)
+                    self:gsub(pattern, function(c) table.insert(fields, c) end)
+                    return fields
+                end
+
+                local function reducer(res, l, r)
+                    if res ~= nil then
+                        return res
+                    end
+                    if tonumber(l) == tonumber(r) then
+                        return nil
+                    end
+                    return tonumber(l) > tonumber(r)
+                end
+
+                local function split_version(version_string)
+                    local vtable  = split(version_string, '.')
+                    local vtable2 = split(vtable[3],  '-')
+                    vtable[3], vtable[4] = vtable2[1], vtable2[2]
+                    return vtable
+                end
+
+                local function check_version_internal(expected, version)
+                    version = version or _TARANTOOL
+                    if type(version) == 'string' then
+                        version = split_version(version)
+                    end
+                    local res = iter(version):zip(expected)
+                                             :reduce(reducer, nil)
+                    if res or res == nil then res = true end
+                    return res
+                end
+
+                return check_version_internal(expected, version)
+            end
+            local cfg = {
               listen = "${host}:${port}",
               wal_mode = "${wal_mode}",
               custom_proc_title = "${custom_proc_title}",
               slab_alloc_arena = ${slab_alloc_arena},
-              replication = ${replication_source},
               work_dir = ${work_dir},
               log_level = ${log_level}
             }
+            if check_version({1, 7}, _TARANTOOL) then
+                cfg.replication = ${replication_source}
+            else
+                local repl = ${replication_source}
+                if type(repl) == 'table' then
+                    repl = table.concat(repl, ',')
+                end
+                cfg.replication_source = repl
+            end
+            require('console').listen("${console_host}:${console_port}")
+            box.cfg(cfg)
             box.schema.user.grant("guest", "read,write,execute", "universe",
                                   nil, {if_not_exists = true})
-            require('console').listen("${console_host}:${console_port}")
             ${applua}
         """
 
@@ -313,6 +366,8 @@ class TarantoolInstance(metaclass=abc.ABCMeta):
         self._is_running = False
         if self._cleanup:
             shutil.rmtree(self._root, ignore_errors=True)
+        if self.host == 'unix/':
+            shutil.rmtree(self.port, ignore_errors=True)
         self._logger.info('Destroyed Tarantool instance (%s)', self._title)
 
 
@@ -375,6 +430,12 @@ class TarantoolSyncInstance(TarantoolInstance):
         super().__init__(**kwargs)
         self._process = None
         self._logger_thread = None
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.stop()
 
     @property
     def pid(self):
@@ -501,6 +562,16 @@ class TarantoolSyncInstance(TarantoolInstance):
             self._logger_thread.join()
         super().cleanup()
 
+    def version(self) -> Optional[tuple]:
+        res = self.command("box.info.version")
+        if not res:
+            return None
+        res = res[0]
+        m = VERSION_STRING_REGEX.match(res)
+        if m is not None:
+            ver = m.group(1)
+            return tuple(map(int, ver.split('.')))
+
     def command(self, cmd, print_greeting=True):
         s = TcpSocket(self._console_host, self._console_port)
         try:
@@ -549,6 +620,9 @@ class TarantoolAsyncInstance(TarantoolInstance):
 
     async def wait_stopped(self):
         return await self._stop_event.wait()
+
+    async def version(self):
+        return await self.command("box.info.version")
 
     async def command(self, cmd, print_greeting=True):
         reader, writer = await asyncio.open_connection(
@@ -657,7 +731,8 @@ class TarantoolAsyncInstance(TarantoolInstance):
 
 class TarantoolSyncDockerInstance(TarantoolSyncInstance):
     def __init__(self, *,
-                 version='1.7',
+                 docker_image=None,
+                 docker_tag=None,
                  host='0.0.0.0',
                  port=3301,
                  console_host=None,
@@ -680,20 +755,23 @@ class TarantoolSyncDockerInstance(TarantoolSyncInstance):
                          root=None, specify_work_dir=False, cleanup=True,
                          initlua_template=initlua_template,
                          applua=applua, timeout=timeout)
-        self._docker_tarantool_version = version
+        self._docker_image = docker_image or 'tarantool/tarantool'
+        self._docker_tag = docker_tag or '1'
 
         cmd = "docker run --rm " \
               "-p {port}:{port} " \
               "-p {console_port}:{console_port} " \
               "-v {root}:/opt/tarantool " \
-              "tarantool/tarantool:{version} " \
+              "{docker_image}:{docker_tag} " \
               "tarantool /opt/tarantool/init.lua"
         cmd = cmd.format(
             port=self.port,
             console_port=self.console_port,
             root=self._root,
-            version=self._docker_tarantool_version
+            docker_image=self._docker_image,
+            docker_tag=self._docker_tag
         )
+        self.logger.debug(cmd)
         args = cmd.split(' ')
         self._command_to_run = args[0]
         self._command_args = args[1:]

@@ -59,10 +59,11 @@ async def bench_asynctnt(n, b, loop=None):
 
     async def bulk_f():
         for _ in range(n_requests_per_bulk):
-            await conn.ping()
+            # await conn.ping()
             # await conn.call('test')
             # await conn.eval('return "hello"')
-            # await conn.select(512)
+            await conn.select(512)
+            # await conn.sql('select 1 as a, 2 as b')
             # await conn.replace('tester', [2, 'hhhh'])
             # await conn.update('tester', [2], [(':', 1, 1, 3, 'yo!')])
 
@@ -73,7 +74,7 @@ async def bench_asynctnt(n, b, loop=None):
     end = datetime.datetime.now()
 
     elapsed = end - start
-    print('Elapsed: {}, RPS: {}'.format(elapsed, n / elapsed.total_seconds()))
+    print('Elapsed: {}, RPS: {}. TPR: {}'.format(elapsed, n / elapsed.total_seconds(), elapsed.total_seconds() / n))
 
 
 async def bench_aiotarantool(n, b, loop=None):

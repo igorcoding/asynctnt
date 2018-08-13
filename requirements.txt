@@ -1,8 +1,8 @@
 PyYAML>=3.13
 uvloop>=0.6.7
-Cython==0.28.4
-pep8==1.7.0
-flake8==3.2.1
+Cython==0.29.1
+pep8==1.7.1
+flake8==3.6.0
 pypandoc
 twine
 Sphinx

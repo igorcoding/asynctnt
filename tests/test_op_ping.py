@@ -1,4 +1,5 @@
 import os
+import warnings
 
 from asynctnt import Response
 from asynctnt.exceptions import TarantoolNotConnectedError
@@ -15,15 +16,19 @@ class PingTestCase(BaseTarantoolTestCase):
         self.assertGreater(res.sync, 0, 'Sync is not 0')
         self.assertEqual(res.code, 0, 'Code is 0')
         self.assertEqual(res.return_code, 0, 'Return code is 0')
-        self.assertIsNone(res.body, 'No body for ping')
+
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore", DeprecationWarning)
+            self.assertIsNone(res.body, 'No body for ping')
 
     async def test__ping_timeout_on_conn(self):
         await self.tnt_reconnect(request_timeout=self.SMALL_TIMEOUT)
+        self.assertEqual(self.conn.request_timeout, self.SMALL_TIMEOUT)
 
         try:
             await self.conn.ping(timeout=1)
-        except:
-            self.fail('Should not fail on timeout 1')
+        except Exception as e:
+            self.fail('Should not fail on timeout 1: {}'.format(e))
 
     async def test__ping_connection_lost(self):
         self.tnt.stop()
@@ -32,7 +37,7 @@ class PingTestCase(BaseTarantoolTestCase):
         try:
             os.kill(self.tnt.pid, 0)
             running = True
-        except:
+        except Exception:
             running = False
 
         with self.assertRaises(TarantoolNotConnectedError):
@@ -46,8 +51,8 @@ class PingTestCase(BaseTarantoolTestCase):
 
         try:
             await self.conn.ping()
-        except:
-            self.fail('Should not fail after tnt start')
+        except Exception as e:
+            self.fail('Should not fail on timeout 1: {}'.format(e))
 
     async def test__ping_with_reconnect(self):
         await self.conn.reconnect()

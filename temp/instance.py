@@ -5,7 +5,7 @@ import logging
 
 import sys
 
-from asynctnt.instance import TarantoolAsyncInstance, TarantoolAsyncDockerInstance, \
+from asynctnt.instance import TarantoolAsyncInstance, \
     TarantoolSyncInstance
 
 logging.basicConfig(level=logging.DEBUG)

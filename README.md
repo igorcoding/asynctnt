@@ -8,42 +8,154 @@
 </a>
 
 asynctnt is a high-performance [Tarantool](https://tarantool.org/) database 
-connector library for Python/asyncio. It was highly inspired by 
+connector library for Python/asyncio. It is highly inspired by 
 [asyncpg](https://github.com/MagicStack/asyncpg) module.
 
 asynctnt requires Python 3.5 or later and is supported for Tarantool 
 versions 1.6+.
 
+
+## Installation
+Use pip to install:
+```bash
+$ pip install asynctnt
+```
+
+
 ## Documentation
 
 Documentation is available [here](https://igorcoding.github.io/asynctnt).
 
+
 ## Key features
 
 * Support for all of the basic requests that Tarantool supports. This includes:
-  `insert`, `select`, `update`, `upsert`, `eval`, `call` and `call16`. 
-  `call16` is an old call method of Tarantool 1.6. `call` - simplifies return
-  values of Tarantool procedures (please refer to Tarantool documentation 
-  for more details).
+  `insert`, `select`, `update`, `upsert`, `eval`, `sql` (for Tarantool 2.x), 
+  `call` and `call16`. _Note: For the difference between `call16` and `call` 
+  please refer to Tarantool documentation._
 * **Schema fetching** on connection establishment, so you can use spaces and 
   indexes names rather than their ids.
-* Schema **auto refetching**. Tarantool has an option to check if "your" schema 
-  is up to date, and if not - returns an error. If such an error occurs on any 
-  request - new schema is refetched and the initial request is resent.
+* Schema **auto refetching**. If schema in Tarantool is changed, `asynctnt`
+  refetches it.
 * **Auto reconnect**. If connection is lost for some reason - asynctnt will 
   start automatic reconnection procedure (with authorization and schema 
   fetching, of course).
 * Ability to use **dicts for tuples** with field names as keys in DML requests 
   (select, insert, replace, delete, update, upsert). This is possible only 
   if space.format is specified in Tarantool. Field names can also be used 
-  in update operations instead of field numbers. Moreover, tuples can be 
-  decoded into dicts instead of arrays if `tuple_as_dict` is True either in
-  `Connection` or a specific request. See below for examples.
+  in update operations instead of field numbers. Moreover, tuples are decoded
+  into the special structures that can act either as `tuple`s or by `dict`s with
+  the appropriate API.
 * All requests support specification of `timeout` value, so if request is 
   executed for too long, asyncio.TimeoutError is raised. It drastically
   simplifies your code, as you don't need to use `asyncio.wait_for(...)`
   stuff anymore.
-  
+
+
+## Basic Usage
+
+Tarantool config:
+
+```lua
+box.cfg {
+    listen = '127.0.0.1:3301'
+}
+
+box.once('v1', function()
+    box.schema.user.grant('guest', 'read,write,execute', 'universe')
+
+    local s = box.schema.create_space('tester')
+    s:create_index('primary')
+    s:format({
+        { name = 'id', type = 'unsigned' },
+        { name = 'name', type = 'string' },
+    })
+end)
+```
+
+Python code:
+```python
+import asyncio
+import asynctnt
+
+
+async def main():
+    conn = asynctnt.Connection(host='127.0.0.1', port=3301)
+    await conn.connect()
+    
+    for i in range(1, 11):
+        await conn.insert('tester', [i, 'hello{}'.format(i)])
+        
+    data = await conn.select('tester', [])
+    first_tuple = data[0]
+    print('tuple:', first_tuple)
+    print(f'tuple[0]: {first_tuple[0]}; tuple["id"]: {first_tuple["id"]}')
+    print(f'tuple[1]: {first_tuple[1]}; tuple["name"]: {first_tuple["name"]}')
+    
+    await conn.disconnect()
+
+asyncio.run(main())
+```
+
+Stdout:
+
+*(note that you can simultaneously access fields either by indices 
+or by their names)*
+```
+tuple: <TarantoolTuple id=1 name='hello1'>
+tuple[0]: 1; tuple["id"]: 1
+tuple[1]: hello1; tuple["name"]: hello1
+```
+
+## SQL
+
+Tarantool 2 brings out an SQL interface to the database. You can easily use SQL 
+through `asynctnt`
+
+```lua
+box.cfg {
+    listen = '127.0.0.1:3301'
+}
+
+box.once('v1', function()
+    box.schema.user.grant('guest', 'read,write,execute', 'universe')
+
+    box.sql.execute([[
+        create table users (
+            id int primary key,
+            name text
+        )
+    ]])
+end)
+```
+
+```python
+import asyncio
+import asynctnt
+
+
+async def main():
+    conn = asynctnt.Connection(host='127.0.0.1', port=3301)
+    await conn.connect()
+    
+    await conn.sql("insert into users (id, name) values (1, 'James Bond')")
+    await conn.sql("insert into users (id, name) values (2, 'Ethan Hunt')")
+    data = await conn.sql('select * from users')
+    
+    for row in data:
+        print(row)
+    
+    await conn.disconnect()
+
+asyncio.run(main())
+```
+
+Stdout:
+```
+<TarantoolTuple ID=1 NAME='James Bond'>
+<TarantoolTuple ID=2 NAME='Ethan Hunt'>
+```
+
 ## Performance
 
 On all of the benchmarks below `wal_mode = none` 
@@ -101,125 +213,6 @@ RPS on running 200k requests in 300 parallel coroutines (with `uvloop`):
 | insert        | 33247.57      | 102971.13  |
 | update        | 28544.68      | 98643.46   |
 
-  
-## Installation
-Use pip to install:
-```bash
-$ pip install asynctnt
-```
-
-
-## Basic Usage
-
-Tarantool config:
-
-```lua
-box.cfg {
-    listen = '127.0.0.1:3301'
-}
-
-box.once('v1', function()
-    box.schema.user.grant('guest', 'read,write,execute', 'universe')
-
-    local s = box.schema.create_space('tester')
-    s:create_index('primary')
-end)
-```
-
-Python code:
-```python
-import asyncio
-import asynctnt
-
-
-async def run():
-    conn = asynctnt.Connection(host='127.0.0.1', port=3301)
-    await conn.connect()
-    
-    for i in range(1, 11):
-        await conn.insert('tester', [i, 'hello{}'.format(i)])
-        
-    values = await conn.select('tester', [])
-    print('Code: {}'.format(values.code))
-    print('Data: {}'.format(values.body))
-    print(values.body2yaml())  # prints as yaml
-    
-    await conn.disconnect()
-
-loop = asyncio.get_event_loop()
-loop.run_until_complete(run())
-```
-
-Stdout:
-```
-Code: 0
-Data: [[1, 'hello1'], [2, 'hello2'], [3, 'hello3'], [4, 'hello4']]
-- [1, hello1]
-- [2, hello2]
-- [3, hello3]
-- [4, hello4]
-```
-
-
-## Example of using space format information
-
-Tarantool config:
-
-```lua
-box.cfg {
-    listen = '127.0.0.1:3301'
-}
-
-box.once('v1', function()
-    box.schema.user.grant('guest', 'read,write,execute', 'universe')
-
-    local s = box.schema.create_space('tester')
-    s:create_index('primary')
-    s:format({  --   <--- Note this format() call
-        {name='id', type='unsigned'},
-        {name='text', type='string'},
-    })
-end)
-```
-
-
-Python code:
-```python
-import asyncio
-import asynctnt
-
-
-async def run():
-    conn = asynctnt.Connection(host='127.0.0.1', port=3301, 
-                               tuple_as_dict=True)  # <--- Note this flag
-    await conn.connect()
-
-    for i in range(1, 5):
-        await conn.insert('tester', {  # <--- Note using dict as a tuple
-            'id': i,
-            'text': 'hello{}'.format(i)
-        })
-
-    values = await conn.select('tester', [])
-    print('Code: {}'.format(values.code))
-    print('Data: {}'.format(values.body))
-    print(values.body2yaml())  # prints as yaml
-
-    await conn.disconnect()
-
-loop = asyncio.get_event_loop()
-loop.run_until_complete(run())
-```
-
-Stdout (now got dict tuples instead of plain arrays):
-```
-Code: 0
-Data: [{'id': 1, 'text': 'hello1'}, {'id': 2, 'text': 'hello2'}, {'id': 3, 'text': 'hello3'}, {'id': 4, 'text': 'hello4'}]
-- {id: 1, text: hello1}
-- {id: 2, text: hello2}
-- {id: 3, text: hello3}
-- {id: 4, text: hello4}
-```
 
 ## License
 asynctnt is developed and distributed under the Apache 2.0 license.

@@ -14,10 +14,11 @@ fi
 if [[ "${BUILD}" == *quicktests* ]]; then
     make && make quicktest || exit 1
 else
-    make && make test
+    make && make test || exit 1
     make clean && make debug && make test || exit 1
 fi
 
 if [[ "${BUILD}" == *coverage* ]]; then
-    make debug && coverage run --source=asynctnt setup.py test
+    make debug && coverage run --source=asynctnt setup.py test || exit 1
+    coveralls
 fi

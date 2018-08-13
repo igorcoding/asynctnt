@@ -1,19 +1,25 @@
 from libc.stdint cimport uint32_t, uint64_t, int64_t
 
-cimport tnt
 
 cdef class Request:
     cdef:
-        tnt.tp_request_type op
+        tarantool.iproto_type op
         uint64_t sync
         int64_t schema_id
-        WriteBuffer buf
-        bint tuple_as_dict
         SchemaSpace space
         object waiter
         object timeout_handle
+        bint parse_metadata
+        bint parse_as_tuples
+        bint push_subscribe
+        Response response
 
     @staticmethod
-    cdef inline Request new(tnt.tp_request_type op,
+    cdef inline Request new(tarantool.iproto_type op,
                             uint64_t sync, int64_t schema_id,
-                            WriteBuffer buf, SchemaSpace space)
+                            SchemaSpace space, bint push_subscribe)
+
+    cdef inline TntFields fields(self):
+        if self.space is None:
+            return None
+        return self.space.fields

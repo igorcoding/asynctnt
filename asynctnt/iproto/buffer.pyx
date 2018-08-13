@@ -12,9 +12,6 @@ from cpython.ref cimport PyObject
 from libc.string cimport memcpy
 from libc.stdint cimport uint32_t, uint64_t, int64_t
 
-from asynctnt.exceptions import TarantoolSchemaError
-from asynctnt.log import logger
-
 
 # noinspection PyUnresolvedReferences
 # noinspection PyAttributeOutsideInit
@@ -132,7 +129,8 @@ cdef class WriteBuffer:
                <size_t>buf._length)
         self._length += buf._length
 
-    cdef void write_header(self, uint64_t sync, tnt.tp_request_type op,
+    cdef void write_header(self, uint64_t sync,
+                           tarantool.iproto_type op,
                            int64_t schema_id) except *:
         cdef:
             char *begin = NULL
@@ -144,15 +142,15 @@ cdef class WriteBuffer:
 
         p = begin = &self._buf[self._length]
         p = mp_encode_map(&p[5], map_size)
-        p = mp_encode_uint(p, tnt.TP_CODE)
+        p = mp_encode_uint(p, tarantool.IPROTO_REQUEST_TYPE)
         self.__op_offset = (p - begin)  # save op position
         p = mp_encode_uint(p, <uint32_t>op)
-        p = mp_encode_uint(p, tnt.TP_SYNC)
+        p = mp_encode_uint(p, tarantool.IPROTO_SYNC)
         self.__sync_offset = (p - begin)  # save sync position
         p = mp_encode_uint(p, sync)
 
         if schema_id > 0:
-            p = mp_encode_uint(p, tnt.TP_SCHEMA_ID)
+            p = mp_encode_uint(p, tarantool.IPROTO_SCHEMA_VERSION)
             p = mp_store_u8(p, 0xce)
             self.__schema_id_offset = (p - begin)  # save schema_id position
             p = mp_store_u32(p, schema_id)
@@ -300,7 +298,7 @@ cdef class WriteBuffer:
         return p
 
     cdef char *_encode_key_sequence(self, char *p, t,
-                                    list fields=None,
+                                    TntFields fields=None,
                                     bint default_none=False) except NULL:
         if isinstance(t, list) or t is None:
             return self._encode_list(p, <list>t)
@@ -308,7 +306,7 @@ cdef class WriteBuffer:
             return self._encode_tuple(p, <tuple>t)
         elif isinstance(t, dict) and fields is not None:
             return self._encode_list(
-                p, dict_to_list_fields(fields, <dict>t, default_none)
+                p, dict_to_list_fields(<dict>t, fields, default_none)
             )
         else:
             if fields is not None:
@@ -372,29 +370,6 @@ cdef class WriteBuffer:
             raise TypeError(
                 'Type `{}` is not supported for encoding'.format(type(o)))
 
-    cdef tnt.tnt_update_op_kind _op_type_to_kind(self, char *str, ssize_t len):
-        cdef:
-            char op
-        if len < 0 or len > 1:
-            return tnt.OP_UPD_UNKNOWN
-
-        op = str[0]
-        if op == b'+' \
-              or op == b'-' \
-              or op == b'&' \
-              or op == b'^' \
-              or op == b'|':
-            return tnt.OP_UPD_ARITHMETIC
-        elif op == b'#':
-            return tnt.OP_UPD_DELETE
-        elif op == b'!' \
-              or op == b'=':
-            return tnt.OP_UPD_INSERT_ASSIGN
-        elif op == b':':
-            return tnt.OP_UPD_SPLICE
-        else:
-            return tnt.OP_UPD_UNKNOWN
-
     cdef char *_encode_update_ops(self, char *p, list operations,
                                   SchemaSpace space) except NULL:
         cdef:
@@ -406,10 +381,10 @@ cdef class WriteBuffer:
 
             char *op_str_c
             ssize_t op_str_len
+            char op
 
             uint32_t extra_length
 
-            tnt.tnt_update_op_kind op_kind
             uint64_t field_no
             object field_no_obj
 
@@ -445,31 +420,32 @@ cdef class WriteBuffer:
                 raise TypeError(
                     'Operation type must of a str or bytes type')
 
-            cpython.bytes.PyBytes_AsStringAndSize(str_temp,
-                                                  &op_str_c, &op_str_len)
-
-            op_kind = self._op_type_to_kind(op_str_c, op_str_len)
             field_no_obj = operation[1]
             if isinstance(field_no_obj, int):
                 field_no = <uint64_t>field_no_obj
             elif isinstance(field_no_obj, str):
-                field_no_obj_p = cpython.dict.PyDict_GetItem(
-                    space.fields_map, field_no_obj
-                )
-                if field_no_obj_p is NULL:
-                    raise TarantoolSchemaError(
-                        'Field with name \'{}\' not found '
-                        'in space \'{}\''.format(
-                            field_no_obj, space.name
-                        )
-                    )
-                field_no = <uint64_t>(<TntField>field_no_obj_p).id
+                if space.fields is not None:
+                    field_no = <uint64_t>space.fields.id_by_name(field_no_obj)
+                else:
+                    raise TypeError(
+                        'Operation field_no must be int as there is '
+                        'no format declaration in space {}'.format(space.sid))
             else:
                 raise TypeError(
                     'Operation field_no must be of either int or str type')
 
-            if op_kind == tnt.OP_UPD_ARITHMETIC \
-                    or op_kind == tnt.OP_UPD_DELETE:
+            cpython.bytes.PyBytes_AsStringAndSize(str_temp, &op_str_c,
+                                                  &op_str_len)
+            op = <char>0
+            if op_str_len == 1:
+                op = op_str_c[0]
+
+            if op == tarantool.IPROTO_OP_ADD \
+                    or op == tarantool.IPROTO_OP_SUB \
+                    or op == tarantool.IPROTO_OP_AND \
+                    or op == tarantool.IPROTO_OP_XOR \
+                    or op == tarantool.IPROTO_OP_OR \
+                    or op == tarantool.IPROTO_OP_DELETE:
                 op_argument = operation[2]
                 if not isinstance(op_argument, int):
                     raise TypeError(
@@ -487,7 +463,8 @@ cdef class WriteBuffer:
                 p = mp_encode_uint(p, field_no)
                 self._length += (p - begin)
                 p = self._encode_obj(p, op_argument)
-            elif op_kind == tnt.OP_UPD_INSERT_ASSIGN:
+            elif op == tarantool.IPROTO_OP_INSERT \
+                    or op == tarantool.IPROTO_OP_ASSIGN:
                 op_argument = operation[2]
 
                 # mp_sizeof_array(3)
@@ -502,7 +479,7 @@ cdef class WriteBuffer:
                 self._length += (p - begin)
                 p = self._encode_obj(p, op_argument)
 
-            elif op_kind == tnt.OP_UPD_SPLICE:
+            elif op == tarantool.IPROTO_OP_SPLICE:
                 if op_len < 5:
                     raise IndexError(
                         'Splice operation must have length of 5, '
@@ -572,10 +549,10 @@ cdef class WriteBuffer:
 
         p = begin = &self._buf[self._length]
         p = mp_encode_map(p, body_map_sz)
-        p = mp_encode_uint(p, tnt.TP_FUNCTION)
+        p = mp_encode_uint(p, tarantool.IPROTO_FUNCTION_NAME)
         p = mp_encode_str(p, func_name_str, <uint32_t>func_name_len)
 
-        p = mp_encode_uint(p, tnt.TP_TUPLE)
+        p = mp_encode_uint(p, tarantool.IPROTO_TUPLE)
         self._length += (p - begin)
         p = self._encode_key_sequence(p, args)
 
@@ -612,10 +589,10 @@ cdef class WriteBuffer:
 
         p = begin = &self._buf[self._length]
         p = mp_encode_map(p, body_map_sz)
-        p = mp_encode_uint(p, tnt.TP_EXPRESSION)
+        p = mp_encode_uint(p, tarantool.IPROTO_EXPR)
         p = mp_encode_str(p, expression_str, <uint32_t>expression_len)
 
-        p = mp_encode_uint(p, tnt.TP_TUPLE)
+        p = mp_encode_uint(p, tarantool.IPROTO_TUPLE)
         self._length += (p - begin)
         p = self._encode_key_sequence(p, args)
 
@@ -664,22 +641,22 @@ cdef class WriteBuffer:
 
         p = begin = &self._buf[self._length]
         p = mp_encode_map(p, body_map_sz)
-        p = mp_encode_uint(p, tnt.TP_SPACE)
+        p = mp_encode_uint(p, tarantool.IPROTO_SPACE_ID)
         p = mp_encode_uint(p, space_id)
-        p = mp_encode_uint(p, tnt.TP_LIMIT)
+        p = mp_encode_uint(p, tarantool.IPROTO_LIMIT)
         p = mp_encode_uint(p, limit)
 
         if index_id > 0:
-            p = mp_encode_uint(p, tnt.TP_INDEX)
+            p = mp_encode_uint(p, tarantool.IPROTO_INDEX_ID)
             p = mp_encode_uint(p, index_id)
         if offset > 0:
-            p = mp_encode_uint(p, tnt.TP_OFFSET)
+            p = mp_encode_uint(p, tarantool.IPROTO_OFFSET)
             p = mp_encode_uint(p, offset)
         if iterator > 0:
-            p = mp_encode_uint(p, tnt.TP_ITERATOR)
+            p = mp_encode_uint(p, tarantool.IPROTO_ITERATOR)
             p = mp_encode_uint(p, iterator)
 
-        p = mp_encode_uint(p, tnt.TP_KEY)
+        p = mp_encode_uint(p, tarantool.IPROTO_KEY)
         self._length += (p - begin)
         p = self._encode_key_sequence(p, key, index.fields, False)
 
@@ -708,10 +685,10 @@ cdef class WriteBuffer:
 
         p = begin = &self._buf[self._length]
         p = mp_encode_map(p, body_map_sz)
-        p = mp_encode_uint(p, tnt.TP_SPACE)
+        p = mp_encode_uint(p, tarantool.IPROTO_SPACE_ID)
         p = mp_encode_uint(p, space_id)
 
-        p = mp_encode_uint(p, tnt.TP_TUPLE)
+        p = mp_encode_uint(p, tarantool.IPROTO_TUPLE)
         self._length += (p - begin)
         p = self._encode_key_sequence(p, t, space.fields, True)
 
@@ -746,14 +723,14 @@ cdef class WriteBuffer:
 
         p = begin = &self._buf[self._length]
         p = mp_encode_map(p, body_map_sz)
-        p = mp_encode_uint(p, tnt.TP_SPACE)
+        p = mp_encode_uint(p, tarantool.IPROTO_SPACE_ID)
         p = mp_encode_uint(p, space_id)
 
         if index_id > 0:
-            p = mp_encode_uint(p, tnt.TP_INDEX)
+            p = mp_encode_uint(p, tarantool.IPROTO_INDEX_ID)
             p = mp_encode_uint(p, index_id)
 
-        p = mp_encode_uint(p, tnt.TP_KEY)
+        p = mp_encode_uint(p, tarantool.IPROTO_KEY)
         self._length += (p - begin)
         p = self._encode_key_sequence(p, key, index.fields, False)
 
@@ -767,20 +744,20 @@ cdef class WriteBuffer:
             uint32_t max_body_len
             uint32_t space_id, index_id
             uint32_t key_of_tuple, key_of_operations
-            list fields
+            TntFields fields
             bint default_fields_none
 
         space_id = space.sid
         index_id = index.iid
 
         if not is_upsert:
-            key_of_tuple = tnt.TP_KEY
-            key_of_operations = tnt.TP_TUPLE
+            key_of_tuple = tarantool.IPROTO_KEY
+            key_of_operations = tarantool.IPROTO_TUPLE
             fields = index.fields
             default_fields_none = False
         else:
-            key_of_tuple = tnt.TP_TUPLE
-            key_of_operations = tnt.TP_OPERATIONS
+            key_of_tuple = tarantool.IPROTO_TUPLE
+            key_of_operations = tarantool.IPROTO_OPS
             fields = space.fields
             default_fields_none = True
 
@@ -805,11 +782,11 @@ cdef class WriteBuffer:
 
         p = begin = &self._buf[self._length]
         p = mp_encode_map(p, body_map_sz)
-        p = mp_encode_uint(p, tnt.TP_SPACE)
+        p = mp_encode_uint(p, tarantool.IPROTO_SPACE_ID)
         p = mp_encode_uint(p, space_id)
 
         if index_id > 0:
-            p = mp_encode_uint(p, tnt.TP_INDEX)
+            p = mp_encode_uint(p, tarantool.IPROTO_INDEX_ID)
             p = mp_encode_uint(p, index_id)
         self._length += (p - begin)
 
@@ -824,6 +801,48 @@ cdef class WriteBuffer:
                                     list operations) except *:
         self.encode_request_update(space, space.get_index(0),
                                    t, operations, True)
+
+    cdef void encode_request_sql(self, str query, args) except *:
+        cdef:
+            char *begin
+            char *p
+            uint32_t body_map_sz
+            uint32_t max_body_len
+
+            bytes query_temp
+            char *query_str
+            ssize_t query_len
+
+        query_str = NULL
+        query_len = 0
+
+        query_temp = encode_unicode_string(query, self._encoding)
+        cpython.bytes.PyBytes_AsStringAndSize(query_temp,
+                                              &query_str,
+                                              &query_len)
+        body_map_sz = 2
+        # Size description:
+        # mp_sizeof_map()
+        # + mp_sizeof_uint(TP_SQL_TEXT)
+        # + mp_sizeof_str(query)
+        # + mp_sizeof_uint(TP_SQL_BIND)
+        max_body_len = 1 \
+                       + 1 \
+                       + mp_sizeof_str(<uint32_t>query_len) \
+                       + 1
+
+        self.ensure_allocated(max_body_len)
+
+        p = begin = &self._buf[self._length]
+        p = mp_encode_map(p, body_map_sz)
+        p = mp_encode_uint(p, tarantool.IPROTO_SQL_TEXT)
+        p = mp_encode_str(p, query_str, <uint32_t>query_len)
+
+        p = mp_encode_uint(p, tarantool.IPROTO_SQL_BIND)
+        self._length += (p - begin)
+        # TODO: replace with custom encoder
+        # TODO: need to simultaneously encode ordinal and named params
+        p = self._encode_key_sequence(p, args)
 
     cdef void encode_request_auth(self,
                                   bytes username,
@@ -865,10 +884,10 @@ cdef class WriteBuffer:
 
         p = begin = &self._buf[self._length]
         p = mp_encode_map(p, body_map_sz)
-        p = mp_encode_uint(p, tnt.TP_USERNAME)
+        p = mp_encode_uint(p, tarantool.IPROTO_USER_NAME)
         p = mp_encode_str(p, username_str, <uint32_t>username_len)
 
-        p = mp_encode_uint(p, tnt.TP_TUPLE)
+        p = mp_encode_uint(p, tarantool.IPROTO_TUPLE)
         p = mp_encode_array(p, 2)
         p = mp_encode_str(p, "chap-sha1", 9)
         p = mp_encode_str(p, scramble_str, <uint32_t>scramble_len)

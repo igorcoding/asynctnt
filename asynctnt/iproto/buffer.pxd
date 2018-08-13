@@ -1,7 +1,5 @@
 from libc.stdint cimport uint32_t, uint64_t, int64_t
 
-cimport tnt
-
 
 cdef class WriteBuffer:
     cdef:
@@ -30,7 +28,8 @@ cdef class WriteBuffer:
                                         ssize_t extra_length) except NULL
     cdef void _reallocate(self, ssize_t new_size) except *
     cdef void write_buffer(self, WriteBuffer buf) except *
-    cdef void write_header(self, uint64_t sync, tnt.tp_request_type op,
+    cdef void write_header(self, uint64_t sync,
+                           tarantool.iproto_type op,
                            int64_t schema_id) except *
     cdef void change_schema_id(self, int64_t new_schema_id)
     cdef void write_length(self)
@@ -50,11 +49,9 @@ cdef class WriteBuffer:
     cdef char *_encode_tuple(self, char *p, tuple t) except NULL
     cdef char *_encode_dict(self, char *p, dict d) except NULL
     cdef char *_encode_key_sequence(self, char *p, t,
-                                    list fields=*,
+                                    TntFields fields=*,
                                     bint default_none=*) except NULL
     cdef char *_encode_obj(self, char *p, object o) except NULL
-
-    cdef tnt.tnt_update_op_kind _op_type_to_kind(self, char *str, ssize_t len)
     cdef char *_encode_update_ops(self, char *p, list operations,
                                   SchemaSpace space) except NULL
 
@@ -71,6 +68,7 @@ cdef class WriteBuffer:
                                     bint is_upsert=*) except *
     cdef void encode_request_upsert(self, SchemaSpace space,
                                     t, list operations) except *
+    cdef void encode_request_sql(self, str query, args) except *
     cdef void encode_request_auth(self,
                                   bytes username,
                                   bytes scramble) except *

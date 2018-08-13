@@ -1,9 +1,6 @@
 cimport cpython
-cimport tnt
 
 import hashlib
-from asynctnt.exceptions import TarantoolDatabaseError, ErrorCode, \
-    TarantoolNotConnectedError
 
 cdef class Db:
     def __cinit__(self):
@@ -20,177 +17,203 @@ cdef class Db:
     cdef inline uint64_t next_sync(self):
         return self._protocol.next_sync()
 
-    @cython.iterable_coroutine
-    async def execute(self, Request req, float timeout, tuple_as_dict):
-        cdef object fut
-
-        if tuple_as_dict is None:
-            req.tuple_as_dict = self._protocol.tuple_as_dict
-        else:
-            req.tuple_as_dict = <bint>tuple_as_dict
-        try:
-            return await self._protocol.execute(req, timeout)
-        except (ConnectionRefusedError, ConnectionResetError) as e:
-            raise TarantoolNotConnectedError('Lost connection') from e
-        except TarantoolDatabaseError as e:
-            if e.code == ErrorCode.ER_WRONG_SCHEMA_VERSION:
-                await self._protocol.refetch_schema()
-
-                # Retry request with updated schema_id
-                req.schema_id = self._protocol._schema_id
-                req.buf.change_schema_id(req.schema_id)
-                return await self._protocol.execute(req, timeout)
-            raise
-
-    cdef Request _ping(self):
+    cdef object _ping(self, float timeout, bint push_subscribe):
         cdef:
-            tnt.tp_request_type op
+            tarantool.iproto_type op
             uint64_t sync
             int64_t schema_id
             WriteBuffer buf
 
-        op = tnt.TP_PING
+        op = tarantool.IPROTO_PING
         sync = self.next_sync()
-        schema_id = self._protocol._schema_id
+        schema_id = -1  # not sending schema_id with the request
         buf = WriteBuffer.new(self._encoding)
         buf.write_header(sync, op, schema_id)
         buf.write_length()
-        return Request.new(op, sync, schema_id, buf, None)
+        return self._protocol.execute(
+            Request.new(op, sync, schema_id, None, push_subscribe),
+            buf, timeout)
 
-    cdef Request _call16(self, str func_name, args):
+    cdef object _call16(self, str func_name, args,
+                         float timeout, bint push_subscribe):
         cdef:
-            tnt.tp_request_type op
+            tarantool.iproto_type op
             uint64_t sync
             int64_t schema_id
             WriteBuffer buf
 
-        op = tnt.TP_CALL_16
+        op = tarantool.IPROTO_CALL_16
         sync = self.next_sync()
-        schema_id = self._protocol._schema_id
+        schema_id = -1  # not sending schema_id with the request
         buf = WriteBuffer.new(self._encoding)
         buf.write_header(sync, op, schema_id)
         buf.encode_request_call(func_name, args)
         buf.write_length()
-        return Request.new(op, sync, schema_id, buf, None)
+        return self._protocol.execute(
+            Request.new(op, sync, schema_id, None, push_subscribe),
+            buf, timeout)
 
-    cdef Request _call(self, str func_name, args):
+    cdef object _call(self, str func_name, args,
+                         float timeout, bint push_subscribe):
         cdef:
-            tnt.tp_request_type op
+            tarantool.iproto_type op
             uint64_t sync
             int64_t schema_id
             WriteBuffer buf
 
-        op = tnt.TP_CALL
+        op = tarantool.IPROTO_CALL
         sync = self.next_sync()
-        schema_id = self._protocol._schema_id
+        schema_id = -1  # not sending schema_id with the request
         buf = WriteBuffer.new(self._encoding)
         buf.write_header(sync, op, schema_id)
         buf.encode_request_call(func_name, args)
         buf.write_length()
-        return Request.new(op, sync, schema_id, buf, None)
+        return self._protocol.execute(
+            Request.new(op, sync, schema_id, None, push_subscribe),
+            buf, timeout)
 
-    cdef Request _eval(self, str expression, args):
+    cdef object _eval(self, str expression, args,
+                         float timeout, bint push_subscribe):
         cdef:
-            tnt.tp_request_type op
+            tarantool.iproto_type op
             uint64_t sync
             int64_t schema_id
             WriteBuffer buf
 
-        op = tnt.TP_EVAL
+        op = tarantool.IPROTO_EVAL
         sync = self.next_sync()
-        schema_id = self._protocol._schema_id
+        schema_id = -1  # not sending schema_id with the request
         buf = WriteBuffer.new(self._encoding)
         buf.write_header(sync, op, schema_id)
         buf.encode_request_eval(expression, args)
         buf.write_length()
-        return Request.new(op, sync, schema_id, buf, None)
+        return self._protocol.execute(
+            Request.new(op, sync, schema_id, None, push_subscribe),
+            buf, timeout)
 
-    cdef Request _select(self, SchemaSpace space, SchemaIndex index, key,
-                         uint64_t offset, uint64_t limit, uint32_t iterator):
+    cdef object _select(self, SchemaSpace space, SchemaIndex index, key,
+                         uint64_t offset, uint64_t limit, uint32_t iterator,
+                         float timeout, bint push_subscribe):
         cdef:
-            tnt.tp_request_type op
+            tarantool.iproto_type op
             uint64_t sync
             int64_t schema_id
             WriteBuffer buf
 
-        op = tnt.TP_SELECT
+        op = tarantool.IPROTO_SELECT
         sync = self.next_sync()
-        schema_id = self._protocol._schema_id
+        schema_id = -1  # not sending schema_id with the request
         buf = WriteBuffer.new(self._encoding)
         buf.write_header(sync, op, schema_id)
         buf.encode_request_select(space, index, key,
                                   offset, limit, iterator)
         buf.write_length()
-        return Request.new(op, sync, schema_id, buf, space)
+        return self._protocol.execute(
+            Request.new(op, sync, schema_id, space, push_subscribe),
+            buf, timeout)
 
-    cdef Request _insert(self, SchemaSpace space, t, bint replace):
+    cdef object _insert(self, SchemaSpace space, t, bint replace,
+                         float timeout, bint push_subscribe):
         cdef:
-            tnt.tp_request_type op
+            tarantool.iproto_type op
             uint64_t sync
             int64_t schema_id
             WriteBuffer buf
 
-        op = tnt.TP_INSERT if not replace else tnt.TP_REPLACE
+        op = tarantool.IPROTO_REPLACE if replace else tarantool.IPROTO_INSERT
         sync = self.next_sync()
-        schema_id = self._protocol._schema_id
+        schema_id = -1  # not sending schema_id with the request
         buf = WriteBuffer.new(self._encoding)
         buf.write_header(sync, op, schema_id)
         buf.encode_request_insert(space, t)
         buf.write_length()
-        return Request.new(op, sync, schema_id, buf, space)
+        return self._protocol.execute(
+            Request.new(op, sync, schema_id, space, push_subscribe),
+            buf, timeout)
 
-    cdef Request _delete(self, SchemaSpace space, SchemaIndex index, key):
+    cdef object _delete(self, SchemaSpace space, SchemaIndex index, key,
+                         float timeout, bint push_subscribe):
         cdef:
-            tnt.tp_request_type op
+            tarantool.iproto_type op
             uint64_t sync
             int64_t schema_id
             WriteBuffer buf
 
-        op = tnt.TP_DELETE
+        op = tarantool.IPROTO_DELETE
         sync = self.next_sync()
-        schema_id = self._protocol._schema_id
+        schema_id = -1  # not sending schema_id with the request
         buf = WriteBuffer.new(self._encoding)
         buf.write_header(sync, op, schema_id)
         buf.encode_request_delete(space, index, key)
         buf.write_length()
-        return Request.new(op, sync, schema_id, buf, space)
+        return self._protocol.execute(
+            Request.new(op, sync, schema_id, space, push_subscribe),
+            buf, timeout)
 
-    cdef Request _update(self, SchemaSpace space, SchemaIndex index,
-                         key, list operations):
+    cdef object _update(self, SchemaSpace space, SchemaIndex index,
+                         key, list operations,
+                         float timeout, bint push_subscribe):
         cdef:
-            tnt.tp_request_type op
+            tarantool.iproto_type op
             uint64_t sync
             int64_t schema_id
             WriteBuffer buf
 
-        op = tnt.TP_UPDATE
+        op = tarantool.IPROTO_UPDATE
         sync = self.next_sync()
-        schema_id = self._protocol._schema_id
+        schema_id = -1  # not sending schema_id with the request
         buf = WriteBuffer.new(self._encoding)
         buf.write_header(sync, op, schema_id)
         buf.encode_request_update(space, index, key, operations)
         buf.write_length()
-        return Request.new(op, sync, schema_id, buf, space)
+        return self._protocol.execute(
+            Request.new(op, sync, schema_id, space, push_subscribe),
+            buf, timeout)
 
-    cdef Request _upsert(self, SchemaSpace space, t, list operations):
+    cdef object _upsert(self, SchemaSpace space, t, list operations,
+                         float timeout, bint push_subscribe):
         cdef:
-            tnt.tp_request_type op
+            tarantool.iproto_type op
             uint64_t sync
             int64_t schema_id
             WriteBuffer buf
 
-        op = tnt.TP_UPSERT
+        op = tarantool.IPROTO_UPSERT
         sync = self.next_sync()
-        schema_id = self._protocol._schema_id
+        schema_id = -1  # not sending schema_id with the request
         buf = WriteBuffer.new(self._encoding)
         buf.write_header(sync, op, schema_id)
         buf.encode_request_upsert(space, t, operations)
         buf.write_length()
-        return Request.new(op, sync, schema_id, buf, space)
+        return self._protocol.execute(
+            Request.new(op, sync, schema_id, space, push_subscribe),
+            buf, timeout)
 
-    cdef Request _auth(self, bytes salt, str username, str password):
+    cdef object _sql(self, str query, args, bint parse_metadata,
+                      float timeout, bint push_subscribe):
         cdef:
-            tnt.tp_request_type op
+            tarantool.iproto_type op
+            uint64_t sync
+            int64_t schema_id
+            WriteBuffer buf
+            Request req
+
+        op = tarantool.IPROTO_EXECUTE
+        sync = self.next_sync()
+        schema_id = -1  # not sending schema_id with the request
+        buf = WriteBuffer.new(self._encoding)
+        buf.write_header(sync, op, schema_id)
+        buf.encode_request_sql(query, args)
+        buf.write_length()
+        req = Request.new(op, sync, schema_id, None, push_subscribe)
+        req.parse_metadata = parse_metadata
+        req.parse_as_tuples = True
+        return self._protocol.execute(req, buf, timeout)
+
+    cdef object _auth(self, bytes salt, str username, str password,
+                       float timeout, bint push_subscribe):
+        cdef:
+            tarantool.iproto_type op
             uint64_t sync
             int64_t schema_id
             WriteBuffer buf
@@ -198,9 +221,9 @@ cdef class Db:
             bytes username_bytes, password_bytes
             bytes hash1, hash2, scramble
 
-        op = tnt.TP_AUTH
+        op = tarantool.IPROTO_AUTH
         sync = self.next_sync()
-        schema_id = self._protocol._schema_id
+        schema_id = -1  # not sending schema_id with the request
         buf = WriteBuffer.new(self._encoding)
         buf.write_header(sync, op, schema_id)
 
@@ -215,7 +238,9 @@ cdef class Db:
         buf.encode_request_auth(username_bytes, scramble)
 
         buf.write_length()
-        return Request.new(op, sync, schema_id, buf, None)
+        return self._protocol.execute(
+            Request.new(op, sync, schema_id, None, push_subscribe),
+            buf, timeout)
 
     @staticmethod
     cdef bytes _sha1(tuple values):
@@ -244,96 +269,72 @@ cdef class Db:
     # public methods
 
     def ping(self, timeout=-1):
-        return self.execute(
-            self._ping(),
-            timeout, False
-        )
+        return self._ping(timeout, False)
 
-    def call16(self, func_name, args=None, timeout=-1):
-        return self.execute(
-            self._call16(func_name, args),
-            timeout, False
-        )
+    def call16(self, func_name, args=None, timeout=-1, push_subscribe=False):
+        return self._call16(func_name, args, timeout, push_subscribe)
 
-    def call(self, func_name, args=None, timeout=-1):
-        return self.execute(
-            self._call(func_name, args),
-            timeout, False
-        )
+    def call(self, func_name, args=None, timeout=-1, push_subscribe=False):
+        return self._call(func_name, args, timeout, push_subscribe)
 
-    def eval(self, expression, args=None, timeout=-1):
-        return self.execute(
-            self._eval(expression, args),
-            timeout, False
-        )
+    def eval(self, expression, args=None, timeout=-1, push_subscribe=False):
+        return self._eval(expression, args, timeout, push_subscribe)
 
     def select(self, space, key=None,
                offset=0, limit=0xffffffff, index=0, iterator=0,
-               timeout=-1, tuple_as_dict=None):
+               timeout=-1):
         cdef:
             SchemaSpace sp
             SchemaIndex idx
         sp = self._protocol._schema.get_or_create_space(space)
         idx = sp.get_index(index)
-        iterator = self._protocol.transform_iterator(iterator)
 
-        return self.execute(
-            self._select(sp, idx, key, offset, limit, iterator),
-            timeout, tuple_as_dict
-        )
+        iterator = self._protocol.transform_iterator(iterator)
+        if key is None and iterator == 0:
+            iterator = 2  # ALL
+
+        return self._select(sp, idx, key, offset, limit, iterator,
+                            timeout, False)
 
     def insert(self, space, t, replace=False,
-               timeout=-1, tuple_as_dict=None):
+               timeout=-1):
         cdef:
             SchemaSpace sp
         sp = self._protocol._schema.get_or_create_space(space)
 
-        return self.execute(
-            self._insert(sp, t, replace),
-            timeout, tuple_as_dict
-        )
+        return self._insert(sp, t, replace, timeout, False)
 
-    def replace(self, space, t, timeout=-1, tuple_as_dict=None):
+    def replace(self, space, t, timeout=-1):
         cdef:
             SchemaSpace sp
         sp = self._protocol._schema.get_or_create_space(space)
 
-        return self.execute(
-            self._insert(sp, t, True),
-            timeout, tuple_as_dict
-        )
+        return self._insert(sp, t, True, timeout, False)
 
-    def delete(self, space, key, index=0, timeout=-1, tuple_as_dict=None):
+    def delete(self, space, key, index=0, timeout=-1):
         cdef:
             SchemaSpace sp
             SchemaIndex idx
         sp = self._protocol._schema.get_or_create_space(space)
         idx = sp.get_index(index)
 
-        return self.execute(
-            self._delete(sp, idx, key),
-            timeout, tuple_as_dict
-        )
+        return self._delete(sp, idx, key, timeout, False)
 
-    def update(self, space, key, operations, index=0,
-               timeout=-1, tuple_as_dict=None):
+    def update(self, space, key, operations, index=0, timeout=-1):
         cdef:
             SchemaSpace sp
             SchemaIndex idx
         sp = self._protocol._schema.get_or_create_space(space)
         idx = sp.get_index(index)
 
-        return self.execute(
-            self._update(sp, idx, key, operations),
-            timeout, tuple_as_dict
-        )
+        return self._update(sp, idx, key, operations, timeout, False)
 
-    def upsert(self, space, t, operations, timeout=-1, tuple_as_dict=None):
+    def upsert(self, space, t, operations, timeout=-1):
         cdef:
             SchemaSpace sp
         sp = self._protocol._schema.get_or_create_space(space)
 
-        return self.execute(
-            self._upsert(sp, t, operations),
-            timeout, tuple_as_dict
-        )
+        return self._upsert(sp, t, operations, timeout, False)
+
+    def sql(self, query, args, parse_metadata=True, timeout=-1):
+        return self._sql(query, args, parse_metadata, timeout, False)

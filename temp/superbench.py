@@ -12,7 +12,7 @@ PASSWORD = 't1'
 
 
 def main():
-    logging.basicConfig(level=logging.WARNING, stream=sys.stdout)
+    logging.basicConfig(level=logging.DEBUG, stream=sys.stdout)
     parser = argparse.ArgumentParser()
     parser.add_argument('-n', type=int, default=200000,
                         help='number of executed requests')
@@ -24,16 +24,20 @@ def main():
     scenarios = [
         ['ping', []],
         ['call', ['test']],
+        ['call', ['test'], dict(push_subscribe=True)],
         ['eval', ['return "hello"']],
         ['select', [512]],
-        ['replace', ['tester', [2, 'hhhh']]],
-        ['update', ['tester', [2], [(':', 1, 1, 3, 'yo!')]]],
+        ['replace', [512, [2, 'hhhh']]],
+        ['update', [512, [2], [(':', 1, 1, 3, 'yo!')]]],
+        # ['sql', ['select 1 as a, 2 as b'], dict(parse_metadata=False)],
     ]
 
-    for use_uvloop in [False, True]:
+    for use_uvloop in [True, ]:
         if use_uvloop:
             import uvloop
             asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
+        else:
+            asyncio.set_event_loop_policy(None)
         asyncio.set_event_loop(None)
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
@@ -41,27 +45,29 @@ def main():
         print('--------- uvloop: {} --------- '.format(use_uvloop))
 
         for name, conn_creator in [
-                    ('asynctnt', create_asynctnt),
-                    ('aiotarantool', create_aiotarantool),
-                ]:
+            ('asynctnt', create_asynctnt),
+            # ('aiotarantool', create_aiotarantool),
+        ]:
+            conn = loop.run_until_complete(conn_creator(loop=loop))
             for scenario in scenarios:
                 loop.run_until_complete(
-                    async_bench(name, conn_creator,
-                                args.n, args.b,
-                                scenario[0], scenario[1],
-                                loop=loop)
+                    async_bench(
+                        name, conn,
+                        args.n, args.b,
+                        method=scenario[0], args=scenario[1],
+                        kwargs=scenario[2] if len(scenario) > 2 else {},
+                        loop=loop
+                    )
                 )
 
 
-async def async_bench(name, connector_creator,
-                      n, b, method, args=[], loop=None):
-    conn = await connector_creator(loop=loop)
-
+async def async_bench(name, conn,
+                      n, b, method, args=[], kwargs={}, loop=None):
     n_requests_per_bulk = math.ceil(n / b)
 
     async def bulk_f():
         for _ in range(n_requests_per_bulk):
-            await getattr(conn, method)(*args)
+            await getattr(conn, method)(*args, **kwargs)
 
     start = datetime.datetime.now()
     coros = [bulk_f() for _ in range(b)]
@@ -81,6 +87,8 @@ async def create_asynctnt(loop):
                                username=USERNAME,
                                password=PASSWORD,
                                reconnect_timeout=1,
+                               fetch_schema=True,
+                               auto_refetch_schema=True,
                                loop=loop)
     await conn.connect()
     return conn

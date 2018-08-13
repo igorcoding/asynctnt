@@ -1,4 +1,5 @@
 import asynctnt
+from asynctnt._testbase import ensure_version
 from asynctnt.exceptions import TarantoolNotConnectedError, \
     TarantoolDatabaseError
 
@@ -14,10 +15,10 @@ class CommonTestCase(BaseTarantoolTestCase):
         data_cmp = [1, 'hello', 1, 0, p_cmp]
 
         res = await self.conn.insert(self.TESTER_SPACE_ID, data)
-        self.assertListEqual(res.body, [data_cmp], 'Body ok')
+        self.assertResponseEqual(res, [data_cmp], 'Body ok')
 
         res = await self.conn.select(self.TESTER_SPACE_ID)
-        self.assertListEqual(res.body, [data_cmp], 'Body ok')
+        self.assertResponseEqual(res, [data_cmp], 'Body ok')
 
     async def test__encoding_cp1251(self):
         await self.tnt_reconnect(encoding='cp1251')
@@ -27,13 +28,15 @@ class CommonTestCase(BaseTarantoolTestCase):
         data_cmp = [1, 'hello', 1, 0, p_cmp]
 
         res = await self.conn.insert(self.TESTER_SPACE_ID, data)
-        self.assertListEqual(res.body, [data_cmp], 'Body ok')
+        self.assertResponseEqual(res, [data_cmp], 'Body ok')
 
         res = await self.conn.select(self.TESTER_SPACE_ID)
-        self.assertListEqual(res.body, [data_cmp], 'Body ok')
+        self.assertResponseEqual(res, [data_cmp], 'Body ok')
 
+    @ensure_version(max=(2, 0), max_included=True)
     async def test__schema_refetch_on_schema_change(self):
-        await self.tnt_reconnect(auto_refetch_schema=True)
+        await self.tnt_reconnect(auto_refetch_schema=True,
+                                 username='t1', password='t1')
         self.assertTrue(self.conn.fetch_schema)
         self.assertTrue(self.conn.auto_refetch_schema)
         schema_before = self.conn.schema_id
@@ -41,7 +44,7 @@ class CommonTestCase(BaseTarantoolTestCase):
 
         # Changing scheme
         await self.conn.eval(
-            "s = box.schema.create_space('new_space');"
+            "local s = box.schema.create_space('new_space');"
             "s:drop();"
         )
 
@@ -50,14 +53,18 @@ class CommonTestCase(BaseTarantoolTestCase):
         except Exception as e:
             self.fail(e)
 
+        # wait for schema to refetch
+        await self.sleep(1)
+
         self.assertGreater(self.conn.schema_id, schema_before,
                            'Schema changed')
 
-    async def test__schema_refetch_on_schema_change_format(self):
-        await self.tnt_reconnect(auto_refetch_schema=True,
+    async def test__schema_refetch_manual(self):
+        await self.tnt_reconnect(fetch_schema=True,
+                                 auto_refetch_schema=False,
                                  username='t1', password='t1')
         self.assertTrue(self.conn.fetch_schema)
-        self.assertTrue(self.conn.auto_refetch_schema)
+        self.assertFalse(self.conn.auto_refetch_schema)
         schema_before = self.conn.schema_id
         self.assertNotEqual(schema_before, -1)
 
@@ -68,11 +75,18 @@ class CommonTestCase(BaseTarantoolTestCase):
         except Exception as e:
             self.fail(e)
 
+        self.assertEqual(self.conn.schema_id, schema_before,
+                         'schema not changed')
+
+        await self.conn.refetch_schema()
+
         self.assertGreater(self.conn.schema_id, schema_before,
                            'Schema changed')
 
+    @ensure_version(max=(2, 0), max_included=True)
     async def test__schema_no_fetch_and_refetch(self):
         await self.tnt_reconnect(auto_refetch_schema=False,
+                                 username='t1', password='t1',
                                  fetch_schema=False)
         self.assertFalse(self.conn.fetch_schema)
         self.assertFalse(self.conn.auto_refetch_schema)
@@ -110,7 +124,7 @@ class CommonTestCase(BaseTarantoolTestCase):
             4.5: 6
         }
 
-        self.assertDictEqual(res.body[0], d, 'Numeric keys parsed ok')
+        self.assertDictEqual(res[0], d, 'Numeric keys parsed ok')
 
     async def test__read_buffer_reallocate_ok(self):
         await self.tnt_reconnect(initial_read_buffer_size=1)
@@ -121,7 +135,7 @@ class CommonTestCase(BaseTarantoolTestCase):
         except Exception as e:
             self.fail(e)
 
-        self.assertDictEqual(res.body[0][0], cmp, 'Body ok')
+        self.assertDictEqual(res[0][0], cmp, 'Body ok')
 
     async def test__read_buffer_deallocate_ok(self):
         size = 100 * 1000
@@ -148,12 +162,12 @@ class CommonTestCase(BaseTarantoolTestCase):
         except Exception as e:
             self.fail(e)
 
-        self.assertDictEqual(res.body[0][0], p, 'Body ok')
+        self.assertDictEqual(res[0][0], p, 'Body ok')
 
     async def test__ensure_no_attribute_error_on_not_connected(self):
         await self.tnt_disconnect()
 
-        self.conn = asynctnt.Connection(
+        self._conn = asynctnt.Connection(
             host=self.tnt.host,
             port=self.tnt.port,
             loop=self.loop)
@@ -169,7 +183,8 @@ class CommonTestCase(BaseTarantoolTestCase):
             await self.conn.call('func_param', [{'a': A()}])
 
     async def test__schema_refetch_next_byte(self):
-        await self.tnt_reconnect(auto_refetch_schema=True)
+        await self.tnt_reconnect(auto_refetch_schema=True,
+                                 username='t1', password='t1')
         await self.conn.call('func_hello')
 
         # Changing scheme

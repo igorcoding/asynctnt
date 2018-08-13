@@ -8,11 +8,15 @@ all: build
 
 
 clean:
-	rm -rf asynctnt/*.c asynctnt/*.so asynctnt/*.html
-	rm -rf asynctnt/iproto/*.c asynctnt/iproto/*.so asynctnt/iproto/*.html
-	rm -rf build *.egg-info
+	rm -rf asynctnt/*.c asynctnt/*.h
+	rm -rf asynctnt/*.so asynctnt/*.html
+	rm -rf asynctnt/iproto/*.c asynctnt/iproto/*.h
+	rm -rf asynctnt/iproto/*.so asynctnt/iproto/*.html
+	rm -rf build *.egg-info .eggs dist
 	find . -name '__pycache__' | xargs rm -rf
 	rm -rf htmlcov
+	rm -rf __tnt*
+	rm -rf tests/__tnt*
 
 
 build:
@@ -23,12 +27,13 @@ debug: clean
 	$(PYTHON) setup.py build_ext --inplace --debug \
 		--cython-always \
 		--cython-annotate \
+		--cython-gdb \
 		--cython-directives="linetrace=True" \
 		--define CYTHON_TRACE,CYTHON_TRACE_NOGIL
 
 
 annotate:
-	cython -a asynctnt/iproto/protocol.pyx
+	cython -3 -a asynctnt/iproto/protocol.pyx
 
 
 test:

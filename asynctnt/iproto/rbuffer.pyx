@@ -1,19 +1,8 @@
-cimport cpython
 cimport cython
-cimport cpython.bytes
-cimport cpython.list
-cimport cpython.tuple
-cimport cpython.dict
-cimport cpython.unicode
 
 from cpython.mem cimport PyMem_Malloc, PyMem_Realloc, PyMem_Free
-from cpython.ref cimport PyObject
 
 from libc.string cimport memcpy, memmove
-from libc.stdint cimport uint32_t, uint64_t, int64_t
-from libc.math cimport fmax
-
-from asynctnt.log import logger
 
 
 @cython.no_gc_clear

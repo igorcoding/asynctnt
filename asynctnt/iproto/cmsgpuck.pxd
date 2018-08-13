@@ -1,4 +1,5 @@
 from libc.stdint cimport uint32_t, uint64_t, int64_t, uint8_t, uint16_t
+from libc.stdio cimport FILE
 
 cdef extern from "../../third_party/msgpuck/msgpuck.h":
     cdef enum mp_type:
@@ -73,3 +74,5 @@ cdef extern from "../../third_party/msgpuck/msgpuck.h":
     cdef bint mp_decode_bool(const char **data)
 
     cdef void mp_next(const char **data)
+
+    cdef void mp_fprint(FILE *file, const char *data)

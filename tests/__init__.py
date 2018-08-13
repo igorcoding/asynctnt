@@ -17,7 +17,7 @@ class BaseTarantoolTestCase(TarantoolTestCase):
     TESTER_SPACE_NAME = 'tester'
 
     async def truncate(self):
-        if self.conn.is_connected:
+        if self.conn and self.conn.is_connected:
             await self.conn.call('truncate', timeout=5)
 
     def tearDown(self):

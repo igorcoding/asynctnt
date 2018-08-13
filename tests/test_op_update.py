@@ -26,7 +26,7 @@ class UpdateTestCase(BaseTarantoolTestCase):
         self.assertGreater(res.sync, 0, 'sync > 0')
 
         data[1][2] = 2
-        self.assertListEqual(res.body, [data[1]], 'Body ok')
+        self.assertResponseEqual(res, [data[1]], 'Body ok')
 
     async def test__update_one_insert(self):
         data = await self._fill_data()
@@ -34,7 +34,7 @@ class UpdateTestCase(BaseTarantoolTestCase):
         res = await self.conn.update(self.TESTER_SPACE_ID,
                                      [1], [['!', 2, 14]])
         data[1].insert(2, 14)
-        self.assertListEqual(res.body, [data[1]], 'Body ok')
+        self.assertResponseEqual(res, [data[1]], 'Body ok')
 
     async def test__update_one_delete(self):
         data = await self._fill_data()
@@ -42,7 +42,7 @@ class UpdateTestCase(BaseTarantoolTestCase):
         res = await self.conn.update(self.TESTER_SPACE_ID,
                                      [2], [['#', 5, 1]])
         data[2].pop(5)
-        self.assertListEqual(res.body, [data[2]], 'Body ok')
+        self.assertResponseEqual(res, [data[2]], 'Body ok')
 
     async def test__update_one_plus(self):
         data = await self._fill_data()
@@ -50,7 +50,7 @@ class UpdateTestCase(BaseTarantoolTestCase):
         res = await self.conn.update(self.TESTER_SPACE_ID,
                                      [1], [['+', 2, 3]])
         data[1][2] += 3
-        self.assertListEqual(res.body, [data[1]], 'Body ok')
+        self.assertResponseEqual(res, [data[1]], 'Body ok')
 
     async def test__update_one_plus_str_field(self):
         data = await self._fill_data()
@@ -58,14 +58,13 @@ class UpdateTestCase(BaseTarantoolTestCase):
         res = await self.conn.update(self.TESTER_SPACE_ID,
                                      [1], [['+', 'f3', 3]])
         data[1][2] += 3
-        self.assertListEqual(res.body, [data[1]], 'Body ok')
+        self.assertResponseEqual(res, [data[1]], 'Body ok')
 
     async def test__update_one_plus_str_field_unknown(self):
         await self._fill_data()
 
-        with self.assertRaisesRegex(TarantoolSchemaError,
-                                    r'Field with name \'f10\' not found '
-                                    r'in space \'tester\''):
+        with self.assertRaisesRegex(KeyError,
+                                    'Field \'f10\' not found'):
             await self.conn.update(self.TESTER_SPACE_ID,
                                    [1], [['+', 'f10', 3]])
 
@@ -75,7 +74,7 @@ class UpdateTestCase(BaseTarantoolTestCase):
         res = await self.conn.update(self.TESTER_SPACE_ID,
                                      [1], [['+', 2, -3]])
         data[1][2] += -3
-        self.assertListEqual(res.body, [data[1]], 'Body ok')
+        self.assertResponseEqual(res, [data[1]], 'Body ok')
 
     async def test__update_one_minus(self):
         data = await self._fill_data()
@@ -83,7 +82,7 @@ class UpdateTestCase(BaseTarantoolTestCase):
         res = await self.conn.update(self.TESTER_SPACE_ID,
                                      [0], [['-', 2, 1]])
         data[0][2] -= 1
-        self.assertListEqual(res.body, [data[0]], 'Body ok')
+        self.assertResponseEqual(res, [data[0]], 'Body ok')
 
     async def test__update_one_minus_negative(self):
         data = await self._fill_data()
@@ -91,7 +90,7 @@ class UpdateTestCase(BaseTarantoolTestCase):
         res = await self.conn.update(self.TESTER_SPACE_ID,
                                      [1], [['-', 2, -3]])
         data[1][2] -= -3
-        self.assertListEqual(res.body, [data[1]], 'Body ok')
+        self.assertResponseEqual(res, [data[1]], 'Body ok')
 
     async def test__update_one_band(self):
         data = await self._fill_data()
@@ -99,22 +98,22 @@ class UpdateTestCase(BaseTarantoolTestCase):
         res = await self.conn.update(self.TESTER_SPACE_ID,
                                      [1], [['&', 2, 3]])
         data[1][2] &= 3
-        self.assertListEqual(res.body, [data[1]], 'Body ok')
+        self.assertResponseEqual(res, [data[1]], 'Body ok')
 
         res = await self.conn.update(self.TESTER_SPACE_ID,
                                      [1], [['&', 2, 2]])
         data[1][2] &= 2
-        self.assertListEqual(res.body, [data[1]], 'Body ok')
+        self.assertResponseEqual(res, [data[1]], 'Body ok')
 
         res = await self.conn.update(self.TESTER_SPACE_ID,
                                      [1], [['&', 2, 1]])
         data[1][2] &= 1
-        self.assertListEqual(res.body, [data[1]], 'Body ok')
+        self.assertResponseEqual(res, [data[1]], 'Body ok')
 
         res = await self.conn.update(self.TESTER_SPACE_ID,
                                      [1], [['&', 2, 0]])
         data[1][2] &= 0
-        self.assertListEqual(res.body, [data[1]], 'Body ok')
+        self.assertResponseEqual(res, [data[1]], 'Body ok')
 
     async def test__update_one_bor(self):
         data = await self._fill_data()
@@ -122,22 +121,22 @@ class UpdateTestCase(BaseTarantoolTestCase):
         res = await self.conn.update(self.TESTER_SPACE_ID,
                                      [1], [['|', 2, 3]])
         data[1][2] |= 3
-        self.assertListEqual(res.body, [data[1]], 'Body ok')
+        self.assertResponseEqual(res, [data[1]], 'Body ok')
 
         res = await self.conn.update(self.TESTER_SPACE_ID,
                                      [1], [['|', 2, 2]])
         data[1][2] |= 2
-        self.assertListEqual(res.body, [data[1]], 'Body ok')
+        self.assertResponseEqual(res, [data[1]], 'Body ok')
 
         res = await self.conn.update(self.TESTER_SPACE_ID,
                                      [1], [['|', 2, 1]])
         data[1][2] |= 1
-        self.assertListEqual(res.body, [data[1]], 'Body ok')
+        self.assertResponseEqual(res, [data[1]], 'Body ok')
 
         res = await self.conn.update(self.TESTER_SPACE_ID,
                                      [1], [['|', 2, 0]])
         data[1][2] |= 0
-        self.assertListEqual(res.body, [data[1]], 'Body ok')
+        self.assertResponseEqual(res, [data[1]], 'Body ok')
 
     async def test__update_one_bxor(self):
         data = await self._fill_data()
@@ -145,22 +144,34 @@ class UpdateTestCase(BaseTarantoolTestCase):
         res = await self.conn.update(self.TESTER_SPACE_ID,
                                      [1], [['^', 2, 3]])
         data[1][2] ^= 3
-        self.assertListEqual(res.body, [data[1]], 'Body ok')
+        self.assertResponseEqual(res, [data[1]], 'Body ok')
 
         res = await self.conn.update(self.TESTER_SPACE_ID,
                                      [1], [['^', 2, 2]])
         data[1][2] ^= 2
-        self.assertListEqual(res.body, [data[1]], 'Body ok')
+        self.assertResponseEqual(res, [data[1]], 'Body ok')
 
         res = await self.conn.update(self.TESTER_SPACE_ID,
                                      [1], [['^', 2, 1]])
         data[1][2] ^= 1
-        self.assertListEqual(res.body, [data[1]], 'Body ok')
+        self.assertResponseEqual(res, [data[1]], 'Body ok')
 
         res = await self.conn.update(self.TESTER_SPACE_ID,
                                      [1], [['^', 2, 0]])
         data[1][2] ^= 0
-        self.assertListEqual(res.body, [data[1]], 'Body ok')
+        self.assertResponseEqual(res, [data[1]], 'Body ok')
+
+    async def test__update_operations_not_int_without_schema(self):
+        await self.tnt_reconnect(fetch_schema=False)
+
+        data = [1, 'hello2', 1, 4, 'what is up']
+        await self.conn.insert(self.TESTER_SPACE_ID, data)
+
+        msg = 'Operation field_no must be int as there is ' \
+              'no format declaration in space {}'.format(self.TESTER_SPACE_ID)
+        with self.assertRaisesRegex(TypeError, msg):
+            await self.conn.update(self.TESTER_SPACE_ID,
+                                   [1], [['+', 'f3', 1]])
 
     async def test__update_splice(self):
         data = [1, 'hello2', 1, 4, 'what is up']
@@ -170,17 +181,17 @@ class UpdateTestCase(BaseTarantoolTestCase):
                                      [1], [[':', 1, 1, 3, '!!!']])
 
         data[1] = 'h!!!o2'
-        self.assertListEqual(res.body, [data], 'Body ok')
+        self.assertResponseEqual(res, [data], 'Body ok')
 
     async def test__update_splice_bytes(self):
-        data = [1, 'hello2', 1, 4, 'what is up']
+        data = [1, 'hello2', 1, 4, 'what is up', -5]
         await self.conn.insert(self.TESTER_SPACE_ID, data)
 
         res = await self.conn.update(self.TESTER_SPACE_ID,
                                      [1], [[b':', 1, 1, 3, '!!!']])
 
         data[1] = 'h!!!o2'
-        self.assertListEqual(res.body, [data], 'Body ok')
+        self.assertResponseEqual(res, [data], 'Body ok')
 
     async def test__update_splice_wrong_args(self):
         data = [1, 'hello2', 1, 4, 'what is up']
@@ -260,7 +271,7 @@ class UpdateTestCase(BaseTarantoolTestCase):
 
         res = await self.conn.update(self.TESTER_SPACE_ID,
                                      [1], operations)
-        self.assertListEqual(res.body, [t], 'Body ok')
+        self.assertResponseEqual(res, [t], 'Body ok')
 
     async def test__update_by_name(self):
         data = await self._fill_data()
@@ -272,7 +283,7 @@ class UpdateTestCase(BaseTarantoolTestCase):
         self.assertIsInstance(res, Response, 'Got response')
         self.assertEqual(res.code, 0, 'success')
         self.assertGreater(res.sync, 0, 'sync > 0')
-        self.assertListEqual(res.body, [data[1]], 'Body ok')
+        self.assertResponseEqual(res, [data[1]], 'Body ok')
 
     async def test__update_by_name_no_schema(self):
         await self._fill_data()
@@ -301,7 +312,7 @@ class UpdateTestCase(BaseTarantoolTestCase):
             self.assertIsInstance(res, Response, 'Got response')
             self.assertEqual(res.code, 0, 'success')
             self.assertGreater(res.sync, 0, 'sync > 0')
-            self.assertListEqual(res.body, [data[0]], 'Body ok')
+            self.assertResponseEqual(res, [data[0]], 'Body ok')
         finally:
             self.tnt.command(
                 'box.space.{}.index.{}:drop()'.format(
@@ -325,7 +336,7 @@ class UpdateTestCase(BaseTarantoolTestCase):
             self.assertIsInstance(res, Response, 'Got response')
             self.assertEqual(res.code, 0, 'success')
             self.assertGreater(res.sync, 0, 'sync > 0')
-            self.assertListEqual(res.body, [data[0]], 'Body ok')
+            self.assertResponseEqual(res, [data[0]], 'Body ok')
         finally:
             self.tnt.command(
                 'box.space.{}.index.{}:drop()'.format(
@@ -360,7 +371,7 @@ class UpdateTestCase(BaseTarantoolTestCase):
                     # success
                     return
             raise
-        self.assertListEqual(res.body, [data[0]], 'empty operations')
+        self.assertResponseEqual(res, [data[0]], 'empty operations')
 
     async def test__update_dict_key(self):
         data = await self._fill_data()
@@ -369,16 +380,15 @@ class UpdateTestCase(BaseTarantoolTestCase):
             'f1': 0
         }, [['+', 3, 1]])
         data[0][3] += 1
-        self.assertListEqual(res.body, [data[0]], 'Body ok')
+        self.assertResponseEqual(res, [data[0]], 'Body ok')
 
     async def test__update_dict_resp(self):
         data = await self._fill_data()
 
-        res = await self.conn.update(self.TESTER_SPACE_ID, [0], [['+', 3, 1]],
-                                     tuple_as_dict=True)
+        res = await self.conn.update(self.TESTER_SPACE_ID, [0], [['+', 3, 1]])
         data[0][3] += 1
 
-        self.assertListEqual(res.body, [{
+        self.assertResponseEqualKV(res, [{
             'f1': data[0][0],
             'f2': data[0][1],
             'f3': data[0][2],

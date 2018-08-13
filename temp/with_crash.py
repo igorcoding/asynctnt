@@ -9,7 +9,7 @@ logging.basicConfig(level=logging.DEBUG)
 async def main():
     c = asynctnt.Connection(
         host='localhost',
-        port=3301,
+        port=3305,
         connect_timeout=5,
         request_timeout=5,
         reconnect_timeout=1/3,

@@ -28,6 +28,9 @@ def find_version():
                 r"""__version__\s*=\s*(['"])([^'"]+)\1""", line).group(2)
 
 
+CYTHON_VERSION = '0.29.1'
+
+
 class build_ext(_build_ext.build_ext):
     user_options = _build_ext.build_ext.user_options + [
         ('cython-always', None,
@@ -35,7 +38,7 @@ class build_ext(_build_ext.build_ext):
         ('cython-annotate', None,
             'Produce a colorized HTML version of the Cython source.'),
         ('cython-directives=', None,
-            'Cythion compiler directives'),
+            'Cython compiler directives'),
     ]
 
     def initialize_options(self):
@@ -71,14 +74,17 @@ class build_ext(_build_ext.build_ext):
                     'please install Cython to compile asynctnt from source')
 
             import pkg_resources
-            cython_dep = pkg_resources.Requirement.parse('0.28.4')
+            cython_dep = pkg_resources.Requirement.parse(CYTHON_VERSION)
             if Cython.__version__ not in cython_dep:
                 raise RuntimeError(
-                    'asynctnt requires Cython version 0.28.4')
+                    'asynctnt requires Cython version {}'.format(
+                        CYTHON_VERSION))
 
             from Cython.Build import cythonize
 
-            directives = {}
+            directives = {
+                'language_level': '3'
+            }
             if self.cython_directives:
                 for directive in self.cython_directives.split(','):
                     k, _, v = directive.partition('=')
@@ -108,9 +114,11 @@ setup(
                       "asynctnt/iproto/protocol.pyx",
                       "third_party/msgpuck/msgpuck.c",
                       "third_party/msgpuck/hints.c",
+                      "asynctnt/iproto/tupleobj/tupleobj.c"
                   ],
                   include_dirs=[
-                      '-Ithird_party'
+                      'third_party',
+                      'asynctnt/iproto',
                   ])
     ],
     version=find_version(),
@@ -122,15 +130,19 @@ setup(
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3 :: Only",
         "Programming Language :: Python :: 3.5",
-        "Programming Language :: Python :: 3.6",
+        "Programming Ldanguage :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
+        'Programming Language :: Python :: Implementation :: CPython',
         "Intended Audience :: Developers",
         "License :: OSI Approved :: Apache Software License",
         "Topic :: Software Development :: Libraries :: Python Modules",
         "Topic :: Database :: Front-Ends"
     ],
     install_requires=[
-        'PyYAML>=3.13'
+        "PyYAML >= 3.13"
+    ],
+    setup_requires=[
+        "Cython=={}".format(CYTHON_VERSION)
     ],
     description=description,
     long_description=long_description,

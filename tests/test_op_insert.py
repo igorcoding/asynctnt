@@ -12,7 +12,7 @@ class InsertTestCase(BaseTarantoolTestCase):
         self.assertIsInstance(res, Response, 'Got response')
         self.assertEqual(res.code, 0, 'success')
         self.assertGreater(res.sync, 0, 'sync > 0')
-        self.assertListEqual(res.body, [data], 'Body ok')
+        self.assertResponseEqual(res, [data], 'Body ok')
 
     async def test__insert_by_name(self):
         data = [1, 'hello', 1, 4, 'what is up']
@@ -21,7 +21,7 @@ class InsertTestCase(BaseTarantoolTestCase):
         self.assertIsInstance(res, Response, 'Got response')
         self.assertEqual(res.code, 0, 'success')
         self.assertGreater(res.sync, 0, 'sync > 0')
-        self.assertListEqual(res.body, [data], 'Body ok')
+        self.assertResponseEqual(res, [data], 'Body ok')
 
     async def test__insert_by_name_no_schema(self):
         await self.tnt_reconnect(fetch_schema=False)
@@ -36,7 +36,7 @@ class InsertTestCase(BaseTarantoolTestCase):
         data_cmp = [1, 'hello', 1, 2, p_cmp]
 
         res = await self.conn.insert(self.TESTER_SPACE_ID, data)
-        self.assertListEqual(res.body, [data_cmp], 'Body ok')
+        self.assertResponseEqual(res, [data_cmp], 'Body ok')
 
     async def test__insert_replace(self):
         data = [1, 'hello', 1, 4, 'what is up']
@@ -49,7 +49,7 @@ class InsertTestCase(BaseTarantoolTestCase):
                                          t=data,
                                          replace=True)
 
-            self.assertListEqual(res.body, [data], 'Body ok')
+            self.assertResponseEqual(res, [data], 'Body ok')
         except Exception as e:
             self.fail(e)
 
@@ -66,11 +66,11 @@ class InsertTestCase(BaseTarantoolTestCase):
     async def test__replace(self):
         data = [1, 'hello', 1, 4, 'what is up']
         res = await self.conn.replace(self.TESTER_SPACE_ID, data)
-        self.assertListEqual(res.body, [data], 'Body ok')
+        self.assertResponseEqual(res, [data], 'Body ok')
 
         data = [1, 'hello2', 1, 5, 'what is up']
         res = await self.conn.replace(self.TESTER_SPACE_ID, data)
-        self.assertListEqual(res.body, [data], 'Body ok')
+        self.assertResponseEqual(res, [data], 'Body ok')
 
     async def test__replace_invalid_types(self):
         with self.assertRaisesRegex(
@@ -92,7 +92,7 @@ class InsertTestCase(BaseTarantoolTestCase):
         }
         data_cmp = [1, 'hello', 5, 6, 'hello dog']
         res = await self.conn.insert(self.TESTER_SPACE_ID, data)
-        self.assertListEqual(res.body, [data_cmp], 'Body ok')
+        self.assertResponseEqual(res, [data_cmp], 'Body ok')
 
     async def test__insert_dict_key_holes(self):
         data = {
@@ -104,13 +104,25 @@ class InsertTestCase(BaseTarantoolTestCase):
         }
         data_cmp = [1, 'hello', 3, 6, None]
         res = await self.conn.insert(self.TESTER_SPACE_ID, data)
-        self.assertListEqual(res.body, [data_cmp], 'Body ok')
+        self.assertResponseEqual(res, [data_cmp], 'Body ok')
+
+    async def test__insert_no_special_empty_key(self):
+        data = {
+            'f1': 1,
+            'f2': 'hello',
+            'f3': 3,
+            'f4': 6,
+            'f5': None,
+        }
+        res = await self.conn.insert(self.TESTER_SPACE_ID, data)
+
+        with self.assertRaises(KeyError):
+            res[0]['']
 
     async def test__insert_dict_resp(self):
         data = [0, 'hello', 0, 5, 'wow']
-        res = await self.conn.insert(self.TESTER_SPACE_ID, data,
-                                     tuple_as_dict=True)
-        self.assertListEqual(res.body, [{
+        res = await self.conn.insert(self.TESTER_SPACE_ID, data)
+        self.assertResponseEqualKV(res, [{
             'f1': 0,
             'f2': 'hello',
             'f3': 0,
@@ -118,21 +130,13 @@ class InsertTestCase(BaseTarantoolTestCase):
             'f5': 'wow'
         }])
 
-    async def test__insert_dict_resp_extra(self):
+    async def test__insert_resp_extra(self):
         data = [0, 'hello', 5, 6, 'help', 'common', 'yo']
-        res = await self.conn.insert(self.TESTER_SPACE_ID, data,
-                                     tuple_as_dict=True)
-        self.assertListEqual(res.body, [{
-            'f1': 0,
-            'f2': 'hello',
-            'f3': 5,
-            'f4': 6,
-            'f5': 'help',
-            '': ['common', 'yo']
-        }])
+        res = await self.conn.insert(self.TESTER_SPACE_ID, data)
+        self.assertResponseEqual(res, [data])
 
     async def test__insert_bin_as_str(self):
         try:
-            (await self.conn.call('func_load_bin_str')).body[0]
+            (await self.conn.call('func_load_bin_str'))[0]
         except UnicodeDecodeError as e:
             self.fail(e)

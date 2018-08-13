@@ -99,7 +99,8 @@ ENV/
 *.snap
 *.xlog
 *.xctl
-*.c
+protocol.c
+protocol.h
 asynctnt/iproto/*.html
 __tnt*
 !third_party/**/*

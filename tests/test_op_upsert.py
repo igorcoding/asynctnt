@@ -22,10 +22,10 @@ class UpsertTestCase(BaseTarantoolTestCase):
         self.assertIsInstance(res, Response, 'Got response')
         self.assertEqual(res.code, 0, 'success')
         self.assertGreater(res.sync, 0, 'sync > 0')
-        self.assertListEqual(res.body, [], 'Body ok')
+        self.assertResponseEqual(res, [], 'Body ok')
 
         res = await self.conn.select(self.TESTER_SPACE_ID, [0])
-        self.assertListEqual(res.body, [data], 'Body ok')
+        self.assertResponseEqual(res, [data], 'Body ok')
 
     async def test__upsert_update_one_assign(self):
         data = [0, 'hello2', 1, 4, 'what is up']
@@ -36,11 +36,11 @@ class UpsertTestCase(BaseTarantoolTestCase):
         self.assertIsInstance(res, Response, 'Got response')
         self.assertEqual(res.code, 0, 'success')
         self.assertGreater(res.sync, 0, 'sync > 0')
-        self.assertListEqual(res.body, [], 'Body ok')
+        self.assertResponseEqual(res, [], 'Body ok')
 
         res = await self.conn.select(self.TESTER_SPACE_ID, [0])
         data[2] = 2
-        self.assertListEqual(res.body, [data], 'Body ok')
+        self.assertResponseEqual(res, [data], 'Body ok')
 
     async def test__upsert_by_name(self):
         data = [0, 'hello2', 1, 4, 'what is up']
@@ -52,7 +52,7 @@ class UpsertTestCase(BaseTarantoolTestCase):
         self.assertIsInstance(res, Response, 'Got response')
         self.assertEqual(res.code, 0, 'success')
         self.assertGreater(res.sync, 0, 'sync > 0')
-        self.assertListEqual(res.body, [data], 'Body ok')
+        self.assertResponseEqual(res, [data], 'Body ok')
 
     async def test__upsert_by_name_no_schema(self):
         await self.tnt_reconnect(fetch_schema=False)
@@ -72,14 +72,14 @@ class UpsertTestCase(BaseTarantoolTestCase):
 
         res = await self.conn.upsert(self.TESTER_SPACE_ID,
                                      data, [['=', 2, 2]])
-        self.assertListEqual(res.body, [], 'Body ok')
+        self.assertResponseEqual(res, [], 'Body ok')
 
         res = await self.conn.select(self.TESTER_SPACE_ID, [0])
-        self.assertListEqual(res.body,
-                             [[0, 'hello', 1, 2, 100]],
-                             'Body ok')
+        self.assertResponseEqual(res,
+                                 [[0, 'hello', 1, 2, 100]],
+                                 'Body ok')
 
-    async def test__update_dict_resp_no_effect(self):
+    async def test__usert_dict_resp_no_effect(self):
         data = {
             'f1': 0,
             'f2': 'hello',
@@ -88,6 +88,5 @@ class UpsertTestCase(BaseTarantoolTestCase):
             'f5': 1000,
         }
 
-        res = await self.conn.upsert(self.TESTER_SPACE_ID,
-                                     data, [['=', 2, 2]], tuple_as_dict=True)
-        self.assertListEqual(res.body, [], 'Body ok')
+        res = await self.conn.upsert(self.TESTER_SPACE_ID, data, [['=', 2, 2]])
+        self.assertResponseEqual(res, [], 'Body ok')
