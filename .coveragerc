@@ -3,9 +3,11 @@ branch = True
 plugins = Cython.Coverage
 source =
     asynctnt/
-    tests/
 omit =
     *.pxd
+    asynctnt/_testbase.py
+    asynctnt/instance.py
+    tests/
 
 [paths]
 source =

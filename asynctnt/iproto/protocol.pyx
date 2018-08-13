@@ -290,9 +290,6 @@ cdef class BaseProtocol(CoreProtocol):
         self._sync += 1
         return self._sync
 
-    cdef bint is_closing(self):
-        return self._closing
-
     def _on_request_timeout(self, waiter):
         cdef Request req
 

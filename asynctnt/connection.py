@@ -155,8 +155,6 @@ class Connection:
                          self._state.name, new_state.name)
             self._state_prev = self._state
             self._state = new_state
-            return True
-        return False
 
     def connection_lost(self, exc):
         if self._transport:
@@ -861,7 +859,7 @@ class Connection:
         return self._db.upsert(space, t, operations, **kwargs)
 
     def _normalize_api(self):
-        if (1, 6) <= self.version < (1, 7):
+        if (1, 6) <= self.version < (1, 7):  # pragma: nocover
             Connection.call = Connection.call16
 
     def __repr__(self):
@@ -875,7 +873,7 @@ class Connection:
 def _create_future(loop):
     try:
         return loop.create_future()
-    except AttributeError:
+    except AttributeError:  # pragma: nocover
         return asyncio.Future(loop=loop)
 
 

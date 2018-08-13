@@ -46,7 +46,6 @@ cdef class BaseProtocol(CoreProtocol):
     cdef void _do_fetch_schema(self, object fut)
 
     cdef uint64_t next_sync(self)
-    cdef bint is_closing(self)
     cdef uint32_t transform_iterator(self, iterator) except *
 
     cdef object _new_waiter_for_request(self, Request req, float timeout)

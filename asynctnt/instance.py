@@ -196,7 +196,6 @@ class TarantoolInstance(metaclass=abc.ABCMeta):
 
     def _create_initlua_template(self):
         return """
-            
             box.cfg{
               listen = "${host}:${port}",
               wal_mode = "${wal_mode}",
@@ -313,6 +312,8 @@ class TarantoolInstance(metaclass=abc.ABCMeta):
         self._is_running = False
         if self._cleanup:
             shutil.rmtree(self._root, ignore_errors=True)
+        if self.host == 'unix/':
+            shutil.rmtree(self.port, ignore_errors=True)
         self._logger.info('Destroyed Tarantool instance (%s)', self._title)
 
 
