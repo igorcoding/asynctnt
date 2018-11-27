@@ -18,6 +18,10 @@ Tarantool config:
 
         local s = box.schema.create_space('tester')
         s:create_index('primary')
+        s:format({
+            { name = 'id', type = 'unsigned' },
+            { name = 'name', type = 'string' },
+        })
     end)
 
 Python code:
@@ -28,31 +32,34 @@ Python code:
     import asynctnt
 
 
-    async def run():
+    async def main():
         conn = asynctnt.Connection(host='127.0.0.1', port=3301)
         await conn.connect()
 
         for i in range(1, 11):
             await conn.insert('tester', [i, 'hello{}'.format(i)])
 
-        values = await conn.select('tester', [])
-        print('Code: {}'.format(values.code))
-        print('Data: {}'.format(values.body))
+        data = await conn.select('tester', [])
+        first_tuple = data[0]
+        print('tuple:', first_tuple)
+        print(f'tuple[0]: {first_tuple[0]}; tuple["id"]: {first_tuple["id"]}')
+        print(f'tuple[1]: {first_tuple[1]}; tuple["name"]: {first_tuple["name"]}')
 
         await conn.disconnect()
 
-    loop = asyncio.get_event_loop()
-    loop.run_until_complete(run())
+    asyncio.run(main())
 
 Stdout:
 
 ::
 
-    Code: 0
-    Data: [[1, 'hello1'], [2, 'hello2'], [3, 'hello3'], [4, 'hello4']]
+    tuple: <TarantoolTuple id=1 name='hello1'>
+    tuple[0]: 1; tuple["id"]: 1
+    tuple[1]: hello1; tuple["name"]: hello1
 
-Example of using space format information
------------------------------------------
+
+Using SQL
+---------
 
 Tarantool config:
 
@@ -65,13 +72,14 @@ Tarantool config:
     box.once('v1', function()
         box.schema.user.grant('guest', 'read,write,execute', 'universe')
 
-        local s = box.schema.create_space('tester')
-        s:create_index('primary')
-        s:format({  -- <--- Note this format() call
-            {name='id', type='unsigned'},
-            {name='text', type='string'},
-        })
+        box.sql.execute([[
+            create table users (
+                id int primary key,
+                name text
+            )
+        ]])
     end)
+
 
 Python code:
 
@@ -81,32 +89,28 @@ Python code:
     import asynctnt
 
 
-    async def run():
-        conn = asynctnt.Connection(host='127.0.0.1', port=3301,
-                                   tuple_as_dict=True)  # <--- Note this flag
+    async def main():
+        conn = asynctnt.Connection(host='127.0.0.1', port=3301)
         await conn.connect()
 
-        for i in range(1, 5):
-            await conn.insert('tester', {  # <--- Note using dict as a tuple
-                'id': i,
-                'text': 'hello{}'.format(i)
-            })
+        await conn.sql("insert into users (id, name) values (1, 'James Bond')")
+        await conn.sql("insert into users (id, name) values (2, 'Ethan Hunt')")
+        data = await conn.sql('select * from users')
 
-        values = await conn.select('tester', [])
-        print('Code: {}'.format(values.code))
-        print('Data: {}'.format(values.body))
+        for row in data:
+            print(row)
 
         await conn.disconnect()
 
-    loop = asyncio.get_event_loop()
-    loop.run_until_complete(run())
+    asyncio.run(main())
 
-Stdout (now got dict tuples instead of plain arrays):
 
-::
+Stdout:
 
-    Code: 0
-    Data: [{'id': 1, 'text': 'hello1'}, {'id': 2, 'text': 'hello2'}, {'id': 3, 'text': 'hello3'}, {'id': 4, 'text': 'hello4'}]
+.. code::
+
+    <TarantoolTuple ID=1 NAME='James Bond'>
+    <TarantoolTuple ID=2 NAME='Ethan Hunt'>
 
 
 Using Connection context manager
@@ -118,10 +122,9 @@ Using Connection context manager
     import asynctnt
 
 
-    async def run():
+    async def main():
         async with asynctnt.Connection(port=3301) as conn:
             res = await conn.call('box.info')
             print(res.body)
 
-    loop = asyncio.get_event_loop()
-    loop.run_until_complete(run())
+    asyncio.run(main())

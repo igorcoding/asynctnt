@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>asynctnt.connection &mdash; asynctnt 0.2.0 documentation</title>
+  <title>asynctnt.connection &mdash; asynctnt 1.0b1 documentation</title>
   
 
   
@@ -56,7 +56,7 @@
             
             
               <div class="version">
-                0.2.0
+                1.0b1
               </div>
             
           
@@ -84,6 +84,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pushes.html">Session Push</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../api.html">API Reference</a></li>
 </ul>
 
@@ -152,9 +153,11 @@
 <span class="kn">import</span> <span class="nn">enum</span>
 <span class="kn">import</span> <span class="nn">functools</span>
 <span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">typing</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Optional</span>
 
 <span class="kn">from</span> <span class="nn">asynctnt.exceptions</span> <span class="k">import</span> <span class="n">TarantoolDatabaseError</span><span class="p">,</span> \
-    <span class="n">ErrorCode</span><span class="p">,</span> <span class="n">TarantoolNotConnectedError</span><span class="p">,</span> <span class="n">TarantoolError</span>
+    <span class="n">ErrorCode</span><span class="p">,</span> <span class="n">TarantoolNotConnectedError</span>
 <span class="kn">from</span> <span class="nn">asynctnt.iproto</span> <span class="k">import</span> <span class="n">protocol</span>
 <span class="kn">from</span> <span class="nn">asynctnt.log</span> <span class="k">import</span> <span class="n">logger</span>
 
@@ -171,12 +174,15 @@
     <span class="n">DISCONNECTED</span> <span class="o">=</span> <span class="mi">5</span>
 
 
+<span class="n">_MethodRet</span> <span class="o">=</span> <span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="n">typing</span><span class="o">.</span><span class="n">Awaitable</span><span class="p">[</span><span class="n">protocol</span><span class="o">.</span><span class="n">Response</span><span class="p">],</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Future</span><span class="p">]</span>
+
+
 <div class="viewcode-block" id="Connection"><a class="viewcode-back" href="../../api.html#asynctnt.Connection">[docs]</a><span class="k">class</span> <span class="nc">Connection</span><span class="p">:</span>
     <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span>
         <span class="s1">&#39;_host&#39;</span><span class="p">,</span> <span class="s1">&#39;_port&#39;</span><span class="p">,</span> <span class="s1">&#39;_username&#39;</span><span class="p">,</span> <span class="s1">&#39;_password&#39;</span><span class="p">,</span>
         <span class="s1">&#39;_fetch_schema&#39;</span><span class="p">,</span> <span class="s1">&#39;_auto_refetch_schema&#39;</span><span class="p">,</span> <span class="s1">&#39;_initial_read_buffer_size&#39;</span><span class="p">,</span>
         <span class="s1">&#39;_encoding&#39;</span><span class="p">,</span> <span class="s1">&#39;_connect_timeout&#39;</span><span class="p">,</span> <span class="s1">&#39;_reconnect_timeout&#39;</span><span class="p">,</span>
-        <span class="s1">&#39;_request_timeout&#39;</span><span class="p">,</span> <span class="s1">&#39;_tuple_as_dict&#39;</span><span class="p">,</span> <span class="s1">&#39;_loop&#39;</span><span class="p">,</span> <span class="s1">&#39;_state&#39;</span><span class="p">,</span> <span class="s1">&#39;_state_prev&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;_request_timeout&#39;</span><span class="p">,</span> <span class="s1">&#39;_loop&#39;</span><span class="p">,</span> <span class="s1">&#39;_state&#39;</span><span class="p">,</span> <span class="s1">&#39;_state_prev&#39;</span><span class="p">,</span>
         <span class="s1">&#39;_transport&#39;</span><span class="p">,</span> <span class="s1">&#39;_protocol&#39;</span><span class="p">,</span> <span class="s1">&#39;_db&#39;</span><span class="p">,</span>
         <span class="s1">&#39;_disconnect_waiter&#39;</span><span class="p">,</span> <span class="s1">&#39;_reconnect_coro&#39;</span><span class="p">,</span>
         <span class="s1">&#39;_connect_lock&#39;</span><span class="p">,</span> <span class="s1">&#39;_disconnect_lock&#39;</span>
@@ -189,10 +195,9 @@
                  <span class="n">password</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                  <span class="n">fetch_schema</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                  <span class="n">auto_refetch_schema</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                 <span class="n">connect_timeout</span><span class="o">=</span><span class="mi">60</span><span class="p">,</span>
+                 <span class="n">connect_timeout</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
                  <span class="n">request_timeout</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span>
                  <span class="n">reconnect_timeout</span><span class="o">=</span><span class="mf">1.</span> <span class="o">/</span> <span class="mf">3.</span><span class="p">,</span>
-                 <span class="n">tuple_as_dict</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                  <span class="n">encoding</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                  <span class="n">initial_read_buffer_size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                  <span class="n">loop</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -245,11 +250,6 @@
 <span class="sd">            :param reconnect_timeout:</span>
 <span class="sd">                    Time in seconds to wait before automatic reconnect</span>
 <span class="sd">                    (set to ``0`` or ``None`` to disable auto reconnect)</span>
-<span class="sd">            :param tuple_as_dict:</span>
-<span class="sd">                    Bool value indicating whether or not to use spaces</span>
-<span class="sd">                    schema to decode response tuples by default. You can</span>
-<span class="sd">                    always change this behaviour in the request itself.</span>
-<span class="sd">                    Note: fetch_schema must be ``True``</span>
 <span class="sd">            :param encoding:</span>
 <span class="sd">                    The encoding to use for all strings</span>
 <span class="sd">                    encoding and decoding (default is ``utf-8``)</span>
@@ -275,12 +275,6 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_auto_refetch_schema</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_initial_read_buffer_size</span> <span class="o">=</span> <span class="n">initial_read_buffer_size</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_encoding</span> <span class="o">=</span> <span class="n">encoding</span> <span class="ow">or</span> <span class="s1">&#39;utf-8&#39;</span>
-        <span class="k">if</span> <span class="n">tuple_as_dict</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fetch_schema</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">TarantoolError</span><span class="p">(</span>
-                <span class="s1">&#39;fetch_schema must be True to be able to use &#39;</span>
-                <span class="s1">&#39;unpacking tuples to dict&#39;</span>
-            <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_tuple_as_dict</span> <span class="o">=</span> <span class="n">tuple_as_dict</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_connect_timeout</span> <span class="o">=</span> <span class="n">connect_timeout</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_reconnect_timeout</span> <span class="o">=</span> <span class="n">reconnect_timeout</span> <span class="ow">or</span> <span class="mi">0</span>
@@ -328,7 +322,8 @@
     <span class="k">def</span> <span class="nf">_start_reconnect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">return_exceptions</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_state</span> <span class="ow">in</span> <span class="p">[</span><span class="n">ConnectionState</span><span class="o">.</span><span class="n">CONNECTING</span><span class="p">,</span>
                            <span class="n">ConnectionState</span><span class="o">.</span><span class="n">RECONNECTING</span><span class="p">]:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> Already reconnecting&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">fingerprint</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> Cannot start reconnect: already reconnecting&#39;</span><span class="p">,</span>
+                         <span class="bp">self</span><span class="o">.</span><span class="n">fingerprint</span><span class="p">)</span>
             <span class="k">return</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_reconnect_coro</span><span class="p">:</span>
@@ -352,7 +347,6 @@
                    <span class="n">request_timeout</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_request_timeout</span><span class="p">,</span>
                    <span class="n">initial_read_buffer_size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_initial_read_buffer_size</span><span class="p">,</span>
                    <span class="n">encoding</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_encoding</span><span class="p">,</span>
-                   <span class="n">tuple_as_dict</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_tuple_as_dict</span><span class="p">,</span>
                    <span class="n">connected_fut</span><span class="o">=</span><span class="n">connected_fut</span><span class="p">,</span>
                    <span class="n">on_connection_made</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                    <span class="n">on_connection_lost</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">connection_lost</span><span class="p">,</span>
@@ -409,8 +403,8 @@
                                     <span class="n">loop</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_loop</span><span class="p">)</span>
                             <span class="k">except</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">TimeoutError</span><span class="p">:</span>
                                 <span class="n">tr</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-                                <span class="k">continue</span>  <span class="c1"># try to create connection again</span>
-                            <span class="k">except</span><span class="p">:</span>
+                                <span class="k">continue</span>  <span class="c1"># try again</span>
+                            <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
                                 <span class="n">tr</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
                                 <span class="k">raise</span>
 
@@ -479,7 +473,7 @@
         <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_reconnect_timeout</span><span class="p">,</span>
                             <span class="n">loop</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_loop</span><span class="p">)</span>
 
-<div class="viewcode-block" id="Connection.connect"><a class="viewcode-back" href="../../api.html#asynctnt.Connection.connect">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">connect</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Connection.connect"><a class="viewcode-back" href="../../api.html#asynctnt.Connection.connect">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">connect</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Connection&#39;</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Connect coroutine</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -567,81 +561,81 @@
         <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">disconnect</span><span class="p">()</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">fingerprint</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">fingerprint</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">return</span> <span class="s1">&#39;Tarantool[</span><span class="si">{}</span><span class="s1">:</span><span class="si">{}</span><span class="s1">]&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_host</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_port</span><span class="p">)</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">host</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">host</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Tarantool host</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_host</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">port</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">port</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Tarantool port</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_port</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">username</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">username</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Tarantool username</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_username</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">password</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">password</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Tarantool password</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_password</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">fetch_schema</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">fetch_schema</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            fetch_schema flag</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fetch_schema</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">auto_refetch_schema</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">auto_refetch_schema</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            auto_refetch_schema flag</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_auto_refetch_schema</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">encoding</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">encoding</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Connection encoding</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_encoding</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">reconnect_timeout</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">reconnect_timeout</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Reconnect timeout value</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_reconnect_timeout</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">connect_timeout</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">connect_timeout</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Connect timeout value</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connect_timeout</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">request_timeout</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">request_timeout</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Request timeout value</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_request_timeout</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">version</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">version</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">tuple</span><span class="p">]:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Protocol version tuple. ex.: (1, 6, 7)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -657,7 +651,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_loop</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">state</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">state</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ConnectionState</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Current connection state</span>
 
@@ -666,7 +660,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_state</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">is_connected</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">is_connected</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Check if an underlying connection is active</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -675,7 +669,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_protocol</span><span class="o">.</span><span class="n">is_connected</span><span class="p">()</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">is_fully_connected</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">is_fully_connected</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Check if connection is fully active (performed auth</span>
 <span class="sd">            and schema fetching)</span>
@@ -685,7 +679,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_protocol</span><span class="o">.</span><span class="n">is_fully_connected</span><span class="p">()</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">schema_id</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">schema_id</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Tarantool&#39;s current schema id</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -694,7 +688,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_protocol</span><span class="o">.</span><span class="n">schema_id</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">initial_read_buffer_size</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">initial_read_buffer_size</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            initial_read_buffer_size value</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -706,7 +700,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_protocol</span><span class="o">.</span><span class="n">refetch_schema</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="Connection.ping"><a class="viewcode-back" href="../../api.html#asynctnt.Connection.ping">[docs]</a>    <span class="k">def</span> <span class="nf">ping</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=-</span><span class="mi">1</span><span class="p">):</span>
+<div class="viewcode-block" id="Connection.ping"><a class="viewcode-back" href="../../api.html#asynctnt.Connection.ping">[docs]</a>    <span class="k">def</span> <span class="nf">ping</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">_MethodRet</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Ping request coroutine</span>
 
@@ -716,7 +710,8 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_db</span><span class="o">.</span><span class="n">ping</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Connection.call16"><a class="viewcode-back" href="../../api.html#asynctnt.Connection.call16">[docs]</a>    <span class="k">def</span> <span class="nf">call16</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func_name</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=-</span><span class="mi">1</span><span class="p">):</span>
+<div class="viewcode-block" id="Connection.call16"><a class="viewcode-back" href="../../api.html#asynctnt.Connection.call16">[docs]</a>    <span class="k">def</span> <span class="nf">call16</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func_name</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span>
+               <span class="n">timeout</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">push_subscribe</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">_MethodRet</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Call16 request coroutine. It is a call with an old behaviour</span>
 <span class="sd">            (return result of a Tarantool procedure is wrapped into a tuple,</span>
@@ -725,13 +720,16 @@
 <span class="sd">            :param func_name: function name to call</span>
 <span class="sd">            :param args: arguments to pass to the function (list object)</span>
 <span class="sd">            :param timeout: Request timeout</span>
+<span class="sd">            :param push_subscribe: Subscribe to push notifications</span>
 
 <span class="sd">            :returns: :class:`asynctnt.Response` instance</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_db</span><span class="o">.</span><span class="n">call16</span><span class="p">(</span><span class="n">func_name</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span>
-                               <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">)</span></div>
+                               <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">,</span>
+                               <span class="n">push_subscribe</span><span class="o">=</span><span class="n">push_subscribe</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Connection.call"><a class="viewcode-back" href="../../api.html#asynctnt.Connection.call">[docs]</a>    <span class="k">def</span> <span class="nf">call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func_name</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=-</span><span class="mi">1</span><span class="p">):</span>
+<div class="viewcode-block" id="Connection.call"><a class="viewcode-back" href="../../api.html#asynctnt.Connection.call">[docs]</a>    <span class="k">def</span> <span class="nf">call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func_name</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span>
+             <span class="n">timeout</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">push_subscribe</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">_MethodRet</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Call request coroutine. It is a call with a new behaviour</span>
 <span class="sd">            (return result of a Tarantool procedure is not wrapped into</span>
@@ -747,24 +745,24 @@
 <span class="sd">                #     return ...</span>
 <span class="sd">                # end</span>
 
-<span class="sd">                &gt;&gt;&gt; res = await conn.call(&#39;f&#39;)</span>
-<span class="sd">                &gt;&gt;&gt; res.body</span>
-<span class="sd">                []</span>
+<span class="sd">                &gt;&gt;&gt; await conn.call(&#39;f&#39;)</span>
+<span class="sd">                &lt;Response sync=3 rowcount=0 data=[]&gt;</span>
 
-<span class="sd">                &gt;&gt;&gt; res = await conn.call(&#39;f&#39;, [20, 42])</span>
-<span class="sd">                &gt;&gt;&gt; res.body</span>
-<span class="sd">                [20, 42]</span>
+<span class="sd">                &gt;&gt;&gt; await conn.call(&#39;f&#39;, [20, 42])</span>
+<span class="sd">                &lt;Response sync=3 rowcount=2 data=[20, 42]&gt;</span>
 
 <span class="sd">            :param func_name: function name to call</span>
 <span class="sd">            :param args: arguments to pass to the function (list object)</span>
 <span class="sd">            :param timeout: Request timeout</span>
+<span class="sd">            :param push_subscribe: Subscribe to push notifications</span>
 
 <span class="sd">            :returns: :class:`asynctnt.Response` instance</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_db</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">func_name</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span>
-                             <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">)</span></div>
+                             <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">,</span> <span class="n">push_subscribe</span><span class="o">=</span><span class="n">push_subscribe</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Connection.eval"><a class="viewcode-back" href="../../api.html#asynctnt.Connection.eval">[docs]</a>    <span class="k">def</span> <span class="nf">eval</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">expression</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=-</span><span class="mi">1</span><span class="p">):</span>
+<div class="viewcode-block" id="Connection.eval"><a class="viewcode-back" href="../../api.html#asynctnt.Connection.eval">[docs]</a>    <span class="k">def</span> <span class="nf">eval</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">expression</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span>
+             <span class="n">timeout</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">push_subscribe</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">_MethodRet</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Eval request coroutine.</span>
 
@@ -772,25 +770,25 @@
 
 <span class="sd">            .. code-block:: pycon</span>
 
-<span class="sd">                &gt;&gt;&gt; res = await conn.eval(&#39;return 42&#39;)</span>
-<span class="sd">                &gt;&gt;&gt; res.body</span>
-<span class="sd">                [42]</span>
+<span class="sd">                &gt;&gt;&gt; await conn.eval(&#39;return 42&#39;)</span>
+<span class="sd">                &lt;Response sync=3 rowcount=1 data=[42]&gt;</span>
 
-<span class="sd">                &gt;&gt;&gt; res = await conn.eval(&#39;return box.info.version&#39;)</span>
-<span class="sd">                &gt;&gt;&gt; res.body</span>
-<span class="sd">                [&#39;1.7.3-354-ge7550da&#39;]</span>
+
+<span class="sd">                &gt;&gt;&gt; await conn.eval(&#39;return box.info.version&#39;)</span>
+<span class="sd">                &lt;Response sync=3 rowcount=1 data=[&#39;2.1.1-7-gd381a45b6&#39;]&gt;</span>
 
 <span class="sd">            :param expression: expression to execute</span>
 <span class="sd">            :param args: arguments to pass to the function, that will</span>
 <span class="sd">                         execute your expression (list object)</span>
 <span class="sd">            :param timeout: Request timeout</span>
+<span class="sd">            :param push_subscribe: Subscribe to push messages</span>
 
 <span class="sd">            :returns: :class:`asynctnt.Response` instance</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_db</span><span class="o">.</span><span class="n">eval</span><span class="p">(</span><span class="n">expression</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span>
-                             <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">)</span></div>
+                             <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">,</span> <span class="n">push_subscribe</span><span class="o">=</span><span class="n">push_subscribe</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Connection.select"><a class="viewcode-back" href="../../api.html#asynctnt.Connection.select">[docs]</a>    <span class="k">def</span> <span class="nf">select</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">space</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="Connection.select"><a class="viewcode-back" href="../../api.html#asynctnt.Connection.select">[docs]</a>    <span class="k">def</span> <span class="nf">select</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">space</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">_MethodRet</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Select request coroutine.</span>
 
@@ -799,28 +797,23 @@
 <span class="sd">            .. code-block:: pycon</span>
 
 <span class="sd">                &gt;&gt;&gt; await conn.select(&#39;tester&#39;)</span>
-<span class="sd">                &lt;Response: code=0, sync=7, body_len=4&gt;</span>
+<span class="sd">                &lt;Response sync=3 rowcount=2 data=[</span>
+<span class="sd">                    &lt;TarantoolTuple id=1 name=&#39;one&#39;&gt;,</span>
+<span class="sd">                    &lt;TarantoolTuple id=2 name=&#39;two&#39;&gt;</span>
+<span class="sd">                ]&gt;</span>
 
-<span class="sd">                &gt;&gt;&gt; res = await conn.select(&#39;_space&#39;, {&#39;tester&#39;}, index=&#39;name&#39;)</span>
-<span class="sd">                &gt;&gt;&gt; res.body</span>
-<span class="sd">                [[512, 1, &#39;tester&#39;, &#39;memtx&#39;, 0, {}, [</span>
-<span class="sd">                    {&#39;name&#39;: &#39;id&#39;, &#39;type&#39;: &#39;unsigned&#39;},</span>
-<span class="sd">                    {&#39;name&#39;: &#39;text&#39;, &#39;type&#39;: &#39;string&#39;}]</span>
-<span class="sd">                ]]</span>
-
-<span class="sd">                &gt;&gt;&gt; res = await conn.select(&#39;_space&#39;, {&#39;tester&#39;},</span>
-<span class="sd">                ...                         index=&#39;name&#39;,</span>
-<span class="sd">                ...                         tuple_as_dict=True)</span>
-<span class="sd">                &gt;&gt;&gt; res.body2yaml()</span>
-<span class="sd">                - engine: memtx</span>
-<span class="sd">                  field_count: 0</span>
-<span class="sd">                  flags: {}</span>
-<span class="sd">                  format:</span>
-<span class="sd">                  - {name: id, type: unsigned}</span>
-<span class="sd">                  - {name: text, type: string}</span>
-<span class="sd">                  id: 512</span>
-<span class="sd">                  name: tester</span>
-<span class="sd">                  owner: 1</span>
+<span class="sd">                &gt;&gt;&gt; res = await conn.select(&#39;_space&#39;, [&#39;tester&#39;], index=&#39;name&#39;)</span>
+<span class="sd">                &gt;&gt;&gt; res.data</span>
+<span class="sd">                [&lt;TarantoolTuple id=512</span>
+<span class="sd">                                 owner=1</span>
+<span class="sd">                                 name=&#39;tester&#39;</span>
+<span class="sd">                                 engine=&#39;memtx&#39;</span>
+<span class="sd">                                 field_count=0</span>
+<span class="sd">                                 flags={}</span>
+<span class="sd">                                 format=[</span>
+<span class="sd">                                    {&#39;name&#39;: &#39;id&#39;, &#39;type&#39;: &#39;unsigned&#39;},</span>
+<span class="sd">                                    {&#39;name&#39;: &#39;name&#39;, &#39;type&#39;: &#39;string&#39;}</span>
+<span class="sd">                                 ]&gt;]</span>
 
 
 <span class="sd">            :param space: space id or space name.</span>
@@ -835,14 +828,12 @@
 <span class="sd">                        * string with an iterator name</span>
 
 <span class="sd">            :param timeout: Request timeout</span>
-<span class="sd">            :param tuple_as_dict: Decode tuple according to schema</span>
 
 <span class="sd">            :returns: :class:`asynctnt.Response` instance</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_db</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">space</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Connection.insert"><a class="viewcode-back" href="../../api.html#asynctnt.Connection.insert">[docs]</a>    <span class="k">def</span> <span class="nf">insert</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">space</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span>
-               <span class="n">replace</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">tuple_as_dict</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="Connection.insert"><a class="viewcode-back" href="../../api.html#asynctnt.Connection.insert">[docs]</a>    <span class="k">def</span> <span class="nf">insert</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">space</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">replace</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">_MethodRet</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Insert request coroutine.</span>
 
@@ -851,57 +842,44 @@
 <span class="sd">            .. code-block:: pycon</span>
 
 <span class="sd">                # Basic usage</span>
-<span class="sd">                &gt;&gt;&gt; res = await conn.insert(&#39;tester&#39;, [0, &#39;hello&#39;])</span>
-<span class="sd">                &gt;&gt;&gt; res</span>
-<span class="sd">                &lt;Response: code=0, sync=7, body_len=4&gt;</span>
-<span class="sd">                &gt;&gt;&gt; res.body</span>
-<span class="sd">                [[0, &#39;hello&#39;]]</span>
-
-<span class="sd">                # Getting dict results</span>
-<span class="sd">                &gt;&gt;&gt; res = await conn.insert(&#39;tester&#39;, [0, &#39;hello&#39;],</span>
-<span class="sd">                ...                         tuple_as_dict=True)</span>
-<span class="sd">                &gt;&gt;&gt; res.body</span>
-<span class="sd">                [{&#39;id&#39;: 0, &#39;text&#39;: &#39;hello&#39;}]</span>
+<span class="sd">                &gt;&gt;&gt; await conn.insert(&#39;tester&#39;, [0, &#39;hello&#39;])</span>
+<span class="sd">                &lt;Response sync=3 rowcount=1 data=[</span>
+<span class="sd">                    &lt;TarantoolTuple id=0 name=&#39;hello&#39;&gt;</span>
+<span class="sd">                ]&gt;</span>
 
 <span class="sd">                # Using dict as an argument tuple</span>
-<span class="sd">                &gt;&gt;&gt; res = await conn.insert(&#39;tester&#39;, {</span>
-<span class="sd">                ...                             &#39;id&#39;: 0</span>
-<span class="sd">                ...                             &#39;text&#39;: &#39;hell0&#39;</span>
-<span class="sd">                ...                         },</span>
-<span class="sd">                ...                         tuple_as_dict=True)</span>
-<span class="sd">                &gt;&gt;&gt; res.body</span>
-<span class="sd">                [{&#39;id&#39;: 0, &#39;text&#39;: &#39;hello&#39;}]</span>
+<span class="sd">                &gt;&gt;&gt; await conn.insert(&#39;tester&#39;, {</span>
+<span class="sd">                ...                     &#39;id&#39;: 0</span>
+<span class="sd">                ...                     &#39;text&#39;: &#39;hell0&#39;</span>
+<span class="sd">                ...                   })</span>
+<span class="sd">                &lt;Response sync=3 rowcount=1 data=[</span>
+<span class="sd">                    &lt;TarantoolTuple id=0 name=&#39;hello&#39;&gt;</span>
+<span class="sd">                ]&gt;</span>
 
 <span class="sd">            :param space: space id or space name.</span>
 <span class="sd">            :param t: tuple to insert (list object)</span>
 <span class="sd">            :param replace: performs replace request instead of insert</span>
 <span class="sd">            :param timeout: Request timeout</span>
-<span class="sd">            :param tuple_as_dict: Decode tuple according to schema</span>
 
 <span class="sd">            :returns: :class:`asynctnt.Response` instance</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_db</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">space</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span>
                                <span class="n">replace</span><span class="o">=</span><span class="n">replace</span><span class="p">,</span>
-                               <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">,</span>
-                               <span class="n">tuple_as_dict</span><span class="o">=</span><span class="n">tuple_as_dict</span><span class="p">)</span></div>
+                               <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Connection.replace"><a class="viewcode-back" href="../../api.html#asynctnt.Connection.replace">[docs]</a>    <span class="k">def</span> <span class="nf">replace</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">space</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span>
-                <span class="n">timeout</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">tuple_as_dict</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="Connection.replace"><a class="viewcode-back" href="../../api.html#asynctnt.Connection.replace">[docs]</a>    <span class="k">def</span> <span class="nf">replace</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">space</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">_MethodRet</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Replace request coroutine. Same as insert, but replace.</span>
 
 <span class="sd">            :param space: space id or space name.</span>
 <span class="sd">            :param t: tuple to insert (list object)</span>
 <span class="sd">            :param timeout: Request timeout</span>
-<span class="sd">            :param tuple_as_dict: Decode tuple according to schema</span>
 
 <span class="sd">            :returns: :class:`asynctnt.Response` instance</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_db</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">space</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span>
-                                <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">,</span>
-                                <span class="n">tuple_as_dict</span><span class="o">=</span><span class="n">tuple_as_dict</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_db</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">space</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Connection.delete"><a class="viewcode-back" href="../../api.html#asynctnt.Connection.delete">[docs]</a>    <span class="k">def</span> <span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">space</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="Connection.delete"><a class="viewcode-back" href="../../api.html#asynctnt.Connection.delete">[docs]</a>    <span class="k">def</span> <span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">space</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">_MethodRet</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Delete request coroutine.</span>
 
@@ -911,26 +889,21 @@
 
 <span class="sd">                # Assuming tuple [0, &#39;hello&#39;] is in space tester</span>
 
-<span class="sd">                &gt;&gt;&gt; res = await conn.delete(&#39;tester&#39;, [0])</span>
-<span class="sd">                &gt;&gt;&gt; res.body</span>
-<span class="sd">                [[0, &#39;hello&#39;]]</span>
-
-<span class="sd">                &gt;&gt;&gt; res = await conn.delete(&#39;tester&#39;, [0],</span>
-<span class="sd">                ...                         tuple_as_dict=True)</span>
-<span class="sd">                &gt;&gt;&gt; res.body</span>
-<span class="sd">                [{&#39;id&#39;: 0, &#39;text&#39;: &#39;hello&#39;}]</span>
+<span class="sd">                &gt;&gt;&gt; await conn.delete(&#39;tester&#39;, [0])</span>
+<span class="sd">                &lt;Response sync=3 rowcount=1 data=[</span>
+<span class="sd">                    &lt;TarantoolTuple id=0 name=&#39;hello&#39;&gt;</span>
+<span class="sd">                ]&gt;</span>
 
 <span class="sd">            :param space: space id or space name.</span>
 <span class="sd">            :param key: key to delete</span>
 <span class="sd">            :param index: index id or name</span>
 <span class="sd">            :param timeout: Request timeout</span>
-<span class="sd">            :param tuple_as_dict: Decode tuple according to schema</span>
 
 <span class="sd">            :returns: :class:`asynctnt.Response` instance</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_db</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">space</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Connection.update"><a class="viewcode-back" href="../../api.html#asynctnt.Connection.update">[docs]</a>    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">space</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">operations</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="Connection.update"><a class="viewcode-back" href="../../api.html#asynctnt.Connection.update">[docs]</a>    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">space</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">operations</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">_MethodRet</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Update request coroutine.</span>
 
@@ -940,23 +913,17 @@
 
 <span class="sd">                # Assuming tuple [0, &#39;hello&#39;] is in space tester</span>
 
-<span class="sd">                &gt;&gt;&gt; res = await conn.update(&#39;tester&#39;, [0],</span>
-<span class="sd">                ...                         [ [&#39;=&#39;, 1, &#39;hi!&#39;] ])</span>
-<span class="sd">                &gt;&gt;&gt; res.body</span>
-<span class="sd">                [[0, &#39;hi!&#39;]]</span>
+<span class="sd">                &gt;&gt;&gt; await conn.update(&#39;tester&#39;, [0], [ [&#39;=&#39;, 1, &#39;hi!&#39;] ])</span>
+<span class="sd">                &lt;Response sync=3 rowcount=1 data=[</span>
+<span class="sd">                    &lt;TarantoolTuple id=0 name=&#39;hi!&#39;&gt;</span>
+<span class="sd">                ]&gt;</span>
 
 <span class="sd">                # you can use fields names as well</span>
 <span class="sd">                &gt;&gt;&gt; res = await conn.update(&#39;tester&#39;, [0],</span>
 <span class="sd">                ...                         [ [&#39;=&#39;, &#39;text&#39;, &#39;hola&#39;] ])</span>
-<span class="sd">                &gt;&gt;&gt; res.body</span>
-<span class="sd">                [[0, &#39;hola&#39;]]</span>
-
-<span class="sd">                # ... and retrieve tuples as dicts, of course</span>
-<span class="sd">                &gt;&gt;&gt; res = await conn.update(&#39;tester&#39;, [0],</span>
-<span class="sd">                ...                         [ [&#39;=&#39;, &#39;text&#39;, &#39;hola&#39;] ],</span>
-<span class="sd">                ...                         tuple_as_dict=True)</span>
-<span class="sd">                &gt;&gt;&gt; res.body</span>
-<span class="sd">                [{&#39;id&#39;: 0, &#39;text&#39;: &#39;hola&#39;}]</span>
+<span class="sd">                &lt;Response sync=3 rowcount=1 data=[</span>
+<span class="sd">                    &lt;TarantoolTuple id=0 name=&#39;hola&#39;&gt;</span>
+<span class="sd">                ]&gt;</span>
 
 <span class="sd">            :param space: space id or space name.</span>
 <span class="sd">            :param key: key to update</span>
@@ -969,13 +936,12 @@
 <span class="sd">                    If field is unknown then TarantoolSchemaError is raised.</span>
 <span class="sd">            :param index: index id or name</span>
 <span class="sd">            :param timeout: Request timeout</span>
-<span class="sd">            :param tuple_as_dict: Decode tuple according to schema</span>
 
 <span class="sd">            :returns: :class:`asynctnt.Response` instance</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_db</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">space</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">operations</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Connection.upsert"><a class="viewcode-back" href="../../api.html#asynctnt.Connection.upsert">[docs]</a>    <span class="k">def</span> <span class="nf">upsert</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">space</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">operations</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="Connection.upsert"><a class="viewcode-back" href="../../api.html#asynctnt.Connection.upsert">[docs]</a>    <span class="k">def</span> <span class="nf">upsert</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">space</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">operations</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">_MethodRet</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Update request coroutine. Performs either insert or update</span>
 <span class="sd">            (depending of either tuple exists or not)</span>
@@ -985,10 +951,9 @@
 <span class="sd">            .. code-block:: pycon</span>
 
 <span class="sd">                # upsert does not return anything</span>
-<span class="sd">                &gt;&gt;&gt; res = await conn.upsert(&#39;tester&#39;, [0, &#39;hello&#39;],</span>
-<span class="sd">                ...                         [ [&#39;=&#39;, 1, &#39;hi!&#39;] ])</span>
-<span class="sd">                &gt;&gt;&gt; res.body</span>
-<span class="sd">                []</span>
+<span class="sd">                &gt;&gt;&gt; await conn.upsert(&#39;tester&#39;, [0, &#39;hello&#39;],</span>
+<span class="sd">                ...                   [ [&#39;=&#39;, 1, &#39;hi!&#39;] ])</span>
+<span class="sd">                &lt;Response sync=3 rowcount=0 data=[]&gt;</span>
 
 <span class="sd">            :param space: space id or space name.</span>
 <span class="sd">            :param t: tuple to insert if it&#39;s not in space</span>
@@ -1001,12 +966,47 @@
 <span class="sd">                    format as a field_no (if only fetch_schema is True).</span>
 <span class="sd">                    If field is unknown then TarantoolSchemaError is raised.</span>
 <span class="sd">            :param timeout: Request timeout</span>
-<span class="sd">            :param tuple_as_dict: Decode tuple according to schema.</span>
-<span class="sd">                    Has no effect in upsert requests</span>
 
 <span class="sd">            :returns: :class:`asynctnt.Response` instance</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_db</span><span class="o">.</span><span class="n">upsert</span><span class="p">(</span><span class="n">space</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">operations</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Connection.sql"><a class="viewcode-back" href="../../api.html#asynctnt.Connection.sql">[docs]</a>    <span class="k">def</span> <span class="nf">sql</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span>
+            <span class="n">parse_metadata</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">_MethodRet</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Executes an SQL statement (only for Tarantool &gt; 2)</span>
+
+<span class="sd">            Examples:</span>
+
+<span class="sd">            .. code-block:: pycon</span>
+
+<span class="sd">                &gt;&gt;&gt; await conn.sql(&quot;select 1 as a, 2 as b&quot;)</span>
+<span class="sd">                &lt;Response sync=3 rowcount=1 data=[&lt;TarantoolTuple A=1 B=2&gt;]&gt;</span>
+
+<span class="sd">                &gt;&gt;&gt; await conn.sql(&quot;select * from sql_space&quot;)</span>
+<span class="sd">                &lt;Response sync=3 rowcount=2 data=[</span>
+<span class="sd">                    &lt;TarantoolTuple ID=1 NAME=&#39;James Bond&#39;&gt;,</span>
+<span class="sd">                    &lt;TarantoolTuple ID=2 NAME=&#39;Ethan Hunt&#39;&gt;</span>
+<span class="sd">                ]&gt;</span>
+
+<span class="sd">                &gt;&gt;&gt; await conn.sql(&quot;select * from sql_space&quot;,</span>
+<span class="sd">                ...                parse_metadata=False)</span>
+<span class="sd">                &lt;Response sync=3 rowcount=2 data=[</span>
+<span class="sd">                    &lt;TarantoolTuple 0=1 1=&#39;James Bond&#39;&gt;,</span>
+<span class="sd">                    &lt;TarantoolTuple 0=2 1=&#39;Ethan Hunt&#39;&gt;</span>
+<span class="sd">                ]&gt;</span>
+
+<span class="sd">            :param query: SQL query</span>
+<span class="sd">            :param args: Query arguments</span>
+<span class="sd">            :param parse_metadata: Set to False to disable response&#39;s metadata</span>
+<span class="sd">                                   parsing for better performance</span>
+<span class="sd">            :param timeout: Request timeout</span>
+
+<span class="sd">            :returns: :class:`asynctnt.Response` instance</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_db</span><span class="o">.</span><span class="n">sql</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span>
+                            <span class="n">parse_metadata</span><span class="o">=</span><span class="n">parse_metadata</span><span class="p">,</span>
+                            <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">)</span></div>
 
     <span class="k">def</span> <span class="nf">_normalize_api</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">version</span> <span class="o">&lt;</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">7</span><span class="p">):</span>  <span class="c1"># pragma: nocover</span>
@@ -1032,15 +1032,13 @@
         <span class="k">raise</span> <span class="n">TarantoolNotConnectedError</span><span class="p">(</span><span class="s1">&#39;Tarantool is not connected&#39;</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="connect"><a class="viewcode-back" href="../../api.html#asynctnt.connect">[docs]</a><span class="k">async</span> <span class="k">def</span> <span class="nf">connect</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="connect"><a class="viewcode-back" href="../../api.html#asynctnt.connect">[docs]</a><span class="k">async</span> <span class="k">def</span> <span class="nf">connect</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Connection</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        connect shorthand. See :class:`asynctnt.Connection` for kwargs details</span>
 
 <span class="sd">        :return: :class:`asynctnt.Connection` object</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">c</span> <span class="o">=</span> <span class="n">Connection</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-    <span class="k">await</span> <span class="n">c</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span>
-    <span class="k">return</span> <span class="n">c</span></div>
+    <span class="k">return</span> <span class="k">await</span> <span class="n">Connection</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span></div>
 </pre></div>
 
            </div>
@@ -1053,7 +1051,7 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2017, igorcoding.
+        &copy; Copyright 2017, igorcoding
 
     </p>
   </div>
@@ -1072,20 +1070,13 @@
 
   
 
-    <script type="text/javascript">
-        var DOCUMENTATION_OPTIONS = {
-            URL_ROOT:'../../',
-            VERSION:'0.2.0',
-            LANGUAGE:'None',
-            COLLAPSE_INDEX:false,
-            FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true,
-            SOURCELINK_SUFFIX: '.txt'
-        };
-    </script>
-      <script type="text/javascript" src="../../_static/jquery.js"></script>
-      <script type="text/javascript" src="../../_static/underscore.js"></script>
-      <script type="text/javascript" src="../../_static/doctools.js"></script>
+    
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+    
 
   
 

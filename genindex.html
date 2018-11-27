@@ -9,7 +9,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Index &mdash; asynctnt 0.2.0 documentation</title>
+  <title>Index &mdash; asynctnt 1.0b1 documentation</title>
   
 
   
@@ -57,7 +57,7 @@
             
             
               <div class="version">
-                0.2.0
+                1.0b1
               </div>
             
           
@@ -85,6 +85,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pushes.html">Session Push</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">API Reference</a></li>
 </ul>
 
@@ -174,7 +175,11 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api.html#asynctnt.Connection.__init__">__init__() (asynctnt.Connection method)</a>
+
+      <ul>
+        <li><a href="api.html#asynctnt.PushIterator.__init__">(asynctnt.PushIterator method)</a>
 </li>
+      </ul></li>
   </ul></td>
 </tr></table>
 
@@ -194,10 +199,6 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api.html#asynctnt.Response.body">body (asynctnt.Response attribute)</a>
-</li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api.html#asynctnt.Response.body2yaml">body2yaml() (asynctnt.Response method)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -307,11 +308,13 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api.html#asynctnt.Connection.password">password (asynctnt.Connection attribute)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api.html#asynctnt.Connection.ping">ping() (asynctnt.Connection method)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api.html#asynctnt.Connection.port">port (asynctnt.Connection attribute)</a>
+</li>
+      <li><a href="api.html#asynctnt.PushIterator">PushIterator (class in asynctnt)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -325,11 +328,13 @@
 </li>
       <li><a href="api.html#asynctnt.Connection.refetch_schema">refetch_schema() (asynctnt.Connection method)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api.html#asynctnt.Connection.replace">replace() (asynctnt.Connection method)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api.html#asynctnt.Connection.request_timeout">request_timeout (asynctnt.Connection attribute)</a>
+</li>
+      <li><a href="api.html#asynctnt.PushIterator.response">response (asynctnt.PushIterator attribute)</a>
 </li>
       <li><a href="api.html#asynctnt.Response">Response (class in asynctnt)</a>
 </li>
@@ -347,9 +352,11 @@
         <li><a href="api.html#asynctnt.Response.schema_id">(asynctnt.Response attribute)</a>
 </li>
       </ul></li>
+      <li><a href="api.html#asynctnt.Connection.select">select() (asynctnt.Connection method)</a>
+</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api.html#asynctnt.Connection.select">select() (asynctnt.Connection method)</a>
+      <li><a href="api.html#asynctnt.Connection.sql">sql() (asynctnt.Connection method)</a>
 </li>
       <li><a href="api.html#asynctnt.Connection.state">state (asynctnt.Connection attribute)</a>
 </li>
@@ -408,7 +415,7 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2017, igorcoding.
+        &copy; Copyright 2017, igorcoding
 
     </p>
   </div>
@@ -427,20 +434,13 @@
 
   
 
-    <script type="text/javascript">
-        var DOCUMENTATION_OPTIONS = {
-            URL_ROOT:'./',
-            VERSION:'0.2.0',
-            LANGUAGE:'None',
-            COLLAPSE_INDEX:false,
-            FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true,
-            SOURCELINK_SUFFIX: '.txt'
-        };
-    </script>
-      <script type="text/javascript" src="_static/jquery.js"></script>
-      <script type="text/javascript" src="_static/underscore.js"></script>
-      <script type="text/javascript" src="_static/doctools.js"></script>
+    
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+    
 
   
 

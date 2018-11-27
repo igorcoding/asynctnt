@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>asynctnt &mdash; asynctnt 0.2.0 documentation</title>
+  <title>asynctnt &mdash; asynctnt 1.0b1 documentation</title>
   
 
   
@@ -57,7 +57,7 @@
             
             
               <div class="version">
-                0.2.0
+                1.0b1
               </div>
             
           
@@ -85,6 +85,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pushes.html">Session Push</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">API Reference</a></li>
 </ul>
 
@@ -151,7 +152,7 @@
            <div itemprop="articleBody">
             
   <div class="section" id="asynctnt">
-<h1>asynctnt<a class="headerlink" href="#asynctnt" title="Permalink to this headline">¶</a></h1>
+<span id="asynctnt-intro"></span><h1>asynctnt<a class="headerlink" href="#asynctnt" title="Permalink to this headline">¶</a></h1>
 <a class="reference external image-reference" href="https://travis-ci.org/igorcoding/asynctnt"><img alt="https://travis-ci.org/igorcoding/asynctnt.svg?branch=master" src="https://travis-ci.org/igorcoding/asynctnt.svg?branch=master" /></a>
 <a class="reference external image-reference" href="https://pypi.python.org/pypi/asynctnt"><img alt="https://img.shields.io/pypi/v/asynctnt.svg" src="https://img.shields.io/pypi/v/asynctnt.svg" /></a>
 <p>asynctnt is a high-performance <a class="reference external" href="https://tarantool.org/">Tarantool</a>
@@ -161,33 +162,36 @@ asynctnt requires Python 3.5 or later and is supported for Tarantool
 versions 1.6+.</p>
 <div class="section" id="key-features">
 <h2>Key features<a class="headerlink" href="#key-features" title="Permalink to this headline">¶</a></h2>
-<ul class="simple">
-<li>Support for all of the basic requests that Tarantool supports. This
-includes: <code class="docutils literal notranslate"><span class="pre">insert</span></code>, <code class="docutils literal notranslate"><span class="pre">select</span></code>, <code class="docutils literal notranslate"><span class="pre">update</span></code>, <code class="docutils literal notranslate"><span class="pre">upsert</span></code>, <code class="docutils literal notranslate"><span class="pre">eval</span></code>,
-<code class="docutils literal notranslate"><span class="pre">call</span></code> and <code class="docutils literal notranslate"><span class="pre">call16</span></code>. <code class="docutils literal notranslate"><span class="pre">call16</span></code> is an old call method of
-Tarantool 1.6. <code class="docutils literal notranslate"><span class="pre">call</span></code> - simplifies return values of Tarantool
-procedures (please refer to Tarantool documentation for more
-details).</li>
-<li><strong>Schema fetching</strong> on connection establishment, so you can use
-spaces and indexes names rather than their ids.</li>
-<li>Schema <strong>auto refetching</strong>. Tarantool has an option to check if
-“your” schema is up to date, and if not - returns an error. If such
-an error occurs on any request - new schema is refetched and the
-initial request is resent.</li>
-<li><strong>Auto reconnect</strong>. If connection is lost for some reason - asynctnt
-will start automatic reconnection procedure (with authorization and
-schema fetching, of course).</li>
-<li>Ability to use <strong>dicts for tuples</strong> with field names as keys in DML
-requests (select, insert, replace, delete, update, upsert). This is
-possible only if space.format is specified in Tarantool. Field names
-can also be used in update operations instead of field numbers.
-Moreover, tuples can be decoded into dicts instead of arrays if
-<code class="docutils literal notranslate"><span class="pre">tuple_as_dict</span></code> is True either in <code class="docutils literal notranslate"><span class="pre">Connection</span></code> or a specific
-request. See below for examples.</li>
-<li>All requests support specification of <code class="docutils literal notranslate"><span class="pre">timeout</span></code> value, so if
-request is executed for too long, asyncio.TimeoutError is raised. It
-drastically simplifies your code, as you don’t need to use
-<code class="docutils literal notranslate"><span class="pre">asyncio.wait_for(...)</span></code> stuff anymore.</li>
+<ul>
+<li><p class="first">Support for all of the basic requests that Tarantool supports. This includes:
+<cite>insert</cite>, <cite>select</cite>, <cite>update</cite>, <cite>upsert</cite>, <cite>eval</cite>, <cite>sql</cite> (for Tarantool 2.x),
+<cite>call</cite> and <cite>call16</cite>.</p>
+<p><em>Note: For the difference between `call16` and `call` please refer to
+Tarantool documentation.</em></p>
+</li>
+<li><p class="first"><strong>Schema fetching</strong> on connection establishment, so you can use spaces and
+indexes names rather than their ids.</p>
+</li>
+<li><p class="first">Schema <strong>auto refetching</strong>. Tarantool has an option to check if “your” schema
+is up to date, and if not - returns an error. If such an error occurs on any
+request - new schema is refetched and the initial request is resent.</p>
+</li>
+<li><p class="first"><strong>Auto reconnect</strong>. If connection is lost for some reason - asynctnt will
+start automatic reconnection procedure (with authorization and schema
+fetching, of course).</p>
+</li>
+<li><p class="first">Ability to use <strong>dicts for tuples</strong> with field names as keys in DML requests
+(select, insert, replace, delete, update, upsert). This is possible only
+if space.format is specified in Tarantool. Field names can also be used
+in update operations instead of field numbers. Moreover, tuples are decoded
+into the special structures that can act either as <a href="#id1"><span class="problematic" id="id2">`</span></a>tuple`s or by <a href="#id3"><span class="problematic" id="id4">`</span></a>dict`s with
+the appropriate API.</p>
+</li>
+<li><p class="first">All requests support specification of <cite>timeout</cite> value, so if request is
+executed for too long, asyncio.TimeoutError is raised. It drastically
+simplifies your code, as you don’t need to use <cite>asyncio.wait_for(…)</cite>
+stuff anymore.</p>
+</li>
 </ul>
 </div>
 <div class="section" id="license">
@@ -202,12 +206,14 @@ drastically simplifies your code, as you don’t need to use
 </li>
 <li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="examples.html#basic-usage">Basic Usage</a></li>
-<li class="toctree-l2"><a class="reference internal" href="examples.html#example-of-using-space-format-information">Example of using space format information</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples.html#using-sql">Using SQL</a></li>
 <li class="toctree-l2"><a class="reference internal" href="examples.html#using-connection-context-manager">Using Connection context manager</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="pushes.html">Session Push</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">API Reference</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="api.html#connection">Connection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.html#pushiterator">PushIterator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="api.html#response">Response</a></li>
 <li class="toctree-l2"><a class="reference internal" href="api.html#iterator">Iterator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="api.html#exceptions">Exceptions</a></li>
@@ -244,7 +250,7 @@ drastically simplifies your code, as you don’t need to use
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2017, igorcoding.
+        &copy; Copyright 2017, igorcoding
 
     </p>
   </div>
@@ -263,20 +269,13 @@ drastically simplifies your code, as you don’t need to use
 
   
 
-    <script type="text/javascript">
-        var DOCUMENTATION_OPTIONS = {
-            URL_ROOT:'./',
-            VERSION:'0.2.0',
-            LANGUAGE:'None',
-            COLLAPSE_INDEX:false,
-            FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true,
-            SOURCELINK_SUFFIX: '.txt'
-        };
-    </script>
-      <script type="text/javascript" src="_static/jquery.js"></script>
-      <script type="text/javascript" src="_static/underscore.js"></script>
-      <script type="text/javascript" src="_static/doctools.js"></script>
+    
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+    
 
   
 
