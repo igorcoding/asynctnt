@@ -16,7 +16,6 @@ if [[ "${TRAVIS_OS_NAME}" == "osx" ]]; then
     eval "$(pyenv init -)"
 fi
 
-pip install --upgrade pip setuptools
+pip install --upgrade pip setuptools coveralls
 pip install -r requirements.txt
-pip install coveralls
 pip install -e .

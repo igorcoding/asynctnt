@@ -23,4 +23,4 @@ if [[ "${TARANTOOL_VERSION}" != "none" ]]; then
 else
     sudo apt-get -qq update
 fi
-sudo apt-get install pandoc libssl-dev openssl
+sudo apt-get -y install libssl-dev openssl
