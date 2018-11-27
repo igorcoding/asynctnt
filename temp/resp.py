@@ -4,7 +4,7 @@ import asyncio
 
 async def f():
     c = await asynctnt.connect()
-    return await c.select(281)
+    c.select(281)
 
 
 loop = asyncio.get_event_loop()

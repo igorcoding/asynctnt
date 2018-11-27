@@ -11,7 +11,7 @@ async def run():
     conn = asynctnt.Connection(host='127.0.0.1', port=3305)
     await conn.connect()
 
-    fut = conn.call_async("asyncaction")
+    fut = conn.call("asyncaction", push_subscribe=True)
     async for row in asynctnt.PushIterator(fut):
         print('wow', row)
 

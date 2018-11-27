@@ -15,6 +15,8 @@ New features:
   by introducing new parameter `push_subscribe` to api methods in `Connection` 
   and the PushIterator class to iterate over the push messages of a specific 
   request. 
+* Added `Connection.sql` method to execute SQL statements for Tarantool 2 
+  (see asynctnt docs for details).
 
 Changes:
 * Iteration over TarantoolTuple results in iterating over a raw tuple by 
@@ -25,8 +27,6 @@ Changes:
   ignore any extra fields if space format contains less fields than there are
   in the tuple. One can acces those extra fields by index numbers. 
 * `Connection`'s default `connect_timeout` changed from `60` to `3` seconds.
-* Added `Connection.sql` method to execute SQL statements for Tarantool 2 
-  (see asynctnt docs for details).
 * `select`: changed default iterator type to `ALL` if no key provided 
   (fixes #2)
 * `Response` new function `done()` indicates if Response is 
