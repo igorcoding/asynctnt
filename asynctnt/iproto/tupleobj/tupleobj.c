@@ -258,6 +258,52 @@ ttuple_item(AtntTupleObject *o, Py_ssize_t i)
 }
 
 
+static int
+ttuple_item_by_name(AtntTupleObject *o, PyObject *item, PyObject **result)
+{
+    if (o->fields == NULL) {
+        goto noitem;
+    }
+
+    PyObject *mapped;
+    Py_ssize_t i;
+    PyObject *value;
+
+    mapped = PyObject_GetItem(o->fields->_mapping, item);
+    if (mapped == NULL) {
+        goto noitem;
+    }
+
+    if (!PyIndex_Check(mapped)) {
+        Py_DECREF(mapped);
+        goto noitem;
+    }
+
+    i = PyNumber_AsSsize_t(mapped, PyExc_IndexError);
+    Py_DECREF(mapped);
+
+    if (i < 0) {
+        if (PyErr_Occurred()) {
+            PyErr_Clear();
+        }
+        goto noitem;
+    }
+
+    value = ttuple_item(o, i);
+    if (result == NULL) {
+        PyErr_Clear();
+        goto noitem;
+    }
+
+    *result = value;
+    return 0;
+
+noitem:
+    PyErr_SetObject(PyExc_KeyError, item);
+    return -1;
+}
+
+
 static PyObject *
 ttuple_subscript(AtntTupleObject* o, PyObject* item)
 {
@@ -287,58 +333,29 @@ ttuple_subscript(AtntTupleObject* o, PyObject* item)
         if (slicelength <= 0) {
             return PyTuple_New(0);
         }
-        else {
-            result = PyTuple_New(slicelength);
-            if (!result) return NULL;
 
-            src = o->ob_item;
-            dest = ((PyTupleObject *)result)->ob_item;
-            for (cur = start, i = 0; i < slicelength; cur += step, i++) {
-                it = src[cur];
-                Py_INCREF(it);
-                dest[i] = it;
-            }
+        result = PyTuple_New(slicelength);
+        if (!result) return NULL;
 
-            return result;
+        src = o->ob_item;
+        dest = ((PyTupleObject *)result)->ob_item;
+        for (cur = start, i = 0; i < slicelength; cur += step, i++) {
+            it = src[cur];
+            Py_INCREF(it);
+            dest[i] = it;
         }
+
+        return result;
     }
-    else if (o->fields != NULL) {
-        PyObject *mapped;
-        mapped = PyObject_GetItem(o->fields->_mapping, item);
-        if (mapped != NULL) {
-            Py_ssize_t i;
-            PyObject *result;
-
-            if (!PyIndex_Check(mapped)) {
-                Py_DECREF(mapped);
-                goto noitem;
-            }
-
-            i = PyNumber_AsSsize_t(mapped, PyExc_IndexError);
-            Py_DECREF(mapped);
-
-            if (i < 0) {
-                if (PyErr_Occurred()) {
-                    PyErr_Clear();
-                }
-                goto noitem;
-            }
-
-            result = ttuple_item(o, i);
-            if (result == NULL) {
-                PyErr_Clear();
-                goto noitem;
-            }
-            return result;
+    else {
+        /* map by name */
+        PyObject *result = NULL;
+        if (ttuple_item_by_name(o, item, &result) < 0) {
+            return NULL;
         }
-        else {
-            goto noitem;
-        }
+
+        return result;
     }
-
-noitem:
-    _PyErr_SetKeyError(item);
-    return NULL;
 }
 
 
@@ -511,6 +528,28 @@ ttuple_contains(AtntTupleObject *o, PyObject *arg)
 }
 
 
+static PyObject *
+ttuple_get(AtntTupleObject* o, PyObject* args)
+{
+    PyObject *key;
+    PyObject *defval = Py_None;
+    PyObject *val = NULL;
+    int res;
+
+    if (!PyArg_UnpackTuple(args, "get", 1, 2, &key, &defval))
+        return NULL;
+
+    res = ttuple_item_by_name(o, key, &val);
+    if (res < 0) {
+        PyErr_Clear();
+        Py_INCREF(defval);
+        val = defval;
+    }
+
+    return val;
+}
+
+
 static PySequenceMethods ttuple_as_sequence = {
     (lenfunc)ttuple_length,                          /* sq_length */
     0,                                               /* sq_concat */
@@ -531,10 +570,11 @@ static PyMappingMethods ttuple_as_mapping = {
 
 
 static PyMethodDef ttuple_methods[] = {
-    {"values",          (PyCFunction)ttuple_values, METH_NOARGS},
-    {"keys",            (PyCFunction)ttuple_keys, METH_NOARGS},
-    {"items",           (PyCFunction)ttuple_items, METH_NOARGS},
-    {NULL,              NULL}           /* sentinel */
+    {"values", (PyCFunction) ttuple_values, METH_NOARGS},
+    {"keys",   (PyCFunction) ttuple_keys, METH_NOARGS},
+    {"items",  (PyCFunction) ttuple_items, METH_NOARGS},
+    {"get",    (PyCFunction) ttuple_get, METH_VARARGS},
+    {NULL,     NULL}           /* sentinel */
 };
 
 

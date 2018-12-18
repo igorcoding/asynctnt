@@ -129,6 +129,24 @@ class ResponseTestCase(BaseTarantoolTestCase):
         self.assertTrue('f5' in res)
         self.assertFalse('f6' in res)
 
+    async def test__response_tuple_key_error(self):
+        data = [0, 'hello', 5, 6, 'help', 'common', 'yo']
+        res = await self.conn.insert(self.TESTER_SPACE_ID, data)
+        res = res[0]
+
+        with self.assertRaises(KeyError):
+            _ = res['f100']
+
+    async def test__response_tuple_get(self):
+        data = [0, 'hello', 5, 6, 'help', 'common', 'yo']
+        res = await self.conn.insert(self.TESTER_SPACE_ID, data)
+        res = res[0]
+
+        self.assertEqual(res.get('f1'), 0)
+        self.assertEqual(res.get('f2'), 'hello')
+        self.assertEqual(res.get('f100'), None)
+        self.assertEqual(res.get('f100', 'zz'), 'zz')
+
     async def test__response_with_no_space_format(self):
         res = await self.conn.insert('no_schema_space', [0, 'one'])
 
