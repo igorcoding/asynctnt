@@ -1,3 +1,5 @@
+import asyncio
+
 import asynctnt
 from asynctnt._testbase import ensure_version
 from asynctnt.exceptions import TarantoolNotConnectedError, \
@@ -202,3 +204,37 @@ class CommonTestCase(BaseTarantoolTestCase):
                 await self.conn.call('func_hello')
         except TarantoolDatabaseError as e:
             self.fail(e)
+
+    async def test__schema_refetch_unknown_space(self):
+        await self.tnt_reconnect(auto_refetch_schema=True,
+                                 username='t1', password='t1',
+                                 ping_timeout=0.1)
+
+        async def func():
+            # trying to select from an unknown space until it is created
+            while True:
+                try:
+                    await self.conn.select('spacex')
+                    return
+                except Exception as e:
+                    pass
+
+                await asyncio.sleep(0.1, loop=self.loop)
+
+        f = asyncio.ensure_future(asyncio.wait_for(func(), loop=self.loop,
+                                                   timeout=1),
+                                  loop=self.loop)
+
+        # Changing scheme
+        try:
+            await self.conn.eval(
+                "s = box.schema.create_space('spacex');"
+                "s:create_index('primary');"
+            )
+        except TarantoolDatabaseError as e:
+            self.fail(e)
+
+        try:
+            await f
+        except (asyncio.TimeoutError, asyncio.CancelledError) as e:
+            self.fail('Schema is not updated: %s %s' % (type(e), e))

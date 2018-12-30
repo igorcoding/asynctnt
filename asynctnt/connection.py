@@ -31,10 +31,11 @@ class Connection:
         '_host', '_port', '_username', '_password',
         '_fetch_schema', '_auto_refetch_schema', '_initial_read_buffer_size',
         '_encoding', '_connect_timeout', '_reconnect_timeout',
-        '_request_timeout', '_loop', '_state', '_state_prev',
+        '_request_timeout', '_ping_timeout', '_loop', '_state', '_state_prev',
         '_transport', '_protocol', '_db',
-        '_disconnect_waiter', '_reconnect_coro',
-        '_connect_lock', '_disconnect_lock'
+        '_disconnect_waiter', '_reconnect_task',
+        '_connect_lock', '_disconnect_lock',
+        '_ping_task', '__create_task'
     )
 
     def __init__(self, *,
@@ -44,9 +45,10 @@ class Connection:
                  password=None,
                  fetch_schema=True,
                  auto_refetch_schema=True,
-                 connect_timeout=3,
-                 request_timeout=-1,
+                 connect_timeout=3.,
+                 request_timeout=-1.,
                  reconnect_timeout=1. / 3.,
+                 ping_timeout=5.,
                  encoding=None,
                  initial_read_buffer_size=None,
                  loop=None):
@@ -99,6 +101,12 @@ class Connection:
             :param reconnect_timeout:
                     Time in seconds to wait before automatic reconnect
                     (set to ``0`` or ``None`` to disable auto reconnect)
+            :param ping_timeout:
+                    If specified (default is 5 seconds) a background task
+                    will be created which will ping Tarantool instance
+                    periodically to check if it is alive and update schema
+                    if it is changed
+                    (set to ``0`` or ``None`` to disable this task)
             :param encoding:
                     The encoding to use for all strings
                     encoding and decoding (default is ``utf-8``)
@@ -128,6 +136,7 @@ class Connection:
         self._connect_timeout = connect_timeout
         self._reconnect_timeout = reconnect_timeout or 0
         self._request_timeout = request_timeout
+        self._ping_timeout = ping_timeout or 0
 
         self._loop = loop or asyncio.get_event_loop()
 
@@ -138,9 +147,16 @@ class Connection:
         self._state = ConnectionState.DISCONNECTED
         self._state_prev = ConnectionState.DISCONNECTED
         self._disconnect_waiter = None
-        self._reconnect_coro = None
+        self._reconnect_task = None
         self._connect_lock = asyncio.Lock(loop=self._loop)
         self._disconnect_lock = asyncio.Lock(loop=self._loop)
+        self._ping_task = None
+
+        if False and hasattr(self._loop, 'create_task'):
+            self.__create_task = self._loop.create_task
+        else:
+            self.__create_task = functools.partial(asyncio.ensure_future,
+                                                   loop=self._loop)
 
     def _set_state(self, new_state):
         if self._state != new_state:
@@ -168,6 +184,17 @@ class Connection:
             # should not reconnect, close everything
             self.close()
 
+    async def _ping_task_func(self):
+        while self._state == ConnectionState.CONNECTED:
+            try:
+                await self.ping(timeout=2.0)
+            except asyncio.CancelledError:
+                break
+            except Exception as e:
+                pass
+
+            await asyncio.sleep(self._ping_timeout, loop=self._loop)
+
     def _start_reconnect(self, return_exceptions=False):
         if self._state in [ConnectionState.CONNECTING,
                            ConnectionState.RECONNECTING]:
@@ -175,15 +202,14 @@ class Connection:
                          self.fingerprint)
             return
 
-        if self._reconnect_coro:
+        if self._reconnect_task:
             return
 
         logger.info('%s Started reconnecting', self.fingerprint)
         self._set_state(ConnectionState.RECONNECTING)
 
-        self._reconnect_coro = asyncio.ensure_future(
-            self._connect(return_exceptions=return_exceptions),
-            loop=self._loop
+        self._reconnect_task = self.__create_task(
+            self._connect(return_exceptions=return_exceptions)
         )
 
     def protocol_factory(self, connected_fut, cls=protocol.Protocol):
@@ -211,7 +237,7 @@ class Connection:
                     }
 
                     if self._state in ignore_states:
-                        self._reconnect_coro = None
+                        self._reconnect_task = None
                         return
 
                     self._set_state(ConnectionState.CONNECTING)
@@ -222,6 +248,9 @@ class Connection:
 
                             if self._host.startswith('unix/'):
                                 unix_path = self._port
+                                assert isinstance(unix_path, str), \
+                                    'port must be a str instance for ' \
+                                    'unix socket'
                                 assert unix_path, \
                                     'No unix file path specified'
                                 assert os.path.exists(unix_path), \
@@ -271,8 +300,12 @@ class Connection:
                     self._transport = tr
                     self._protocol = pr
                     self._db = self._protocol.get_common_db()
-                    self._reconnect_coro = None
+                    self._reconnect_task = None
                     self._normalize_api()
+
+                    if self._ping_timeout:
+                        self._ping_task = \
+                            self.__create_task(self._ping_task_func())
                     return
                 except TarantoolDatabaseError as e:
                     skip_errors = {
@@ -287,7 +320,7 @@ class Connection:
                             continue
 
                     if return_exceptions:
-                        self._reconnect_coro = None
+                        self._reconnect_task = None
                         raise e
 
                     logger.exception(e)
@@ -298,7 +331,7 @@ class Connection:
                     return  # no reconnect, no return_exceptions
                 except asyncio.CancelledError:
                     logger.debug("connect is cancelled")
-                    self._reconnect_coro = None
+                    self._reconnect_task = None
                     raise
                 except Exception as e:
                     if self._reconnect_timeout > 0:
@@ -306,7 +339,7 @@ class Connection:
                         continue
 
                     if return_exceptions:
-                        self._reconnect_coro = None
+                        self._reconnect_task = None
                         raise e
 
                     logger.exception(e)
@@ -341,9 +374,13 @@ class Connection:
             self._set_state(ConnectionState.DISCONNECTING)
 
             logger.info('%s Disconnecting...', self.fingerprint)
-            if self._reconnect_coro:
-                self._reconnect_coro.cancel()
-                self._reconnect_coro = None
+            if self._reconnect_task:
+                self._reconnect_task.cancel()
+                self._reconnect_task = None
+
+            if self._ping_task and not self._ping_task.done():
+                self._ping_task.cancel()
+                self._ping_task = None
 
             self._db = _DbMock()
             if self._transport:
@@ -373,9 +410,13 @@ class Connection:
         self._set_state(ConnectionState.DISCONNECTING)
         logger.info('%s Disconnecting...', self.fingerprint)
 
-        if self._reconnect_coro:
-            self._reconnect_coro.cancel()
-            self._reconnect_coro = None
+        if self._reconnect_task and not self._reconnect_task.done():
+            self._reconnect_task.cancel()
+            self._reconnect_task = None
+
+        if self._ping_task and not self._ping_task.done():
+            self._ping_task.cancel()
+            self._ping_task = None
 
         if self._transport:
             self._transport.close()
@@ -549,7 +590,7 @@ class Connection:
         """
         await self._protocol.refetch_schema()
 
-    def ping(self, *, timeout=-1) -> _MethodRet:
+    def ping(self, *, timeout=-1.0) -> _MethodRet:
         """
             Ping request coroutine
 
@@ -560,7 +601,7 @@ class Connection:
         return self._db.ping(timeout=timeout)
 
     def call16(self, func_name, args=None, *,
-               timeout=-1, push_subscribe=False) -> _MethodRet:
+               timeout=-1.0, push_subscribe=False) -> _MethodRet:
         """
             Call16 request coroutine. It is a call with an old behaviour
             (return result of a Tarantool procedure is wrapped into a tuple,
@@ -578,7 +619,7 @@ class Connection:
                                push_subscribe=push_subscribe)
 
     def call(self, func_name, args=None, *,
-             timeout=-1, push_subscribe=False) -> _MethodRet:
+             timeout=-1.0, push_subscribe=False) -> _MethodRet:
         """
             Call request coroutine. It is a call with a new behaviour
             (return result of a Tarantool procedure is not wrapped into
@@ -611,7 +652,7 @@ class Connection:
                              timeout=timeout, push_subscribe=push_subscribe)
 
     def eval(self, expression, args=None, *,
-             timeout=-1, push_subscribe=False) -> _MethodRet:
+             timeout=-1.0, push_subscribe=False) -> _MethodRet:
         """
             Eval request coroutine.
 
@@ -716,7 +757,7 @@ class Connection:
                                replace=replace,
                                timeout=timeout)
 
-    def replace(self, space, t, *, timeout=-1) -> _MethodRet:
+    def replace(self, space, t, *, timeout=-1.0) -> _MethodRet:
         """
             Replace request coroutine. Same as insert, but replace.
 
@@ -821,7 +862,7 @@ class Connection:
         return self._db.upsert(space, t, operations, **kwargs)
 
     def sql(self, query, args=None, *,
-            parse_metadata=True, timeout=-1) -> _MethodRet:
+            parse_metadata=True, timeout=-1.0) -> _MethodRet:
         """
             Executes an SQL statement (only for Tarantool > 2)
 

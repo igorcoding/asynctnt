@@ -17,6 +17,10 @@ New features:
   request. 
 * Added `Connection.sql` method to execute SQL statements for Tarantool 2 
   (see asynctnt docs for details).
+* Added internal background coroutine with pings periodically a Tarantool
+  instance to check if it is alive and to refresh schema if it is changed
+  (default period is 5 seconds and is configured by `Connection.ping_timeout`
+  parameter).
 
 Changes:
 * Iteration over TarantoolTuple results in iterating over a raw tuple by 

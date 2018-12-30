@@ -54,7 +54,6 @@ class SQLTestCase(BaseTarantoolTestCase):
 
         res = await self.conn.sql("update sql_space set name = 'uno'")
 
-        print(await self.conn.sql("select * from sql_space"))
         self.assertEqual(2, res.rowcount, 'rowcount ok')
 
     @ensure_version(min=(2, 0))
