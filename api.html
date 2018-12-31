@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>API Reference &mdash; asynctnt 1.0b1 documentation</title>
+  <title>API Reference &mdash; asynctnt 1.0b3 documentation</title>
   
 
   
@@ -57,7 +57,7 @@
             
             
               <div class="version">
-                1.0b1
+                1.0b3
               </div>
             
           
@@ -178,10 +178,10 @@
 
 <dl class="class">
 <dt id="asynctnt.Connection">
-<em class="property">class </em><code class="descclassname">asynctnt.</code><code class="descname">Connection</code><span class="sig-paren">(</span><em>*</em>, <em>host='127.0.0.1'</em>, <em>port=3301</em>, <em>username=None</em>, <em>password=None</em>, <em>fetch_schema=True</em>, <em>auto_refetch_schema=True</em>, <em>connect_timeout=3</em>, <em>request_timeout=-1</em>, <em>reconnect_timeout=0.3333333333333333</em>, <em>encoding=None</em>, <em>initial_read_buffer_size=None</em>, <em>loop=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/asynctnt/connection.html#Connection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#asynctnt.Connection" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">asynctnt.</code><code class="descname">Connection</code><span class="sig-paren">(</span><em>*</em>, <em>host='127.0.0.1'</em>, <em>port=3301</em>, <em>username=None</em>, <em>password=None</em>, <em>fetch_schema=True</em>, <em>auto_refetch_schema=True</em>, <em>connect_timeout=3.0</em>, <em>request_timeout=-1.0</em>, <em>reconnect_timeout=0.3333333333333333</em>, <em>ping_timeout=5.0</em>, <em>encoding=None</em>, <em>initial_read_buffer_size=None</em>, <em>loop=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/asynctnt/connection.html#Connection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#asynctnt.Connection" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="method">
 <dt id="asynctnt.Connection.__init__">
-<code class="descname">__init__</code><span class="sig-paren">(</span><em>*</em>, <em>host='127.0.0.1'</em>, <em>port=3301</em>, <em>username=None</em>, <em>password=None</em>, <em>fetch_schema=True</em>, <em>auto_refetch_schema=True</em>, <em>connect_timeout=3</em>, <em>request_timeout=-1</em>, <em>reconnect_timeout=0.3333333333333333</em>, <em>encoding=None</em>, <em>initial_read_buffer_size=None</em>, <em>loop=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/asynctnt/connection.html#Connection.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#asynctnt.Connection.__init__" title="Permalink to this definition">¶</a></dt>
+<code class="descname">__init__</code><span class="sig-paren">(</span><em>*</em>, <em>host='127.0.0.1'</em>, <em>port=3301</em>, <em>username=None</em>, <em>password=None</em>, <em>fetch_schema=True</em>, <em>auto_refetch_schema=True</em>, <em>connect_timeout=3.0</em>, <em>request_timeout=-1.0</em>, <em>reconnect_timeout=0.3333333333333333</em>, <em>ping_timeout=5.0</em>, <em>encoding=None</em>, <em>initial_read_buffer_size=None</em>, <em>loop=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/asynctnt/connection.html#Connection.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#asynctnt.Connection.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Connection constructor.</p>
 <p>To manipulate a Connection instance there are several functions:</p>
 <blockquote>
@@ -224,6 +224,11 @@ be checked by Tarantool, so no errors will occur</li>
 (by default there is no timeout)</li>
 <li><strong>reconnect_timeout</strong> – Time in seconds to wait before automatic reconnect
 (set to <code class="docutils literal notranslate"><span class="pre">0</span></code> or <code class="docutils literal notranslate"><span class="pre">None</span></code> to disable auto reconnect)</li>
+<li><strong>ping_timeout</strong> – If specified (default is 5 seconds) a background task
+will be created which will ping Tarantool instance
+periodically to check if it is alive and update schema
+if it is changed
+(set to <code class="docutils literal notranslate"><span class="pre">0</span></code> or <code class="docutils literal notranslate"><span class="pre">None</span></code> to disable this task)</li>
 <li><strong>encoding</strong> – The encoding to use for all strings
 encoding and decoding (default is <code class="docutils literal notranslate"><span class="pre">utf-8</span></code>)</li>
 <li><strong>initial_read_buffer_size</strong> – Initial and minimum size of read buffer in bytes.
@@ -245,7 +250,7 @@ memory usage.</li>
 
 <dl class="method">
 <dt id="asynctnt.Connection.call">
-<code class="descname">call</code><span class="sig-paren">(</span><em>func_name</em>, <em>args=None</em>, <em>*</em>, <em>timeout=-1</em>, <em>push_subscribe=False</em><span class="sig-paren">)</span> &#x2192; Union[Awaitable[asynctnt.iproto.protocol.Response], _asyncio.Future]<a class="reference internal" href="_modules/asynctnt/connection.html#Connection.call"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#asynctnt.Connection.call" title="Permalink to this definition">¶</a></dt>
+<code class="descname">call</code><span class="sig-paren">(</span><em>func_name</em>, <em>args=None</em>, <em>*</em>, <em>timeout=-1.0</em>, <em>push_subscribe=False</em><span class="sig-paren">)</span> &#x2192; Union[Awaitable[asynctnt.iproto.protocol.Response], _asyncio.Future]<a class="reference internal" href="_modules/asynctnt/connection.html#Connection.call"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#asynctnt.Connection.call" title="Permalink to this definition">¶</a></dt>
 <dd><p>Call request coroutine. It is a call with a new behaviour
 (return result of a Tarantool procedure is not wrapped into
 an extra tuple). If you’re connecting to Tarantool with
@@ -284,7 +289,7 @@ version &lt; 1.7, then this call method acts like a call16 method</p>
 
 <dl class="method">
 <dt id="asynctnt.Connection.call16">
-<code class="descname">call16</code><span class="sig-paren">(</span><em>func_name</em>, <em>args=None</em>, <em>*</em>, <em>timeout=-1</em>, <em>push_subscribe=False</em><span class="sig-paren">)</span> &#x2192; Union[Awaitable[asynctnt.iproto.protocol.Response], _asyncio.Future]<a class="reference internal" href="_modules/asynctnt/connection.html#Connection.call16"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#asynctnt.Connection.call16" title="Permalink to this definition">¶</a></dt>
+<code class="descname">call16</code><span class="sig-paren">(</span><em>func_name</em>, <em>args=None</em>, <em>*</em>, <em>timeout=-1.0</em>, <em>push_subscribe=False</em><span class="sig-paren">)</span> &#x2192; Union[Awaitable[asynctnt.iproto.protocol.Response], _asyncio.Future]<a class="reference internal" href="_modules/asynctnt/connection.html#Connection.call16"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#asynctnt.Connection.call16" title="Permalink to this definition">¶</a></dt>
 <dd><p>Call16 request coroutine. It is a call with an old behaviour
 (return result of a Tarantool procedure is wrapped into a tuple,
 if needed)</p>
@@ -372,7 +377,7 @@ for disconnect to finish.</p>
 
 <dl class="method">
 <dt id="asynctnt.Connection.eval">
-<code class="descname">eval</code><span class="sig-paren">(</span><em>expression</em>, <em>args=None</em>, <em>*</em>, <em>timeout=-1</em>, <em>push_subscribe=False</em><span class="sig-paren">)</span> &#x2192; Union[Awaitable[asynctnt.iproto.protocol.Response], _asyncio.Future]<a class="reference internal" href="_modules/asynctnt/connection.html#Connection.eval"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#asynctnt.Connection.eval" title="Permalink to this definition">¶</a></dt>
+<code class="descname">eval</code><span class="sig-paren">(</span><em>expression</em>, <em>args=None</em>, <em>*</em>, <em>timeout=-1.0</em>, <em>push_subscribe=False</em><span class="sig-paren">)</span> &#x2192; Union[Awaitable[asynctnt.iproto.protocol.Response], _asyncio.Future]<a class="reference internal" href="_modules/asynctnt/connection.html#Connection.eval"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#asynctnt.Connection.eval" title="Permalink to this definition">¶</a></dt>
 <dd><p>Eval request coroutine.</p>
 <p>Examples:</p>
 <div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">await</span> <span class="n">conn</span><span class="o">.</span><span class="n">eval</span><span class="p">(</span><span class="s1">&#39;return 42&#39;</span><span class="p">)</span>
@@ -488,7 +493,7 @@ and schema fetching)</p>
 
 <dl class="method">
 <dt id="asynctnt.Connection.ping">
-<code class="descname">ping</code><span class="sig-paren">(</span><em>*</em>, <em>timeout=-1</em><span class="sig-paren">)</span> &#x2192; Union[Awaitable[asynctnt.iproto.protocol.Response], _asyncio.Future]<a class="reference internal" href="_modules/asynctnt/connection.html#Connection.ping"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#asynctnt.Connection.ping" title="Permalink to this definition">¶</a></dt>
+<code class="descname">ping</code><span class="sig-paren">(</span><em>*</em>, <em>timeout=-1.0</em><span class="sig-paren">)</span> &#x2192; Union[Awaitable[asynctnt.iproto.protocol.Response], _asyncio.Future]<a class="reference internal" href="_modules/asynctnt/connection.html#Connection.ping"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#asynctnt.Connection.ping" title="Permalink to this definition">¶</a></dt>
 <dd><p>Ping request coroutine</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -529,7 +534,7 @@ Just calls disconnect() and connect()</p>
 
 <dl class="method">
 <dt id="asynctnt.Connection.replace">
-<code class="descname">replace</code><span class="sig-paren">(</span><em>space</em>, <em>t</em>, <em>*</em>, <em>timeout=-1</em><span class="sig-paren">)</span> &#x2192; Union[Awaitable[asynctnt.iproto.protocol.Response], _asyncio.Future]<a class="reference internal" href="_modules/asynctnt/connection.html#Connection.replace"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#asynctnt.Connection.replace" title="Permalink to this definition">¶</a></dt>
+<code class="descname">replace</code><span class="sig-paren">(</span><em>space</em>, <em>t</em>, <em>*</em>, <em>timeout=-1.0</em><span class="sig-paren">)</span> &#x2192; Union[Awaitable[asynctnt.iproto.protocol.Response], _asyncio.Future]<a class="reference internal" href="_modules/asynctnt/connection.html#Connection.replace"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#asynctnt.Connection.replace" title="Permalink to this definition">¶</a></dt>
 <dd><p>Replace request coroutine. Same as insert, but replace.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -616,7 +621,7 @@ Just calls disconnect() and connect()</p>
 
 <dl class="method">
 <dt id="asynctnt.Connection.sql">
-<code class="descname">sql</code><span class="sig-paren">(</span><em>query</em>, <em>args=None</em>, <em>*</em>, <em>parse_metadata=True</em>, <em>timeout=-1</em><span class="sig-paren">)</span> &#x2192; Union[Awaitable[asynctnt.iproto.protocol.Response], _asyncio.Future]<a class="reference internal" href="_modules/asynctnt/connection.html#Connection.sql"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#asynctnt.Connection.sql" title="Permalink to this definition">¶</a></dt>
+<code class="descname">sql</code><span class="sig-paren">(</span><em>query</em>, <em>args=None</em>, <em>*</em>, <em>parse_metadata=True</em>, <em>timeout=-1.0</em><span class="sig-paren">)</span> &#x2192; Union[Awaitable[asynctnt.iproto.protocol.Response], _asyncio.Future]<a class="reference internal" href="_modules/asynctnt/connection.html#Connection.sql"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#asynctnt.Connection.sql" title="Permalink to this definition">¶</a></dt>
 <dd><p>Executes an SQL statement (only for Tarantool &gt; 2)</p>
 <p>Examples:</p>
 <div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">await</span> <span class="n">conn</span><span class="o">.</span><span class="n">sql</span><span class="p">(</span><span class="s2">&quot;select 1 as a, 2 as b&quot;</span><span class="p">)</span>
@@ -956,6 +961,7 @@ request is finished already while iterating over the PushIterator</p>
         <script type="text/javascript" src="_static/jquery.js"></script>
         <script type="text/javascript" src="_static/underscore.js"></script>
         <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
     
 
   
