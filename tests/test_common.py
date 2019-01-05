@@ -228,7 +228,8 @@ class CommonTestCase(BaseTarantoolTestCase):
         # Changing scheme
         try:
             conn = await asynctnt.connect(host=self.tnt.host,
-                                          port=self.tnt.port)
+                                          port=self.tnt.port,
+                                          username='t1', password='t1')
             async with conn:
                 await conn.eval(
                     "s = box.schema.create_space('spacex');"

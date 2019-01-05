@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -e -x
+
 if [[ "${BUILD}" != *tests* ]]; then
     echo "Skipping tests."
     exit 0
@@ -12,13 +14,13 @@ if [ "${TRAVIS_OS_NAME}" == "osx" ]; then
 fi
 
 if [[ "${BUILD}" == *quicktests* ]]; then
-    make && make quicktest || exit 1
+    make && make quicktest
 else
-    make && make test || exit 1
-    make clean && make debug && make test || exit 1
+    make && make test
+    make clean && make debug && make test
 fi
 
 if [[ "${BUILD}" == *coverage* ]]; then
-    make debug && coverage run --source=asynctnt setup.py test || exit 1
+    make debug && coverage run --source=asynctnt setup.py test
     coveralls
 fi
