@@ -152,7 +152,7 @@ class Connection:
         self._disconnect_lock = asyncio.Lock(loop=self._loop)
         self._ping_task = None
 
-        if False and hasattr(self._loop, 'create_task'):
+        if hasattr(self._loop, 'create_task'):
             self.__create_task = self._loop.create_task
         else:
             self.__create_task = functools.partial(asyncio.ensure_future,

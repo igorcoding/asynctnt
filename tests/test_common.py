@@ -227,10 +227,13 @@ class CommonTestCase(BaseTarantoolTestCase):
 
         # Changing scheme
         try:
-            await self.conn.eval(
-                "s = box.schema.create_space('spacex');"
-                "s:create_index('primary');"
-            )
+            conn = await asynctnt.connect(host=self.tnt.host,
+                                          port=self.tnt.port)
+            async with conn:
+                await conn.eval(
+                    "s = box.schema.create_space('spacex');"
+                    "s:create_index('primary');"
+                )
         except TarantoolDatabaseError as e:
             self.fail(e)
 

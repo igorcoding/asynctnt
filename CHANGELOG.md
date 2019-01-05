@@ -1,4 +1,4 @@
-v1.0b
+v1.0
 
 Breaking changes:
 * Removed method `body2yaml` from Response.
