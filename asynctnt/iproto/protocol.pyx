@@ -116,7 +116,6 @@ cdef class BaseProtocol(CoreProtocol):
             PyObject *req_p
             Request req
             Header hdr
-            Response resp
             bint is_chunk
             object waiter
             object sync_obj
@@ -263,8 +262,7 @@ cdef class BaseProtocol(CoreProtocol):
         fut_vspace = self._db.select(SPACE_VSPACE, timeout=0)
         fut_vindex = self._db.select(SPACE_VINDEX, timeout=0)
         gather_fut = asyncio.gather(fut_vspace, fut_vindex,
-                                    return_exceptions=False,
-                                    loop=self.loop)
+                                    return_exceptions=False)
         gather_fut.add_done_callback(on_fetch)
 
     cdef void _on_connection_made(self):
@@ -353,7 +351,7 @@ cdef class BaseProtocol(CoreProtocol):
         fut._req = req  # to be able to retrieve request after done()
         req.waiter = fut
         req.response = Response.__new__(Response, self.encoding,
-                                        req.push_subscribe, self.loop)
+                                        req.push_subscribe)
 
         if timeout < 0:
             timeout = self.request_timeout

@@ -120,6 +120,18 @@ jobs:
       script: ".ci/travis-tests.sh"
       env: BUILD=tests TARANTOOL_VERSION=1_10
 
+    # xenial python3.8 Tarantool 1.10
+    - stage: tests
+      os: linux
+      dist: xenial
+      sudo: required
+      language: python
+      python: '3.8'
+      before_install: ".ci/travis-before-install-${TRAVIS_OS_NAME}.sh"
+      install: ".ci/travis-install.sh"
+      script: ".ci/travis-tests.sh"
+      env: BUILD=tests TARANTOOL_VERSION=1_10
+
     # xenial python3.7 Tarantool 2x
     - stage: tests
       os: linux
@@ -127,6 +139,18 @@ jobs:
       sudo: required
       language: python
       python: '3.7'
+      before_install: ".ci/travis-before-install-${TRAVIS_OS_NAME}.sh"
+      install: ".ci/travis-install.sh"
+      script: ".ci/travis-tests.sh"
+      env: BUILD=tests,coverage TARANTOOL_VERSION=2x
+
+    # xenial python3.8 Tarantool 2x
+    - stage: tests
+      os: linux
+      dist: xenial
+      sudo: required
+      language: python
+      python: '3.8'
       before_install: ".ci/travis-before-install-${TRAVIS_OS_NAME}.sh"
       install: ".ci/travis-install.sh"
       script: ".ci/travis-tests.sh"
@@ -169,6 +193,14 @@ jobs:
       script: ".ci/travis-tests.sh"
       env: BUILD=quicktests PYTHON_VERSION=3.7.5 TARANTOOL_VERSION=2_x
 
+    - stage: tests
+      os: osx
+      language: generic
+      before_install: ".ci/travis-before-install-${TRAVIS_OS_NAME}.sh"
+      install: ".ci/travis-install.sh"
+      script: ".ci/travis-tests.sh"
+      env: BUILD=quicktests PYTHON_VERSION=3.8.0 TARANTOOL_VERSION=2_x
+
     ### Wheels ###
 
     - stage: wheels
@@ -179,7 +211,7 @@ jobs:
       python: "3.7"
 
       env:
-        - CIBW_BUILD="cp35-* cp36-* cp37-*"
+        - CIBW_BUILD="cp35-* cp36-* cp37-* cp38-*"
 
       before_install:
         - if [ "${TRAVIS_TAG:-}" = "" ]; then exit 0; fi
@@ -201,7 +233,7 @@ jobs:
       language: generic
 
       env:
-        - CIBW_BUILD="cp35-* cp36-* cp37-*"
+        - CIBW_BUILD="cp35-* cp36-* cp37-* cp38-*"
 
       before_install:
         - if [ "${TRAVIS_TAG:-}" = "" ]; then exit 0; fi

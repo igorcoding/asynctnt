@@ -171,8 +171,7 @@ class CommonTestCase(BaseTarantoolTestCase):
 
         self._conn = asynctnt.Connection(
             host=self.tnt.host,
-            port=self.tnt.port,
-            loop=self.loop)
+            port=self.tnt.port)
 
         with self.assertRaises(TarantoolNotConnectedError):
             await self.conn.ping()
@@ -219,11 +218,9 @@ class CommonTestCase(BaseTarantoolTestCase):
                 except Exception:
                     pass
 
-                await asyncio.sleep(0.1, loop=self.loop)
+                await asyncio.sleep(0.1)
 
-        f = asyncio.ensure_future(asyncio.wait_for(func(), loop=self.loop,
-                                                   timeout=1),
-                                  loop=self.loop)
+        f = asyncio.ensure_future(asyncio.wait_for(func(), timeout=1))
 
         # Changing scheme
         try:

@@ -72,19 +72,17 @@ class TestCase(unittest.TestCase, metaclass=TestCaseMeta):
 
     @classmethod
     def setUpClass(cls):
-        if os.environ.get('USE_UVLOOP'):
+        use_uvloop = os.environ.get('USE_UVLOOP')
+
+        if use_uvloop:
             import uvloop
-            asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
+            uvloop.install()
 
-        loop = asyncio.new_event_loop()
-        asyncio.set_event_loop(None)
-        cls.loop = loop
+        cls.loop = asyncio.get_event_loop()
 
-    @classmethod
-    def tearDownClass(cls):
-        if cls.loop:
-            cls.loop.close()
-        asyncio.set_event_loop(None)
+        if use_uvloop:
+            import uvloop
+            assert isinstance(cls.loop, uvloop.Loop)
 
     @contextlib.contextmanager
     def assertRunUnder(self, delta):
@@ -98,11 +96,11 @@ class TestCase(unittest.TestCase, metaclass=TestCaseMeta):
 
     @classmethod
     def ensure_future(cls, coro_or_future):
-        return asyncio.ensure_future(coro_or_future, loop=cls.loop)
+        return asyncio.ensure_future(coro_or_future)
 
     @classmethod
     def sleep(cls, delay, result=None):
-        return asyncio.sleep(delay, result, loop=cls.loop)
+        return asyncio.sleep(delay, result)
 
 
 class TarantoolTestCase(TestCase):
@@ -210,8 +208,7 @@ class TarantoolTestCase(TestCase):
             request_timeout=request_timeout,
             ping_timeout=ping_timeout,
             encoding=encoding,
-            initial_read_buffer_size=initial_read_buffer_size,
-            loop=self.loop)
+            initial_read_buffer_size=initial_read_buffer_size)
         await self._conn.connect()
         return self._conn
 

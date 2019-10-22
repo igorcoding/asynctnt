@@ -5,14 +5,16 @@ import os
 import typing
 from typing import Optional
 
-from asynctnt.exceptions import TarantoolDatabaseError, \
+from .exceptions import TarantoolDatabaseError, \
     ErrorCode, TarantoolNotConnectedError
-from asynctnt.iproto import protocol
-from asynctnt.log import logger
+from .iproto import protocol
+from .log import logger
 
 __all__ = (
     'Connection', 'connect', 'ConnectionState'
 )
+
+from .utils import get_running_loop
 
 
 class ConnectionState(enum.IntEnum):
@@ -51,7 +53,7 @@ class Connection:
                  ping_timeout=5.,
                  encoding=None,
                  initial_read_buffer_size=None,
-                 loop=None):
+                 **kwargs):
 
         """
             Connection constructor.
@@ -113,9 +115,9 @@ class Connection:
             :param initial_read_buffer_size:
                     Initial and minimum size of read buffer in bytes.
                     Higher value means less reallocations, but higher
-                    memory usage.
+                    memory usage (default is 131072).
             :param loop:
-                    Asyncio event loop to use
+                    (Deprecated) Asyncio event loop to use
         """
         self._host = host
         self._port = port
@@ -138,7 +140,7 @@ class Connection:
         self._request_timeout = request_timeout
         self._ping_timeout = ping_timeout or 0
 
-        self._loop = loop or asyncio.get_event_loop()
+        self._loop = get_running_loop(kwargs.pop('loop', None))
 
         self._transport = None
         self._protocol = None
@@ -148,15 +150,14 @@ class Connection:
         self._state_prev = ConnectionState.DISCONNECTED
         self._disconnect_waiter = None
         self._reconnect_task = None
-        self._connect_lock = asyncio.Lock(loop=self._loop)
-        self._disconnect_lock = asyncio.Lock(loop=self._loop)
+        self._connect_lock = asyncio.Lock()
+        self._disconnect_lock = asyncio.Lock()
         self._ping_task = None
 
         if hasattr(self._loop, 'create_task'):
             self.__create_task = self._loop.create_task
         else:
-            self.__create_task = functools.partial(asyncio.ensure_future,
-                                                   loop=self._loop)
+            self.__create_task = asyncio.ensure_future
 
     def _set_state(self, new_state):
         if self._state != new_state:
@@ -193,7 +194,7 @@ class Connection:
             except Exception:
                 pass
 
-            await asyncio.sleep(self._ping_timeout, loop=self._loop)
+            await asyncio.sleep(self._ping_timeout)
 
     def _start_reconnect(self, return_exceptions=False):
         if self._state in [ConnectionState.CONNECTING,
@@ -275,10 +276,8 @@ class Connection:
                                 if self._connect_timeout is not None:
                                     timeout = self._connect_timeout / 2
 
-                                await asyncio.wait_for(
-                                    connected_fut,
-                                    timeout=timeout,
-                                    loop=self._loop)
+                                await asyncio.wait_for(connected_fut,
+                                                       timeout=timeout)
                             except asyncio.TimeoutError:
                                 tr.close()
                                 continue  # try again
@@ -291,7 +290,6 @@ class Connection:
                     tr, pr = await asyncio.wait_for(
                         full_connect(),
                         timeout=self._connect_timeout,
-                        loop=self._loop
                     )
 
                     logger.info('%s Connected successfully', self.fingerprint)
@@ -352,8 +350,7 @@ class Connection:
                        repr(exc) if exc else '',
                        self._reconnect_timeout)
 
-        await asyncio.sleep(self._reconnect_timeout,
-                            loop=self._loop)
+        await asyncio.sleep(self._reconnect_timeout)
 
     async def connect(self) -> 'Connection':
         """

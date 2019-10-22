@@ -19,7 +19,7 @@ cdef class Response:
         Response object for all the requests to Tarantool
     """
 
-    def __cinit__(self, bytes encoding, bint push_subscribe, loop):
+    def __cinit__(self, bytes encoding, bint push_subscribe):
         self._sync = 0
         self._code = -1
         self._return_code = -1
@@ -33,7 +33,7 @@ cdef class Response:
         self._push_subscribe = push_subscribe
         if push_subscribe:
             self._q = collections.deque()
-            self._push_event = asyncio.Event(loop=loop)
+            self._push_event = asyncio.Event()
 
             self._q_append = self._q.append
             self._q_popleft = self._q.popleft

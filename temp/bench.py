@@ -32,27 +32,25 @@ def main():
 
     if args.aiotnt:
         loop.run_until_complete(
-            bench_aiotarantool(args.n, args.b, loop=loop)
+            bench_aiotarantool(args.n, args.b)
         )
     elif args.tarantool:
         bench_tarantool(args.n, 1)
     else:
         loop.run_until_complete(
-            bench_asynctnt(args.n, args.b, loop=loop)
+            bench_asynctnt(args.n, args.b)
         )
 
 
-async def bench_asynctnt(n, b, loop=None):
+async def bench_asynctnt(n, b):
     import asynctnt
     from asynctnt.iproto.protocol import Iterator
-
-    loop = loop or asyncio.get_event_loop()
 
     conn = asynctnt.Connection(host='127.0.0.1',
                                port=3305,
                                username='t1',
                                password='t1',
-                               reconnect_timeout=1, loop=loop)
+                               reconnect_timeout=1)
     await conn.connect()
 
     n_requests_per_bulk = int(math.ceil(n / b))
@@ -70,20 +68,18 @@ async def bench_asynctnt(n, b, loop=None):
     coros = [bulk_f() for _ in range(b)]
 
     start = datetime.datetime.now()
-    await asyncio.wait(coros, loop=loop)
+    await asyncio.wait(coros)
     end = datetime.datetime.now()
 
     elapsed = end - start
     print('Elapsed: {}, RPS: {}. TPR: {}'.format(elapsed, n / elapsed.total_seconds(), elapsed.total_seconds() / n))
 
 
-async def bench_aiotarantool(n, b, loop=None):
+async def bench_aiotarantool(n, b):
     import aiotarantool
 
-    loop = loop or asyncio.get_event_loop()
     conn = aiotarantool.connect('127.0.0.1', 3305,
-                                user='t1', password='t1',
-                                loop=loop)
+                                user='t1', password='t1')
 
     n_requests_per_bulk = int(math.ceil(n / b))
 
@@ -99,14 +95,14 @@ async def bench_aiotarantool(n, b, loop=None):
     coros = [bulk_f() for _ in range(b)]
 
     start = datetime.datetime.now()
-    await asyncio.wait(coros, loop=loop)
+    await asyncio.wait(coros)
     end = datetime.datetime.now()
 
     elapsed = end - start
     print('Elapsed: {}, RPS: {}'.format(elapsed, n / elapsed.total_seconds()))
 
 
-def bench_tarantool(n, b, loop=None):
+def bench_tarantool(n, b):
     import tarantool
 
     conn = tarantool.Connection(host='127.0.0.1',

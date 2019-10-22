@@ -305,7 +305,7 @@ cdef list dict_to_list_fields(dict d, TntFields fields, bint default_none):
         object value
         str field_name
         int32_t used_count
-        uint32_t field_id
+        int field_id
         PyObject *obj_p
 
     assert fields is not None

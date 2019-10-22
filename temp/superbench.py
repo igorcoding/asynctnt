@@ -48,21 +48,20 @@ def main():
             ('asynctnt', create_asynctnt),
             # ('aiotarantool', create_aiotarantool),
         ]:
-            conn = loop.run_until_complete(conn_creator(loop=loop))
+            conn = loop.run_until_complete(conn_creator())
             for scenario in scenarios:
                 loop.run_until_complete(
                     async_bench(
                         name, conn,
                         args.n, args.b,
                         method=scenario[0], args=scenario[1],
-                        kwargs=scenario[2] if len(scenario) > 2 else {},
-                        loop=loop
+                        kwargs=scenario[2] if len(scenario) > 2 else {}
                     )
                 )
 
 
 async def async_bench(name, conn,
-                      n, b, method, args=[], kwargs={}, loop=None):
+                      n, b, method, args=[], kwargs={}):
     n_requests_per_bulk = math.ceil(n / b)
 
     async def bulk_f():
@@ -72,7 +71,7 @@ async def async_bench(name, conn,
     start = datetime.datetime.now()
     coros = [bulk_f() for _ in range(b)]
 
-    await asyncio.wait(coros, loop=loop)
+    await asyncio.wait(coros)
     end = datetime.datetime.now()
 
     elapsed = end - start
@@ -88,8 +87,7 @@ async def create_asynctnt(loop):
                                password=PASSWORD,
                                reconnect_timeout=1,
                                fetch_schema=True,
-                               auto_refetch_schema=True,
-                               loop=loop)
+                               auto_refetch_schema=True)
     await conn.connect()
     return conn
 
@@ -98,8 +96,7 @@ async def create_aiotarantool(loop):
     import aiotarantool
     conn = aiotarantool.connect(HOST, PORT,
                                 user=USERNAME,
-                                password=PASSWORD,
-                                loop=loop)
+                                password=PASSWORD)
     await conn.connect()
     return conn
 

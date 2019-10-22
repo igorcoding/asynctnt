@@ -36,14 +36,12 @@ async def main(t, loop):
     # await t.wait_stopped()
 
 event_loop = asyncio.get_event_loop()
-asyncio.set_event_loop(None)
 asyncio.get_child_watcher().attach_loop(event_loop)
 
 t = TarantoolAsyncInstance(
     host='unix/',
     port='/tmp/_mytnt.sock',
     console_host='127.0.0.1',
-    loop=event_loop,
     applua=open('../tests/files/app.lua').read())
 try:
     event_loop.run_until_complete(main(t, event_loop))

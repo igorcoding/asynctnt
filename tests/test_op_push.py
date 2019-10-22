@@ -12,7 +12,7 @@ class PushTestCase(BaseTarantoolTestCase):
     async def test__push_invalid_future(self):
 
         with self.assertRaises(ValueError) as e:
-            PushIterator(asyncio.Future(loop=self.loop))
+            PushIterator(asyncio.Future())
 
         self.assertEqual(str(e.exception),
                          'Future is invalid. Make sure to call with '
@@ -214,7 +214,7 @@ class PushTestCase(BaseTarantoolTestCase):
 
             return results
 
-        res1, res2 = await asyncio.gather(f(it1), f(it2), loop=self.loop)
+        res1, res2 = await asyncio.gather(f(it1), f(it2))
         res1.extend(res2)
         res1.sort()
 

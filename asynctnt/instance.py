@@ -25,6 +25,8 @@ __all__ = (
     'TarantoolSyncDockerInstance'
 )
 
+from asynctnt.utils import get_running_loop
+
 VERSION_STRING_REGEX = re.compile(r'\s*([\d.]+).*')
 
 
@@ -586,22 +588,22 @@ class TarantoolSyncInstance(TarantoolInstance):
             s.write(cmd + b'\n')
 
             data = s.read_until(b'...\n').decode()
-            data = yaml.load(data, Loader=yaml.FullLoader)
+            data = yaml.full_load(data)
             return data
         finally:
             s.close()
 
 
 class TarantoolAsyncInstance(TarantoolInstance):
-    def __init__(self, loop=None, **kwargs):
+    def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self._loop = loop or asyncio.get_event_loop()
+        self._loop = get_running_loop(kwargs.pop('loop', None))
 
         self._is_stopping = False
         self._transport = None
         self._protocol = None
         self._last_return_code = None
-        self._stop_event = asyncio.Event(loop=self._loop)
+        self._stop_event = asyncio.Event()
 
     @property
     def pid(self):
@@ -625,9 +627,8 @@ class TarantoolAsyncInstance(TarantoolInstance):
         return await self.command("box.info.version")
 
     async def command(self, cmd, print_greeting=True):
-        reader, writer = await asyncio.open_connection(
-            self._console_host, self._console_port, loop=self._loop
-        )
+        reader, writer = await asyncio.open_connection(self._console_host,
+                                                       self._console_port)
 
         greeting = (await reader.read(128)).decode()
         if print_greeting:
@@ -638,7 +639,7 @@ class TarantoolAsyncInstance(TarantoolInstance):
                 cmd = cmd.encode('utf-8')
             writer.write(cmd + b'\n')
             data = (await reader.readuntil(b'...\n')).decode()
-            data = yaml.load(data)
+            data = yaml.full_load(data)
             return data
         finally:
             writer.close()
@@ -684,7 +685,7 @@ class TarantoolAsyncInstance(TarantoolInstance):
                         break
             except OSError:
                 pass
-            await asyncio.sleep(interval, loop=self._loop)
+            await asyncio.sleep(interval)
             attempts -= 1
         else:
             raise asyncio.TimeoutError(

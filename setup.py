@@ -28,7 +28,7 @@ def find_version():
                 r"""__version__\s*=\s*(['"])([^'"]+)\1""", line).group(2)
 
 
-CYTHON_VERSION = '0.29.1'
+CYTHON_VERSION = '0.29.14'
 
 
 class build_ext(_build_ext.build_ext):
