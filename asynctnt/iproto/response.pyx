@@ -11,6 +11,7 @@ from libc cimport stdio
 
 from asynctnt.log import logger
 
+
 @cython.final
 @cython.freelist(REQUEST_FREELIST)
 cdef class Response:
