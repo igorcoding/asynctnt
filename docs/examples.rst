@@ -74,7 +74,7 @@ Tarantool config:
 
         box.execute([[
             create table users (
-                id int primary key,
+                id int primary key autoincrement,
                 name text
             )
         ]])
@@ -93,8 +93,12 @@ Python code:
         conn = asynctnt.Connection(host='127.0.0.1', port=3301)
         await conn.connect()
 
-        await conn.sql("insert into users (id, name) values (1, 'James Bond')")
-        await conn.sql("insert into users (id, name) values (2, 'Ethan Hunt')")
+        await conn.sql("insert into users (name) values ('James Bond')")
+        resp = await conn.sql("insert into users (name) values ('Ethan Hunt')")
+
+        # get value of auto incremented primary key
+        print(resp.autoincrement_ids)
+
         data = await conn.sql('select * from users')
 
         for row in data:

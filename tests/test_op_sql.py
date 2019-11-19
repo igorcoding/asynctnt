@@ -34,7 +34,7 @@ class SQLTestCase(BaseTarantoolTestCase):
     @ensure_version(min=(2, 0))
     async def test__sql_insert_autoincrement(self):
         res = await self.conn.sql(
-            "insert into sql_space__autoincrement values (null)")
+            "insert into sql_space_autoincrement (name) values ('name')")
         self.assertEqual(1, res.rowcount, 'rowcount ok')
         self.assertEqual([1], res.autoincrement_ids, 'autoincrement ok')
 
