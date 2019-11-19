@@ -122,6 +122,11 @@ if B:check_version({2, 0}) then
                 name TEXT
             )
         ]])
+        box.sql.execute([[
+            CREATE TABLE sql_space_autoincrement (
+                id INT PRIMARY KEY AUTOINCREMENT
+            )
+        ]])
     end)
 end
 
