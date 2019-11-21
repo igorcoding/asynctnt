@@ -447,6 +447,7 @@ cdef ssize_t response_parse_body(const char *buf, uint32_t buf_len,
                     ids = cpython.list.PyList_New(arr_size)
                     for i in range(arr_size):
                         el = mp_decode_int(&b)
+                        cpython.Py_INCREF(el)
                         cpython.list.PyList_SET_ITEM(ids, i, el)
                     resp._autoincrement_ids = ids
                 else:
