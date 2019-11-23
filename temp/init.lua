@@ -52,16 +52,16 @@ box.once('access', function()
 end)
 
 --box.once("v2", function()
---    box.sql.execute([[
+--    box.execute([[
 --        create table users (
 --            id int primary key,
 --            name text
 --        );
 --    ]])
---    box.sql.execute([[
+--    box.execute([[
 --        insert into users values (1, 'one');
 --    ]])
---    box.sql.execute([[
+--    box.execute([[
 --        insert into users values (2, 'two');
 --    ]])
 --end)
@@ -99,7 +99,7 @@ local function push_messages(sync)
     for i=1,10 do
         print(i)
         box.session.push('hello_' .. tostring(i), sync)
-        --box.session.push(box.sql.execute("select * from users limit 1"), sync)
+        --box.session.push(box.execute("select * from users limit 1"), sync)
         fiber.sleep(0.5)
         print('end', i, sync)
     end

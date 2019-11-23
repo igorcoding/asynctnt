@@ -72,7 +72,7 @@ Tarantool config:
     box.once('v1', function()
         box.schema.user.grant('guest', 'read,write,execute', 'universe')
 
-        box.sql.execute([[
+        box.execute([[
             create table users (
                 id int primary key,
                 name text

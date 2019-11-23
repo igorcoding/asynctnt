@@ -7,11 +7,7 @@ if [[ "${BUILD}" != *tests* ]]; then
     exit 0
 fi
 
-if [ "${TRAVIS_OS_NAME}" == "osx" ]; then
-    PYENV_ROOT="$HOME/.pyenv"
-    PATH="$PYENV_ROOT/bin:$PATH"
-    eval "$(pyenv init -)"
-fi
+source .ci/common-${TRAVIS_OS_NAME}.sh
 
 if [[ "${BUILD}" == *quicktests* ]]; then
     make && make quicktest

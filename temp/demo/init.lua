@@ -16,7 +16,7 @@ end)
 box.once('v2', function()
     pcall(box.schema.user.grant, 'guest', 'read,write,execute', 'universe')
 
-    box.sql.execute([[
+    box.execute([[
         create table users (
             id int primary key,
             name text

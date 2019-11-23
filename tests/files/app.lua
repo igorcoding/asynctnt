@@ -116,7 +116,7 @@ end)
 
 if B:check_version({2, 0}) then
     box.once('v2', function()
-        box.sql.execute([[
+        box.execute([[
             CREATE TABLE sql_space (
                 id INT PRIMARY KEY,
                 name TEXT
@@ -152,7 +152,7 @@ function truncate()
     end
 
     if box.space.SQL_SPACE ~= nil then
-        box.sql.execute('DELETE FROM sql_space')
+        box.execute('DELETE FROM sql_space')
     end
 end
 
