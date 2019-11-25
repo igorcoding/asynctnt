@@ -128,6 +128,12 @@ if B:check_version({2, 0}) then
                 name TEXT
             )
         ]])
+        box.execute([[
+            CREATE TABLE sql_space_autoincrement_multiple (
+                id INT PRIMARY KEY AUTOINCREMENT,
+                name TEXT
+            )
+        ]])
     end)
 end
 
@@ -159,6 +165,14 @@ function truncate()
 
     if box.space.SQL_SPACE ~= nil then
         box.execute('DELETE FROM sql_space')
+    end
+
+    if box.space.SQL_SPACE_AUTOINCREMENT ~= nil then
+        box.execute('DELETE FROM sql_space_autoincrement')
+    end
+
+    if box.space.SQL_SPACE_AUTOINCREMENT_MULTIPLE ~= nil then
+        box.execute('DELETE FROM sql_space_autoincrement_multiple')
     end
 end
 
