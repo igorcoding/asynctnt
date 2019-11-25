@@ -17,34 +17,36 @@
   
 
   
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
 
-  
-  
     
 
   
-
   <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="API Reference" href="api.html" />
     <link rel="prev" title="Examples" href="examples.html" /> 
-
-  
-  <script src="_static/js/modernizr.min.js"></script>
-
 </head>
 
 <body class="wy-body-for-nav">
 
    
   <div class="wy-grid-for-nav">
-
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search">
+        <div class="wy-side-nav-search" >
           
 
           
@@ -157,36 +159,36 @@
 <p>Tarantool 1.10 introduced session pushes which gives an ability to receive
 out of bound notifications from Tarantool server</p>
 <p>For example let’s consider this simple example:</p>
-<div class="code lua highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">function</span> <span class="n">sub</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
-    <span class="k">for</span> <span class="n">i</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">n</span> <span class="n">do</span>
-        <span class="n">box</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">push</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">i</span> <span class="o">*</span> <span class="n">i</span><span class="p">)</span>
-    <span class="n">end</span>
+<div class="highlight-lua notranslate"><div class="highlight"><pre><span></span><span class="kr">function</span> <span class="nf">sub</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+    <span class="kr">for</span> <span class="n">i</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">n</span> <span class="kr">do</span>
+        <span class="n">box</span><span class="p">.</span><span class="n">session</span><span class="p">.</span><span class="n">push</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">i</span> <span class="o">*</span> <span class="n">i</span><span class="p">)</span>
+    <span class="kr">end</span>
 
-    <span class="k">return</span> <span class="s1">&#39;done&#39;</span>
-<span class="n">end</span>
+    <span class="kr">return</span> <span class="s1">&#39;done&#39;</span>
+<span class="kr">end</span>
 </pre></div>
 </div>
 <p>This function will yield <cite>n</cite> push messages to the client before returning.
 To receive such notification in Python using <cite>asynctnt</cite> we need to subscribe
 first for these notifications and then use <cite>PushIterator</cite> to iterate over
 all the messages from Tarantool:</p>
-<div class="code python highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">asyncio</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">asyncio</span>
 <span class="kn">import</span> <span class="nn">asynctnt</span>
 
 
-<span class="k">async</span> <span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
-    <span class="k">async</span> <span class="k">with</span> <span class="n">asynctnt</span><span class="o">.</span><span class="n">Connection</span><span class="p">(</span><span class="n">port</span><span class="o">=</span><span class="mi">3301</span><span class="p">)</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
-        <span class="n">fut</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s1">&#39;sub&#39;</span><span class="p">,</span> <span class="p">[</span><span class="mi">10</span><span class="p">],</span> <span class="n">push_subscribe</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">async</span> <span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+    <span class="n">async</span> <span class="k">with</span> <span class="n">asynctnt</span><span class="o">.</span><span class="n">Connection</span><span class="p">(</span><span class="n">port</span><span class="o">=</span><span class="mi">3301</span><span class="p">)</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
+        <span class="n">fut</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s1">&#39;sub&#39;</span><span class="p">,</span> <span class="p">[</span><span class="mi">10</span><span class="p">],</span> <span class="n">push_subscribe</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
         <span class="n">it</span> <span class="o">=</span> <span class="n">asynctnt</span><span class="o">.</span><span class="n">PushIterator</span><span class="p">(</span><span class="n">fut</span><span class="p">)</span>
 
-        <span class="k">async</span> <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">it</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="n">async</span> <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">it</span><span class="p">:</span>
+            <span class="k">print</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
 
 <span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">main</span><span class="p">())</span>
 </pre></div>
 </div>
 <p>This will produce the following output:</p>
-<div class="code highlight-default notranslate"><div class="highlight"><pre><span></span>$ python example.py
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ python example.py
 [1, 1]
 [2, 4]
 [3, 9]
@@ -196,19 +198,19 @@ all the messages from Tarantool:</p>
 </div>
 <p>In order to receive a return value you can simply <cite>await</cite> on the initially
 returned future from the <cite>call()</cite> method:</p>
-<div class="code python highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">asyncio</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">asyncio</span>
 <span class="kn">import</span> <span class="nn">asynctnt</span>
 
 
-<span class="k">async</span> <span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
-    <span class="k">async</span> <span class="k">with</span> <span class="n">asynctnt</span><span class="o">.</span><span class="n">Connection</span><span class="p">(</span><span class="n">port</span><span class="o">=</span><span class="mi">3301</span><span class="p">)</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
-        <span class="n">fut</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s1">&#39;sub&#39;</span><span class="p">,</span> <span class="p">[</span><span class="mi">10</span><span class="p">],</span> <span class="n">push_subscribe</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">async</span> <span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+    <span class="n">async</span> <span class="k">with</span> <span class="n">asynctnt</span><span class="o">.</span><span class="n">Connection</span><span class="p">(</span><span class="n">port</span><span class="o">=</span><span class="mi">3301</span><span class="p">)</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
+        <span class="n">fut</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s1">&#39;sub&#39;</span><span class="p">,</span> <span class="p">[</span><span class="mi">10</span><span class="p">],</span> <span class="n">push_subscribe</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
         <span class="n">it</span> <span class="o">=</span> <span class="n">asynctnt</span><span class="o">.</span><span class="n">PushIterator</span><span class="p">(</span><span class="n">fut</span><span class="p">)</span>
 
-        <span class="k">async</span> <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">it</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="n">async</span> <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">it</span><span class="p">:</span>
+            <span class="k">print</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
 
-        <span class="nb">print</span><span class="p">(</span><span class="k">await</span> <span class="n">fut</span><span class="p">)</span>  <span class="c1"># receive the response</span>
+        <span class="k">print</span><span class="p">(</span><span class="n">await</span> <span class="n">fut</span><span class="p">)</span>  <span class="c1"># receive the response</span>
 
 <span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">main</span><span class="p">())</span>
 </pre></div>
@@ -226,7 +228,7 @@ returned future from the <cite>call()</cite> method:</p>
         <a href="api.html" class="btn btn-neutral float-right" title="API Reference" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="examples.html" class="btn btn-neutral" title="Examples" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="examples.html" class="btn btn-neutral float-left" title="Examples" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -252,26 +254,16 @@ returned future from the <cite>call()</cite> method:</p>
   
 
 
-  
-
-    
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-        <script type="text/javascript" src="_static/jquery.js"></script>
-        <script type="text/javascript" src="_static/underscore.js"></script>
-        <script type="text/javascript" src="_static/doctools.js"></script>
-        <script type="text/javascript" src="_static/language_data.js"></script>
-    
-
-  
-
-  <script type="text/javascript" src="_static/js/theme.js"></script>
-
   <script type="text/javascript">
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script> 
+  </script>
+
+  
+  
+    
+   
 
 </body>
 </html>

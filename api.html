@@ -17,33 +17,35 @@
   
 
   
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
 
-  
-  
     
 
   
-
   <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="prev" title="Session Push" href="pushes.html" /> 
-
-  
-  <script src="_static/js/modernizr.min.js"></script>
-
 </head>
 
 <body class="wy-body-for-nav">
 
    
   <div class="wy-grid-for-nav">
-
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search">
+        <div class="wy-side-nav-search" >
           
 
           
@@ -164,35 +166,32 @@
 <h2>Connection<a class="headerlink" href="#connection" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
 <dt id="asynctnt.connect">
-<code class="descclassname">asynctnt.</code><code class="descname">connect</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span> &#x2192; asynctnt.connection.Connection<a class="reference internal" href="_modules/asynctnt/connection.html#connect"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#asynctnt.connect" title="Permalink to this definition">¶</a></dt>
+<em class="property">async </em><code class="sig-prename descclassname">asynctnt.</code><code class="sig-name descname">connect</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span> &#x2192; asynctnt.connection.Connection<a class="reference internal" href="_modules/asynctnt/connection.html#connect"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#asynctnt.connect" title="Permalink to this definition">¶</a></dt>
 <dd><p>connect shorthand. See <a class="reference internal" href="#asynctnt.Connection" title="asynctnt.Connection"><code class="xref py py-class docutils literal notranslate"><span class="pre">asynctnt.Connection</span></code></a> for kwargs details</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><a class="reference internal" href="#asynctnt.Connection" title="asynctnt.Connection"><code class="xref py py-class docutils literal notranslate"><span class="pre">asynctnt.Connection</span></code></a> object</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#asynctnt.Connection" title="asynctnt.Connection"><code class="xref py py-class docutils literal notranslate"><span class="pre">asynctnt.Connection</span></code></a> object</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="class">
 <dt id="asynctnt.Connection">
-<em class="property">class </em><code class="descclassname">asynctnt.</code><code class="descname">Connection</code><span class="sig-paren">(</span><em>*</em>, <em>host='127.0.0.1'</em>, <em>port=3301</em>, <em>username=None</em>, <em>password=None</em>, <em>fetch_schema=True</em>, <em>auto_refetch_schema=True</em>, <em>connect_timeout=3.0</em>, <em>request_timeout=-1.0</em>, <em>reconnect_timeout=0.3333333333333333</em>, <em>ping_timeout=5.0</em>, <em>encoding=None</em>, <em>initial_read_buffer_size=None</em>, <em>loop=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/asynctnt/connection.html#Connection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#asynctnt.Connection" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">asynctnt.</code><code class="sig-name descname">Connection</code><span class="sig-paren">(</span><em class="sig-param">*</em>, <em class="sig-param">host='127.0.0.1'</em>, <em class="sig-param">port=3301</em>, <em class="sig-param">username=None</em>, <em class="sig-param">password=None</em>, <em class="sig-param">fetch_schema=True</em>, <em class="sig-param">auto_refetch_schema=True</em>, <em class="sig-param">connect_timeout=3.0</em>, <em class="sig-param">request_timeout=-1.0</em>, <em class="sig-param">reconnect_timeout=0.3333333333333333</em>, <em class="sig-param">ping_timeout=5.0</em>, <em class="sig-param">encoding=None</em>, <em class="sig-param">initial_read_buffer_size=None</em>, <em class="sig-param">loop=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/asynctnt/connection.html#Connection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#asynctnt.Connection" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="method">
 <dt id="asynctnt.Connection.__init__">
-<code class="descname">__init__</code><span class="sig-paren">(</span><em>*</em>, <em>host='127.0.0.1'</em>, <em>port=3301</em>, <em>username=None</em>, <em>password=None</em>, <em>fetch_schema=True</em>, <em>auto_refetch_schema=True</em>, <em>connect_timeout=3.0</em>, <em>request_timeout=-1.0</em>, <em>reconnect_timeout=0.3333333333333333</em>, <em>ping_timeout=5.0</em>, <em>encoding=None</em>, <em>initial_read_buffer_size=None</em>, <em>loop=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/asynctnt/connection.html#Connection.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#asynctnt.Connection.__init__" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">*</em>, <em class="sig-param">host='127.0.0.1'</em>, <em class="sig-param">port=3301</em>, <em class="sig-param">username=None</em>, <em class="sig-param">password=None</em>, <em class="sig-param">fetch_schema=True</em>, <em class="sig-param">auto_refetch_schema=True</em>, <em class="sig-param">connect_timeout=3.0</em>, <em class="sig-param">request_timeout=-1.0</em>, <em class="sig-param">reconnect_timeout=0.3333333333333333</em>, <em class="sig-param">ping_timeout=5.0</em>, <em class="sig-param">encoding=None</em>, <em class="sig-param">initial_read_buffer_size=None</em>, <em class="sig-param">loop=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/asynctnt/connection.html#Connection.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#asynctnt.Connection.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Connection constructor.</p>
 <p>To manipulate a Connection instance there are several functions:</p>
 <blockquote>
 <div><ul class="simple">
-<li><dl class="first docutils">
-<dt>await connect() - performs connecting, authorization and</dt>
-<dd>schema fetching.</dd>
+<li><dl class="simple">
+<dt>await connect() - performs connecting, authorization and</dt><dd><p>schema fetching.</p>
+</dd>
 </dl>
 </li>
-<li>await disconnect() - performs disconnection.</li>
-<li>close() - closes connection (not a coroutine)</li>
+<li><p>await disconnect() - performs disconnection.</p></li>
+<li><p>close() - closes connection (not a coroutine)</p></li>
 </ul>
 </div></blockquote>
 <p>Connection also supports context manager protocol, which connects
@@ -202,55 +201,51 @@ on entering and disconnecting on leaving a block.</p>
     <span class="n">await</span> <span class="n">conn</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s1">&#39;box.info&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>host</strong> – Tarantool host (pass <code class="docutils literal notranslate"><span class="pre">unix/</span></code> to connect to unix socket)</li>
-<li><strong>port</strong> – Tarantool port
-(pass <code class="docutils literal notranslate"><span class="pre">/path/to/sockfile</span></code> to connect ot unix socket)</li>
-<li><strong>username</strong> – Username to use for auth
-(if <code class="docutils literal notranslate"><span class="pre">None</span></code> you are connected as a guest)</li>
-<li><strong>password</strong> – Password to use for auth</li>
-<li><strong>fetch_schema</strong> – Pass <code class="docutils literal notranslate"><span class="pre">True</span></code> to be able to use spaces and indexes names in
-data manipulation routines (default is <code class="docutils literal notranslate"><span class="pre">True</span></code>)</li>
-<li><strong>auto_refetch_schema</strong> – If set to <code class="docutils literal notranslate"><span class="pre">True</span></code> then when ER_WRONG_SCHEMA_VERSION error
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>host</strong> – Tarantool host (pass <code class="docutils literal notranslate"><span class="pre">unix/</span></code> to connect to unix socket)</p></li>
+<li><p><strong>port</strong> – Tarantool port
+(pass <code class="docutils literal notranslate"><span class="pre">/path/to/sockfile</span></code> to connect ot unix socket)</p></li>
+<li><p><strong>username</strong> – Username to use for auth
+(if <code class="docutils literal notranslate"><span class="pre">None</span></code> you are connected as a guest)</p></li>
+<li><p><strong>password</strong> – Password to use for auth</p></li>
+<li><p><strong>fetch_schema</strong> – Pass <code class="docutils literal notranslate"><span class="pre">True</span></code> to be able to use spaces and indexes names in
+data manipulation routines (default is <code class="docutils literal notranslate"><span class="pre">True</span></code>)</p></li>
+<li><p><strong>auto_refetch_schema</strong> – If set to <code class="docutils literal notranslate"><span class="pre">True</span></code> then when ER_WRONG_SCHEMA_VERSION error
 occurs on a request, schema is refetched and the initial
 request is resent. If set to <code class="docutils literal notranslate"><span class="pre">False</span></code> then schema will not
-be checked by Tarantool, so no errors will occur</li>
-<li><strong>connect_timeout</strong> – Time in seconds how long to wait for connecting to socket</li>
-<li><strong>request_timeout</strong> – Request timeout (in seconds) for all requests
-(by default there is no timeout)</li>
-<li><strong>reconnect_timeout</strong> – Time in seconds to wait before automatic reconnect
-(set to <code class="docutils literal notranslate"><span class="pre">0</span></code> or <code class="docutils literal notranslate"><span class="pre">None</span></code> to disable auto reconnect)</li>
-<li><strong>ping_timeout</strong> – If specified (default is 5 seconds) a background task
+be checked by Tarantool, so no errors will occur</p></li>
+<li><p><strong>connect_timeout</strong> – Time in seconds how long to wait for connecting to socket</p></li>
+<li><p><strong>request_timeout</strong> – Request timeout (in seconds) for all requests
+(by default there is no timeout)</p></li>
+<li><p><strong>reconnect_timeout</strong> – Time in seconds to wait before automatic reconnect
+(set to <code class="docutils literal notranslate"><span class="pre">0</span></code> or <code class="docutils literal notranslate"><span class="pre">None</span></code> to disable auto reconnect)</p></li>
+<li><p><strong>ping_timeout</strong> – If specified (default is 5 seconds) a background task
 will be created which will ping Tarantool instance
 periodically to check if it is alive and update schema
 if it is changed
-(set to <code class="docutils literal notranslate"><span class="pre">0</span></code> or <code class="docutils literal notranslate"><span class="pre">None</span></code> to disable this task)</li>
-<li><strong>encoding</strong> – The encoding to use for all strings
-encoding and decoding (default is <code class="docutils literal notranslate"><span class="pre">utf-8</span></code>)</li>
-<li><strong>initial_read_buffer_size</strong> – Initial and minimum size of read buffer in bytes.
+(set to <code class="docutils literal notranslate"><span class="pre">0</span></code> or <code class="docutils literal notranslate"><span class="pre">None</span></code> to disable this task)</p></li>
+<li><p><strong>encoding</strong> – The encoding to use for all strings
+encoding and decoding (default is <code class="docutils literal notranslate"><span class="pre">utf-8</span></code>)</p></li>
+<li><p><strong>initial_read_buffer_size</strong> – Initial and minimum size of read buffer in bytes.
 Higher value means less reallocations, but higher
-memory usage.</li>
-<li><strong>loop</strong> – Asyncio event loop to use</li>
+memory usage.</p></li>
+<li><p><strong>loop</strong> – Asyncio event loop to use</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="method">
 <dt id="asynctnt.Connection.auto_refetch_schema">
-<code class="descname">auto_refetch_schema</code><a class="headerlink" href="#asynctnt.Connection.auto_refetch_schema" title="Permalink to this definition">¶</a></dt>
+<em class="property">property </em><code class="sig-name descname">auto_refetch_schema</code><a class="headerlink" href="#asynctnt.Connection.auto_refetch_schema" title="Permalink to this definition">¶</a></dt>
 <dd><p>auto_refetch_schema flag</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="asynctnt.Connection.call">
-<code class="descname">call</code><span class="sig-paren">(</span><em>func_name</em>, <em>args=None</em>, <em>*</em>, <em>timeout=-1.0</em>, <em>push_subscribe=False</em><span class="sig-paren">)</span> &#x2192; Union[Awaitable[asynctnt.iproto.protocol.Response], _asyncio.Future]<a class="reference internal" href="_modules/asynctnt/connection.html#Connection.call"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#asynctnt.Connection.call" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">call</code><span class="sig-paren">(</span><em class="sig-param">func_name</em>, <em class="sig-param">args=None</em>, <em class="sig-param">*</em>, <em class="sig-param">timeout=-1.0</em>, <em class="sig-param">push_subscribe=False</em><span class="sig-paren">)</span> &#x2192; Union[Awaitable[asynctnt.iproto.protocol.Response], _asyncio.Future]<a class="reference internal" href="_modules/asynctnt/connection.html#Connection.call"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#asynctnt.Connection.call" title="Permalink to this definition">¶</a></dt>
 <dd><p>Call request coroutine. It is a call with a new behaviour
 (return result of a Tarantool procedure is not wrapped into
 an extra tuple). If you’re connecting to Tarantool with
@@ -268,72 +263,58 @@ version &lt; 1.7, then this call method acts like a call16 method</p>
 <span class="go">&lt;Response sync=3 rowcount=2 data=[20, 42]&gt;</span>
 </pre></div>
 </div>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>func_name</strong> – function name to call</li>
-<li><strong>args</strong> – arguments to pass to the function (list object)</li>
-<li><strong>timeout</strong> – Request timeout</li>
-<li><strong>push_subscribe</strong> – Subscribe to push notifications</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>func_name</strong> – function name to call</p></li>
+<li><p><strong>args</strong> – arguments to pass to the function (list object)</p></li>
+<li><p><strong>timeout</strong> – Request timeout</p></li>
+<li><p><strong>push_subscribe</strong> – Subscribe to push notifications</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#asynctnt.Response" title="asynctnt.Response"><code class="xref py py-class docutils literal notranslate"><span class="pre">asynctnt.Response</span></code></a> instance</p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><a class="reference internal" href="#asynctnt.Response" title="asynctnt.Response"><code class="xref py py-class docutils literal notranslate"><span class="pre">asynctnt.Response</span></code></a> instance</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="asynctnt.Connection.call16">
-<code class="descname">call16</code><span class="sig-paren">(</span><em>func_name</em>, <em>args=None</em>, <em>*</em>, <em>timeout=-1.0</em>, <em>push_subscribe=False</em><span class="sig-paren">)</span> &#x2192; Union[Awaitable[asynctnt.iproto.protocol.Response], _asyncio.Future]<a class="reference internal" href="_modules/asynctnt/connection.html#Connection.call16"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#asynctnt.Connection.call16" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">call16</code><span class="sig-paren">(</span><em class="sig-param">func_name</em>, <em class="sig-param">args=None</em>, <em class="sig-param">*</em>, <em class="sig-param">timeout=-1.0</em>, <em class="sig-param">push_subscribe=False</em><span class="sig-paren">)</span> &#x2192; Union[Awaitable[asynctnt.iproto.protocol.Response], _asyncio.Future]<a class="reference internal" href="_modules/asynctnt/connection.html#Connection.call16"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#asynctnt.Connection.call16" title="Permalink to this definition">¶</a></dt>
 <dd><p>Call16 request coroutine. It is a call with an old behaviour
 (return result of a Tarantool procedure is wrapped into a tuple,
 if needed)</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>func_name</strong> – function name to call</li>
-<li><strong>args</strong> – arguments to pass to the function (list object)</li>
-<li><strong>timeout</strong> – Request timeout</li>
-<li><strong>push_subscribe</strong> – Subscribe to push notifications</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>func_name</strong> – function name to call</p></li>
+<li><p><strong>args</strong> – arguments to pass to the function (list object)</p></li>
+<li><p><strong>timeout</strong> – Request timeout</p></li>
+<li><p><strong>push_subscribe</strong> – Subscribe to push notifications</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#asynctnt.Response" title="asynctnt.Response"><code class="xref py py-class docutils literal notranslate"><span class="pre">asynctnt.Response</span></code></a> instance</p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><a class="reference internal" href="#asynctnt.Response" title="asynctnt.Response"><code class="xref py py-class docutils literal notranslate"><span class="pre">asynctnt.Response</span></code></a> instance</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="asynctnt.Connection.close">
-<code class="descname">close</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/asynctnt/connection.html#Connection.close"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#asynctnt.Connection.close" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">close</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/asynctnt/connection.html#Connection.close"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#asynctnt.Connection.close" title="Permalink to this definition">¶</a></dt>
 <dd><p>Same as disconnect, but not a coroutine, i.e. it does not wait
 for disconnect to finish.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="asynctnt.Connection.connect">
-<em class="property">coroutine </em><code class="descname">connect</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; asynctnt.connection.Connection<a class="reference internal" href="_modules/asynctnt/connection.html#Connection.connect"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#asynctnt.Connection.connect" title="Permalink to this definition">¶</a></dt>
-<dd><p>Connect coroutine</p>
-</dd></dl>
-
-<dl class="attribute">
 <dt id="asynctnt.Connection.connect_timeout">
-<code class="descname">connect_timeout</code><a class="headerlink" href="#asynctnt.Connection.connect_timeout" title="Permalink to this definition">¶</a></dt>
+<em class="property">property </em><code class="sig-name descname">connect_timeout</code><a class="headerlink" href="#asynctnt.Connection.connect_timeout" title="Permalink to this definition">¶</a></dt>
 <dd><p>Connect timeout value</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="asynctnt.Connection.delete">
-<code class="descname">delete</code><span class="sig-paren">(</span><em>space</em>, <em>key</em>, <em>**kwargs</em><span class="sig-paren">)</span> &#x2192; Union[Awaitable[asynctnt.iproto.protocol.Response], _asyncio.Future]<a class="reference internal" href="_modules/asynctnt/connection.html#Connection.delete"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#asynctnt.Connection.delete" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">delete</code><span class="sig-paren">(</span><em class="sig-param">space</em>, <em class="sig-param">key</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span> &#x2192; Union[Awaitable[asynctnt.iproto.protocol.Response], _asyncio.Future]<a class="reference internal" href="_modules/asynctnt/connection.html#Connection.delete"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#asynctnt.Connection.delete" title="Permalink to this definition">¶</a></dt>
 <dd><p>Delete request coroutine.</p>
 <p>Examples:</p>
 <div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="go"># Assuming tuple [0, &#39;hello&#39;] is in space tester</span>
@@ -344,40 +325,30 @@ for disconnect to finish.</p>
 <span class="go">]&gt;</span>
 </pre></div>
 </div>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>space</strong> – space id or space name.</li>
-<li><strong>key</strong> – key to delete</li>
-<li><strong>index</strong> – index id or name</li>
-<li><strong>timeout</strong> – Request timeout</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>space</strong> – space id or space name.</p></li>
+<li><p><strong>key</strong> – key to delete</p></li>
+<li><p><strong>index</strong> – index id or name</p></li>
+<li><p><strong>timeout</strong> – Request timeout</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#asynctnt.Response" title="asynctnt.Response"><code class="xref py py-class docutils literal notranslate"><span class="pre">asynctnt.Response</span></code></a> instance</p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><a class="reference internal" href="#asynctnt.Response" title="asynctnt.Response"><code class="xref py py-class docutils literal notranslate"><span class="pre">asynctnt.Response</span></code></a> instance</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
-<dt id="asynctnt.Connection.disconnect">
-<em class="property">coroutine </em><code class="descname">disconnect</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/asynctnt/connection.html#Connection.disconnect"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#asynctnt.Connection.disconnect" title="Permalink to this definition">¶</a></dt>
-<dd><p>Disconnect coroutine</p>
-</dd></dl>
-
-<dl class="attribute">
 <dt id="asynctnt.Connection.encoding">
-<code class="descname">encoding</code><a class="headerlink" href="#asynctnt.Connection.encoding" title="Permalink to this definition">¶</a></dt>
+<em class="property">property </em><code class="sig-name descname">encoding</code><a class="headerlink" href="#asynctnt.Connection.encoding" title="Permalink to this definition">¶</a></dt>
 <dd><p>Connection encoding</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="asynctnt.Connection.eval">
-<code class="descname">eval</code><span class="sig-paren">(</span><em>expression</em>, <em>args=None</em>, <em>*</em>, <em>timeout=-1.0</em>, <em>push_subscribe=False</em><span class="sig-paren">)</span> &#x2192; Union[Awaitable[asynctnt.iproto.protocol.Response], _asyncio.Future]<a class="reference internal" href="_modules/asynctnt/connection.html#Connection.eval"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#asynctnt.Connection.eval" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">eval</code><span class="sig-paren">(</span><em class="sig-param">expression</em>, <em class="sig-param">args=None</em>, <em class="sig-param">*</em>, <em class="sig-param">timeout=-1.0</em>, <em class="sig-param">push_subscribe=False</em><span class="sig-paren">)</span> &#x2192; Union[Awaitable[asynctnt.iproto.protocol.Response], _asyncio.Future]<a class="reference internal" href="_modules/asynctnt/connection.html#Connection.eval"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#asynctnt.Connection.eval" title="Permalink to this definition">¶</a></dt>
 <dd><p>Eval request coroutine.</p>
 <p>Examples:</p>
 <div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">await</span> <span class="n">conn</span><span class="o">.</span><span class="n">eval</span><span class="p">(</span><span class="s1">&#39;return 42&#39;</span><span class="p">)</span>
@@ -388,47 +359,43 @@ for disconnect to finish.</p>
 <span class="go">&lt;Response sync=3 rowcount=1 data=[&#39;2.1.1-7-gd381a45b6&#39;]&gt;</span>
 </pre></div>
 </div>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>expression</strong> – expression to execute</li>
-<li><strong>args</strong> – arguments to pass to the function, that will
-execute your expression (list object)</li>
-<li><strong>timeout</strong> – Request timeout</li>
-<li><strong>push_subscribe</strong> – Subscribe to push messages</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>expression</strong> – expression to execute</p></li>
+<li><p><strong>args</strong> – arguments to pass to the function, that will
+execute your expression (list object)</p></li>
+<li><p><strong>timeout</strong> – Request timeout</p></li>
+<li><p><strong>push_subscribe</strong> – Subscribe to push messages</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#asynctnt.Response" title="asynctnt.Response"><code class="xref py py-class docutils literal notranslate"><span class="pre">asynctnt.Response</span></code></a> instance</p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><a class="reference internal" href="#asynctnt.Response" title="asynctnt.Response"><code class="xref py py-class docutils literal notranslate"><span class="pre">asynctnt.Response</span></code></a> instance</p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="method">
 <dt id="asynctnt.Connection.fetch_schema">
-<code class="descname">fetch_schema</code><a class="headerlink" href="#asynctnt.Connection.fetch_schema" title="Permalink to this definition">¶</a></dt>
+<em class="property">property </em><code class="sig-name descname">fetch_schema</code><a class="headerlink" href="#asynctnt.Connection.fetch_schema" title="Permalink to this definition">¶</a></dt>
 <dd><p>fetch_schema flag</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="method">
 <dt id="asynctnt.Connection.host">
-<code class="descname">host</code><a class="headerlink" href="#asynctnt.Connection.host" title="Permalink to this definition">¶</a></dt>
+<em class="property">property </em><code class="sig-name descname">host</code><a class="headerlink" href="#asynctnt.Connection.host" title="Permalink to this definition">¶</a></dt>
 <dd><p>Tarantool host</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="method">
 <dt id="asynctnt.Connection.initial_read_buffer_size">
-<code class="descname">initial_read_buffer_size</code><a class="headerlink" href="#asynctnt.Connection.initial_read_buffer_size" title="Permalink to this definition">¶</a></dt>
+<em class="property">property </em><code class="sig-name descname">initial_read_buffer_size</code><a class="headerlink" href="#asynctnt.Connection.initial_read_buffer_size" title="Permalink to this definition">¶</a></dt>
 <dd><p>initial_read_buffer_size value</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="asynctnt.Connection.insert">
-<code class="descname">insert</code><span class="sig-paren">(</span><em>space</em>, <em>t</em>, <em>*</em>, <em>replace=False</em>, <em>timeout=-1</em><span class="sig-paren">)</span> &#x2192; Union[Awaitable[asynctnt.iproto.protocol.Response], _asyncio.Future]<a class="reference internal" href="_modules/asynctnt/connection.html#Connection.insert"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#asynctnt.Connection.insert" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">insert</code><span class="sig-paren">(</span><em class="sig-param">space</em>, <em class="sig-param">t</em>, <em class="sig-param">*</em>, <em class="sig-param">replace=False</em>, <em class="sig-param">timeout=-1</em><span class="sig-paren">)</span> &#x2192; Union[Awaitable[asynctnt.iproto.protocol.Response], _asyncio.Future]<a class="reference internal" href="_modules/asynctnt/connection.html#Connection.insert"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#asynctnt.Connection.insert" title="Permalink to this definition">¶</a></dt>
 <dd><p>Insert request coroutine.</p>
 <p>Examples:</p>
 <div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="go"># Basic usage</span>
@@ -447,128 +414,105 @@ execute your expression (list object)</li>
 <span class="go">]&gt;</span>
 </pre></div>
 </div>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>space</strong> – space id or space name.</li>
-<li><strong>t</strong> – tuple to insert (list object)</li>
-<li><strong>replace</strong> – performs replace request instead of insert</li>
-<li><strong>timeout</strong> – Request timeout</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>space</strong> – space id or space name.</p></li>
+<li><p><strong>t</strong> – tuple to insert (list object)</p></li>
+<li><p><strong>replace</strong> – performs replace request instead of insert</p></li>
+<li><p><strong>timeout</strong> – Request timeout</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#asynctnt.Response" title="asynctnt.Response"><code class="xref py py-class docutils literal notranslate"><span class="pre">asynctnt.Response</span></code></a> instance</p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><a class="reference internal" href="#asynctnt.Response" title="asynctnt.Response"><code class="xref py py-class docutils literal notranslate"><span class="pre">asynctnt.Response</span></code></a> instance</p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="method">
 <dt id="asynctnt.Connection.is_connected">
-<code class="descname">is_connected</code><a class="headerlink" href="#asynctnt.Connection.is_connected" title="Permalink to this definition">¶</a></dt>
+<em class="property">property </em><code class="sig-name descname">is_connected</code><a class="headerlink" href="#asynctnt.Connection.is_connected" title="Permalink to this definition">¶</a></dt>
 <dd><p>Check if an underlying connection is active</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="method">
 <dt id="asynctnt.Connection.is_fully_connected">
-<code class="descname">is_fully_connected</code><a class="headerlink" href="#asynctnt.Connection.is_fully_connected" title="Permalink to this definition">¶</a></dt>
+<em class="property">property </em><code class="sig-name descname">is_fully_connected</code><a class="headerlink" href="#asynctnt.Connection.is_fully_connected" title="Permalink to this definition">¶</a></dt>
 <dd><p>Check if connection is fully active (performed auth
 and schema fetching)</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="method">
 <dt id="asynctnt.Connection.loop">
-<code class="descname">loop</code><a class="headerlink" href="#asynctnt.Connection.loop" title="Permalink to this definition">¶</a></dt>
+<em class="property">property </em><code class="sig-name descname">loop</code><a class="headerlink" href="#asynctnt.Connection.loop" title="Permalink to this definition">¶</a></dt>
 <dd><p>Asyncio event loop</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="method">
 <dt id="asynctnt.Connection.password">
-<code class="descname">password</code><a class="headerlink" href="#asynctnt.Connection.password" title="Permalink to this definition">¶</a></dt>
+<em class="property">property </em><code class="sig-name descname">password</code><a class="headerlink" href="#asynctnt.Connection.password" title="Permalink to this definition">¶</a></dt>
 <dd><p>Tarantool password</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="asynctnt.Connection.ping">
-<code class="descname">ping</code><span class="sig-paren">(</span><em>*</em>, <em>timeout=-1.0</em><span class="sig-paren">)</span> &#x2192; Union[Awaitable[asynctnt.iproto.protocol.Response], _asyncio.Future]<a class="reference internal" href="_modules/asynctnt/connection.html#Connection.ping"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#asynctnt.Connection.ping" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">ping</code><span class="sig-paren">(</span><em class="sig-param">*</em>, <em class="sig-param">timeout=-1.0</em><span class="sig-paren">)</span> &#x2192; Union[Awaitable[asynctnt.iproto.protocol.Response], _asyncio.Future]<a class="reference internal" href="_modules/asynctnt/connection.html#Connection.ping"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#asynctnt.Connection.ping" title="Permalink to this definition">¶</a></dt>
 <dd><p>Ping request coroutine</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>timeout</strong> – Request timeout</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><a class="reference internal" href="#asynctnt.Response" title="asynctnt.Response"><code class="xref py py-class docutils literal notranslate"><span class="pre">asynctnt.Response</span></code></a> instance</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>timeout</strong> – Request timeout</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><a class="reference internal" href="#asynctnt.Response" title="asynctnt.Response"><code class="xref py py-class docutils literal notranslate"><span class="pre">asynctnt.Response</span></code></a> instance</p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="method">
 <dt id="asynctnt.Connection.port">
-<code class="descname">port</code><a class="headerlink" href="#asynctnt.Connection.port" title="Permalink to this definition">¶</a></dt>
+<em class="property">property </em><code class="sig-name descname">port</code><a class="headerlink" href="#asynctnt.Connection.port" title="Permalink to this definition">¶</a></dt>
 <dd><p>Tarantool port</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="asynctnt.Connection.reconnect">
-<em class="property">coroutine </em><code class="descname">reconnect</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/asynctnt/connection.html#Connection.reconnect"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#asynctnt.Connection.reconnect" title="Permalink to this definition">¶</a></dt>
-<dd><p>Reconnect coroutine.
-Just calls disconnect() and connect()</p>
-</dd></dl>
-
-<dl class="attribute">
 <dt id="asynctnt.Connection.reconnect_timeout">
-<code class="descname">reconnect_timeout</code><a class="headerlink" href="#asynctnt.Connection.reconnect_timeout" title="Permalink to this definition">¶</a></dt>
+<em class="property">property </em><code class="sig-name descname">reconnect_timeout</code><a class="headerlink" href="#asynctnt.Connection.reconnect_timeout" title="Permalink to this definition">¶</a></dt>
 <dd><p>Reconnect timeout value</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="asynctnt.Connection.refetch_schema">
-<em class="property">coroutine </em><code class="descname">refetch_schema</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/asynctnt/connection.html#Connection.refetch_schema"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#asynctnt.Connection.refetch_schema" title="Permalink to this definition">¶</a></dt>
-<dd><p>Coroutine to force refetch schema</p>
+<dt id="asynctnt.Connection.replace">
+<code class="sig-name descname">replace</code><span class="sig-paren">(</span><em class="sig-param">space</em>, <em class="sig-param">t</em>, <em class="sig-param">*</em>, <em class="sig-param">timeout=-1.0</em><span class="sig-paren">)</span> &#x2192; Union[Awaitable[asynctnt.iproto.protocol.Response], _asyncio.Future]<a class="reference internal" href="_modules/asynctnt/connection.html#Connection.replace"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#asynctnt.Connection.replace" title="Permalink to this definition">¶</a></dt>
+<dd><p>Replace request coroutine. Same as insert, but replace.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>space</strong> – space id or space name.</p></li>
+<li><p><strong>t</strong> – tuple to insert (list object)</p></li>
+<li><p><strong>timeout</strong> – Request timeout</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><a class="reference internal" href="#asynctnt.Response" title="asynctnt.Response"><code class="xref py py-class docutils literal notranslate"><span class="pre">asynctnt.Response</span></code></a> instance</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
-<dt id="asynctnt.Connection.replace">
-<code class="descname">replace</code><span class="sig-paren">(</span><em>space</em>, <em>t</em>, <em>*</em>, <em>timeout=-1.0</em><span class="sig-paren">)</span> &#x2192; Union[Awaitable[asynctnt.iproto.protocol.Response], _asyncio.Future]<a class="reference internal" href="_modules/asynctnt/connection.html#Connection.replace"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#asynctnt.Connection.replace" title="Permalink to this definition">¶</a></dt>
-<dd><p>Replace request coroutine. Same as insert, but replace.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>space</strong> – space id or space name.</li>
-<li><strong>t</strong> – tuple to insert (list object)</li>
-<li><strong>timeout</strong> – Request timeout</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#asynctnt.Response" title="asynctnt.Response"><code class="xref py py-class docutils literal notranslate"><span class="pre">asynctnt.Response</span></code></a> instance</p>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="attribute">
 <dt id="asynctnt.Connection.request_timeout">
-<code class="descname">request_timeout</code><a class="headerlink" href="#asynctnt.Connection.request_timeout" title="Permalink to this definition">¶</a></dt>
+<em class="property">property </em><code class="sig-name descname">request_timeout</code><a class="headerlink" href="#asynctnt.Connection.request_timeout" title="Permalink to this definition">¶</a></dt>
 <dd><p>Request timeout value</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="method">
 <dt id="asynctnt.Connection.schema_id">
-<code class="descname">schema_id</code><a class="headerlink" href="#asynctnt.Connection.schema_id" title="Permalink to this definition">¶</a></dt>
+<em class="property">property </em><code class="sig-name descname">schema_id</code><a class="headerlink" href="#asynctnt.Connection.schema_id" title="Permalink to this definition">¶</a></dt>
 <dd><p>Tarantool’s current schema id</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="asynctnt.Connection.select">
-<code class="descname">select</code><span class="sig-paren">(</span><em>space</em>, <em>key=None</em>, <em>**kwargs</em><span class="sig-paren">)</span> &#x2192; Union[Awaitable[asynctnt.iproto.protocol.Response], _asyncio.Future]<a class="reference internal" href="_modules/asynctnt/connection.html#Connection.select"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#asynctnt.Connection.select" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">select</code><span class="sig-paren">(</span><em class="sig-param">space</em>, <em class="sig-param">key=None</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span> &#x2192; Union[Awaitable[asynctnt.iproto.protocol.Response], _asyncio.Future]<a class="reference internal" href="_modules/asynctnt/connection.html#Connection.select"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#asynctnt.Connection.select" title="Permalink to this definition">¶</a></dt>
 <dd><p>Select request coroutine.</p>
 <p>Examples:</p>
 <div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">await</span> <span class="n">conn</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s1">&#39;tester&#39;</span><span class="p">)</span>
@@ -591,37 +535,33 @@ Just calls disconnect() and connect()</p>
 <span class="go">                 ]&gt;]</span>
 </pre></div>
 </div>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>space</strong> – space id or space name.</li>
-<li><strong>key</strong> – key to select</li>
-<li><strong>offset</strong> – offset to use</li>
-<li><strong>limit</strong> – limit to use</li>
-<li><strong>index</strong> – index id or name</li>
-<li><strong>iterator</strong> – <p>one of the following</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>space</strong> – space id or space name.</p></li>
+<li><p><strong>key</strong> – key to select</p></li>
+<li><p><strong>offset</strong> – offset to use</p></li>
+<li><p><strong>limit</strong> – limit to use</p></li>
+<li><p><strong>index</strong> – index id or name</p></li>
+<li><p><strong>iterator</strong> – <p>one of the following</p>
 <ul>
-<li>iterator id (int number),</li>
-<li><a class="reference internal" href="#asynctnt.Iterator" title="asynctnt.Iterator"><code class="xref py py-class docutils literal notranslate"><span class="pre">asynctnt.Iterator</span></code></a> object</li>
-<li>string with an iterator name</li>
+<li><p>iterator id (int number),</p></li>
+<li><p><a class="reference internal" href="#asynctnt.Iterator" title="asynctnt.Iterator"><code class="xref py py-class docutils literal notranslate"><span class="pre">asynctnt.Iterator</span></code></a> object</p></li>
+<li><p>string with an iterator name</p></li>
 </ul>
-</li>
-<li><strong>timeout</strong> – Request timeout</li>
+</p></li>
+<li><p><strong>timeout</strong> – Request timeout</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#asynctnt.Response" title="asynctnt.Response"><code class="xref py py-class docutils literal notranslate"><span class="pre">asynctnt.Response</span></code></a> instance</p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><a class="reference internal" href="#asynctnt.Response" title="asynctnt.Response"><code class="xref py py-class docutils literal notranslate"><span class="pre">asynctnt.Response</span></code></a> instance</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="asynctnt.Connection.sql">
-<code class="descname">sql</code><span class="sig-paren">(</span><em>query</em>, <em>args=None</em>, <em>*</em>, <em>parse_metadata=True</em>, <em>timeout=-1.0</em><span class="sig-paren">)</span> &#x2192; Union[Awaitable[asynctnt.iproto.protocol.Response], _asyncio.Future]<a class="reference internal" href="_modules/asynctnt/connection.html#Connection.sql"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#asynctnt.Connection.sql" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">sql</code><span class="sig-paren">(</span><em class="sig-param">query</em>, <em class="sig-param">args=None</em>, <em class="sig-param">*</em>, <em class="sig-param">parse_metadata=True</em>, <em class="sig-param">timeout=-1.0</em><span class="sig-paren">)</span> &#x2192; Union[Awaitable[asynctnt.iproto.protocol.Response], _asyncio.Future]<a class="reference internal" href="_modules/asynctnt/connection.html#Connection.sql"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#asynctnt.Connection.sql" title="Permalink to this definition">¶</a></dt>
 <dd><p>Executes an SQL statement (only for Tarantool &gt; 2)</p>
 <p>Examples:</p>
 <div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">await</span> <span class="n">conn</span><span class="o">.</span><span class="n">sql</span><span class="p">(</span><span class="s2">&quot;select 1 as a, 2 as b&quot;</span><span class="p">)</span>
@@ -641,43 +581,36 @@ Just calls disconnect() and connect()</p>
 <span class="go">]&gt;</span>
 </pre></div>
 </div>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>query</strong> – SQL query</li>
-<li><strong>args</strong> – Query arguments</li>
-<li><strong>parse_metadata</strong> – Set to False to disable response’s metadata
-parsing for better performance</li>
-<li><strong>timeout</strong> – Request timeout</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>query</strong> – SQL query</p></li>
+<li><p><strong>args</strong> – Query arguments</p></li>
+<li><p><strong>parse_metadata</strong> – Set to False to disable response’s metadata
+parsing for better performance</p></li>
+<li><p><strong>timeout</strong> – Request timeout</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#asynctnt.Response" title="asynctnt.Response"><code class="xref py py-class docutils literal notranslate"><span class="pre">asynctnt.Response</span></code></a> instance</p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><a class="reference internal" href="#asynctnt.Response" title="asynctnt.Response"><code class="xref py py-class docutils literal notranslate"><span class="pre">asynctnt.Response</span></code></a> instance</p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="method">
 <dt id="asynctnt.Connection.state">
-<code class="descname">state</code><a class="headerlink" href="#asynctnt.Connection.state" title="Permalink to this definition">¶</a></dt>
+<em class="property">property </em><code class="sig-name descname">state</code><a class="headerlink" href="#asynctnt.Connection.state" title="Permalink to this definition">¶</a></dt>
 <dd><p>Current connection state</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">ConnectionState</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>ConnectionState</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="asynctnt.Connection.update">
-<code class="descname">update</code><span class="sig-paren">(</span><em>space</em>, <em>key</em>, <em>operations</em>, <em>**kwargs</em><span class="sig-paren">)</span> &#x2192; Union[Awaitable[asynctnt.iproto.protocol.Response], _asyncio.Future]<a class="reference internal" href="_modules/asynctnt/connection.html#Connection.update"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#asynctnt.Connection.update" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">update</code><span class="sig-paren">(</span><em class="sig-param">space</em>, <em class="sig-param">key</em>, <em class="sig-param">operations</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span> &#x2192; Union[Awaitable[asynctnt.iproto.protocol.Response], _asyncio.Future]<a class="reference internal" href="_modules/asynctnt/connection.html#Connection.update"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#asynctnt.Connection.update" title="Permalink to this definition">¶</a></dt>
 <dd><p>Update request coroutine.</p>
 <p>Examples:</p>
 <div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="go"># Assuming tuple [0, &#39;hello&#39;] is in space tester</span>
@@ -695,34 +628,30 @@ parsing for better performance</li>
 <span class="go">]&gt;</span>
 </pre></div>
 </div>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>space</strong> – space id or space name.</li>
-<li><strong>key</strong> – key to update</li>
-<li><strong>operations</strong> – Operations list of the following format:
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>space</strong> – space id or space name.</p></li>
+<li><p><strong>key</strong> – key to update</p></li>
+<li><p><strong>operations</strong> – Operations list of the following format:
 [ [op_type, field_no, …], … ]. Please refer to
 <a class="reference external" href="https://tarantool.org/doc/book/box/box_space.html?highlight=update#lua-function.space_object.update">https://tarantool.org/doc/book/box/box_space.html?highlight=update#lua-function.space_object.update</a>
 You can use field numbers as well as their names in space
 format as a field_no (if only fetch_schema is True).
-If field is unknown then TarantoolSchemaError is raised.</li>
-<li><strong>index</strong> – index id or name</li>
-<li><strong>timeout</strong> – Request timeout</li>
+If field is unknown then TarantoolSchemaError is raised.</p></li>
+<li><p><strong>index</strong> – index id or name</p></li>
+<li><p><strong>timeout</strong> – Request timeout</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#asynctnt.Response" title="asynctnt.Response"><code class="xref py py-class docutils literal notranslate"><span class="pre">asynctnt.Response</span></code></a> instance</p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><a class="reference internal" href="#asynctnt.Response" title="asynctnt.Response"><code class="xref py py-class docutils literal notranslate"><span class="pre">asynctnt.Response</span></code></a> instance</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="asynctnt.Connection.upsert">
-<code class="descname">upsert</code><span class="sig-paren">(</span><em>space</em>, <em>t</em>, <em>operations</em>, <em>**kwargs</em><span class="sig-paren">)</span> &#x2192; Union[Awaitable[asynctnt.iproto.protocol.Response], _asyncio.Future]<a class="reference internal" href="_modules/asynctnt/connection.html#Connection.upsert"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#asynctnt.Connection.upsert" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">upsert</code><span class="sig-paren">(</span><em class="sig-param">space</em>, <em class="sig-param">t</em>, <em class="sig-param">operations</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span> &#x2192; Union[Awaitable[asynctnt.iproto.protocol.Response], _asyncio.Future]<a class="reference internal" href="_modules/asynctnt/connection.html#Connection.upsert"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#asynctnt.Connection.upsert" title="Permalink to this definition">¶</a></dt>
 <dd><p>Update request coroutine. Performs either insert or update
 (depending of either tuple exists or not)</p>
 <p>Examples:</p>
@@ -732,40 +661,36 @@ If field is unknown then TarantoolSchemaError is raised.</li>
 <span class="go">&lt;Response sync=3 rowcount=0 data=[]&gt;</span>
 </pre></div>
 </div>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>space</strong> – space id or space name.</li>
-<li><strong>t</strong> – tuple to insert if it’s not in space</li>
-<li><strong>operations</strong> – Operations list to use for update if tuple is already in
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>space</strong> – space id or space name.</p></li>
+<li><p><strong>t</strong> – tuple to insert if it’s not in space</p></li>
+<li><p><strong>operations</strong> – Operations list to use for update if tuple is already in
 space. It has the same format as in update requets:
 [ [op_type, field_no, …], … ]. Please refer to
 <a class="reference external" href="https://tarantool.org/doc/book/box/box_space.html?highlight=update#lua-function.space_object.update">https://tarantool.org/doc/book/box/box_space.html?highlight=update#lua-function.space_object.update</a>
 You can use field numbers as well as their names in space
 format as a field_no (if only fetch_schema is True).
-If field is unknown then TarantoolSchemaError is raised.</li>
-<li><strong>timeout</strong> – Request timeout</li>
+If field is unknown then TarantoolSchemaError is raised.</p></li>
+<li><p><strong>timeout</strong> – Request timeout</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#asynctnt.Response" title="asynctnt.Response"><code class="xref py py-class docutils literal notranslate"><span class="pre">asynctnt.Response</span></code></a> instance</p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><a class="reference internal" href="#asynctnt.Response" title="asynctnt.Response"><code class="xref py py-class docutils literal notranslate"><span class="pre">asynctnt.Response</span></code></a> instance</p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="method">
 <dt id="asynctnt.Connection.username">
-<code class="descname">username</code><a class="headerlink" href="#asynctnt.Connection.username" title="Permalink to this definition">¶</a></dt>
+<em class="property">property </em><code class="sig-name descname">username</code><a class="headerlink" href="#asynctnt.Connection.username" title="Permalink to this definition">¶</a></dt>
 <dd><p>Tarantool username</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="method">
 <dt id="asynctnt.Connection.version">
-<code class="descname">version</code><a class="headerlink" href="#asynctnt.Connection.version" title="Permalink to this definition">¶</a></dt>
+<em class="property">property </em><code class="sig-name descname">version</code><a class="headerlink" href="#asynctnt.Connection.version" title="Permalink to this definition">¶</a></dt>
 <dd><p>Protocol version tuple. ex.: (1, 6, 7)</p>
 </dd></dl>
 
@@ -776,10 +701,10 @@ If field is unknown then TarantoolSchemaError is raised.</li>
 <h2>PushIterator<a class="headerlink" href="#pushiterator" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="asynctnt.PushIterator">
-<em class="property">class </em><code class="descclassname">asynctnt.</code><code class="descname">PushIterator</code><a class="headerlink" href="#asynctnt.PushIterator" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">asynctnt.</code><code class="sig-name descname">PushIterator</code><a class="headerlink" href="#asynctnt.PushIterator" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="method">
 <dt id="asynctnt.PushIterator.__init__">
-<code class="descname">__init__</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#asynctnt.PushIterator.__init__" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#asynctnt.PushIterator.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates PushIterator object. In order to receive push notifications
 this iterator must be created.</p>
 <p>Example:</p>
@@ -794,30 +719,24 @@ this iterator must be created.</p>
 <span class="gp">... </span>    <span class="k">print</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
 </pre></div>
 </div>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>fut</strong> (<em>asyncio.Future</em>) – Future object returned from call_async, eval_sync
-functions</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>fut</strong> (<em>asyncio.Future</em>) – Future object returned from call_async, eval_sync
+functions</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="asynctnt.PushIterator.response">
-<code class="descname">response</code><a class="headerlink" href="#asynctnt.PushIterator.response" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">response</code><a class="headerlink" href="#asynctnt.PushIterator.response" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return current Response object. Might be handy to know if the
 request is finished already while iterating over the PushIterator</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#asynctnt.Response" title="asynctnt.Response">asynctnt.Response</a></td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#asynctnt.Response" title="asynctnt.Response">asynctnt.Response</a></p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
@@ -827,47 +746,47 @@ request is finished already while iterating over the PushIterator</p>
 <h2>Response<a class="headerlink" href="#response" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="asynctnt.Response">
-<em class="property">class </em><code class="descclassname">asynctnt.</code><code class="descname">Response</code><a class="headerlink" href="#asynctnt.Response" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">asynctnt.</code><code class="sig-name descname">Response</code><a class="headerlink" href="#asynctnt.Response" title="Permalink to this definition">¶</a></dt>
 <dd><p>Response object for all the requests to Tarantool</p>
 <dl class="attribute">
 <dt id="asynctnt.Response.body">
-<code class="descname">body</code><a class="headerlink" href="#asynctnt.Response.body" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">body</code><a class="headerlink" href="#asynctnt.Response.body" title="Permalink to this definition">¶</a></dt>
 <dd><p>Response body</p>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="asynctnt.Response.code">
-<code class="descname">code</code><a class="headerlink" href="#asynctnt.Response.code" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">code</code><a class="headerlink" href="#asynctnt.Response.code" title="Permalink to this definition">¶</a></dt>
 <dd><p>Response code (0 - success)</p>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="asynctnt.Response.encoding">
-<code class="descname">encoding</code><a class="headerlink" href="#asynctnt.Response.encoding" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">encoding</code><a class="headerlink" href="#asynctnt.Response.encoding" title="Permalink to this definition">¶</a></dt>
 <dd><p>Response encoding</p>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="asynctnt.Response.errmsg">
-<code class="descname">errmsg</code><a class="headerlink" href="#asynctnt.Response.errmsg" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">errmsg</code><a class="headerlink" href="#asynctnt.Response.errmsg" title="Permalink to this definition">¶</a></dt>
 <dd><p>If self.code != 0 then errmsg contains an error message</p>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="asynctnt.Response.return_code">
-<code class="descname">return_code</code><a class="headerlink" href="#asynctnt.Response.return_code" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">return_code</code><a class="headerlink" href="#asynctnt.Response.return_code" title="Permalink to this definition">¶</a></dt>
 <dd><p>Response return code (It’s essentially a code &amp; 0x7FFF)</p>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="asynctnt.Response.schema_id">
-<code class="descname">schema_id</code><a class="headerlink" href="#asynctnt.Response.schema_id" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">schema_id</code><a class="headerlink" href="#asynctnt.Response.schema_id" title="Permalink to this definition">¶</a></dt>
 <dd><p>Current scema id in Tarantool</p>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="asynctnt.Response.sync">
-<code class="descname">sync</code><a class="headerlink" href="#asynctnt.Response.sync" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">sync</code><a class="headerlink" href="#asynctnt.Response.sync" title="Permalink to this definition">¶</a></dt>
 <dd><p>Response’s sync (incremental id) for the corresponding request</p>
 </dd></dl>
 
@@ -878,7 +797,7 @@ request is finished already while iterating over the PushIterator</p>
 <h2>Iterator<a class="headerlink" href="#iterator" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="asynctnt.Iterator">
-<em class="property">class </em><code class="descclassname">asynctnt.</code><code class="descname">Iterator</code><a class="headerlink" href="#asynctnt.Iterator" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">asynctnt.</code><code class="sig-name descname">Iterator</code><a class="headerlink" href="#asynctnt.Iterator" title="Permalink to this definition">¶</a></dt>
 <dd><p>Available Iterator types</p>
 </dd></dl>
 
@@ -887,31 +806,31 @@ request is finished already while iterating over the PushIterator</p>
 <h2>Exceptions<a class="headerlink" href="#exceptions" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="asynctnt.exceptions.TarantoolError">
-<em class="property">class </em><code class="descclassname">asynctnt.exceptions.</code><code class="descname">TarantoolError</code><a class="reference internal" href="_modules/asynctnt/exceptions.html#TarantoolError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#asynctnt.exceptions.TarantoolError" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">asynctnt.exceptions.</code><code class="sig-name descname">TarantoolError</code><a class="reference internal" href="_modules/asynctnt/exceptions.html#TarantoolError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#asynctnt.exceptions.TarantoolError" title="Permalink to this definition">¶</a></dt>
 <dd><p>Base Tarantool Exception class</p>
 </dd></dl>
 
 <dl class="class">
 <dt id="asynctnt.exceptions.TarantoolSchemaError">
-<em class="property">class </em><code class="descclassname">asynctnt.exceptions.</code><code class="descname">TarantoolSchemaError</code><a class="reference internal" href="_modules/asynctnt/exceptions.html#TarantoolSchemaError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#asynctnt.exceptions.TarantoolSchemaError" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">asynctnt.exceptions.</code><code class="sig-name descname">TarantoolSchemaError</code><a class="reference internal" href="_modules/asynctnt/exceptions.html#TarantoolSchemaError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#asynctnt.exceptions.TarantoolSchemaError" title="Permalink to this definition">¶</a></dt>
 <dd><p>Exception is raised when any problems with schema occurred</p>
 </dd></dl>
 
 <dl class="class">
 <dt id="asynctnt.exceptions.TarantoolDatabaseError">
-<em class="property">class </em><code class="descclassname">asynctnt.exceptions.</code><code class="descname">TarantoolDatabaseError</code><span class="sig-paren">(</span><em>code</em>, <em>message</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/asynctnt/exceptions.html#TarantoolDatabaseError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#asynctnt.exceptions.TarantoolDatabaseError" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">asynctnt.exceptions.</code><code class="sig-name descname">TarantoolDatabaseError</code><span class="sig-paren">(</span><em class="sig-param">code</em>, <em class="sig-param">message</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/asynctnt/exceptions.html#TarantoolDatabaseError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#asynctnt.exceptions.TarantoolDatabaseError" title="Permalink to this definition">¶</a></dt>
 <dd><p>Exception is raised when Tarantool responds with code != 0</p>
 </dd></dl>
 
 <dl class="class">
 <dt id="asynctnt.exceptions.TarantoolNotConnectedError">
-<em class="property">class </em><code class="descclassname">asynctnt.exceptions.</code><code class="descname">TarantoolNotConnectedError</code><a class="reference internal" href="_modules/asynctnt/exceptions.html#TarantoolNotConnectedError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#asynctnt.exceptions.TarantoolNotConnectedError" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">asynctnt.exceptions.</code><code class="sig-name descname">TarantoolNotConnectedError</code><a class="reference internal" href="_modules/asynctnt/exceptions.html#TarantoolNotConnectedError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#asynctnt.exceptions.TarantoolNotConnectedError" title="Permalink to this definition">¶</a></dt>
 <dd><p>Raised when asynctnt is not connected to Tarantool</p>
 </dd></dl>
 
 <dl class="class">
 <dt id="asynctnt.exceptions.ErrorCode">
-<em class="property">class </em><code class="descclassname">asynctnt.exceptions.</code><code class="descname">ErrorCode</code><a class="reference internal" href="_modules/asynctnt/exceptions.html#ErrorCode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#asynctnt.exceptions.ErrorCode" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">asynctnt.exceptions.</code><code class="sig-name descname">ErrorCode</code><a class="reference internal" href="_modules/asynctnt/exceptions.html#ErrorCode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#asynctnt.exceptions.ErrorCode" title="Permalink to this definition">¶</a></dt>
 <dd><p>Tarantool default error codes</p>
 </dd></dl>
 
@@ -927,7 +846,7 @@ request is finished already while iterating over the PushIterator</p>
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
       
-        <a href="pushes.html" class="btn btn-neutral" title="Session Push" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="pushes.html" class="btn btn-neutral float-left" title="Session Push" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -953,26 +872,16 @@ request is finished already while iterating over the PushIterator</p>
   
 
 
-  
-
-    
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-        <script type="text/javascript" src="_static/jquery.js"></script>
-        <script type="text/javascript" src="_static/underscore.js"></script>
-        <script type="text/javascript" src="_static/doctools.js"></script>
-        <script type="text/javascript" src="_static/language_data.js"></script>
-    
-
-  
-
-  <script type="text/javascript" src="_static/js/theme.js"></script>
-
   <script type="text/javascript">
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script> 
+  </script>
+
+  
+  
+    
+   
 
 </body>
 </html>

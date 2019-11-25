@@ -17,33 +17,35 @@
   
 
   
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
 
-  
-  
     
 
   
-
   <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Installation" href="installation.html" /> 
-
-  
-  <script src="_static/js/modernizr.min.js"></script>
-
 </head>
 
 <body class="wy-body-for-nav">
 
    
   <div class="wy-grid-for-nav">
-
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search">
+        <div class="wy-side-nav-search" >
           
 
           
@@ -163,35 +165,30 @@ versions 1.6+.</p>
 <div class="section" id="key-features">
 <h2>Key features<a class="headerlink" href="#key-features" title="Permalink to this headline">¶</a></h2>
 <ul>
-<li><p class="first">Support for all of the basic requests that Tarantool supports. This includes:
+<li><p>Support for all of the basic requests that Tarantool supports. This includes:
 <cite>insert</cite>, <cite>select</cite>, <cite>update</cite>, <cite>upsert</cite>, <cite>eval</cite>, <cite>sql</cite> (for Tarantool 2.x),
 <cite>call</cite> and <cite>call16</cite>.</p>
 <p><em>Note: For the difference between `call16` and `call` please refer to
 Tarantool documentation.</em></p>
 </li>
-<li><p class="first"><strong>Schema fetching</strong> on connection establishment, so you can use spaces and
-indexes names rather than their ids.</p>
-</li>
-<li><p class="first">Schema <strong>auto refetching</strong>. Tarantool has an option to check if “your” schema
+<li><p><strong>Schema fetching</strong> on connection establishment, so you can use spaces and
+indexes names rather than their ids.</p></li>
+<li><p>Schema <strong>auto refetching</strong>. Tarantool has an option to check if “your” schema
 is up to date, and if not - returns an error. If such an error occurs on any
-request - new schema is refetched and the initial request is resent.</p>
-</li>
-<li><p class="first"><strong>Auto reconnect</strong>. If connection is lost for some reason - asynctnt will
+request - new schema is refetched and the initial request is resent.</p></li>
+<li><p><strong>Auto reconnect</strong>. If connection is lost for some reason - asynctnt will
 start automatic reconnection procedure (with authorization and schema
-fetching, of course).</p>
-</li>
-<li><p class="first">Ability to use <strong>dicts for tuples</strong> with field names as keys in DML requests
+fetching, of course).</p></li>
+<li><p>Ability to use <strong>dicts for tuples</strong> with field names as keys in DML requests
 (select, insert, replace, delete, update, upsert). This is possible only
 if space.format is specified in Tarantool. Field names can also be used
 in update operations instead of field numbers. Moreover, tuples are decoded
 into the special structures that can act either as <a href="#id1"><span class="problematic" id="id2">`</span></a>tuple`s or by <a href="#id3"><span class="problematic" id="id4">`</span></a>dict`s with
-the appropriate API.</p>
-</li>
-<li><p class="first">All requests support specification of <cite>timeout</cite> value, so if request is
+the appropriate API.</p></li>
+<li><p>All requests support specification of <cite>timeout</cite> value, so if request is
 executed for too long, asyncio.TimeoutError is raised. It drastically
 simplifies your code, as you don’t need to use <cite>asyncio.wait_for(…)</cite>
-stuff anymore.</p>
-</li>
+stuff anymore.</p></li>
 </ul>
 </div>
 <div class="section" id="license">
@@ -224,9 +221,9 @@ stuff anymore.</p>
 <div class="section" id="indices-and-tables">
 <h3>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
-<li><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></li>
-<li><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></li>
-<li><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></li>
+<li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
+<li><p><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></p></li>
+<li><p><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></p></li>
 </ul>
 </div>
 </div>
@@ -267,26 +264,16 @@ stuff anymore.</p>
   
 
 
-  
-
-    
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-        <script type="text/javascript" src="_static/jquery.js"></script>
-        <script type="text/javascript" src="_static/underscore.js"></script>
-        <script type="text/javascript" src="_static/doctools.js"></script>
-        <script type="text/javascript" src="_static/language_data.js"></script>
-    
-
-  
-
-  <script type="text/javascript" src="_static/js/theme.js"></script>
-
   <script type="text/javascript">
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script> 
+  </script>
+
+  
+  
+    
+   
 
 </body>
 </html>

@@ -17,34 +17,36 @@
   
 
   
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
 
-  
-  
     
 
   
-
   <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Session Push" href="pushes.html" />
     <link rel="prev" title="Installation" href="installation.html" /> 
-
-  
-  <script src="_static/js/modernizr.min.js"></script>
-
 </head>
 
 <body class="wy-body-for-nav">
 
    
   <div class="wy-grid-for-nav">
-
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search">
+        <div class="wy-side-nav-search" >
           
 
           
@@ -162,41 +164,41 @@
 <div class="section" id="basic-usage">
 <h2>Basic Usage<a class="headerlink" href="#basic-usage" title="Permalink to this headline">¶</a></h2>
 <p>Tarantool config:</p>
-<div class="code lua highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">box</span><span class="o">.</span><span class="n">cfg</span> <span class="p">{</span>
+<div class="highlight-lua notranslate"><div class="highlight"><pre><span></span><span class="n">box</span><span class="p">.</span><span class="n">cfg</span> <span class="p">{</span>
     <span class="n">listen</span> <span class="o">=</span> <span class="s1">&#39;127.0.0.1:3301&#39;</span>
 <span class="p">}</span>
 
-<span class="n">box</span><span class="o">.</span><span class="n">once</span><span class="p">(</span><span class="s1">&#39;v1&#39;</span><span class="p">,</span> <span class="n">function</span><span class="p">()</span>
-    <span class="n">box</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">grant</span><span class="p">(</span><span class="s1">&#39;guest&#39;</span><span class="p">,</span> <span class="s1">&#39;read,write,execute&#39;</span><span class="p">,</span> <span class="s1">&#39;universe&#39;</span><span class="p">)</span>
+<span class="n">box</span><span class="p">.</span><span class="n">once</span><span class="p">(</span><span class="s1">&#39;v1&#39;</span><span class="p">,</span> <span class="kr">function</span><span class="p">()</span>
+    <span class="n">box</span><span class="p">.</span><span class="n">schema</span><span class="p">.</span><span class="n">user</span><span class="p">.</span><span class="n">grant</span><span class="p">(</span><span class="s1">&#39;guest&#39;</span><span class="p">,</span> <span class="s1">&#39;read,write,execute&#39;</span><span class="p">,</span> <span class="s1">&#39;universe&#39;</span><span class="p">)</span>
 
-    <span class="n">local</span> <span class="n">s</span> <span class="o">=</span> <span class="n">box</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">create_space</span><span class="p">(</span><span class="s1">&#39;tester&#39;</span><span class="p">)</span>
+    <span class="kd">local</span> <span class="n">s</span> <span class="o">=</span> <span class="n">box</span><span class="p">.</span><span class="n">schema</span><span class="p">.</span><span class="n">create_space</span><span class="p">(</span><span class="s1">&#39;tester&#39;</span><span class="p">)</span>
     <span class="n">s</span><span class="p">:</span><span class="n">create_index</span><span class="p">(</span><span class="s1">&#39;primary&#39;</span><span class="p">)</span>
-    <span class="n">s</span><span class="p">:</span><span class="nb">format</span><span class="p">({</span>
+    <span class="n">s</span><span class="p">:</span><span class="n">format</span><span class="p">({</span>
         <span class="p">{</span> <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;id&#39;</span><span class="p">,</span> <span class="nb">type</span> <span class="o">=</span> <span class="s1">&#39;unsigned&#39;</span> <span class="p">},</span>
         <span class="p">{</span> <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="nb">type</span> <span class="o">=</span> <span class="s1">&#39;string&#39;</span> <span class="p">},</span>
     <span class="p">})</span>
-<span class="n">end</span><span class="p">)</span>
+<span class="kr">end</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Python code:</p>
-<div class="code python highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">asyncio</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">asyncio</span>
 <span class="kn">import</span> <span class="nn">asynctnt</span>
 
 
-<span class="k">async</span> <span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+<span class="n">async</span> <span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
     <span class="n">conn</span> <span class="o">=</span> <span class="n">asynctnt</span><span class="o">.</span><span class="n">Connection</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s1">&#39;127.0.0.1&#39;</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">3301</span><span class="p">)</span>
-    <span class="k">await</span> <span class="n">conn</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span>
+    <span class="n">await</span> <span class="n">conn</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span>
 
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">11</span><span class="p">):</span>
-        <span class="k">await</span> <span class="n">conn</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="s1">&#39;tester&#39;</span><span class="p">,</span> <span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="s1">&#39;hello</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">)])</span>
+        <span class="n">await</span> <span class="n">conn</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="s1">&#39;tester&#39;</span><span class="p">,</span> <span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="s1">&#39;hello{}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">)])</span>
 
-    <span class="n">data</span> <span class="o">=</span> <span class="k">await</span> <span class="n">conn</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s1">&#39;tester&#39;</span><span class="p">,</span> <span class="p">[])</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">await</span> <span class="n">conn</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s1">&#39;tester&#39;</span><span class="p">,</span> <span class="p">[])</span>
     <span class="n">first_tuple</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;tuple:&#39;</span><span class="p">,</span> <span class="n">first_tuple</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">f</span><span class="s1">&#39;tuple[0]: </span><span class="si">{first_tuple[0]}</span><span class="s1">; tuple[&quot;id&quot;]: </span><span class="si">{first_tuple[&quot;id&quot;]}</span><span class="s1">&#39;</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">f</span><span class="s1">&#39;tuple[1]: </span><span class="si">{first_tuple[1]}</span><span class="s1">; tuple[&quot;name&quot;]: </span><span class="si">{first_tuple[&quot;name&quot;]}</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="k">print</span><span class="p">(</span><span class="s1">&#39;tuple:&#39;</span><span class="p">,</span> <span class="n">first_tuple</span><span class="p">)</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">f</span><span class="s1">&#39;tuple[0]: {first_tuple[0]}; tuple[&quot;id&quot;]: {first_tuple[&quot;id&quot;]}&#39;</span><span class="p">)</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">f</span><span class="s1">&#39;tuple[1]: {first_tuple[1]}; tuple[&quot;name&quot;]: {first_tuple[&quot;name&quot;]}&#39;</span><span class="p">)</span>
 
-    <span class="k">await</span> <span class="n">conn</span><span class="o">.</span><span class="n">disconnect</span><span class="p">()</span>
+    <span class="n">await</span> <span class="n">conn</span><span class="o">.</span><span class="n">disconnect</span><span class="p">()</span>
 
 <span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">main</span><span class="p">())</span>
 </pre></div>
@@ -211,59 +213,59 @@
 <div class="section" id="using-sql">
 <h2>Using SQL<a class="headerlink" href="#using-sql" title="Permalink to this headline">¶</a></h2>
 <p>Tarantool config:</p>
-<div class="code lua highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">box</span><span class="o">.</span><span class="n">cfg</span> <span class="p">{</span>
+<div class="highlight-lua notranslate"><div class="highlight"><pre><span></span><span class="n">box</span><span class="p">.</span><span class="n">cfg</span> <span class="p">{</span>
     <span class="n">listen</span> <span class="o">=</span> <span class="s1">&#39;127.0.0.1:3301&#39;</span>
 <span class="p">}</span>
 
-<span class="n">box</span><span class="o">.</span><span class="n">once</span><span class="p">(</span><span class="s1">&#39;v1&#39;</span><span class="p">,</span> <span class="n">function</span><span class="p">()</span>
-    <span class="n">box</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">grant</span><span class="p">(</span><span class="s1">&#39;guest&#39;</span><span class="p">,</span> <span class="s1">&#39;read,write,execute&#39;</span><span class="p">,</span> <span class="s1">&#39;universe&#39;</span><span class="p">)</span>
+<span class="n">box</span><span class="p">.</span><span class="n">once</span><span class="p">(</span><span class="s1">&#39;v1&#39;</span><span class="p">,</span> <span class="kr">function</span><span class="p">()</span>
+    <span class="n">box</span><span class="p">.</span><span class="n">schema</span><span class="p">.</span><span class="n">user</span><span class="p">.</span><span class="n">grant</span><span class="p">(</span><span class="s1">&#39;guest&#39;</span><span class="p">,</span> <span class="s1">&#39;read,write,execute&#39;</span><span class="p">,</span> <span class="s1">&#39;universe&#39;</span><span class="p">)</span>
 
-    <span class="n">box</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">execute</span><span class="p">([[</span>
-        <span class="n">create</span> <span class="n">table</span> <span class="n">users</span> <span class="p">(</span>
-            <span class="nb">id</span> <span class="nb">int</span> <span class="n">primary</span> <span class="n">key</span><span class="p">,</span>
-            <span class="n">name</span> <span class="n">text</span>
-        <span class="p">)</span>
-    <span class="p">]])</span>
-<span class="n">end</span><span class="p">)</span>
+    <span class="n">box</span><span class="p">.</span><span class="n">execute</span><span class="p">(</span><span class="s">[[</span>
+<span class="s">        create table users (</span>
+<span class="s">            id int primary key,</span>
+<span class="s">            name text</span>
+<span class="s">        )</span>
+<span class="s">    ]]</span><span class="p">)</span>
+<span class="kr">end</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Python code:</p>
-<div class="code python highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">asyncio</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">asyncio</span>
 <span class="kn">import</span> <span class="nn">asynctnt</span>
 
 
-<span class="k">async</span> <span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+<span class="n">async</span> <span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
     <span class="n">conn</span> <span class="o">=</span> <span class="n">asynctnt</span><span class="o">.</span><span class="n">Connection</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s1">&#39;127.0.0.1&#39;</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">3301</span><span class="p">)</span>
-    <span class="k">await</span> <span class="n">conn</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span>
+    <span class="n">await</span> <span class="n">conn</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span>
 
-    <span class="k">await</span> <span class="n">conn</span><span class="o">.</span><span class="n">sql</span><span class="p">(</span><span class="s2">&quot;insert into users (id, name) values (1, &#39;James Bond&#39;)&quot;</span><span class="p">)</span>
-    <span class="k">await</span> <span class="n">conn</span><span class="o">.</span><span class="n">sql</span><span class="p">(</span><span class="s2">&quot;insert into users (id, name) values (2, &#39;Ethan Hunt&#39;)&quot;</span><span class="p">)</span>
-    <span class="n">data</span> <span class="o">=</span> <span class="k">await</span> <span class="n">conn</span><span class="o">.</span><span class="n">sql</span><span class="p">(</span><span class="s1">&#39;select * from users&#39;</span><span class="p">)</span>
+    <span class="n">await</span> <span class="n">conn</span><span class="o">.</span><span class="n">sql</span><span class="p">(</span><span class="s2">&quot;insert into users (id, name) values (1, &#39;James Bond&#39;)&quot;</span><span class="p">)</span>
+    <span class="n">await</span> <span class="n">conn</span><span class="o">.</span><span class="n">sql</span><span class="p">(</span><span class="s2">&quot;insert into users (id, name) values (2, &#39;Ethan Hunt&#39;)&quot;</span><span class="p">)</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">await</span> <span class="n">conn</span><span class="o">.</span><span class="n">sql</span><span class="p">(</span><span class="s1">&#39;select * from users&#39;</span><span class="p">)</span>
 
     <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
+        <span class="k">print</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
 
-    <span class="k">await</span> <span class="n">conn</span><span class="o">.</span><span class="n">disconnect</span><span class="p">()</span>
+    <span class="n">await</span> <span class="n">conn</span><span class="o">.</span><span class="n">disconnect</span><span class="p">()</span>
 
 <span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">main</span><span class="p">())</span>
 </pre></div>
 </div>
 <p>Stdout:</p>
-<div class="code highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">TarantoolTuple</span> <span class="n">ID</span><span class="o">=</span><span class="mi">1</span> <span class="n">NAME</span><span class="o">=</span><span class="s1">&#39;James Bond&#39;</span><span class="o">&gt;</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">TarantoolTuple</span> <span class="n">ID</span><span class="o">=</span><span class="mi">1</span> <span class="n">NAME</span><span class="o">=</span><span class="s1">&#39;James Bond&#39;</span><span class="o">&gt;</span>
 <span class="o">&lt;</span><span class="n">TarantoolTuple</span> <span class="n">ID</span><span class="o">=</span><span class="mi">2</span> <span class="n">NAME</span><span class="o">=</span><span class="s1">&#39;Ethan Hunt&#39;</span><span class="o">&gt;</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="using-connection-context-manager">
 <h2>Using Connection context manager<a class="headerlink" href="#using-connection-context-manager" title="Permalink to this headline">¶</a></h2>
-<div class="code python highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">asyncio</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">asyncio</span>
 <span class="kn">import</span> <span class="nn">asynctnt</span>
 
 
-<span class="k">async</span> <span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
-    <span class="k">async</span> <span class="k">with</span> <span class="n">asynctnt</span><span class="o">.</span><span class="n">Connection</span><span class="p">(</span><span class="n">port</span><span class="o">=</span><span class="mi">3301</span><span class="p">)</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
-        <span class="n">res</span> <span class="o">=</span> <span class="k">await</span> <span class="n">conn</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s1">&#39;box.info&#39;</span><span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">body</span><span class="p">)</span>
+<span class="n">async</span> <span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+    <span class="n">async</span> <span class="k">with</span> <span class="n">asynctnt</span><span class="o">.</span><span class="n">Connection</span><span class="p">(</span><span class="n">port</span><span class="o">=</span><span class="mi">3301</span><span class="p">)</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="n">await</span> <span class="n">conn</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s1">&#39;box.info&#39;</span><span class="p">)</span>
+        <span class="k">print</span><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">body</span><span class="p">)</span>
 
 <span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">main</span><span class="p">())</span>
 </pre></div>
@@ -282,7 +284,7 @@
         <a href="pushes.html" class="btn btn-neutral float-right" title="Session Push" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="installation.html" class="btn btn-neutral" title="Installation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="installation.html" class="btn btn-neutral float-left" title="Installation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -308,26 +310,16 @@
   
 
 
-  
-
-    
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-        <script type="text/javascript" src="_static/jquery.js"></script>
-        <script type="text/javascript" src="_static/underscore.js"></script>
-        <script type="text/javascript" src="_static/doctools.js"></script>
-        <script type="text/javascript" src="_static/language_data.js"></script>
-    
-
-  
-
-  <script type="text/javascript" src="_static/js/theme.js"></script>
-
   <script type="text/javascript">
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script> 
+  </script>
+
+  
+  
+    
+   
 
 </body>
 </html>
