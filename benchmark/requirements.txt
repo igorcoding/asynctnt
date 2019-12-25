@@ -1,0 +1,4 @@
+asynctnt
+git+git://github.com/shveenkov/aiotarantool@master#egg=aiotarantool
+tarantool
+

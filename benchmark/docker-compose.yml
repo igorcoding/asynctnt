@@ -1,0 +1,10 @@
+version: '2'
+
+services:
+  tarantool:
+    build: .
+    ports:
+      - "3301:3301"
+      - "3305:3305"
+    volumes:
+    - ./app.lua:/opt/tarantool/app.lua
