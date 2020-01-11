@@ -216,7 +216,7 @@ class CommonTestCase(BaseTarantoolTestCase):
                 try:
                     await self.conn.select('spacex')
                     return
-                except Exception as e:
+                except Exception:
                     pass
 
                 await asyncio.sleep(0.1, loop=self.loop)

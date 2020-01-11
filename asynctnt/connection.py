@@ -190,7 +190,7 @@ class Connection:
                 await self.ping(timeout=2.0)
             except asyncio.CancelledError:
                 break
-            except Exception as e:
+            except Exception:
                 pass
 
             await asyncio.sleep(self._ping_timeout, loop=self._loop)

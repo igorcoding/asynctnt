@@ -19,7 +19,7 @@ fi
 tarantool -V
 
 
-brew install xz zlib pyenv
+brew install xz zlib pyenv || echo "ignore"
 if ! (pyenv versions | grep "${PYTHON_VERSION}$"); then
     pyenv install ${PYTHON_VERSION}
 fi

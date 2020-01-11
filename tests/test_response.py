@@ -135,7 +135,8 @@ class ResponseTestCase(BaseTarantoolTestCase):
         res = res[0]
 
         with self.assertRaises(KeyError):
-            _ = res['f100']
+            # noinspection PyStatementEffect
+            res['f100']
 
     async def test__response_tuple_get(self):
         data = [0, 'hello', 5, 6, 'help', 'common', 'yo']

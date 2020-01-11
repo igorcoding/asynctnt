@@ -2,9 +2,10 @@ PyYAML>=3.13
 uvloop>=0.6.7
 Cython==0.29.1
 pep8==1.7.1
-flake8==3.6.0
+flake8==3.7.9
 pypandoc
 twine
 Sphinx
 sphinx_rtd_theme
 sphinxcontrib-asyncio
+coverage<5.0
