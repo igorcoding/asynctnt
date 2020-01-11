@@ -443,7 +443,12 @@ cdef ssize_t response_parse_body(const char *buf, uint32_t buf_len,
                 if key == tarantool.SQL_INFO_ROW_COUNT:
                     resp._rowcount = mp_decode_uint(&b)
                 elif key == tarantool.SQL_INFO_AUTOINCREMENT_IDS:
-                    ids = _decode_obj(&b, resp._encoding)
+                    arr_size = mp_decode_array(&b)
+                    ids = cpython.list.PyList_New(arr_size)
+                    for i in range(arr_size):
+                        el = <object> mp_decode_int(&b)
+                        cpython.Py_INCREF(el)
+                        cpython.list.PyList_SET_ITEM(ids, i, el)
                     resp._autoincrement_ids = ids
                 else:
                     logger.warning('unknown key in sql info decoding: %d', key)
