@@ -156,12 +156,12 @@
 <span class="kn">import</span> <span class="nn">functools</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">typing</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Optional</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span>
 
-<span class="kn">from</span> <span class="nn">asynctnt.exceptions</span> <span class="k">import</span> <span class="n">TarantoolDatabaseError</span><span class="p">,</span> \
+<span class="kn">from</span> <span class="nn">asynctnt.exceptions</span> <span class="kn">import</span> <span class="n">TarantoolDatabaseError</span><span class="p">,</span> \
     <span class="n">ErrorCode</span><span class="p">,</span> <span class="n">TarantoolNotConnectedError</span>
-<span class="kn">from</span> <span class="nn">asynctnt.iproto</span> <span class="k">import</span> <span class="n">protocol</span>
-<span class="kn">from</span> <span class="nn">asynctnt.log</span> <span class="k">import</span> <span class="n">logger</span>
+<span class="kn">from</span> <span class="nn">asynctnt.iproto</span> <span class="kn">import</span> <span class="n">protocol</span>
+<span class="kn">from</span> <span class="nn">asynctnt.log</span> <span class="kn">import</span> <span class="n">logger</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span>
     <span class="s1">&#39;Connection&#39;</span><span class="p">,</span> <span class="s1">&#39;connect&#39;</span><span class="p">,</span> <span class="s1">&#39;ConnectionState&#39;</span>
@@ -191,7 +191,7 @@
         <span class="s1">&#39;_ping_task&#39;</span><span class="p">,</span> <span class="s1">&#39;__create_task&#39;</span>
     <span class="p">)</span>
 
-<div class="viewcode-block" id="Connection.__init__"><a class="viewcode-back" href="../../api.html#asynctnt.Connection.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span>
+<div class="viewcode-block" id="Connection.__init__"><a class="viewcode-back" href="../../api.html#asynctnt.Connection.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span>
                  <span class="n">host</span><span class="o">=</span><span class="s1">&#39;127.0.0.1&#39;</span><span class="p">,</span>
                  <span class="n">port</span><span class="o">=</span><span class="mi">3301</span><span class="p">,</span>
                  <span class="n">username</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -343,7 +343,7 @@
                 <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">ping</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="mf">2.0</span><span class="p">)</span>
             <span class="k">except</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">CancelledError</span><span class="p">:</span>
                 <span class="k">break</span>
-            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
                 <span class="k">pass</span>
 
             <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ping_timeout</span><span class="p">,</span> <span class="n">loop</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_loop</span><span class="p">)</span>
@@ -588,7 +588,7 @@
         <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">disconnect</span><span class="p">()</span>
         <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span>
 
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">__aenter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="fm">__aenter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Executed on entering the async with section.</span>
 <span class="sd">            Connects to Tarantool instance.</span>
@@ -596,7 +596,7 @@
         <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span>
         <span class="k">return</span> <span class="bp">self</span>
 
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">__aexit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exc_type</span><span class="p">,</span> <span class="n">exc_val</span><span class="p">,</span> <span class="n">exc_tb</span><span class="p">):</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="fm">__aexit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exc_type</span><span class="p">,</span> <span class="n">exc_val</span><span class="p">,</span> <span class="n">exc_tb</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Executed on leaving the async with section.</span>
 <span class="sd">            Disconnects from Tarantool instance.</span>
@@ -1055,7 +1055,7 @@
         <span class="k">if</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">version</span> <span class="o">&lt;</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">7</span><span class="p">):</span>  <span class="c1"># pragma: nocover</span>
             <span class="n">Connection</span><span class="o">.</span><span class="n">call</span> <span class="o">=</span> <span class="n">Connection</span><span class="o">.</span><span class="n">call16</span>
 
-    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="s2">&quot;&lt;asynctnt.Connection host=</span><span class="si">{}</span><span class="s2"> port=</span><span class="si">{}</span><span class="s2"> state=</span><span class="si">{}</span><span class="s2">&gt;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">host</span><span class="p">,</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="p">,</span>
@@ -1071,7 +1071,7 @@
 
 
 <span class="k">class</span> <span class="nc">_DbMock</span><span class="p">:</span>
-    <span class="k">def</span> <span class="nf">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
         <span class="k">raise</span> <span class="n">TarantoolNotConnectedError</span><span class="p">(</span><span class="s1">&#39;Tarantool is not connected&#39;</span><span class="p">)</span>
 
 

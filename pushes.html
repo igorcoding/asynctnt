@@ -176,13 +176,13 @@ all the messages from Tarantool:</p>
 <span class="kn">import</span> <span class="nn">asynctnt</span>
 
 
-<span class="n">async</span> <span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
-    <span class="n">async</span> <span class="k">with</span> <span class="n">asynctnt</span><span class="o">.</span><span class="n">Connection</span><span class="p">(</span><span class="n">port</span><span class="o">=</span><span class="mi">3301</span><span class="p">)</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
-        <span class="n">fut</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s1">&#39;sub&#39;</span><span class="p">,</span> <span class="p">[</span><span class="mi">10</span><span class="p">],</span> <span class="n">push_subscribe</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+    <span class="k">async</span> <span class="k">with</span> <span class="n">asynctnt</span><span class="o">.</span><span class="n">Connection</span><span class="p">(</span><span class="n">port</span><span class="o">=</span><span class="mi">3301</span><span class="p">)</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
+        <span class="n">fut</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s1">&#39;sub&#39;</span><span class="p">,</span> <span class="p">[</span><span class="mi">10</span><span class="p">],</span> <span class="n">push_subscribe</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="n">it</span> <span class="o">=</span> <span class="n">asynctnt</span><span class="o">.</span><span class="n">PushIterator</span><span class="p">(</span><span class="n">fut</span><span class="p">)</span>
 
-        <span class="n">async</span> <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">it</span><span class="p">:</span>
-            <span class="k">print</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="k">async</span> <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">it</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
 
 <span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">main</span><span class="p">())</span>
 </pre></div>
@@ -202,15 +202,15 @@ returned future from the <cite>call()</cite> method:</p>
 <span class="kn">import</span> <span class="nn">asynctnt</span>
 
 
-<span class="n">async</span> <span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
-    <span class="n">async</span> <span class="k">with</span> <span class="n">asynctnt</span><span class="o">.</span><span class="n">Connection</span><span class="p">(</span><span class="n">port</span><span class="o">=</span><span class="mi">3301</span><span class="p">)</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
-        <span class="n">fut</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s1">&#39;sub&#39;</span><span class="p">,</span> <span class="p">[</span><span class="mi">10</span><span class="p">],</span> <span class="n">push_subscribe</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+    <span class="k">async</span> <span class="k">with</span> <span class="n">asynctnt</span><span class="o">.</span><span class="n">Connection</span><span class="p">(</span><span class="n">port</span><span class="o">=</span><span class="mi">3301</span><span class="p">)</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
+        <span class="n">fut</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s1">&#39;sub&#39;</span><span class="p">,</span> <span class="p">[</span><span class="mi">10</span><span class="p">],</span> <span class="n">push_subscribe</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="n">it</span> <span class="o">=</span> <span class="n">asynctnt</span><span class="o">.</span><span class="n">PushIterator</span><span class="p">(</span><span class="n">fut</span><span class="p">)</span>
 
-        <span class="n">async</span> <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">it</span><span class="p">:</span>
-            <span class="k">print</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="k">async</span> <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">it</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
 
-        <span class="k">print</span><span class="p">(</span><span class="n">await</span> <span class="n">fut</span><span class="p">)</span>  <span class="c1"># receive the response</span>
+        <span class="nb">print</span><span class="p">(</span><span class="k">await</span> <span class="n">fut</span><span class="p">)</span>  <span class="c1"># receive the response</span>
 
 <span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">main</span><span class="p">())</span>
 </pre></div>

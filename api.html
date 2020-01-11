@@ -197,8 +197,8 @@
 <p>Connection also supports context manager protocol, which connects
 on entering and disconnecting on leaving a block.</p>
 <p>So one can simply use it as follows:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">async</span> <span class="k">with</span> <span class="n">asynctnt</span><span class="o">.</span><span class="n">Connection</span><span class="p">()</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
-    <span class="n">await</span> <span class="n">conn</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s1">&#39;box.info&#39;</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">async</span> <span class="k">with</span> <span class="n">asynctnt</span><span class="o">.</span><span class="n">Connection</span><span class="p">()</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
+    <span class="k">await</span> <span class="n">conn</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s1">&#39;box.info&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 <dl class="field-list simple">
@@ -256,10 +256,10 @@ version &lt; 1.7, then this call method acts like a call16 method</p>
 <span class="go">#     return ...</span>
 <span class="go"># end</span>
 
-<span class="gp">&gt;&gt;&gt; </span><span class="n">await</span> <span class="n">conn</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s1">&#39;f&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">await</span> <span class="n">conn</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s1">&#39;f&#39;</span><span class="p">)</span>
 <span class="go">&lt;Response sync=3 rowcount=0 data=[]&gt;</span>
 
-<span class="gp">&gt;&gt;&gt; </span><span class="n">await</span> <span class="n">conn</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s1">&#39;f&#39;</span><span class="p">,</span> <span class="p">[</span><span class="mi">20</span><span class="p">,</span> <span class="mi">42</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">await</span> <span class="n">conn</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s1">&#39;f&#39;</span><span class="p">,</span> <span class="p">[</span><span class="mi">20</span><span class="p">,</span> <span class="mi">42</span><span class="p">])</span>
 <span class="go">&lt;Response sync=3 rowcount=2 data=[20, 42]&gt;</span>
 </pre></div>
 </div>
@@ -319,7 +319,7 @@ for disconnect to finish.</p>
 <p>Examples:</p>
 <div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="go"># Assuming tuple [0, &#39;hello&#39;] is in space tester</span>
 
-<span class="gp">&gt;&gt;&gt; </span><span class="n">await</span> <span class="n">conn</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="s1">&#39;tester&#39;</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">await</span> <span class="n">conn</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="s1">&#39;tester&#39;</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">])</span>
 <span class="go">&lt;Response sync=3 rowcount=1 data=[</span>
 <span class="go">    &lt;TarantoolTuple id=0 name=&#39;hello&#39;&gt;</span>
 <span class="go">]&gt;</span>
@@ -351,11 +351,11 @@ for disconnect to finish.</p>
 <code class="sig-name descname">eval</code><span class="sig-paren">(</span><em class="sig-param">expression</em>, <em class="sig-param">args=None</em>, <em class="sig-param">*</em>, <em class="sig-param">timeout=-1.0</em>, <em class="sig-param">push_subscribe=False</em><span class="sig-paren">)</span> &#x2192; Union[Awaitable[asynctnt.iproto.protocol.Response], _asyncio.Future]<a class="reference internal" href="_modules/asynctnt/connection.html#Connection.eval"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#asynctnt.Connection.eval" title="Permalink to this definition">¶</a></dt>
 <dd><p>Eval request coroutine.</p>
 <p>Examples:</p>
-<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">await</span> <span class="n">conn</span><span class="o">.</span><span class="n">eval</span><span class="p">(</span><span class="s1">&#39;return 42&#39;</span><span class="p">)</span>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">await</span> <span class="n">conn</span><span class="o">.</span><span class="n">eval</span><span class="p">(</span><span class="s1">&#39;return 42&#39;</span><span class="p">)</span>
 <span class="go">&lt;Response sync=3 rowcount=1 data=[42]&gt;</span>
 
 
-<span class="gp">&gt;&gt;&gt; </span><span class="n">await</span> <span class="n">conn</span><span class="o">.</span><span class="n">eval</span><span class="p">(</span><span class="s1">&#39;return box.info.version&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">await</span> <span class="n">conn</span><span class="o">.</span><span class="n">eval</span><span class="p">(</span><span class="s1">&#39;return box.info.version&#39;</span><span class="p">)</span>
 <span class="go">&lt;Response sync=3 rowcount=1 data=[&#39;2.1.1-7-gd381a45b6&#39;]&gt;</span>
 </pre></div>
 </div>
@@ -399,13 +399,13 @@ execute your expression (list object)</p></li>
 <dd><p>Insert request coroutine.</p>
 <p>Examples:</p>
 <div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="go"># Basic usage</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">await</span> <span class="n">conn</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="s1">&#39;tester&#39;</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;hello&#39;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">await</span> <span class="n">conn</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="s1">&#39;tester&#39;</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;hello&#39;</span><span class="p">])</span>
 <span class="go">&lt;Response sync=3 rowcount=1 data=[</span>
 <span class="go">    &lt;TarantoolTuple id=0 name=&#39;hello&#39;&gt;</span>
 <span class="go">]&gt;</span>
 
 <span class="go"># Using dict as an argument tuple</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">await</span> <span class="n">conn</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="s1">&#39;tester&#39;</span><span class="p">,</span> <span class="p">{</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">await</span> <span class="n">conn</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="s1">&#39;tester&#39;</span><span class="p">,</span> <span class="p">{</span>
 <span class="gp">... </span>                    <span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">0</span>
 <span class="gp">... </span>                    <span class="s1">&#39;text&#39;</span><span class="p">:</span> <span class="s1">&#39;hell0&#39;</span>
 <span class="gp">... </span>                  <span class="p">})</span>
@@ -515,13 +515,13 @@ and schema fetching)</p>
 <code class="sig-name descname">select</code><span class="sig-paren">(</span><em class="sig-param">space</em>, <em class="sig-param">key=None</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span> &#x2192; Union[Awaitable[asynctnt.iproto.protocol.Response], _asyncio.Future]<a class="reference internal" href="_modules/asynctnt/connection.html#Connection.select"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#asynctnt.Connection.select" title="Permalink to this definition">¶</a></dt>
 <dd><p>Select request coroutine.</p>
 <p>Examples:</p>
-<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">await</span> <span class="n">conn</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s1">&#39;tester&#39;</span><span class="p">)</span>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">await</span> <span class="n">conn</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s1">&#39;tester&#39;</span><span class="p">)</span>
 <span class="go">&lt;Response sync=3 rowcount=2 data=[</span>
 <span class="go">    &lt;TarantoolTuple id=1 name=&#39;one&#39;&gt;,</span>
 <span class="go">    &lt;TarantoolTuple id=2 name=&#39;two&#39;&gt;</span>
 <span class="go">]&gt;</span>
 
-<span class="gp">&gt;&gt;&gt; </span><span class="n">res</span> <span class="o">=</span> <span class="n">await</span> <span class="n">conn</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s1">&#39;_space&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;tester&#39;</span><span class="p">],</span> <span class="n">index</span><span class="o">=</span><span class="s1">&#39;name&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">res</span> <span class="o">=</span> <span class="k">await</span> <span class="n">conn</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s1">&#39;_space&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;tester&#39;</span><span class="p">],</span> <span class="n">index</span><span class="o">=</span><span class="s1">&#39;name&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">res</span><span class="o">.</span><span class="n">data</span>
 <span class="go">[&lt;TarantoolTuple id=512</span>
 <span class="go">                 owner=1</span>
@@ -564,17 +564,17 @@ and schema fetching)</p>
 <code class="sig-name descname">sql</code><span class="sig-paren">(</span><em class="sig-param">query</em>, <em class="sig-param">args=None</em>, <em class="sig-param">*</em>, <em class="sig-param">parse_metadata=True</em>, <em class="sig-param">timeout=-1.0</em><span class="sig-paren">)</span> &#x2192; Union[Awaitable[asynctnt.iproto.protocol.Response], _asyncio.Future]<a class="reference internal" href="_modules/asynctnt/connection.html#Connection.sql"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#asynctnt.Connection.sql" title="Permalink to this definition">¶</a></dt>
 <dd><p>Executes an SQL statement (only for Tarantool &gt; 2)</p>
 <p>Examples:</p>
-<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">await</span> <span class="n">conn</span><span class="o">.</span><span class="n">sql</span><span class="p">(</span><span class="s2">&quot;select 1 as a, 2 as b&quot;</span><span class="p">)</span>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">await</span> <span class="n">conn</span><span class="o">.</span><span class="n">sql</span><span class="p">(</span><span class="s2">&quot;select 1 as a, 2 as b&quot;</span><span class="p">)</span>
 <span class="go">&lt;Response sync=3 rowcount=1 data=[&lt;TarantoolTuple A=1 B=2&gt;]&gt;</span>
 
-<span class="gp">&gt;&gt;&gt; </span><span class="n">await</span> <span class="n">conn</span><span class="o">.</span><span class="n">sql</span><span class="p">(</span><span class="s2">&quot;select * from sql_space&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">await</span> <span class="n">conn</span><span class="o">.</span><span class="n">sql</span><span class="p">(</span><span class="s2">&quot;select * from sql_space&quot;</span><span class="p">)</span>
 <span class="go">&lt;Response sync=3 rowcount=2 data=[</span>
 <span class="go">    &lt;TarantoolTuple ID=1 NAME=&#39;James Bond&#39;&gt;,</span>
 <span class="go">    &lt;TarantoolTuple ID=2 NAME=&#39;Ethan Hunt&#39;&gt;</span>
 <span class="go">]&gt;</span>
 
-<span class="gp">&gt;&gt;&gt; </span><span class="n">await</span> <span class="n">conn</span><span class="o">.</span><span class="n">sql</span><span class="p">(</span><span class="s2">&quot;select * from sql_space&quot;</span><span class="p">,</span>
-<span class="gp">... </span>               <span class="n">parse_metadata</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">await</span> <span class="n">conn</span><span class="o">.</span><span class="n">sql</span><span class="p">(</span><span class="s2">&quot;select * from sql_space&quot;</span><span class="p">,</span>
+<span class="gp">... </span>               <span class="n">parse_metadata</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="go">&lt;Response sync=3 rowcount=2 data=[</span>
 <span class="go">    &lt;TarantoolTuple 0=1 1=&#39;James Bond&#39;&gt;,</span>
 <span class="go">    &lt;TarantoolTuple 0=2 1=&#39;Ethan Hunt&#39;&gt;</span>
@@ -615,13 +615,13 @@ parsing for better performance</p></li>
 <p>Examples:</p>
 <div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="go"># Assuming tuple [0, &#39;hello&#39;] is in space tester</span>
 
-<span class="gp">&gt;&gt;&gt; </span><span class="n">await</span> <span class="n">conn</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="s1">&#39;tester&#39;</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="p">[</span> <span class="p">[</span><span class="s1">&#39;=&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;hi!&#39;</span><span class="p">]</span> <span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">await</span> <span class="n">conn</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="s1">&#39;tester&#39;</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="p">[</span> <span class="p">[</span><span class="s1">&#39;=&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;hi!&#39;</span><span class="p">]</span> <span class="p">])</span>
 <span class="go">&lt;Response sync=3 rowcount=1 data=[</span>
 <span class="go">    &lt;TarantoolTuple id=0 name=&#39;hi!&#39;&gt;</span>
 <span class="go">]&gt;</span>
 
 <span class="go"># you can use fields names as well</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">res</span> <span class="o">=</span> <span class="n">await</span> <span class="n">conn</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="s1">&#39;tester&#39;</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">res</span> <span class="o">=</span> <span class="k">await</span> <span class="n">conn</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="s1">&#39;tester&#39;</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">],</span>
 <span class="gp">... </span>                        <span class="p">[</span> <span class="p">[</span><span class="s1">&#39;=&#39;</span><span class="p">,</span> <span class="s1">&#39;text&#39;</span><span class="p">,</span> <span class="s1">&#39;hola&#39;</span><span class="p">]</span> <span class="p">])</span>
 <span class="go">&lt;Response sync=3 rowcount=1 data=[</span>
 <span class="go">    &lt;TarantoolTuple id=0 name=&#39;hola&#39;&gt;</span>
@@ -656,7 +656,7 @@ If field is unknown then TarantoolSchemaError is raised.</p></li>
 (depending of either tuple exists or not)</p>
 <p>Examples:</p>
 <div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="go"># upsert does not return anything</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">await</span> <span class="n">conn</span><span class="o">.</span><span class="n">upsert</span><span class="p">(</span><span class="s1">&#39;tester&#39;</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;hello&#39;</span><span class="p">],</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">await</span> <span class="n">conn</span><span class="o">.</span><span class="n">upsert</span><span class="p">(</span><span class="s1">&#39;tester&#39;</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;hello&#39;</span><span class="p">],</span>
 <span class="gp">... </span>                  <span class="p">[</span> <span class="p">[</span><span class="s1">&#39;=&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;hi!&#39;</span><span class="p">]</span> <span class="p">])</span>
 <span class="go">&lt;Response sync=3 rowcount=0 data=[]&gt;</span>
 </pre></div>
@@ -714,9 +714,9 @@ this iterator must be created.</p>
 <span class="go">#     return &#39;finished&#39;</span>
 <span class="go"># end</span>
 
-<span class="gp">&gt;&gt;&gt; </span><span class="n">fut</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s1">&#39;async_function&#39;</span><span class="p">,</span> <span class="n">push_subscribe</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">async</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">PushIterator</span><span class="p">(</span><span class="n">fut</span><span class="p">):</span>
-<span class="gp">... </span>    <span class="k">print</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">fut</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s1">&#39;async_function&#39;</span><span class="p">,</span> <span class="n">push_subscribe</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">async</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">PushIterator</span><span class="p">(</span><span class="n">fut</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
 </pre></div>
 </div>
 <dl class="field-list simple">
