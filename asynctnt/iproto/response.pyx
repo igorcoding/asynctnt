@@ -29,6 +29,7 @@ cdef class Response:
         self._body = None
         self._encoding = encoding
         self._fields = None
+        self._autoincrement_ids = None
         self._push_subscribe = push_subscribe
         if push_subscribe:
             self._q = collections.deque()
@@ -150,6 +151,14 @@ cdef class Response:
             if self_len > 0:
                 return self_len
         return self._rowcount
+
+    @property
+    def autoincrement_ids(self) -> Optional[list]:
+        """
+            Response autoincrement ids
+        """
+        return self._autoincrement_ids
+
 
     def done(self):
         return self._code >= 0
@@ -433,6 +442,14 @@ cdef ssize_t response_parse_body(const char *buf, uint32_t buf_len,
                 key = mp_decode_uint(&b)
                 if key == tarantool.SQL_INFO_ROW_COUNT:
                     resp._rowcount = mp_decode_uint(&b)
+                elif key == tarantool.SQL_INFO_AUTOINCREMENT_IDS:
+                    arr_size = mp_decode_array(&b)
+                    ids = cpython.list.PyList_New(arr_size)
+                    for i in range(arr_size):
+                        el = <object>mp_decode_uint(&b)
+                        cpython.Py_INCREF(el)
+                        cpython.list.PyList_SET_ITEM(ids, i, el)
+                    resp._autoincrement_ids = ids
                 else:
                     logger.warning('unknown key in sql info decoding: %d', key)
                     mp_next(&b)

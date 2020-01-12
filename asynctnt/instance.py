@@ -586,7 +586,7 @@ class TarantoolSyncInstance(TarantoolInstance):
             s.write(cmd + b'\n')
 
             data = s.read_until(b'...\n').decode()
-            data = yaml.load(data)
+            data = yaml.load(data, Loader=yaml.FullLoader)
             return data
         finally:
             s.close()

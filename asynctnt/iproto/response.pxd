@@ -18,6 +18,7 @@ cdef class Response:
         list _body
         bytes _encoding
         TntFields _fields
+        list _autoincrement_ids
         bint _push_subscribe
         object _exception
 
