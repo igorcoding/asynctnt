@@ -240,8 +240,6 @@ jobs:
         - echo "TRAVIS_BUILD_NUMBER=${TRAVIS_BUILD_NUMBER}"
 
       install:
-        - brew update
-        - brew upgrade python
         - pip3 install --upgrade cibuildwheel
         - touch .cibuildwheel
 
