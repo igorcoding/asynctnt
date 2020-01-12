@@ -222,7 +222,7 @@
 
     <span class="n">box</span><span class="p">.</span><span class="n">execute</span><span class="p">(</span><span class="s">[[</span>
 <span class="s">        create table users (</span>
-<span class="s">            id int primary key,</span>
+<span class="s">            id int primary key autoincrement,</span>
 <span class="s">            name text</span>
 <span class="s">        )</span>
 <span class="s">    ]]</span><span class="p">)</span>
@@ -238,8 +238,12 @@
     <span class="n">conn</span> <span class="o">=</span> <span class="n">asynctnt</span><span class="o">.</span><span class="n">Connection</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s1">&#39;127.0.0.1&#39;</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">3301</span><span class="p">)</span>
     <span class="k">await</span> <span class="n">conn</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span>
 
-    <span class="k">await</span> <span class="n">conn</span><span class="o">.</span><span class="n">sql</span><span class="p">(</span><span class="s2">&quot;insert into users (id, name) values (1, &#39;James Bond&#39;)&quot;</span><span class="p">)</span>
-    <span class="k">await</span> <span class="n">conn</span><span class="o">.</span><span class="n">sql</span><span class="p">(</span><span class="s2">&quot;insert into users (id, name) values (2, &#39;Ethan Hunt&#39;)&quot;</span><span class="p">)</span>
+    <span class="k">await</span> <span class="n">conn</span><span class="o">.</span><span class="n">sql</span><span class="p">(</span><span class="s2">&quot;insert into users (name) values (&#39;James Bond&#39;)&quot;</span><span class="p">)</span>
+    <span class="n">resp</span> <span class="o">=</span> <span class="k">await</span> <span class="n">conn</span><span class="o">.</span><span class="n">sql</span><span class="p">(</span><span class="s2">&quot;insert into users (name) values (&#39;Ethan Hunt&#39;)&quot;</span><span class="p">)</span>
+
+    <span class="c1"># get value of auto incremented primary key</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">resp</span><span class="o">.</span><span class="n">autoincrement_ids</span><span class="p">)</span>
+
     <span class="n">data</span> <span class="o">=</span> <span class="k">await</span> <span class="n">conn</span><span class="o">.</span><span class="n">sql</span><span class="p">(</span><span class="s1">&#39;select * from users&#39;</span><span class="p">)</span>
 
     <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
