@@ -1,6 +1,13 @@
 v1.1
 
+New features:
+* Parse autoincrement ids in sql response (#14). Thanks to @oleynikandrey
+* Added Python 3.8 support. Removed all redundant `loop` arguments to functions
+  and asyncio classes.
+
+Other changes:
 * Updated Cython to 0.29.14
+* Updated msgpuck to most recent version.
 
 v1.0
 
