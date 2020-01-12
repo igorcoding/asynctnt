@@ -8,6 +8,7 @@ New features:
 Other changes:
 * Updated Cython to 0.29.14
 * Updated msgpuck to most recent version.
+* Added building wheels for Windows for Python 3.6, 3.7, 3.8
 
 v1.0
 

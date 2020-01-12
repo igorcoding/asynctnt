@@ -201,7 +201,7 @@ jobs:
       script: ".ci/travis-tests.sh"
       env: BUILD=quicktests PYTHON_VERSION=3.8.0 TARANTOOL_VERSION=2_x
 
-    ### Wheels ###
+    ## Wheels ###
 
     - stage: wheels
       sudo: required
@@ -242,6 +242,30 @@ jobs:
       install:
         - brew update
         - brew upgrade python
+        - pip3 install --upgrade cibuildwheel
+        - touch .cibuildwheel
+
+      script:
+        - cibuildwheel --output-dir wheelhouse
+
+      after_success:
+        - pip install awscli
+        - aws s3 sync wheelhouse s3://asynctnt/${TRAVIS_BUILD_NUMBER}
+
+    - stage: wheels
+      os: windows
+      language: shell
+
+      env:
+        - CIBW_BUILD="cp36-* cp37-* cp38-*"
+
+      before_install:
+        - if [ "${TRAVIS_TAG:-}" = "" ]; then exit 0; fi
+        - echo "TRAVIS_BUILD_NUMBER=${TRAVIS_BUILD_NUMBER}"
+
+      install:
+        - choco install python --version 3.7.0
+        - export PATH="/c/Python37:/c/Python37/Scripts:$PATH"
         - pip3 install --upgrade cibuildwheel
         - touch .cibuildwheel
 
