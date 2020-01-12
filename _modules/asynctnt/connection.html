@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>asynctnt.connection &mdash; asynctnt 1.0 documentation</title>
+  <title>asynctnt.connection &mdash; asynctnt 1.1 documentation</title>
   
 
   
@@ -58,7 +58,7 @@
             
             
               <div class="version">
-                1.0
+                1.1
               </div>
             
           
@@ -158,14 +158,16 @@
 <span class="kn">import</span> <span class="nn">typing</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span>
 
-<span class="kn">from</span> <span class="nn">asynctnt.exceptions</span> <span class="kn">import</span> <span class="n">TarantoolDatabaseError</span><span class="p">,</span> \
+<span class="kn">from</span> <span class="nn">.exceptions</span> <span class="kn">import</span> <span class="n">TarantoolDatabaseError</span><span class="p">,</span> \
     <span class="n">ErrorCode</span><span class="p">,</span> <span class="n">TarantoolNotConnectedError</span>
-<span class="kn">from</span> <span class="nn">asynctnt.iproto</span> <span class="kn">import</span> <span class="n">protocol</span>
-<span class="kn">from</span> <span class="nn">asynctnt.log</span> <span class="kn">import</span> <span class="n">logger</span>
+<span class="kn">from</span> <span class="nn">.iproto</span> <span class="kn">import</span> <span class="n">protocol</span>
+<span class="kn">from</span> <span class="nn">.log</span> <span class="kn">import</span> <span class="n">logger</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span>
     <span class="s1">&#39;Connection&#39;</span><span class="p">,</span> <span class="s1">&#39;connect&#39;</span><span class="p">,</span> <span class="s1">&#39;ConnectionState&#39;</span>
 <span class="p">)</span>
+
+<span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="n">get_running_loop</span>
 
 
 <span class="k">class</span> <span class="nc">ConnectionState</span><span class="p">(</span><span class="n">enum</span><span class="o">.</span><span class="n">IntEnum</span><span class="p">):</span>
@@ -204,7 +206,7 @@
                  <span class="n">ping_timeout</span><span class="o">=</span><span class="mf">5.</span><span class="p">,</span>
                  <span class="n">encoding</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                  <span class="n">initial_read_buffer_size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                 <span class="n">loop</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+                 <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Connection constructor.</span>
@@ -266,9 +268,9 @@
 <span class="sd">            :param initial_read_buffer_size:</span>
 <span class="sd">                    Initial and minimum size of read buffer in bytes.</span>
 <span class="sd">                    Higher value means less reallocations, but higher</span>
-<span class="sd">                    memory usage.</span>
+<span class="sd">                    memory usage (default is 131072).</span>
 <span class="sd">            :param loop:</span>
-<span class="sd">                    Asyncio event loop to use</span>
+<span class="sd">                    (Deprecated) Asyncio event loop to use</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_host</span> <span class="o">=</span> <span class="n">host</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_port</span> <span class="o">=</span> <span class="n">port</span>
@@ -291,7 +293,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_request_timeout</span> <span class="o">=</span> <span class="n">request_timeout</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_ping_timeout</span> <span class="o">=</span> <span class="n">ping_timeout</span> <span class="ow">or</span> <span class="mi">0</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_loop</span> <span class="o">=</span> <span class="n">loop</span> <span class="ow">or</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">get_event_loop</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_loop</span> <span class="o">=</span> <span class="n">get_running_loop</span><span class="p">(</span><span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;loop&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_transport</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_protocol</span> <span class="o">=</span> <span class="kc">None</span>
@@ -301,15 +303,14 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_state_prev</span> <span class="o">=</span> <span class="n">ConnectionState</span><span class="o">.</span><span class="n">DISCONNECTED</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_disconnect_waiter</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_reconnect_task</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_connect_lock</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Lock</span><span class="p">(</span><span class="n">loop</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_loop</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_disconnect_lock</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Lock</span><span class="p">(</span><span class="n">loop</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_loop</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_connect_lock</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Lock</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_disconnect_lock</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Lock</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_ping_task</span> <span class="o">=</span> <span class="kc">None</span>
 
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_loop</span><span class="p">,</span> <span class="s1">&#39;create_task&#39;</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">__create_task</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_loop</span><span class="o">.</span><span class="n">create_task</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">__create_task</span> <span class="o">=</span> <span class="n">functools</span><span class="o">.</span><span class="n">partial</span><span class="p">(</span><span class="n">asyncio</span><span class="o">.</span><span class="n">ensure_future</span><span class="p">,</span>
-                                                   <span class="n">loop</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_loop</span><span class="p">)</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__create_task</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">ensure_future</span></div>
 
     <span class="k">def</span> <span class="nf">_set_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_state</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_state</span> <span class="o">!=</span> <span class="n">new_state</span><span class="p">:</span>
@@ -346,7 +347,7 @@
             <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
                 <span class="k">pass</span>
 
-            <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ping_timeout</span><span class="p">,</span> <span class="n">loop</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_loop</span><span class="p">)</span>
+            <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ping_timeout</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_start_reconnect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">return_exceptions</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_state</span> <span class="ow">in</span> <span class="p">[</span><span class="n">ConnectionState</span><span class="o">.</span><span class="n">CONNECTING</span><span class="p">,</span>
@@ -428,10 +429,8 @@
                                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connect_timeout</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                                     <span class="n">timeout</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connect_timeout</span> <span class="o">/</span> <span class="mi">2</span>
 
-                                <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">wait_for</span><span class="p">(</span>
-                                    <span class="n">connected_fut</span><span class="p">,</span>
-                                    <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">,</span>
-                                    <span class="n">loop</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_loop</span><span class="p">)</span>
+                                <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">wait_for</span><span class="p">(</span><span class="n">connected_fut</span><span class="p">,</span>
+                                                       <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">)</span>
                             <span class="k">except</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">TimeoutError</span><span class="p">:</span>
                                 <span class="n">tr</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
                                 <span class="k">continue</span>  <span class="c1"># try again</span>
@@ -444,7 +443,6 @@
                     <span class="n">tr</span><span class="p">,</span> <span class="n">pr</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">wait_for</span><span class="p">(</span>
                         <span class="n">full_connect</span><span class="p">(),</span>
                         <span class="n">timeout</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_connect_timeout</span><span class="p">,</span>
-                        <span class="n">loop</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_loop</span>
                     <span class="p">)</span>
 
                     <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> Connected successfully&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">fingerprint</span><span class="p">)</span>
@@ -505,8 +503,7 @@
                        <span class="nb">repr</span><span class="p">(</span><span class="n">exc</span><span class="p">)</span> <span class="k">if</span> <span class="n">exc</span> <span class="k">else</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
                        <span class="bp">self</span><span class="o">.</span><span class="n">_reconnect_timeout</span><span class="p">)</span>
 
-        <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_reconnect_timeout</span><span class="p">,</span>
-                            <span class="n">loop</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_loop</span><span class="p">)</span>
+        <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_reconnect_timeout</span><span class="p">)</span>
 
     <span class="k">async</span> <span class="k">def</span> <span class="nf">connect</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Connection&#39;</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>

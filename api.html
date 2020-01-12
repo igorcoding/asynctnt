@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>API Reference &mdash; asynctnt 1.0 documentation</title>
+  <title>API Reference &mdash; asynctnt 1.1 documentation</title>
   
 
   
@@ -59,7 +59,7 @@
             
             
               <div class="version">
-                1.0
+                1.1
               </div>
             
           
@@ -177,10 +177,10 @@
 
 <dl class="class">
 <dt id="asynctnt.Connection">
-<em class="property">class </em><code class="sig-prename descclassname">asynctnt.</code><code class="sig-name descname">Connection</code><span class="sig-paren">(</span><em class="sig-param">*</em>, <em class="sig-param">host='127.0.0.1'</em>, <em class="sig-param">port=3301</em>, <em class="sig-param">username=None</em>, <em class="sig-param">password=None</em>, <em class="sig-param">fetch_schema=True</em>, <em class="sig-param">auto_refetch_schema=True</em>, <em class="sig-param">connect_timeout=3.0</em>, <em class="sig-param">request_timeout=-1.0</em>, <em class="sig-param">reconnect_timeout=0.3333333333333333</em>, <em class="sig-param">ping_timeout=5.0</em>, <em class="sig-param">encoding=None</em>, <em class="sig-param">initial_read_buffer_size=None</em>, <em class="sig-param">loop=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/asynctnt/connection.html#Connection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#asynctnt.Connection" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">asynctnt.</code><code class="sig-name descname">Connection</code><span class="sig-paren">(</span><em class="sig-param">*</em>, <em class="sig-param">host='127.0.0.1'</em>, <em class="sig-param">port=3301</em>, <em class="sig-param">username=None</em>, <em class="sig-param">password=None</em>, <em class="sig-param">fetch_schema=True</em>, <em class="sig-param">auto_refetch_schema=True</em>, <em class="sig-param">connect_timeout=3.0</em>, <em class="sig-param">request_timeout=-1.0</em>, <em class="sig-param">reconnect_timeout=0.3333333333333333</em>, <em class="sig-param">ping_timeout=5.0</em>, <em class="sig-param">encoding=None</em>, <em class="sig-param">initial_read_buffer_size=None</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/asynctnt/connection.html#Connection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#asynctnt.Connection" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="method">
 <dt id="asynctnt.Connection.__init__">
-<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">*</em>, <em class="sig-param">host='127.0.0.1'</em>, <em class="sig-param">port=3301</em>, <em class="sig-param">username=None</em>, <em class="sig-param">password=None</em>, <em class="sig-param">fetch_schema=True</em>, <em class="sig-param">auto_refetch_schema=True</em>, <em class="sig-param">connect_timeout=3.0</em>, <em class="sig-param">request_timeout=-1.0</em>, <em class="sig-param">reconnect_timeout=0.3333333333333333</em>, <em class="sig-param">ping_timeout=5.0</em>, <em class="sig-param">encoding=None</em>, <em class="sig-param">initial_read_buffer_size=None</em>, <em class="sig-param">loop=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/asynctnt/connection.html#Connection.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#asynctnt.Connection.__init__" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">*</em>, <em class="sig-param">host='127.0.0.1'</em>, <em class="sig-param">port=3301</em>, <em class="sig-param">username=None</em>, <em class="sig-param">password=None</em>, <em class="sig-param">fetch_schema=True</em>, <em class="sig-param">auto_refetch_schema=True</em>, <em class="sig-param">connect_timeout=3.0</em>, <em class="sig-param">request_timeout=-1.0</em>, <em class="sig-param">reconnect_timeout=0.3333333333333333</em>, <em class="sig-param">ping_timeout=5.0</em>, <em class="sig-param">encoding=None</em>, <em class="sig-param">initial_read_buffer_size=None</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/asynctnt/connection.html#Connection.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#asynctnt.Connection.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Connection constructor.</p>
 <p>To manipulate a Connection instance there are several functions:</p>
 <blockquote>
@@ -230,8 +230,8 @@ if it is changed
 encoding and decoding (default is <code class="docutils literal notranslate"><span class="pre">utf-8</span></code>)</p></li>
 <li><p><strong>initial_read_buffer_size</strong> – Initial and minimum size of read buffer in bytes.
 Higher value means less reallocations, but higher
-memory usage.</p></li>
-<li><p><strong>loop</strong> – Asyncio event loop to use</p></li>
+memory usage (default is 131072).</p></li>
+<li><p><strong>loop</strong> – (Deprecated) Asyncio event loop to use</p></li>
 </ul>
 </dd>
 </dl>
