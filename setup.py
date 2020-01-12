@@ -139,7 +139,7 @@ setup(
         "Topic :: Database :: Front-Ends"
     ],
     install_requires=[
-        "PyYAML >= 3.13"
+        "PyYAML >= 5.0"
     ],
     setup_requires=[
         "Cython=={}".format(CYTHON_VERSION)
