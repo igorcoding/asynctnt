@@ -18,3 +18,15 @@ end)
 function f(...)
     return ...
 end
+
+
+local x = 0
+
+function infinite_push_loop()
+    local fiber = require('fiber')
+    while true do
+        fiber.sleep(2)
+        x = x + 1
+        box.session.push(x)
+    end
+end

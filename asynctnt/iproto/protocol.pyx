@@ -127,7 +127,7 @@ cdef class BaseProtocol(CoreProtocol):
         buf_len -= length
         buf = &buf[length]  # skip header
 
-        sync_obj = <object>hdr.sync
+        sync_obj = <object> hdr.sync
 
         req_p = cpython.dict.PyDict_GetItem(self._reqs, sync_obj)
         if req_p is NULL:
@@ -136,7 +136,7 @@ cdef class BaseProtocol(CoreProtocol):
 
         is_chunk = (hdr.code == tarantool.IPROTO_CHUNK)
 
-        req = <Request>req_p
+        req = <Request> req_p
         req.response._sync = hdr.sync
         req.response._schema_id = hdr.schema_id
         if not is_chunk:
@@ -286,34 +286,35 @@ cdef class BaseProtocol(CoreProtocol):
 
         pos = 0
         while cpython.dict.PyDict_Next(self._reqs, &pos, &pkey, &pvalue):
-            sync = <uint64_t><object>pkey
-            req = <Request>pvalue
+            sync = <uint64_t> <object> pkey
+            req = <Request> pvalue
 
             waiter = req.waiter
             if waiter and not waiter.done():
+                err = None
                 if exc is None:
-                    waiter.set_exception(
-                        TarantoolNotConnectedError(
-                            'Lost connection to Tarantool')
+                    err = TarantoolNotConnectedError(
+                        'Lost connection to Tarantool'
                     )
                 elif isinstance(exc, (ConnectionRefusedError,
                                       ConnectionResetError)):
-                    waiter.set_exception(
-                        TarantoolNotConnectedError(
-                            'Lost connection to Tarantool: {}: {}'.format(
-                                exc.__class__.__name__, str(exc))
-                        )
+                    err = TarantoolNotConnectedError(
+                        'Lost connection to Tarantool: {}: {}'.format(
+                            exc.__class__.__name__, str(exc))
                     )
                 elif exc is ConnectionRefusedError \
                         or exc is ConnectionResetError:
-                    waiter.set_exception(
-                        TarantoolNotConnectedError(
-                            'Lost connection to Tarantool: {}'.format(
-                                exc.__name__)
-                        )
+                    err = TarantoolNotConnectedError(
+                        'Lost connection to Tarantool: {}'.format(
+                            exc.__name__)
                     )
                 else:
-                    waiter.set_exception(exc)
+                    err = exc
+
+                if err is not None:
+                    waiter.set_exception(err)
+                    if req.response is not None:
+                        req.response.set_exception(err)
 
         if self.on_connection_lost_cb:
             self.on_connection_lost_cb(exc)
@@ -407,4 +408,4 @@ class Protocol(BaseProtocol, asyncio.Protocol):
     pass
 
 
-TarantoolTuple = <object>tupleobj.AtntTuple_InitTypes()
+TarantoolTuple = <object> tupleobj.AtntTuple_InitTypes()

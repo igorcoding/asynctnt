@@ -43,6 +43,7 @@ cdef class PushIterator:
                              'a future returned from a method with '
                              'push_subscribe=True flag')
 
+        self._fut = fut
         self._request = request
         self._response = request.response
 
@@ -72,6 +73,13 @@ cdef class PushIterator:
 
         exc = response.get_exception()
         if exc is not None:
+            # someone needs to await the underlying future
+            # so we do it here, and most probably (like 99%) the exception
+            # that happened is already in the self._fut. So, await-ing it
+            # would cause an exception to be thrown.
+            # But if it doesnt't throw we still await the future and throw
+            # the exception ourselves.
+            await self._fut
             raise exc
 
         if response.push_len() > 0:

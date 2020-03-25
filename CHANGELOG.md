@@ -1,3 +1,7 @@
+v1.2
+Bugs fixed:
+* Fixed hanging PushIterator when connection to Tarantool is lost (#17).
+
 v1.1
 
 New features:

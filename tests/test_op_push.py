@@ -3,7 +3,7 @@ import asyncio
 import asynctnt
 from asynctnt import Response, PushIterator
 from asynctnt._testbase import ensure_version
-from asynctnt.exceptions import TarantoolDatabaseError
+from asynctnt.exceptions import TarantoolDatabaseError, TarantoolNotConnectedError
 from tests import BaseTarantoolTestCase
 
 
@@ -190,6 +190,29 @@ class PushTestCase(BaseTarantoolTestCase):
 
     @ensure_version(min=(1, 10))
     async def test__push_read_all_error(self):
+        fut = self.conn.eval("""
+                    for i = 1, 5 do
+                        box.session.push('hello_' .. tostring(i))
+                        require'fiber'.sleep(0.01)
+                    end
+                    return 'ret'
+                """, push_subscribe=True)
+        it = PushIterator(fut)
+
+        # iter once
+        await it.__anext__()
+
+        # drop tarantool
+        self.tnt.stop()
+
+        try:
+            with self.assertRaises(TarantoolNotConnectedError):
+                await asyncio.wait_for(it.__anext__(), timeout=5)
+        finally:
+            self.tnt.start()
+
+    @ensure_version(min=(1, 10))
+    async def test__push_read_all_disconnect(self):
         fut = self.conn.eval("error('some error')", push_subscribe=True)
         it = PushIterator(fut)
 
