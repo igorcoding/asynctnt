@@ -10,7 +10,14 @@ include "unicodeutil.pxd"
 include "schema.pxd"
 include "buffer.pxd"
 include "rbuffer.pxd"
+# include "requests/all.pxd"
 include "request.pxd"
+include "requests/base.pxd"
+include "requests/ping.pxd"
+include "requests/call.pxd"
+include "requests/eval.pxd"
+include "requests/select.pxd"
+
 include "response.pxd"
 include "db.pxd"
 include "push.pxd"
@@ -54,6 +61,6 @@ cdef class BaseProtocol(CoreProtocol):
     cdef inline uint64_t next_sync(self)
     cdef uint32_t transform_iterator(self, iterator) except *
 
-    cdef object _new_waiter_for_request(self, Request req, float timeout)
+    cdef object _new_waiter_for_request(self, BaseRequest req, float timeout)
     cdef Db _create_db(self)
-    cdef object execute(self, Request req, WriteBuffer buf, float timeout)
+    cdef object execute(self, BaseRequest req, WriteBuffer buf, float timeout)

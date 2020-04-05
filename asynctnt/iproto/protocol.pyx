@@ -13,7 +13,14 @@ include "unicodeutil.pyx"
 include "schema.pyx"
 include "buffer.pyx"
 include "rbuffer.pyx"
+# include "requests/all.pyx"
 include "request.pyx"
+include "requests/base.pyx"
+include "requests/ping.pyx"
+include "requests/call.pyx"
+include "requests/eval.pyx"
+include "requests/select.pyx"
+
 include "response.pyx"
 include "db.pyx"
 include "push.pyx"
@@ -114,7 +121,7 @@ cdef class BaseProtocol(CoreProtocol):
     cdef void _on_response_received(self, const char *buf, uint32_t buf_len):
         cdef:
             PyObject *req_p
-            Request req
+            BaseRequest req
             Header hdr
             bint is_chunk
             object waiter
@@ -136,7 +143,7 @@ cdef class BaseProtocol(CoreProtocol):
 
         is_chunk = (hdr.code == tarantool.IPROTO_CHUNK)
 
-        req = <Request> req_p
+        req = <BaseRequest> req_p
         req.response._sync = hdr.sync
         req.response._schema_id = hdr.schema_id
         if not is_chunk:
@@ -273,7 +280,7 @@ cdef class BaseProtocol(CoreProtocol):
 
     cdef void _on_connection_lost(self, exc):
         cdef:
-            Request req
+            BaseRequest req
             PyObject *pkey
             PyObject *pvalue
             object key, value
@@ -287,7 +294,7 @@ cdef class BaseProtocol(CoreProtocol):
         pos = 0
         while cpython.dict.PyDict_Next(self._reqs, &pos, &pkey, &pvalue):
             sync = <uint64_t> <object> pkey
-            req = <Request> pvalue
+            req = <BaseRequest> pvalue
 
             waiter = req.waiter
             if waiter and not waiter.done():
@@ -326,7 +333,7 @@ cdef class BaseProtocol(CoreProtocol):
         return self._sync
 
     def _on_request_timeout(self, waiter):
-        cdef Request req
+        cdef BaseRequest req
 
         if waiter.done():
             return
@@ -340,14 +347,14 @@ cdef class BaseProtocol(CoreProtocol):
         )
 
     def _on_request_completed(self, fut):
-        cdef Request req = fut._req
+        cdef BaseRequest req = fut._req
         fut._req = None
 
         if req.timeout_handle is not None:
             req.timeout_handle.cancel()
             req.timeout_handle = None
 
-    cdef object _new_waiter_for_request(self, Request req, float timeout):
+    cdef object _new_waiter_for_request(self, BaseRequest req, float timeout):
         fut = self.create_future()
         fut._req = req  # to be able to retrieve request after done()
         req.waiter = fut
@@ -372,7 +379,7 @@ cdef class BaseProtocol(CoreProtocol):
     def get_common_db(self):
         return self._db
 
-    cdef object execute(self, Request req, WriteBuffer buf, float timeout):
+    cdef object execute(self, BaseRequest req, WriteBuffer buf, float timeout):
         if self.con_state == CONNECTION_BAD:
             raise TarantoolNotConnectedError('Tarantool is not connected')
 

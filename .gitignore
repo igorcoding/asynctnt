@@ -101,7 +101,7 @@ ENV/
 *.xctl
 protocol.c
 protocol.h
-asynctnt/iproto/*.html
+asynctnt/**/*.html
 __tnt*
 !third_party/**/*
 vinyl.meta

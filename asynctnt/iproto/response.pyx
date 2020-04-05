@@ -267,7 +267,7 @@ cdef object _decode_obj(const char **p, bytes encoding):
 
 
 cdef list _response_parse_body_data(const char **b,
-                                    Response resp, Request req):
+                                    Response resp, BaseRequest req):
     cdef:
         uint32_t size
         uint32_t tuple_size
@@ -354,7 +354,7 @@ cdef ssize_t response_parse_header(const char *buf, uint32_t buf_len,
 
 
 cdef ssize_t response_parse_body(const char *buf, uint32_t buf_len,
-                                 Response resp, Request req,
+                                 Response resp, BaseRequest req,
                                  bint is_chunk) except -1:
     cdef:
         const char *b

@@ -43,5 +43,5 @@ cdef class Response:
 cdef ssize_t response_parse_header(const char *buf, uint32_t buf_len,
                                    Header *hdr) except -1
 cdef ssize_t response_parse_body(const char *buf, uint32_t buf_len,
-                                 Response resp, Request req,
+                                 Response resp, BaseRequest req,
                                  bint is_chunk) except -1
