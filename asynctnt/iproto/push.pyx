@@ -30,13 +30,13 @@ cdef class PushIterator:
             :type fut: asyncio.Future
         """
         cdef:
-            Request request
+            BaseRequest request
         if not hasattr(fut, '_req'):
             raise ValueError('Future is invalid. Make sure to call with '
                              'a future returned from a method with '
                              'push_subscribe=True flag')
 
-        request = <Request>fut._req
+        request = <BaseRequest> fut._req
 
         if not request.push_subscribe:
             raise ValueError('Future is invalid. Make sure to call with '

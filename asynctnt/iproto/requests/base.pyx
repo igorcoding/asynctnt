@@ -2,7 +2,6 @@ cimport cython
 from libc.stdint cimport uint64_t, int64_t
 
 
-# @cython.final
 @cython.freelist(REQUEST_FREELIST)
 cdef class BaseRequest:
 

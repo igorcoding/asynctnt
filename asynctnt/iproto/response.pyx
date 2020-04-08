@@ -5,6 +5,7 @@ from typing import Optional
 cimport cpython
 cimport cpython.list
 cimport cpython.dict
+cimport cython
 
 from libc.stdint cimport uint32_t
 from libc cimport stdio

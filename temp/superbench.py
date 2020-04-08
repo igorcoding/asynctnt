@@ -22,13 +22,13 @@ def main():
     print('Running {} requests in {} batches. '.format(args.n, args.b))
 
     scenarios = [
-        ['ping', []],
-        ['call', ['test']],
-        ['call', ['test'], dict(push_subscribe=True)],
-        ['eval', ['return "hello"']],
-        ['select', [512]],
-        # ['replace', [512, [2, 'hhhh']]],
-        # ['update', [512, [2], [(':', 1, 1, 3, 'yo!')]]],
+        # ['ping', []],
+        # ['call', ['test']],
+        # ['call', ['test'], dict(push_subscribe=True)],
+        # ['eval', ['return "hello"']],
+        # ['select', [512]],
+        ['replace', [512, [2, 'hhhh']]],
+        ['update', [512, [2], [(':', 1, 1, 3, 'yo!')]]],
         # ['sql', ['select 1 as a, 2 as b'], dict(parse_metadata=False)],
     ]
 
@@ -83,8 +83,8 @@ async def create_asynctnt():
     import asynctnt
     conn = asynctnt.Connection(host=HOST,
                                port=PORT,
-                               # username=USERNAME,
-                               # password=PASSWORD,
+                               username=USERNAME,
+                               password=PASSWORD,
                                reconnect_timeout=1,
                                fetch_schema=False,
                                auto_refetch_schema=False)

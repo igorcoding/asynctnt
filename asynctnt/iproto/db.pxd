@@ -12,36 +12,31 @@ cdef class Db:
 
     cdef object _ping(self, float timeout)
 
-    cdef object _call(self, tarantool.iproto_type op, str func_name, args,
+    cdef object _call(self, tarantool.iproto_type op, str func_name, object args,
                       float timeout, bint push_subscribe)
 
-    cdef object _eval(self, str expression, args,
+    cdef object _eval(self, str expression, object args,
                       float timeout, bint push_subscribe)
 
     cdef object _select(self, object space, object index, object key,
-                        uint64_t offset, uint64_t limit, uint32_t iterator,
+                        uint64_t offset, uint64_t limit, object iterator,
                         float timeout, bint push_subscribe)
 
-    # cdef object _insert(self, SchemaSpace space, t, bint replace,
-    #                     float timeout, bint push_subscribe)
-    #
-    # cdef object _delete(self, SchemaSpace space, SchemaIndex index, key,
-    #                     float timeout, bint push_subscribe)
-    #
-    # cdef object _update(self, SchemaSpace space, SchemaIndex index, key,
-    #                     list operations, float timeout, bint push_subscribe)
-    #
-    # cdef object _upsert(self, SchemaSpace space, t, list operations,
-    #                     float timeout, bint push_subscribe)
-    #
-    # cdef object _sql(self, str query, args, bint parse_metadata,
-    #                  float timeout, bint push_subscribe)
-    #
-    # cdef object _auth(self, bytes salt, str username, str password,
-    #                   float timeout, bint push_subscribe)
+    cdef object _insert(self, object space, object t, bint replace,
+                        float timeout, bint push_subscribe)
 
-    @staticmethod
-    cdef bytes _sha1(tuple values)
+    cdef object _delete(self, object space, object index, object key,
+                        float timeout, bint push_subscribe)
 
-    @staticmethod
-    cdef bytes _strxor(bytes hash1, bytes scramble)
+    cdef object _update(self, object space, object index,
+                        object key, list operations,
+                        float timeout, bint push_subscribe)
+
+    cdef object _upsert(self, object space, object t, list operations,
+                        float timeout, bint push_subscribe)
+
+    cdef object _execute(self, str query, object args, bint parse_metadata,
+                         float timeout, bint push_subscribe)
+
+    cdef object _auth(self, bytes salt, str username, str password,
+                      float timeout, bint push_subscribe)
