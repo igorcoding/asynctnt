@@ -126,6 +126,7 @@ cdef class BaseProtocol(CoreProtocol):
     cdef void _on_response_received(self, const char *buf, uint32_t buf_len):
         cdef:
             PyObject *req_p
+            Response response
             BaseRequest req
             Header hdr
             bint is_chunk
@@ -141,19 +142,20 @@ cdef class BaseProtocol(CoreProtocol):
 
         sync_obj = <object> hdr.sync
 
-        req_p = cpython.dict.PyDict_GetItem(self._reqs, sync_obj)
-        if req_p is NULL:
+        response_p = cpython.dict.PyDict_GetItem(self._reqs, sync_obj)
+        if response_p is NULL:
             logger.warning('sync %d not found', hdr.sync)
             return
 
         is_chunk = (hdr.code == tarantool.IPROTO_CHUNK)
 
-        req = <BaseRequest> req_p
-        req.response._sync = hdr.sync
-        req.response._schema_id = hdr.schema_id
+        response = <Response> response_p
+        req = response._request
+        response._sync = hdr.sync
+        response._schema_id = hdr.schema_id
         if not is_chunk:
-            req.response._code = hdr.code
-            req.response._return_code = hdr.return_code
+            response._code = hdr.code
+            response._return_code = hdr.return_code
             cpython.dict.PyDict_DelItem(self._reqs, sync_obj)
         else:
             if not req.push_subscribe:
@@ -165,14 +167,14 @@ cdef class BaseProtocol(CoreProtocol):
         if buf != &buf[buf_len]:
             # has body
             try:
-                response_parse_body(buf, buf_len, req.response, req, is_chunk)
+                response_parse_body(buf, buf_len, response, req, is_chunk)
             except Exception as e:
                 err = e
 
         # refetch schema if it is changed
         if self.auto_refetch_schema \
-                and req.response._schema_id > 0 \
-                and req.response._schema_id != self._schema_id:
+                and response._schema_id > 0 \
+                and response._schema_id != self._schema_id:
             self._refetch_schema()
 
         # returning result
@@ -184,18 +186,18 @@ cdef class BaseProtocol(CoreProtocol):
             return
 
         if err is not None:
-            req.response.set_exception(err)
+            response.set_exception(err)
             waiter.set_exception(err)
             return
 
-        if req.response.is_error():
-            err = TarantoolDatabaseError(req.response._return_code,
-                                         req.response._errmsg)
-            req.response.set_exception(err)
+        if response.is_error():
+            err = TarantoolDatabaseError(response._return_code,
+                                         response._errmsg)
+            response.set_exception(err)
             waiter.set_exception(err)
             return
 
-        waiter.set_result(req.response)
+        waiter.set_result(response)
 
     cdef void _do_auth(self, str username, str password):
         # No extra error handling from Db.execute
@@ -286,6 +288,7 @@ cdef class BaseProtocol(CoreProtocol):
     cdef void _on_connection_lost(self, exc):
         cdef:
             BaseRequest req
+            Response response
             PyObject *pkey
             PyObject *pvalue
             object key, value
@@ -299,7 +302,8 @@ cdef class BaseProtocol(CoreProtocol):
         pos = 0
         while cpython.dict.PyDict_Next(self._reqs, &pos, &pkey, &pvalue):
             sync = <uint64_t> <object> pkey
-            req = <BaseRequest> pvalue
+            response = <Response> pvalue
+            req = response._request
 
             waiter = req.waiter
             if waiter and not waiter.done():
@@ -325,8 +329,8 @@ cdef class BaseProtocol(CoreProtocol):
 
                 if err is not None:
                     waiter.set_exception(err)
-                    if req.response is not None:
-                        req.response.set_exception(err)
+                    if response is not None:
+                        response.set_exception(err)
 
         if self.on_connection_lost_cb:
             self.on_connection_lost_cb(exc)
@@ -338,12 +342,15 @@ cdef class BaseProtocol(CoreProtocol):
         return self._sync
 
     def _on_request_timeout(self, waiter):
-        cdef BaseRequest req
+        cdef:
+            BaseRequest req
+            Response response
 
         if waiter.done():
             return
 
-        req = waiter._req
+        response = waiter._response
+        req = response._request
         req.timeout_handle.cancel()
         req.timeout_handle = None
         waiter.set_exception(
@@ -352,19 +359,17 @@ cdef class BaseProtocol(CoreProtocol):
         )
 
     def _on_request_completed(self, fut):
-        cdef BaseRequest req = fut._req
-        fut._req = None
+        cdef BaseRequest req = (<Response> fut._response)._request
+        fut._response = None
 
         if req.timeout_handle is not None:
             req.timeout_handle.cancel()
             req.timeout_handle = None
 
-    cdef object _new_waiter_for_request(self, BaseRequest req, float timeout):
+    cdef object _new_waiter_for_request(self, Response response, BaseRequest req, float timeout):
         fut = self.create_future()
-        fut._req = req  # to be able to retrieve request after done()
         req.waiter = fut
-        req.response = Response.__new__(Response, self.encoding,
-                                        req.push_subscribe)
+        fut._response = response  # to be able to retrieve request after done()
 
         if timeout < 0:
             timeout = self.request_timeout
@@ -385,13 +390,17 @@ cdef class BaseProtocol(CoreProtocol):
         return self._db
 
     cdef object execute(self, BaseRequest req, WriteBuffer buf, float timeout):
+        cdef:
+            Response response
+
         if self.con_state == CONNECTION_BAD:
             raise TarantoolNotConnectedError('Tarantool is not connected')
 
-        cpython.dict.PyDict_SetItem(self._reqs, req.sync, req)
+        response = Response.__new__(Response, self.encoding, req)
+        cpython.dict.PyDict_SetItem(self._reqs, req.sync, response)
         self._write(buf)
 
-        return self._new_waiter_for_request(req, timeout)
+        return self._new_waiter_for_request(response, req, timeout)
 
     cdef uint32_t transform_iterator(self, iterator) except *:
         if isinstance(iterator, int):

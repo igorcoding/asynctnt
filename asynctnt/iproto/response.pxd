@@ -20,6 +20,7 @@ cdef class Response:
         TntFields _fields
         list _autoincrement_ids
         bint _push_subscribe
+        BaseRequest _request
         object _exception
 
         readonly object _q

@@ -12,7 +12,6 @@ cdef class BaseRequest:
         bint parse_metadata
         bint parse_as_tuples
         bint push_subscribe
-        Response response
 
     cdef inline TntFields fields(self):
         if self.space is None:

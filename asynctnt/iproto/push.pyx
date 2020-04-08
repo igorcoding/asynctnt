@@ -30,13 +30,15 @@ cdef class PushIterator:
             :type fut: asyncio.Future
         """
         cdef:
+            Response response
             BaseRequest request
-        if not hasattr(fut, '_req'):
+        if not hasattr(fut, '_response'):
             raise ValueError('Future is invalid. Make sure to call with '
                              'a future returned from a method with '
                              'push_subscribe=True flag')
 
-        request = <BaseRequest> fut._req
+        response = <Response> fut._response
+        request = response._request
 
         if not request.push_subscribe:
             raise ValueError('Future is invalid. Make sure to call with '
@@ -45,7 +47,7 @@ cdef class PushIterator:
 
         self._fut = fut
         self._request = request
-        self._response = request.response
+        self._response = response
 
     def __iter__(self):
         raise RuntimeError('Cannot use iter with PushIterator - use aiter')
