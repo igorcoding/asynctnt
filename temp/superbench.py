@@ -22,13 +22,13 @@ def main():
     print('Running {} requests in {} batches. '.format(args.n, args.b))
 
     scenarios = [
-        # ['ping', []],
+        ['ping', []],
         # ['call', ['test']],
         # ['call', ['test'], dict(push_subscribe=True)],
         # ['eval', ['return "hello"']],
         # ['select', [512]],
-        ['replace', [512, [2, 'hhhh']]],
-        ['update', [512, [2], [(':', 1, 1, 3, 'yo!')]]],
+        # ['replace', [512, [2, 'hhhh']]],
+        # ['update', [512, [2], [(':', 1, 1, 3, 'yo!')]]],
         # ['sql', ['select 1 as a, 2 as b'], dict(parse_metadata=False)],
     ]
 

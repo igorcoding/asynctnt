@@ -1,3 +1,6 @@
+cimport cython
+
+@cython.final
 cdef class Db:
     def __cinit__(self):
         self._protocol = None
@@ -51,7 +54,7 @@ cdef class Db:
             <float> timeout
         )
 
-    cdef object _select(self, object space, object index, key,
+    cdef object _select(self, object space, object index, object key,
                         uint64_t offset, uint64_t limit, object iterator,
                         float timeout, bint push_subscribe):
         cdef:
@@ -64,8 +67,10 @@ cdef class Db:
         idx = sp.get_index(index)
 
         iterator_value = self._protocol.transform_iterator(iterator)
-        if key is None and iterator == 0:
-            iterator_value = 2  # ALL
+        if key is None and isinstance(iterator, int):
+            iterator_value = <uint32_t> iterator
+            if iterator_value == 0:
+                iterator_value = 2  # ALL
 
         req = SelectRequest.__new__(SelectRequest)
         req.op = tarantool.IPROTO_SELECT
