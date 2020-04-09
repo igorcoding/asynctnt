@@ -3,9 +3,4 @@ cdef class UpsertRequest(BaseRequest):
         object t
         list operations
 
-    cdef inline WriteBuffer encode(self, bytes encoding):
-        cdef WriteBuffer buffer = WriteBuffer.create(encoding)
-        buffer.write_header(self.sync, self.op, self.schema_id)
-        buffer.encode_request_upsert(self.space, self.t, self.operations)
-        buffer.write_length()
-        return buffer
+    cdef inline WriteBuffer encode(self, bytes encoding)

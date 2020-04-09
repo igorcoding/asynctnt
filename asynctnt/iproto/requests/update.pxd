@@ -4,10 +4,13 @@ cdef class UpdateRequest(BaseRequest):
         object key
         list operations
 
-    cdef inline WriteBuffer encode(self, bytes encoding):
-        cdef WriteBuffer buffer = WriteBuffer.create(encoding)
-        buffer.write_header(self.sync, self.op, self.schema_id)
-        buffer.encode_request_update(self.space, self.index, self.key,
-                                     self.operations)
-        buffer.write_length()
-        return buffer
+    cdef inline WriteBuffer encode(self, bytes encoding)
+
+
+cdef char *encode_update_ops(WriteBuffer buffer, 
+                             char *p, list operations,  
+                             SchemaSpace space) except NULL
+cdef int encode_request_update(WriteBuffer buffer,
+                               SchemaSpace space, SchemaIndex index,
+                               key_tuple, list operations,
+                               bint is_upsert) except -1

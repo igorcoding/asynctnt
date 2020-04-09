@@ -3,9 +3,5 @@ cdef class EvalRequest(BaseRequest):
         str expression
         object args
 
-    cdef inline WriteBuffer encode(self, bytes encoding):
-        cdef WriteBuffer buffer = WriteBuffer.create(encoding)
-        buffer.write_header(self.sync, self.op, self.schema_id)
-        buffer.encode_request_eval(self.expression, self.args)
-        buffer.write_length()
-        return buffer
+    cdef inline WriteBuffer encode(self, bytes encoding)
+    cdef int encode_request_eval(self, WriteBuffer buffer, str expression, args) except -1

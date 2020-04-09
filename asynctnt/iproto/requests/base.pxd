@@ -17,3 +17,9 @@ cdef class BaseRequest:
         if self.space is None:
             return None
         return self.space.fields
+
+
+cdef char *encode_key_sequence(WriteBuffer buffer,
+                               char *p, object t,
+                               TntFields fields,
+                               bint default_none) except NULL

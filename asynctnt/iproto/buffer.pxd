@@ -42,27 +42,4 @@ cdef class WriteBuffer:
     cdef char *mp_encode_list(self, char *p, list arr) except NULL
     cdef char *mp_encode_tuple(self, char *p, tuple t) except NULL
     cdef char *mp_encode_dict(self, char *p, dict d) except NULL
-    cdef char *mp_encode_key_sequence(self, char *p, t,
-                                      TntFields fields= *,
-                                      bint default_none= *) except NULL
     cdef char *mp_encode_obj(self, char *p, object o) except NULL
-    cdef char *_encode_update_ops(self, char *p, list operations,
-                                  SchemaSpace space) except NULL
-
-    cdef int encode_request_call(self, str func_name, args) except -1
-    cdef int encode_request_eval(self, str expression, args) except -1
-    cdef int encode_request_select(self, SchemaSpace space, SchemaIndex index,
-                                    key, uint64_t offset, uint64_t limit,
-                                    uint32_t iterator) except -1
-    cdef int encode_request_insert(self, SchemaSpace space, t) except -1
-    cdef int encode_request_delete(self, SchemaSpace space, SchemaIndex index,
-                                    key) except -1
-    cdef int encode_request_update(self, SchemaSpace space, SchemaIndex index,
-                                    key_tuple, list operations,
-                                    bint is_upsert= *) except -1
-    cdef int encode_request_upsert(self, SchemaSpace space,
-                                    t, list operations) except -1
-    cdef int encode_request_sql(self, str query, args) except -1
-    cdef int encode_request_auth(self,
-                                  bytes username,
-                                  bytes scramble) except -1
