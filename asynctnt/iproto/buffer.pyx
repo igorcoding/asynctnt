@@ -52,7 +52,7 @@ cdef class WriteBuffer:
                         for i in range(self._length))
 
     @staticmethod
-    cdef WriteBuffer new(bytes encoding):
+    cdef WriteBuffer create(bytes encoding):
         cdef WriteBuffer buf
         buf = WriteBuffer.__new__(WriteBuffer)
         buf._encoding = encoding

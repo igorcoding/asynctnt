@@ -8,7 +8,7 @@ all: build
 
 
 clean:
-	rm -rf asynctnt/*.c asynctnt/*.h
+	rm -rf asynctnt/*.c asynctnt/*.h asynctnt/*.cpp
 	rm -rf asynctnt/*.so asynctnt/*.html
 	rm -rf asynctnt/iproto/*.c asynctnt/iproto/*.h
 	rm -rf asynctnt/iproto/*.so asynctnt/iproto/*.html asynctnt/iproto/requests/*.html

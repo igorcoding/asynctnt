@@ -381,7 +381,7 @@ cdef class BaseProtocol(CoreProtocol):
         return fut
 
     cdef Db _create_db(self):
-        return Db.new(self)
+        return Db.create(self)
 
     def create_db(self):
         return self._create_db()

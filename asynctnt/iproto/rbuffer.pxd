@@ -28,7 +28,7 @@ cdef class ReadBuffer:
         str encoding
 
     @staticmethod
-    cdef ReadBuffer new(str encoding, size_t initial_buffer_size=*)
+    cdef ReadBuffer create(str encoding, size_t initial_buffer_size=*)
 
     cdef void _reallocate(self, size_t new_size) except *
     cdef int extend(self, const char *data, size_t len) except -1

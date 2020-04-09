@@ -7,7 +7,7 @@ cdef class Db:
         self._encoding = None
 
     @staticmethod
-    cdef inline Db new(BaseProtocol protocol):
+    cdef inline Db create(BaseProtocol protocol):
         cdef Db db = Db.__new__(Db)
         db._protocol = protocol
         db._encoding = protocol.encoding

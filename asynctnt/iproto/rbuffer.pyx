@@ -16,7 +16,7 @@ cdef class ReadBuffer:
         self.encoding = None
 
     @staticmethod
-    cdef ReadBuffer new(str encoding, size_t initial_buffer_size=0x80000):
+    cdef ReadBuffer create(str encoding, size_t initial_buffer_size=0x80000):
         cdef ReadBuffer b
         b = ReadBuffer.__new__(ReadBuffer)
 

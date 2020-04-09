@@ -4,6 +4,10 @@
 #include "Python.h"
 #include "protocol.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /* Largest ttuple to save on free list */
 #define AtntTuple_MAXSAVESIZE 20
 
@@ -47,5 +51,9 @@ extern PyTypeObject AtntTupleDesc_Type;
 
 PyTypeObject *AtntTuple_InitTypes(void);
 PyObject *AtntTuple_New(PyObject *, Py_ssize_t);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

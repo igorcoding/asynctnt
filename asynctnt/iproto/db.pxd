@@ -6,7 +6,7 @@ cdef class Db:
         bytes _encoding
 
     @staticmethod
-    cdef inline Db new(BaseProtocol protocol)
+    cdef inline Db create(BaseProtocol protocol)
 
     cdef inline uint64_t next_sync(self)
 

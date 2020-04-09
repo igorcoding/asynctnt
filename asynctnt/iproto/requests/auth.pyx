@@ -33,7 +33,7 @@ cdef inline bytes _strxor(bytes hash1, bytes scramble):
 @cython.final
 cdef class AuthRequest(BaseRequest):
     cdef WriteBuffer encode(self, bytes encoding):
-        cdef WriteBuffer buffer = WriteBuffer.new(encoding)
+        cdef WriteBuffer buffer = WriteBuffer.create(encoding)
         buffer.write_header(self.sync, self.op, self.schema_id)
         username_bytes = encode_unicode_string(self.username, encoding)
         password_bytes = encode_unicode_string(self.password, encoding)

@@ -14,7 +14,7 @@ cdef class WriteBuffer:
         bytes _encoding
 
     @staticmethod
-    cdef WriteBuffer new(bytes encoding)
+    cdef WriteBuffer create(bytes encoding)
 
     cdef inline _check_readonly(self)
     cdef inline len(self)

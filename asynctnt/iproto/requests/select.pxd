@@ -7,7 +7,7 @@ cdef class SelectRequest(BaseRequest):
         uint32_t iterator
 
     cdef inline WriteBuffer encode(self, bytes encoding):
-        cdef WriteBuffer buffer = WriteBuffer.new(encoding)
+        cdef WriteBuffer buffer = WriteBuffer.create(encoding)
         buffer.write_header(self.sync, self.op, self.schema_id)
         buffer.encode_request_select(self.space, self.index, self.key,
                                      self.offset, self.limit, self.iterator)
