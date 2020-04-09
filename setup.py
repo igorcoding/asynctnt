@@ -119,7 +119,9 @@ setup(
                   include_dirs=[
                       'third_party',
                       'asynctnt/iproto',
-                  ])
+                  ],
+                  language='C++',
+                  extra_compile_args=['-std=c++11'])
     ],
     version=find_version(),
     author="igorcoding",

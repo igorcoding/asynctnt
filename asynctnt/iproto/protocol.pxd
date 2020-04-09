@@ -1,5 +1,9 @@
 cimport asynctnt.iproto.tupleobj as tupleobj
 cimport asynctnt.iproto.tarantool as tarantool
+from libcpp.unordered_map cimport unordered_map
+from libc.stdint cimport uint64_t
+from cpython.ref cimport PyObject
+
 
 include "const.pxi"
 
@@ -47,6 +51,7 @@ cdef class BaseProtocol(CoreProtocol):
         object _on_request_timeout_cb
 
         dict _reqs
+        unordered_map[uint64_t, PyObject *] _pending
         uint64_t _sync
         Schema _schema
         int64_t _schema_id

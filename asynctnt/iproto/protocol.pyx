@@ -1,6 +1,8 @@
 # cython: language_level=3
+# distutils: language=c++
 
 cimport cpython.dict
+cimport cython.operator
 
 import asyncio
 import enum
@@ -140,12 +142,19 @@ cdef class BaseProtocol(CoreProtocol):
         buf_len -= length
         buf = &buf[length]  # skip header
 
-        sync_obj = <object> hdr.sync
-
-        response_p = cpython.dict.PyDict_GetItem(self._reqs, sync_obj)
-        if response_p is NULL:
+        _sync_iter = self._pending.find(hdr.sync)
+        if _sync_iter == self._pending.end():
             logger.warning('sync %d not found', hdr.sync)
             return
+
+        response_p = cython.operator.dereference(_sync_iter).second
+
+        # sync_obj = <object> hdr.sync
+        #
+        # response_p = cpython.dict.PyDict_GetItem(self._reqs, sync_obj)
+        # if response_p is NULL:
+        #     logger.warning('sync %d not found', hdr.sync)
+        #     return
 
         is_chunk = (hdr.code == tarantool.IPROTO_CHUNK)
 
@@ -156,7 +165,10 @@ cdef class BaseProtocol(CoreProtocol):
         if not is_chunk:
             response._code = hdr.code
             response._return_code = hdr.return_code
-            cpython.dict.PyDict_DelItem(self._reqs, sync_obj)
+
+            cpython.Py_DECREF(response)
+            self._pending.erase(_sync_iter)
+            # cpython.dict.PyDict_DelItem(self._reqs, sync_obj)
         else:
             if not req.push_subscribe:
                 # skip request data as no one will be waiting for it
@@ -294,16 +306,26 @@ cdef class BaseProtocol(CoreProtocol):
             object key, value
             Py_ssize_t pos
 
+
         if self._closing:
             return
 
         self._closing = True
 
         pos = 0
-        while cpython.dict.PyDict_Next(self._reqs, &pos, &pkey, &pvalue):
-            sync = <uint64_t> <object> pkey
-            response = <Response> pvalue
+        _iter = self._pending.begin()
+
+        # while cpython.dict.PyDict_Next(self._reqs, &pos, &pkey, &pvalue):
+        while _iter != self._pending.end():
+            response_p = cython.operator.dereference(_iter).second
+            response = <Response> response_p
             req = response._request
+
+            cpython.Py_DECREF(response)
+
+            # sync = <uint64_t> <object> pkey
+            # response = <Response> pvalue
+            # req = response._request
 
             waiter = req.waiter
             if waiter and not waiter.done():
@@ -332,10 +354,13 @@ cdef class BaseProtocol(CoreProtocol):
                     if response is not None:
                         response.set_exception(err)
 
+            cython.operator.preincrement(_iter)
+
         if self.on_connection_lost_cb:
             self.on_connection_lost_cb(exc)
 
-        self._reqs = {}  # reset requests map
+        self._pending.clear()
+        # self._reqs = {}  # reset requests map
 
     cdef inline uint64_t next_sync(self):
         self._sync += 1
@@ -397,7 +422,10 @@ cdef class BaseProtocol(CoreProtocol):
             raise TarantoolNotConnectedError('Tarantool is not connected')
 
         response = Response.__new__(Response, self.encoding, req)
-        cpython.dict.PyDict_SetItem(self._reqs, req.sync, response)
+
+        cpython.Py_INCREF(response)
+        self._pending[req.sync] = <PyObject *> response
+        # cpython.dict.PyDict_SetItem(self._reqs, req.sync, response)
         self._write(buf)
 
         return self._new_waiter_for_request(response, req, timeout)
