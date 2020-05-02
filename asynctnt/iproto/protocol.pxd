@@ -4,10 +4,12 @@ cimport asynctnt.iproto.tarantool as tarantool
 include "const.pxi"
 
 include "cmsgpuck.pxd"
+include "xd.pxd"
 include "python.pxd"
 
 include "unicodeutil.pxd"
 include "schema.pxd"
+include "ext.pxd"
 include "buffer.pxd"
 include "rbuffer.pxd"
 

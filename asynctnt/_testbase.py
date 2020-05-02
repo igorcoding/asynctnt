@@ -147,7 +147,8 @@ class TarantoolTestCase(TestCase):
             tnt = TarantoolSyncDockerInstance(
                 applua=cls.read_applua(),
                 docker_image=tarantool_docker_image,
-                docker_tag=tarantool_docker_tag
+                docker_tag=tarantool_docker_tag,
+                timeout=4*60
             )
             in_docker = True
         else:

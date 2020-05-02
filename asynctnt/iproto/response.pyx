@@ -198,6 +198,8 @@ cdef object _decode_obj(const char **p, bytes encoding):
         uint32_t map_key_len
         object map_key
 
+        int8_t ext_type
+
     obj_type = mp_typeof(p[0][0])
     if obj_type == MP_UINT:
         return mp_decode_uint(p)
@@ -262,6 +264,14 @@ cdef object _decode_obj(const char **p, bytes encoding):
     elif obj_type == MP_NIL:
         mp_next(p)
         return None
+    elif obj_type == MP_EXT:
+        ext_type = 0
+        s_len = mp_decode_extl(p, &ext_type)
+        if ext_type == tarantool.MP_DECIMAL:
+            return decimal_decode(p, s_len)
+        else:
+            logger.warning('Unexpected ext type: %d', ext_type)
+            return None
     else:  # pragma: nocover
         mp_next(p)
         logger.warning('Unexpected obj type: %s', obj_type)

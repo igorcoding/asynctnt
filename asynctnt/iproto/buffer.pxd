@@ -37,6 +37,7 @@ cdef class WriteBuffer:
                              const char *str, uint32_t len) except NULL
     cdef char *mp_encode_bin(self, char *p,
                              const char *data, uint32_t len) except NULL
+    cdef char *mp_encode_decimal(self, char *p, object value) except NULL
     cdef char *mp_encode_array(self, char *p, uint32_t len) except NULL
     cdef char *mp_encode_map(self, char *p, uint32_t len) except NULL
     cdef char *mp_encode_list(self, char *p, list arr) except NULL
