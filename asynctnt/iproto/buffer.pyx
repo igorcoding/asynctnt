@@ -10,7 +10,10 @@ from cpython.mem cimport PyMem_Malloc, PyMem_Realloc, PyMem_Free
 from cpython.ref cimport PyObject
 
 from libc.string cimport memcpy
-from libc.stdint cimport uint32_t, uint64_t, int64_t
+from libc.stdint cimport uint32_t, uint64_t, int64_t, uint8_t
+from libc.stdio cimport printf
+
+from decimal import Decimal
 
 # noinspection PyUnresolvedReferences
 # noinspection PyAttributeOutsideInit
@@ -208,6 +211,36 @@ cdef class WriteBuffer:
         self._length += (p - begin)
         return p
 
+    cdef char *mp_encode_decimal(self, char *p, object value) except NULL:
+        cdef:
+            char *begin
+            char *svp
+            uint8_t sign
+            tuple digits
+            int exponent
+            uint32_t length
+
+        decimal_tuple = value.as_tuple()
+        sign = <uint8_t> decimal_tuple.sign
+        digits = <tuple> decimal_tuple.digits
+        exponent = <int> decimal_tuple.exponent
+
+        length = decimal_len(exponent, digits)
+
+        p = begin = self._ensure_allocated(p, mp_sizeof_ext(length))
+
+        # encode header
+        p = mp_encode_extl(p, tarantool.MP_DECIMAL, length)
+
+        # encode decimal
+        p = decimal_encode(p, sign, digits, exponent)
+
+        self._length += (p - begin)
+
+        printf("%s\n", xd(begin, (p-begin)))
+
+        return p
+
     cdef char *mp_encode_array(self, char *p, uint32_t len) except NULL:
         cdef char *begin
         p = begin = self._ensure_allocated(p, mp_sizeof_array(len))
@@ -292,11 +325,11 @@ cdef class WriteBuffer:
         if o is None:
             return self.mp_encode_nil(p)
 
-        elif isinstance(o, bool):
-            return self.mp_encode_bool(p, <bint> o)
-
         elif isinstance(o, float):
             return self.mp_encode_double(p, <double> o)
+
+        elif isinstance(o, bool):
+            return self.mp_encode_bool(p, <bint> o)
 
         elif isinstance(o, int):
             if o >= 0:
@@ -331,6 +364,9 @@ cdef class WriteBuffer:
 
         elif isinstance(o, dict):
             return self.mp_encode_dict(p, <dict> o)
+
+        elif isinstance(o, Decimal):
+            return self.mp_encode_decimal(p, o)
 
         else:
             raise TypeError(

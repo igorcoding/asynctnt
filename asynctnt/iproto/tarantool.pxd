@@ -76,3 +76,8 @@ cdef enum iproto_update_operation:
     IPROTO_OP_INSERT = b'!'
     IPROTO_OP_ASSIGN = b'='
     IPROTO_OP_SPLICE = b':'
+
+
+cdef enum mp_extension_type:
+    MP_UNKNOWN_EXTENSION = 0
+    MP_DECIMAL = 1

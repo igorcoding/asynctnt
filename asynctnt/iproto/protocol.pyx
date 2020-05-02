@@ -11,6 +11,7 @@ include "const.pxi"
 
 include "unicodeutil.pyx"
 include "schema.pyx"
+include "ext.pyx"
 include "buffer.pyx"
 include "rbuffer.pyx"
 

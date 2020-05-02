@@ -1,4 +1,4 @@
-from libc.stdint cimport uint32_t, uint64_t, int64_t, uint8_t, uint16_t
+from libc.stdint cimport uint32_t, uint64_t, int64_t, uint8_t, uint16_t, int8_t
 from libc.stdio cimport FILE
 
 cdef extern from "../../third_party/msgpuck/msgpuck.h":
@@ -63,6 +63,13 @@ cdef extern from "../../third_party/msgpuck/msgpuck.h":
     cdef uint32_t mp_sizeof_bin(uint32_t len)
     cdef char *mp_encode_bin(char *data, const char *str, uint32_t len)
     cdef const char *mp_decode_bin(const char **data, uint32_t *len)
+
+    cdef uint32_t mp_sizeof_extl(uint32_t len)
+    cdef uint32_t mp_sizeof_ext(uint32_t len)
+    cdef char *mp_encode_extl(char *data, int8_t type, uint32_t len)
+    cdef char *mp_encode_ext(char *data, int8_t type, char *str, uint32_t len)
+    cdef uint32_t mp_decode_extl(const char **data, int8_t *type)
+    cdef const char *mp_decode_ext(const char **data, int8_t *type, uint32_t *len)
 
     cdef uint32_t mp_decode_strbinl(const char **data)
     cdef const char *mp_decode_strbin(const char **data, uint32_t *len)

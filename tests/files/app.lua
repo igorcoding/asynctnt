@@ -60,6 +60,7 @@ local function bootstrap()
         b.types.string = 'string'
         b.types.unsigned = 'unsigned'
         b.types.integer = 'integer'
+        b.types.decimal = 'decimal'
     else
         b.types.string = 'str'
         b.types.unsigned = 'num'
@@ -134,6 +135,15 @@ if B:check_version({2, 0}) then
                 name TEXT
             )
         ]])
+    end)
+
+    box.once('v2.1', function()
+        local s = box.schema.create_space('tester_ext')
+        s:format({
+            {type=B.types.unsigned, name='f1'},
+            {type=B.types.decimal, name='f2'},
+        })
+        s:create_index('primary')
     end)
 end
 
