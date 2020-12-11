@@ -22,7 +22,7 @@ jobs:
       before_install: ".ci/travis-before-install-${TRAVIS_OS_NAME}.sh"
       install: ".ci/travis-install.sh"
       script: ".ci/travis-tests.sh"
-      env: BUILD=quicktests TARANTOOL_VERSION=1_10
+      env: BUILD=quicktests TARANTOOL_VERSION=1.10
 
     # bionic python3.6 Tarantool 1.10
     - stage: tests
@@ -34,7 +34,7 @@ jobs:
       before_install: ".ci/travis-before-install-${TRAVIS_OS_NAME}.sh"
       install: ".ci/travis-install.sh"
       script: ".ci/travis-tests.sh"
-      env: BUILD=quicktests TARANTOOL_VERSION=1_10
+      env: BUILD=quicktests TARANTOOL_VERSION=1.10
 
     # bionic python3.7 Tarantool 1.10
     - stage: tests
@@ -46,7 +46,7 @@ jobs:
       before_install: ".ci/travis-before-install-${TRAVIS_OS_NAME}.sh"
       install: ".ci/travis-install.sh"
       script: ".ci/travis-tests.sh"
-      env: BUILD=quicktests TARANTOOL_VERSION=1_10
+      env: BUILD=quicktests TARANTOOL_VERSION=1.10
 
     # focal python3.8 Tarantool 1.10
     - stage: tests
@@ -58,7 +58,7 @@ jobs:
       before_install: ".ci/travis-before-install-${TRAVIS_OS_NAME}.sh"
       install: ".ci/travis-install.sh"
       script: ".ci/travis-tests.sh"
-      env: BUILD=quicktests TARANTOOL_VERSION=1_10
+      env: BUILD=quicktests TARANTOOL_VERSION=1.10
 
     # focal python3.8 Tarantool 2x
     - stage: tests
@@ -70,7 +70,7 @@ jobs:
       before_install: ".ci/travis-before-install-${TRAVIS_OS_NAME}.sh"
       install: ".ci/travis-install.sh"
       script: ".ci/travis-tests.sh"
-      env: BUILD=quicktests TARANTOOL_VERSION=2x
+      env: BUILD=quicktests TARANTOOL_VERSION=2.5
 
     # focal python3.9 Tarantool 1.10
     - stage: tests
@@ -82,7 +82,7 @@ jobs:
       before_install: ".ci/travis-before-install-${TRAVIS_OS_NAME}.sh"
       install: ".ci/travis-install.sh"
       script: ".ci/travis-tests.sh"
-      env: BUILD=quicktests TARANTOOL_VERSION=1_10
+      env: BUILD=quicktests TARANTOOL_VERSION=1.10
 
     # focal python3.9 Tarantool 2x
     - stage: tests
@@ -94,37 +94,22 @@ jobs:
       before_install: ".ci/travis-before-install-${TRAVIS_OS_NAME}.sh"
       install: ".ci/travis-install.sh"
       script: ".ci/travis-tests.sh"
-      env: BUILD=tests,coverage TARANTOOL_VERSION=2x
+      env: BUILD=tests,coverage TARANTOOL_VERSION=2.5
 
     # osx
 
     - stage: tests
       os: osx
-      osx_image: xcode11.2
+      osx_image: xcode12.2
       language: generic
       before_install: ".ci/travis-before-install-${TRAVIS_OS_NAME}.sh"
       install: ".ci/travis-install.sh"
       script: ".ci/travis-tests.sh"
-      env: BUILD=quicktests PYTHON_VERSION=3.7.9 TARANTOOL_VERSION=2_x
+      env: BUILD=quicktests PYTHON_VERSION=3.9.0 TARANTOOL_VERSION=1.10
 
     - stage: tests
       os: osx
-      language: generic
-      before_install: ".ci/travis-before-install-${TRAVIS_OS_NAME}.sh"
-      install: ".ci/travis-install.sh"
-      script: ".ci/travis-tests.sh"
-      env: BUILD=quicktests PYTHON_VERSION=3.8.6 TARANTOOL_VERSION=2_x
-
-    - stage: tests
-      os: osx
-      language: generic
-      before_install: ".ci/travis-before-install-${TRAVIS_OS_NAME}.sh"
-      install: ".ci/travis-install.sh"
-      script: ".ci/travis-tests.sh"
-      env: BUILD=quicktests PYTHON_VERSION=3.9.0 TARANTOOL_VERSION=1_10
-
-    - stage: tests
-      os: osx
+      osx_image: xcode12.2
       language: generic
       before_install: ".ci/travis-before-install-${TRAVIS_OS_NAME}.sh"
       install: ".ci/travis-install.sh"
@@ -160,6 +145,7 @@ jobs:
 
     - stage: wheels
       os: osx
+      osx_image: xcode12.2
       language: generic
 
       env:

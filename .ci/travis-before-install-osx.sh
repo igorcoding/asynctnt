@@ -2,16 +2,10 @@
 
 set -e -x
 
-brew update
+export HOMEBREW_NO_AUTO_UPDATE=1
 
-if [[ "${TARANTOOL_VERSION}" == "1_10" ]]; then
+if [[ "${TARANTOOL_VERSION}" == "1.10" ]]; then
     brew install .ci/formulas/tarantool.rb
-    brew reinstall .ci/formulas/icu4c.rb
-    brew switch icu4c 62.1
-    brew uninstall --ignore-dependencies openssl
-    brew reinstall .ci/formulas/openssl.rb
-    ln -s /usr/local/opt/openssl/include/openssl /usr/local/include
-    ln -s /usr/local/opt/openssl/lib/libssl.1.0.0.dylib /usr/local/lib/
 else
     brew install tarantool
 fi
@@ -19,7 +13,7 @@ fi
 tarantool -V
 
 
-brew install xz zlib pyenv || echo "ignore"
+brew install xz zlib pyenv || true
 if ! (pyenv versions | grep "${PYTHON_VERSION}$"); then
     pyenv install ${PYTHON_VERSION}
 fi
