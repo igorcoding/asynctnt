@@ -2,7 +2,9 @@
 
 set -e -x
 
-brew update
+export HOMEBREW_NO_AUTO_UPDATE=1
+
+# brew update
 
 if [[ "${TARANTOOL_VERSION}" == "1.10" ]]; then
     brew install .ci/formulas/tarantool.rb
@@ -19,7 +21,7 @@ fi
 tarantool -V
 
 
-brew install xz zlib pyenv || echo "ignore"
+brew install xz zlib pyenv || true
 if ! (pyenv versions | grep "${PYTHON_VERSION}$"); then
     pyenv install ${PYTHON_VERSION}
 fi
