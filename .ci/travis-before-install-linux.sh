@@ -2,7 +2,6 @@
 
 set -e -x
 
-apt-get -y install sudo
 sudo apt-get -y install gnupg2 curl lsb-release apt-transport-https
 curl https://download.tarantool.org/tarantool/release/${TARANTOOL_VERSION}/gpgkey | sudo apt-key add -
 release=`lsb_release -c -s`
