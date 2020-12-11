@@ -105,6 +105,15 @@ jobs:
       before_install: ".ci/travis-before-install-${TRAVIS_OS_NAME}.sh"
       install: ".ci/travis-install.sh"
       script: ".ci/travis-tests.sh"
+      env: BUILD=quicktests PYTHON_VERSION=3.9.0 TARANTOOL_VERSION=1.10
+
+    - stage: tests
+      os: osx
+      osx_image: xcode12.2
+      language: generic
+      before_install: ".ci/travis-before-install-${TRAVIS_OS_NAME}.sh"
+      install: ".ci/travis-install.sh"
+      script: ".ci/travis-tests.sh"
       env: BUILD=quicktests PYTHON_VERSION=3.9.0 TARANTOOL_VERSION=2_x
 
     ## Wheels ###

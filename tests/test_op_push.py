@@ -61,12 +61,10 @@ class PushTestCase(BaseTarantoolTestCase):
 
         result = []
 
-        i = 0
         async for entry in it:
             result.append(entry[0])
 
-            self.assertFalse(it.response.done(), 'response not done')
-            i += 1
+        self.assertTrue(it.response.done(), 'response is done')
 
         self.assertListEqual(result, [
             'hello_1',
