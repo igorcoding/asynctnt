@@ -1,19 +1,17 @@
 class Tarantool < Formula
   desc "In-memory database and Lua application server"
   homepage "https://tarantool.org/"
-  url "https://download.tarantool.org/tarantool/1.10/src/tarantool-1.10.2.1.tar.gz"
-  sha256 "2d077978a65e785349883ef3c98c46d35af26bcc10dae58eabfca27cfbcc6c6b"
-  head "https://github.com/tarantool/tarantool.git", :branch => "2.1", :shallow => false
+  url "https://download.tarantool.org/tarantool/1.10/src/tarantool-1.10.8.32.tar.gz"
+  #sha256 "03f3b839926bd40f9bd98d3573040ac7ff430cd90384dbe34a1aa5ff29c5e3f3"
+  revision 1
+  #head "https://github.com/tarantool/tarantool.git", :branch => "2.3", :shallow => false
 
-  bottle do
-    sha256 "9c881185602894a1c795bac55e714bfe4971e035aa03f1cf4ae0ae1592640c87" => :mojave
-    sha256 "d893c055938419f3d60319a8abd815a151459520ee2283fc5b3fe437a7538c53" => :high_sierra
-    sha256 "b4ddd59d9478c553c2bff11bcb0cbc0d52ab05560d1a7fd3a0b69c02386da2e5" => :sierra
-  end
-
+  depends_on "autoconf" => :build
+  depends_on "automake" => :build
   depends_on "cmake" => :build
+  depends_on "libtool" => :build
   depends_on "icu4c"
-  depends_on "openssl"
+  depends_on "openssl@1.1"
   depends_on "readline"
 
   def install
@@ -22,12 +20,17 @@ class Tarantool < Formula
     # Necessary for luajit to build on macOS Mojave (see luajit formula)
     ENV["MACOSX_DEPLOYMENT_TARGET"] = MacOS.version
 
+    # Avoid keeping references to Homebrew's clang/clang++ shims
+    inreplace "src/trivia/config.h.cmake",
+              "#define COMPILER_INFO \"@CMAKE_C_COMPILER@ @CMAKE_CXX_COMPILER@\"",
+              "#define COMPILER_INFO \"/usr/bin/clang /usr/bin/clang++\""
+
     args = std_cmake_args
     args << "-DCMAKE_INSTALL_MANDIR=#{doc}"
     args << "-DCMAKE_INSTALL_SYSCONFDIR=#{etc}"
     args << "-DCMAKE_INSTALL_LOCALSTATEDIR=#{var}"
     args << "-DENABLE_DIST=ON"
-    args << "-DOPENSSL_ROOT_DIR=#{Formula["openssl"].opt_prefix}"
+    args << "-DOPENSSL_ROOT_DIR=#{Formula["openssl@1.1"].opt_prefix}"
     args << "-DREADLINE_ROOT=#{Formula["readline"].opt_prefix}"
     args << "-DCURL_INCLUDE_DIR=#{sdk}/usr/include"
     args << "-DCURL_LIBRARY=/usr/lib/libcurl.dylib"
