@@ -100,31 +100,7 @@ jobs:
 
     - stage: tests
       os: osx
-      osx_image: xcode11.2
-      language: generic
-      before_install: ".ci/travis-before-install-${TRAVIS_OS_NAME}.sh"
-      install: ".ci/travis-install.sh"
-      script: ".ci/travis-tests.sh"
-      env: BUILD=quicktests PYTHON_VERSION=3.7.9 TARANTOOL_VERSION=2_x
-
-    - stage: tests
-      os: osx
-      language: generic
-      before_install: ".ci/travis-before-install-${TRAVIS_OS_NAME}.sh"
-      install: ".ci/travis-install.sh"
-      script: ".ci/travis-tests.sh"
-      env: BUILD=quicktests PYTHON_VERSION=3.8.6 TARANTOOL_VERSION=2_x
-
-    - stage: tests
-      os: osx
-      language: generic
-      before_install: ".ci/travis-before-install-${TRAVIS_OS_NAME}.sh"
-      install: ".ci/travis-install.sh"
-      script: ".ci/travis-tests.sh"
-      env: BUILD=quicktests PYTHON_VERSION=3.9.0 TARANTOOL_VERSION=1.10
-
-    - stage: tests
-      os: osx
+      osx_image: xcode12.2
       language: generic
       before_install: ".ci/travis-before-install-${TRAVIS_OS_NAME}.sh"
       install: ".ci/travis-install.sh"
@@ -160,6 +136,7 @@ jobs:
 
     - stage: wheels
       os: osx
+      osx_image: xcode12.2
       language: generic
 
       env:
