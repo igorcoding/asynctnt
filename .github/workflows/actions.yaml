@@ -107,7 +107,7 @@ jobs:
           python setup.py sdist
           tree wheels
           tree dist
-          # twine upload dist/* wheels/*
+          twine upload dist/* wheels/*
       - uses: marvinpinto/action-automatic-releases@latest
         with:
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
