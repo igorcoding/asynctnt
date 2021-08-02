@@ -3,9 +3,9 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8">
+  <meta charset="utf-8" />
   
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
   <title>API Reference &mdash; asynctnt 1.2.1 documentation</title>
   
@@ -13,10 +13,15 @@
   
   <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
 
   
   
+
   
+  
+
   
 
   
@@ -26,10 +31,10 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
         <script src="_static/doctools.js"></script>
-        <script src="_static/language_data.js"></script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
@@ -50,7 +55,7 @@
           
 
           
-            <a href="index.html" class="icon icon-home" alt="Documentation Home"> asynctnt
+            <a href="index.html" class="icon icon-home"> asynctnt
           
 
           
@@ -85,7 +90,7 @@
               
             
             
-              <p class="caption"><span class="caption-text">Contents:</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
@@ -138,6 +143,8 @@
 
 
 
+
+
 <div role="navigation" aria-label="breadcrumbs navigation">
 
   <ul class="wy-breadcrumbs">
@@ -149,7 +156,7 @@
     
       <li class="wy-breadcrumbs-aside">
         
-            
+          
             <a href="_sources/api.rst.txt" rel="nofollow"> View page source</a>
           
         
@@ -168,8 +175,8 @@
 <div class="section" id="connection">
 <h2>Connection<a class="headerlink" href="#connection" title="Permalink to this headline">¶</a></h2>
 <dl class="py function">
-<dt id="asynctnt.connect">
-<em class="property">async </em><code class="sig-prename descclassname">asynctnt.</code><code class="sig-name descname">connect</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span> &#x2192; asynctnt.connection.Connection<a class="reference internal" href="_modules/asynctnt/connection.html#connect"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#asynctnt.connect" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="asynctnt.connect">
+<em class="property"><span class="pre">async</span> </em><span class="sig-prename descclassname"><span class="pre">asynctnt.</span></span><span class="sig-name descname"><span class="pre">connect</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#asynctnt.Connection" title="asynctnt.connection.Connection"><span class="pre">asynctnt.connection.Connection</span></a></span></span><a class="reference internal" href="_modules/asynctnt/connection.html#connect"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#asynctnt.connect" title="Permalink to this definition">¶</a></dt>
 <dd><p>connect shorthand. See <a class="reference internal" href="#asynctnt.Connection" title="asynctnt.Connection"><code class="xref py py-class docutils literal notranslate"><span class="pre">asynctnt.Connection</span></code></a> for kwargs details</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -179,11 +186,11 @@
 </dd></dl>
 
 <dl class="py class">
-<dt id="asynctnt.Connection">
-<em class="property">class </em><code class="sig-prename descclassname">asynctnt.</code><code class="sig-name descname">Connection</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span></em>, <em class="sig-param"><span class="n">host</span><span class="o">=</span><span class="default_value">'127.0.0.1'</span></em>, <em class="sig-param"><span class="n">port</span><span class="o">=</span><span class="default_value">3301</span></em>, <em class="sig-param"><span class="n">username</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">password</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">fetch_schema</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">auto_refetch_schema</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">connect_timeout</span><span class="o">=</span><span class="default_value">3.0</span></em>, <em class="sig-param"><span class="n">request_timeout</span><span class="o">=</span><span class="default_value">- 1.0</span></em>, <em class="sig-param"><span class="n">reconnect_timeout</span><span class="o">=</span><span class="default_value">0.3333333333333333</span></em>, <em class="sig-param"><span class="n">ping_timeout</span><span class="o">=</span><span class="default_value">5.0</span></em>, <em class="sig-param"><span class="n">encoding</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">initial_read_buffer_size</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/asynctnt/connection.html#Connection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#asynctnt.Connection" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="asynctnt.Connection">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">asynctnt.</span></span><span class="sig-name descname"><span class="pre">Connection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">host</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'127.0.0.1'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">port</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3301</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">username</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">password</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fetch_schema</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">auto_refetch_schema</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">connect_timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">request_timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-</span> <span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reconnect_timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.3333333333333333</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ping_timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">encoding</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initial_read_buffer_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/asynctnt/connection.html#Connection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#asynctnt.Connection" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="py method">
-<dt id="asynctnt.Connection.__init__">
-<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span></em>, <em class="sig-param"><span class="n">host</span><span class="o">=</span><span class="default_value">'127.0.0.1'</span></em>, <em class="sig-param"><span class="n">port</span><span class="o">=</span><span class="default_value">3301</span></em>, <em class="sig-param"><span class="n">username</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">password</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">fetch_schema</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">auto_refetch_schema</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">connect_timeout</span><span class="o">=</span><span class="default_value">3.0</span></em>, <em class="sig-param"><span class="n">request_timeout</span><span class="o">=</span><span class="default_value">- 1.0</span></em>, <em class="sig-param"><span class="n">reconnect_timeout</span><span class="o">=</span><span class="default_value">0.3333333333333333</span></em>, <em class="sig-param"><span class="n">ping_timeout</span><span class="o">=</span><span class="default_value">5.0</span></em>, <em class="sig-param"><span class="n">encoding</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">initial_read_buffer_size</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/asynctnt/connection.html#Connection.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#asynctnt.Connection.__init__" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="asynctnt.Connection.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">host</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'127.0.0.1'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">port</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3301</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">username</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">password</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fetch_schema</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">auto_refetch_schema</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">connect_timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">request_timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-</span> <span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reconnect_timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.3333333333333333</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ping_timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">encoding</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initial_read_buffer_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/asynctnt/connection.html#Connection.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#asynctnt.Connection.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Connection constructor.</p>
 <p>To manipulate a Connection instance there are several functions:</p>
 <blockquote>
@@ -240,15 +247,15 @@ memory usage (default is 131072).</p></li>
 </dl>
 </dd></dl>
 
-<dl class="py method">
-<dt id="asynctnt.Connection.auto_refetch_schema">
-<em class="property">property </em><code class="sig-name descname">auto_refetch_schema</code><a class="headerlink" href="#asynctnt.Connection.auto_refetch_schema" title="Permalink to this definition">¶</a></dt>
+<dl class="py property">
+<dt class="sig sig-object py" id="asynctnt.Connection.auto_refetch_schema">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">auto_refetch_schema</span></span><em class="property"><span class="pre">:</span> <span class="pre">bool</span></em><a class="headerlink" href="#asynctnt.Connection.auto_refetch_schema" title="Permalink to this definition">¶</a></dt>
 <dd><p>auto_refetch_schema flag</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="asynctnt.Connection.call">
-<code class="sig-name descname">call</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">func_name</span></em>, <em class="sig-param"><span class="n">args</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">*</span></em>, <em class="sig-param"><span class="n">timeout</span><span class="o">=</span><span class="default_value">- 1.0</span></em>, <em class="sig-param"><span class="n">push_subscribe</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span> &#x2192; Union<span class="p">[</span>Awaitable<span class="p">[</span>asynctnt.iproto.protocol.Response<span class="p">]</span><span class="p">, </span>_asyncio.Future<span class="p">]</span><a class="reference internal" href="_modules/asynctnt/connection.html#Connection.call"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#asynctnt.Connection.call" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="asynctnt.Connection.call">
+<span class="sig-name descname"><span class="pre">call</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">args</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-</span> <span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">push_subscribe</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">Awaitable</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#asynctnt.Response" title="asynctnt.iproto.protocol.Response"><span class="pre">asynctnt.iproto.protocol.Response</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span> </span><span class="pre">_asyncio.Future</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/asynctnt/connection.html#Connection.call"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#asynctnt.Connection.call" title="Permalink to this definition">¶</a></dt>
 <dd><p>Call request coroutine. It is a call with a new behaviour
 (return result of a Tarantool procedure is not wrapped into
 an extra tuple). If you’re connecting to Tarantool with
@@ -282,8 +289,8 @@ version &lt; 1.7, then this call method acts like a call16 method</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="asynctnt.Connection.call16">
-<code class="sig-name descname">call16</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">func_name</span></em>, <em class="sig-param"><span class="n">args</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">*</span></em>, <em class="sig-param"><span class="n">timeout</span><span class="o">=</span><span class="default_value">- 1.0</span></em>, <em class="sig-param"><span class="n">push_subscribe</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span> &#x2192; Union<span class="p">[</span>Awaitable<span class="p">[</span>asynctnt.iproto.protocol.Response<span class="p">]</span><span class="p">, </span>_asyncio.Future<span class="p">]</span><a class="reference internal" href="_modules/asynctnt/connection.html#Connection.call16"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#asynctnt.Connection.call16" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="asynctnt.Connection.call16">
+<span class="sig-name descname"><span class="pre">call16</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">args</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-</span> <span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">push_subscribe</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">Awaitable</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#asynctnt.Response" title="asynctnt.iproto.protocol.Response"><span class="pre">asynctnt.iproto.protocol.Response</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span> </span><span class="pre">_asyncio.Future</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/asynctnt/connection.html#Connection.call16"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#asynctnt.Connection.call16" title="Permalink to this definition">¶</a></dt>
 <dd><p>Call16 request coroutine. It is a call with an old behaviour
 (return result of a Tarantool procedure is wrapped into a tuple,
 if needed)</p>
@@ -303,27 +310,27 @@ if needed)</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="asynctnt.Connection.close">
-<code class="sig-name descname">close</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/asynctnt/connection.html#Connection.close"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#asynctnt.Connection.close" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="asynctnt.Connection.close">
+<span class="sig-name descname"><span class="pre">close</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/asynctnt/connection.html#Connection.close"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#asynctnt.Connection.close" title="Permalink to this definition">¶</a></dt>
 <dd><p>Same as disconnect, but not a coroutine, i.e. it does not wait
 for disconnect to finish.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="asynctnt.Connection.connect">
-<em class="property">coroutine </em><code class="sig-name descname">connect</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; asynctnt.connection.Connection<a class="reference internal" href="_modules/asynctnt/connection.html#Connection.connect"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#asynctnt.Connection.connect" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="asynctnt.Connection.connect">
+<em class="property"><span class="pre">coroutine</span> </em><span class="sig-name descname"><span class="pre">connect</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#asynctnt.Connection" title="asynctnt.connection.Connection"><span class="pre">asynctnt.connection.Connection</span></a></span></span><a class="reference internal" href="_modules/asynctnt/connection.html#Connection.connect"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#asynctnt.Connection.connect" title="Permalink to this definition">¶</a></dt>
 <dd><p>Connect coroutine</p>
 </dd></dl>
 
-<dl class="py method">
-<dt id="asynctnt.Connection.connect_timeout">
-<em class="property">property </em><code class="sig-name descname">connect_timeout</code><a class="headerlink" href="#asynctnt.Connection.connect_timeout" title="Permalink to this definition">¶</a></dt>
+<dl class="py property">
+<dt class="sig sig-object py" id="asynctnt.Connection.connect_timeout">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">connect_timeout</span></span><em class="property"><span class="pre">:</span> <span class="pre">float</span></em><a class="headerlink" href="#asynctnt.Connection.connect_timeout" title="Permalink to this definition">¶</a></dt>
 <dd><p>Connect timeout value</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="asynctnt.Connection.delete">
-<code class="sig-name descname">delete</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">space</span></em>, <em class="sig-param"><span class="n">key</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span> &#x2192; Union<span class="p">[</span>Awaitable<span class="p">[</span>asynctnt.iproto.protocol.Response<span class="p">]</span><span class="p">, </span>_asyncio.Future<span class="p">]</span><a class="reference internal" href="_modules/asynctnt/connection.html#Connection.delete"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#asynctnt.Connection.delete" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="asynctnt.Connection.delete">
+<span class="sig-name descname"><span class="pre">delete</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">space</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">Awaitable</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#asynctnt.Response" title="asynctnt.iproto.protocol.Response"><span class="pre">asynctnt.iproto.protocol.Response</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span> </span><span class="pre">_asyncio.Future</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/asynctnt/connection.html#Connection.delete"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#asynctnt.Connection.delete" title="Permalink to this definition">¶</a></dt>
 <dd><p>Delete request coroutine.</p>
 <p>Examples:</p>
 <div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="go"># Assuming tuple [0, &#39;hello&#39;] is in space tester</span>
@@ -350,20 +357,20 @@ for disconnect to finish.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="asynctnt.Connection.disconnect">
-<em class="property">coroutine </em><code class="sig-name descname">disconnect</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/asynctnt/connection.html#Connection.disconnect"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#asynctnt.Connection.disconnect" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="asynctnt.Connection.disconnect">
+<em class="property"><span class="pre">coroutine</span> </em><span class="sig-name descname"><span class="pre">disconnect</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/asynctnt/connection.html#Connection.disconnect"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#asynctnt.Connection.disconnect" title="Permalink to this definition">¶</a></dt>
 <dd><p>Disconnect coroutine</p>
 </dd></dl>
 
-<dl class="py method">
-<dt id="asynctnt.Connection.encoding">
-<em class="property">property </em><code class="sig-name descname">encoding</code><a class="headerlink" href="#asynctnt.Connection.encoding" title="Permalink to this definition">¶</a></dt>
+<dl class="py property">
+<dt class="sig sig-object py" id="asynctnt.Connection.encoding">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">encoding</span></span><em class="property"><span class="pre">:</span> <span class="pre">str</span></em><a class="headerlink" href="#asynctnt.Connection.encoding" title="Permalink to this definition">¶</a></dt>
 <dd><p>Connection encoding</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="asynctnt.Connection.eval">
-<code class="sig-name descname">eval</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">expression</span></em>, <em class="sig-param"><span class="n">args</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">*</span></em>, <em class="sig-param"><span class="n">timeout</span><span class="o">=</span><span class="default_value">- 1.0</span></em>, <em class="sig-param"><span class="n">push_subscribe</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span> &#x2192; Union<span class="p">[</span>Awaitable<span class="p">[</span>asynctnt.iproto.protocol.Response<span class="p">]</span><span class="p">, </span>_asyncio.Future<span class="p">]</span><a class="reference internal" href="_modules/asynctnt/connection.html#Connection.eval"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#asynctnt.Connection.eval" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="asynctnt.Connection.eval">
+<span class="sig-name descname"><span class="pre">eval</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">expression</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">args</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-</span> <span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">push_subscribe</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">Awaitable</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#asynctnt.Response" title="asynctnt.iproto.protocol.Response"><span class="pre">asynctnt.iproto.protocol.Response</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span> </span><span class="pre">_asyncio.Future</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/asynctnt/connection.html#Connection.eval"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#asynctnt.Connection.eval" title="Permalink to this definition">¶</a></dt>
 <dd><p>Eval request coroutine.</p>
 <p>Examples:</p>
 <div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">await</span> <span class="n">conn</span><span class="o">.</span><span class="n">eval</span><span class="p">(</span><span class="s1">&#39;return 42&#39;</span><span class="p">)</span>
@@ -390,27 +397,27 @@ execute your expression (list object)</p></li>
 </dl>
 </dd></dl>
 
-<dl class="py method">
-<dt id="asynctnt.Connection.fetch_schema">
-<em class="property">property </em><code class="sig-name descname">fetch_schema</code><a class="headerlink" href="#asynctnt.Connection.fetch_schema" title="Permalink to this definition">¶</a></dt>
+<dl class="py property">
+<dt class="sig sig-object py" id="asynctnt.Connection.fetch_schema">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">fetch_schema</span></span><em class="property"><span class="pre">:</span> <span class="pre">bool</span></em><a class="headerlink" href="#asynctnt.Connection.fetch_schema" title="Permalink to this definition">¶</a></dt>
 <dd><p>fetch_schema flag</p>
 </dd></dl>
 
-<dl class="py method">
-<dt id="asynctnt.Connection.host">
-<em class="property">property </em><code class="sig-name descname">host</code><a class="headerlink" href="#asynctnt.Connection.host" title="Permalink to this definition">¶</a></dt>
+<dl class="py property">
+<dt class="sig sig-object py" id="asynctnt.Connection.host">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">host</span></span><em class="property"><span class="pre">:</span> <span class="pre">str</span></em><a class="headerlink" href="#asynctnt.Connection.host" title="Permalink to this definition">¶</a></dt>
 <dd><p>Tarantool host</p>
 </dd></dl>
 
-<dl class="py method">
-<dt id="asynctnt.Connection.initial_read_buffer_size">
-<em class="property">property </em><code class="sig-name descname">initial_read_buffer_size</code><a class="headerlink" href="#asynctnt.Connection.initial_read_buffer_size" title="Permalink to this definition">¶</a></dt>
+<dl class="py property">
+<dt class="sig sig-object py" id="asynctnt.Connection.initial_read_buffer_size">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">initial_read_buffer_size</span></span><em class="property"><span class="pre">:</span> <span class="pre">int</span></em><a class="headerlink" href="#asynctnt.Connection.initial_read_buffer_size" title="Permalink to this definition">¶</a></dt>
 <dd><p>initial_read_buffer_size value</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="asynctnt.Connection.insert">
-<code class="sig-name descname">insert</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">space</span></em>, <em class="sig-param"><span class="n">t</span></em>, <em class="sig-param"><span class="o">*</span></em>, <em class="sig-param"><span class="n">replace</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">timeout</span><span class="o">=</span><span class="default_value">- 1</span></em><span class="sig-paren">)</span> &#x2192; Union<span class="p">[</span>Awaitable<span class="p">[</span>asynctnt.iproto.protocol.Response<span class="p">]</span><span class="p">, </span>_asyncio.Future<span class="p">]</span><a class="reference internal" href="_modules/asynctnt/connection.html#Connection.insert"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#asynctnt.Connection.insert" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="asynctnt.Connection.insert">
+<span class="sig-name descname"><span class="pre">insert</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">space</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">replace</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-</span> <span class="pre">1</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">Awaitable</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#asynctnt.Response" title="asynctnt.iproto.protocol.Response"><span class="pre">asynctnt.iproto.protocol.Response</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span> </span><span class="pre">_asyncio.Future</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/asynctnt/connection.html#Connection.insert"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#asynctnt.Connection.insert" title="Permalink to this definition">¶</a></dt>
 <dd><p>Insert request coroutine.</p>
 <p>Examples:</p>
 <div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="go"># Basic usage</span>
@@ -444,34 +451,34 @@ execute your expression (list object)</p></li>
 </dl>
 </dd></dl>
 
-<dl class="py method">
-<dt id="asynctnt.Connection.is_connected">
-<em class="property">property </em><code class="sig-name descname">is_connected</code><a class="headerlink" href="#asynctnt.Connection.is_connected" title="Permalink to this definition">¶</a></dt>
+<dl class="py property">
+<dt class="sig sig-object py" id="asynctnt.Connection.is_connected">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">is_connected</span></span><em class="property"><span class="pre">:</span> <span class="pre">bool</span></em><a class="headerlink" href="#asynctnt.Connection.is_connected" title="Permalink to this definition">¶</a></dt>
 <dd><p>Check if an underlying connection is active</p>
 </dd></dl>
 
-<dl class="py method">
-<dt id="asynctnt.Connection.is_fully_connected">
-<em class="property">property </em><code class="sig-name descname">is_fully_connected</code><a class="headerlink" href="#asynctnt.Connection.is_fully_connected" title="Permalink to this definition">¶</a></dt>
+<dl class="py property">
+<dt class="sig sig-object py" id="asynctnt.Connection.is_fully_connected">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">is_fully_connected</span></span><em class="property"><span class="pre">:</span> <span class="pre">bool</span></em><a class="headerlink" href="#asynctnt.Connection.is_fully_connected" title="Permalink to this definition">¶</a></dt>
 <dd><p>Check if connection is fully active (performed auth
 and schema fetching)</p>
 </dd></dl>
 
-<dl class="py method">
-<dt id="asynctnt.Connection.loop">
-<em class="property">property </em><code class="sig-name descname">loop</code><a class="headerlink" href="#asynctnt.Connection.loop" title="Permalink to this definition">¶</a></dt>
+<dl class="py property">
+<dt class="sig sig-object py" id="asynctnt.Connection.loop">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">loop</span></span><a class="headerlink" href="#asynctnt.Connection.loop" title="Permalink to this definition">¶</a></dt>
 <dd><p>Asyncio event loop</p>
 </dd></dl>
 
-<dl class="py method">
-<dt id="asynctnt.Connection.password">
-<em class="property">property </em><code class="sig-name descname">password</code><a class="headerlink" href="#asynctnt.Connection.password" title="Permalink to this definition">¶</a></dt>
+<dl class="py property">
+<dt class="sig sig-object py" id="asynctnt.Connection.password">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">password</span></span><em class="property"><span class="pre">:</span> <span class="pre">Optional[str]</span></em><a class="headerlink" href="#asynctnt.Connection.password" title="Permalink to this definition">¶</a></dt>
 <dd><p>Tarantool password</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="asynctnt.Connection.ping">
-<code class="sig-name descname">ping</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span></em>, <em class="sig-param"><span class="n">timeout</span><span class="o">=</span><span class="default_value">- 1.0</span></em><span class="sig-paren">)</span> &#x2192; Union<span class="p">[</span>Awaitable<span class="p">[</span>asynctnt.iproto.protocol.Response<span class="p">]</span><span class="p">, </span>_asyncio.Future<span class="p">]</span><a class="reference internal" href="_modules/asynctnt/connection.html#Connection.ping"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#asynctnt.Connection.ping" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="asynctnt.Connection.ping">
+<span class="sig-name descname"><span class="pre">ping</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-</span> <span class="pre">1.0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">Awaitable</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#asynctnt.Response" title="asynctnt.iproto.protocol.Response"><span class="pre">asynctnt.iproto.protocol.Response</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span> </span><span class="pre">_asyncio.Future</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/asynctnt/connection.html#Connection.ping"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#asynctnt.Connection.ping" title="Permalink to this definition">¶</a></dt>
 <dd><p>Ping request coroutine</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -483,34 +490,34 @@ and schema fetching)</p>
 </dl>
 </dd></dl>
 
-<dl class="py method">
-<dt id="asynctnt.Connection.port">
-<em class="property">property </em><code class="sig-name descname">port</code><a class="headerlink" href="#asynctnt.Connection.port" title="Permalink to this definition">¶</a></dt>
+<dl class="py property">
+<dt class="sig sig-object py" id="asynctnt.Connection.port">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">port</span></span><em class="property"><span class="pre">:</span> <span class="pre">int</span></em><a class="headerlink" href="#asynctnt.Connection.port" title="Permalink to this definition">¶</a></dt>
 <dd><p>Tarantool port</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="asynctnt.Connection.reconnect">
-<em class="property">coroutine </em><code class="sig-name descname">reconnect</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/asynctnt/connection.html#Connection.reconnect"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#asynctnt.Connection.reconnect" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="asynctnt.Connection.reconnect">
+<em class="property"><span class="pre">coroutine</span> </em><span class="sig-name descname"><span class="pre">reconnect</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/asynctnt/connection.html#Connection.reconnect"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#asynctnt.Connection.reconnect" title="Permalink to this definition">¶</a></dt>
 <dd><p>Reconnect coroutine.
 Just calls disconnect() and connect()</p>
 </dd></dl>
 
-<dl class="py method">
-<dt id="asynctnt.Connection.reconnect_timeout">
-<em class="property">property </em><code class="sig-name descname">reconnect_timeout</code><a class="headerlink" href="#asynctnt.Connection.reconnect_timeout" title="Permalink to this definition">¶</a></dt>
+<dl class="py property">
+<dt class="sig sig-object py" id="asynctnt.Connection.reconnect_timeout">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">reconnect_timeout</span></span><em class="property"><span class="pre">:</span> <span class="pre">float</span></em><a class="headerlink" href="#asynctnt.Connection.reconnect_timeout" title="Permalink to this definition">¶</a></dt>
 <dd><p>Reconnect timeout value</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="asynctnt.Connection.refetch_schema">
-<em class="property">coroutine </em><code class="sig-name descname">refetch_schema</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/asynctnt/connection.html#Connection.refetch_schema"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#asynctnt.Connection.refetch_schema" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="asynctnt.Connection.refetch_schema">
+<em class="property"><span class="pre">coroutine</span> </em><span class="sig-name descname"><span class="pre">refetch_schema</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/asynctnt/connection.html#Connection.refetch_schema"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#asynctnt.Connection.refetch_schema" title="Permalink to this definition">¶</a></dt>
 <dd><p>Coroutine to force refetch schema</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="asynctnt.Connection.replace">
-<code class="sig-name descname">replace</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">space</span></em>, <em class="sig-param"><span class="n">t</span></em>, <em class="sig-param"><span class="o">*</span></em>, <em class="sig-param"><span class="n">timeout</span><span class="o">=</span><span class="default_value">- 1.0</span></em><span class="sig-paren">)</span> &#x2192; Union<span class="p">[</span>Awaitable<span class="p">[</span>asynctnt.iproto.protocol.Response<span class="p">]</span><span class="p">, </span>_asyncio.Future<span class="p">]</span><a class="reference internal" href="_modules/asynctnt/connection.html#Connection.replace"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#asynctnt.Connection.replace" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="asynctnt.Connection.replace">
+<span class="sig-name descname"><span class="pre">replace</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">space</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-</span> <span class="pre">1.0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">Awaitable</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#asynctnt.Response" title="asynctnt.iproto.protocol.Response"><span class="pre">asynctnt.iproto.protocol.Response</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span> </span><span class="pre">_asyncio.Future</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/asynctnt/connection.html#Connection.replace"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#asynctnt.Connection.replace" title="Permalink to this definition">¶</a></dt>
 <dd><p>Replace request coroutine. Same as insert, but replace.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -526,21 +533,21 @@ Just calls disconnect() and connect()</p>
 </dl>
 </dd></dl>
 
-<dl class="py method">
-<dt id="asynctnt.Connection.request_timeout">
-<em class="property">property </em><code class="sig-name descname">request_timeout</code><a class="headerlink" href="#asynctnt.Connection.request_timeout" title="Permalink to this definition">¶</a></dt>
+<dl class="py property">
+<dt class="sig sig-object py" id="asynctnt.Connection.request_timeout">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">request_timeout</span></span><em class="property"><span class="pre">:</span> <span class="pre">float</span></em><a class="headerlink" href="#asynctnt.Connection.request_timeout" title="Permalink to this definition">¶</a></dt>
 <dd><p>Request timeout value</p>
 </dd></dl>
 
-<dl class="py method">
-<dt id="asynctnt.Connection.schema_id">
-<em class="property">property </em><code class="sig-name descname">schema_id</code><a class="headerlink" href="#asynctnt.Connection.schema_id" title="Permalink to this definition">¶</a></dt>
+<dl class="py property">
+<dt class="sig sig-object py" id="asynctnt.Connection.schema_id">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">schema_id</span></span><em class="property"><span class="pre">:</span> <span class="pre">Optional[int]</span></em><a class="headerlink" href="#asynctnt.Connection.schema_id" title="Permalink to this definition">¶</a></dt>
 <dd><p>Tarantool’s current schema id</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="asynctnt.Connection.select">
-<code class="sig-name descname">select</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">space</span></em>, <em class="sig-param"><span class="n">key</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span> &#x2192; Union<span class="p">[</span>Awaitable<span class="p">[</span>asynctnt.iproto.protocol.Response<span class="p">]</span><span class="p">, </span>_asyncio.Future<span class="p">]</span><a class="reference internal" href="_modules/asynctnt/connection.html#Connection.select"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#asynctnt.Connection.select" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="asynctnt.Connection.select">
+<span class="sig-name descname"><span class="pre">select</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">space</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">Awaitable</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#asynctnt.Response" title="asynctnt.iproto.protocol.Response"><span class="pre">asynctnt.iproto.protocol.Response</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span> </span><span class="pre">_asyncio.Future</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/asynctnt/connection.html#Connection.select"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#asynctnt.Connection.select" title="Permalink to this definition">¶</a></dt>
 <dd><p>Select request coroutine.</p>
 <p>Examples:</p>
 <div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">await</span> <span class="n">conn</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s1">&#39;tester&#39;</span><span class="p">)</span>
@@ -588,8 +595,8 @@ Just calls disconnect() and connect()</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="asynctnt.Connection.sql">
-<code class="sig-name descname">sql</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">query</span></em>, <em class="sig-param"><span class="n">args</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">*</span></em>, <em class="sig-param"><span class="n">parse_metadata</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">timeout</span><span class="o">=</span><span class="default_value">- 1.0</span></em><span class="sig-paren">)</span> &#x2192; Union<span class="p">[</span>Awaitable<span class="p">[</span>asynctnt.iproto.protocol.Response<span class="p">]</span><span class="p">, </span>_asyncio.Future<span class="p">]</span><a class="reference internal" href="_modules/asynctnt/connection.html#Connection.sql"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#asynctnt.Connection.sql" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="asynctnt.Connection.sql">
+<span class="sig-name descname"><span class="pre">sql</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">query</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">args</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parse_metadata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-</span> <span class="pre">1.0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">Awaitable</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#asynctnt.Response" title="asynctnt.iproto.protocol.Response"><span class="pre">asynctnt.iproto.protocol.Response</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span> </span><span class="pre">_asyncio.Future</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/asynctnt/connection.html#Connection.sql"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#asynctnt.Connection.sql" title="Permalink to this definition">¶</a></dt>
 <dd><p>Executes an SQL statement (only for Tarantool &gt; 2)</p>
 <p>Examples:</p>
 <div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">await</span> <span class="n">conn</span><span class="o">.</span><span class="n">sql</span><span class="p">(</span><span class="s2">&quot;select 1 as a, 2 as b&quot;</span><span class="p">)</span>
@@ -625,9 +632,9 @@ parsing for better performance</p></li>
 </dl>
 </dd></dl>
 
-<dl class="py method">
-<dt id="asynctnt.Connection.state">
-<em class="property">property </em><code class="sig-name descname">state</code><a class="headerlink" href="#asynctnt.Connection.state" title="Permalink to this definition">¶</a></dt>
+<dl class="py property">
+<dt class="sig sig-object py" id="asynctnt.Connection.state">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">state</span></span><em class="property"><span class="pre">:</span> <span class="pre">asynctnt.connection.ConnectionState</span></em><a class="headerlink" href="#asynctnt.Connection.state" title="Permalink to this definition">¶</a></dt>
 <dd><p>Current connection state</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
@@ -637,8 +644,8 @@ parsing for better performance</p></li>
 </dd></dl>
 
 <dl class="py method">
-<dt id="asynctnt.Connection.update">
-<code class="sig-name descname">update</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">space</span></em>, <em class="sig-param"><span class="n">key</span></em>, <em class="sig-param"><span class="n">operations</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span> &#x2192; Union<span class="p">[</span>Awaitable<span class="p">[</span>asynctnt.iproto.protocol.Response<span class="p">]</span><span class="p">, </span>_asyncio.Future<span class="p">]</span><a class="reference internal" href="_modules/asynctnt/connection.html#Connection.update"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#asynctnt.Connection.update" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="asynctnt.Connection.update">
+<span class="sig-name descname"><span class="pre">update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">space</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">operations</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">Awaitable</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#asynctnt.Response" title="asynctnt.iproto.protocol.Response"><span class="pre">asynctnt.iproto.protocol.Response</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span> </span><span class="pre">_asyncio.Future</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/asynctnt/connection.html#Connection.update"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#asynctnt.Connection.update" title="Permalink to this definition">¶</a></dt>
 <dd><p>Update request coroutine.</p>
 <p>Examples:</p>
 <div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="go"># Assuming tuple [0, &#39;hello&#39;] is in space tester</span>
@@ -678,8 +685,8 @@ If field is unknown then TarantoolSchemaError is raised.</p></li>
 </dd></dl>
 
 <dl class="py method">
-<dt id="asynctnt.Connection.upsert">
-<code class="sig-name descname">upsert</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">space</span></em>, <em class="sig-param"><span class="n">t</span></em>, <em class="sig-param"><span class="n">operations</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span> &#x2192; Union<span class="p">[</span>Awaitable<span class="p">[</span>asynctnt.iproto.protocol.Response<span class="p">]</span><span class="p">, </span>_asyncio.Future<span class="p">]</span><a class="reference internal" href="_modules/asynctnt/connection.html#Connection.upsert"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#asynctnt.Connection.upsert" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="asynctnt.Connection.upsert">
+<span class="sig-name descname"><span class="pre">upsert</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">space</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">operations</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">Awaitable</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#asynctnt.Response" title="asynctnt.iproto.protocol.Response"><span class="pre">asynctnt.iproto.protocol.Response</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span> </span><span class="pre">_asyncio.Future</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/asynctnt/connection.html#Connection.upsert"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#asynctnt.Connection.upsert" title="Permalink to this definition">¶</a></dt>
 <dd><p>Update request coroutine. Performs either insert or update
 (depending of either tuple exists or not)</p>
 <p>Examples:</p>
@@ -710,15 +717,15 @@ If field is unknown then TarantoolSchemaError is raised.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="py method">
-<dt id="asynctnt.Connection.username">
-<em class="property">property </em><code class="sig-name descname">username</code><a class="headerlink" href="#asynctnt.Connection.username" title="Permalink to this definition">¶</a></dt>
+<dl class="py property">
+<dt class="sig sig-object py" id="asynctnt.Connection.username">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">username</span></span><em class="property"><span class="pre">:</span> <span class="pre">Optional[str]</span></em><a class="headerlink" href="#asynctnt.Connection.username" title="Permalink to this definition">¶</a></dt>
 <dd><p>Tarantool username</p>
 </dd></dl>
 
-<dl class="py method">
-<dt id="asynctnt.Connection.version">
-<em class="property">property </em><code class="sig-name descname">version</code><a class="headerlink" href="#asynctnt.Connection.version" title="Permalink to this definition">¶</a></dt>
+<dl class="py property">
+<dt class="sig sig-object py" id="asynctnt.Connection.version">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">version</span></span><em class="property"><span class="pre">:</span> <span class="pre">Optional[tuple]</span></em><a class="headerlink" href="#asynctnt.Connection.version" title="Permalink to this definition">¶</a></dt>
 <dd><p>Protocol version tuple. ex.: (1, 6, 7)</p>
 </dd></dl>
 
@@ -728,11 +735,11 @@ If field is unknown then TarantoolSchemaError is raised.</p></li>
 <div class="section" id="pushiterator">
 <h2>PushIterator<a class="headerlink" href="#pushiterator" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
-<dt id="asynctnt.PushIterator">
-<em class="property">class </em><code class="sig-prename descclassname">asynctnt.</code><code class="sig-name descname">PushIterator</code><a class="headerlink" href="#asynctnt.PushIterator" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="asynctnt.PushIterator">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">asynctnt.</span></span><span class="sig-name descname"><span class="pre">PushIterator</span></span><a class="headerlink" href="#asynctnt.PushIterator" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="py method">
-<dt id="asynctnt.PushIterator.__init__">
-<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#asynctnt.PushIterator.__init__" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="asynctnt.PushIterator.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#asynctnt.PushIterator.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates PushIterator object. In order to receive push notifications
 this iterator must be created.</p>
 <p>Example:</p>
@@ -756,8 +763,8 @@ functions</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt id="asynctnt.PushIterator.response">
-<code class="sig-name descname">response</code><a class="headerlink" href="#asynctnt.PushIterator.response" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="asynctnt.PushIterator.response">
+<span class="sig-name descname"><span class="pre">response</span></span><a class="headerlink" href="#asynctnt.PushIterator.response" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return current Response object. Might be handy to know if the
 request is finished already while iterating over the PushIterator</p>
 <dl class="field-list simple">
@@ -773,54 +780,54 @@ request is finished already while iterating over the PushIterator</p>
 <div class="section" id="response">
 <h2>Response<a class="headerlink" href="#response" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
-<dt id="asynctnt.Response">
-<em class="property">class </em><code class="sig-prename descclassname">asynctnt.</code><code class="sig-name descname">Response</code><a class="headerlink" href="#asynctnt.Response" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="asynctnt.Response">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">asynctnt.</span></span><span class="sig-name descname"><span class="pre">Response</span></span><a class="headerlink" href="#asynctnt.Response" title="Permalink to this definition">¶</a></dt>
 <dd><p>Response object for all the requests to Tarantool</p>
 <dl class="py attribute">
-<dt id="asynctnt.Response.autoincrement_ids">
-<code class="sig-name descname">autoincrement_ids</code><a class="headerlink" href="#asynctnt.Response.autoincrement_ids" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="asynctnt.Response.autoincrement_ids">
+<span class="sig-name descname"><span class="pre">autoincrement_ids</span></span><a class="headerlink" href="#asynctnt.Response.autoincrement_ids" title="Permalink to this definition">¶</a></dt>
 <dd><p>Response autoincrement ids</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt id="asynctnt.Response.body">
-<code class="sig-name descname">body</code><a class="headerlink" href="#asynctnt.Response.body" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="asynctnt.Response.body">
+<span class="sig-name descname"><span class="pre">body</span></span><a class="headerlink" href="#asynctnt.Response.body" title="Permalink to this definition">¶</a></dt>
 <dd><p>Response body</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt id="asynctnt.Response.code">
-<code class="sig-name descname">code</code><a class="headerlink" href="#asynctnt.Response.code" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="asynctnt.Response.code">
+<span class="sig-name descname"><span class="pre">code</span></span><a class="headerlink" href="#asynctnt.Response.code" title="Permalink to this definition">¶</a></dt>
 <dd><p>Response code (0 - success)</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt id="asynctnt.Response.encoding">
-<code class="sig-name descname">encoding</code><a class="headerlink" href="#asynctnt.Response.encoding" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="asynctnt.Response.encoding">
+<span class="sig-name descname"><span class="pre">encoding</span></span><a class="headerlink" href="#asynctnt.Response.encoding" title="Permalink to this definition">¶</a></dt>
 <dd><p>Response encoding</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt id="asynctnt.Response.errmsg">
-<code class="sig-name descname">errmsg</code><a class="headerlink" href="#asynctnt.Response.errmsg" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="asynctnt.Response.errmsg">
+<span class="sig-name descname"><span class="pre">errmsg</span></span><a class="headerlink" href="#asynctnt.Response.errmsg" title="Permalink to this definition">¶</a></dt>
 <dd><p>If self.code != 0 then errmsg contains an error message</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt id="asynctnt.Response.return_code">
-<code class="sig-name descname">return_code</code><a class="headerlink" href="#asynctnt.Response.return_code" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="asynctnt.Response.return_code">
+<span class="sig-name descname"><span class="pre">return_code</span></span><a class="headerlink" href="#asynctnt.Response.return_code" title="Permalink to this definition">¶</a></dt>
 <dd><p>Response return code (It’s essentially a code &amp; 0x7FFF)</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt id="asynctnt.Response.schema_id">
-<code class="sig-name descname">schema_id</code><a class="headerlink" href="#asynctnt.Response.schema_id" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="asynctnt.Response.schema_id">
+<span class="sig-name descname"><span class="pre">schema_id</span></span><a class="headerlink" href="#asynctnt.Response.schema_id" title="Permalink to this definition">¶</a></dt>
 <dd><p>Current scema id in Tarantool</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt id="asynctnt.Response.sync">
-<code class="sig-name descname">sync</code><a class="headerlink" href="#asynctnt.Response.sync" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="asynctnt.Response.sync">
+<span class="sig-name descname"><span class="pre">sync</span></span><a class="headerlink" href="#asynctnt.Response.sync" title="Permalink to this definition">¶</a></dt>
 <dd><p>Response’s sync (incremental id) for the corresponding request</p>
 </dd></dl>
 
@@ -830,8 +837,8 @@ request is finished already while iterating over the PushIterator</p>
 <div class="section" id="iterator">
 <h2>Iterator<a class="headerlink" href="#iterator" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
-<dt id="asynctnt.Iterator">
-<em class="property">class </em><code class="sig-prename descclassname">asynctnt.</code><code class="sig-name descname">Iterator</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">value</span></em><span class="sig-paren">)</span><a class="headerlink" href="#asynctnt.Iterator" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="asynctnt.Iterator">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">asynctnt.</span></span><span class="sig-name descname"><span class="pre">Iterator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#asynctnt.Iterator" title="Permalink to this definition">¶</a></dt>
 <dd><p>Available Iterator types</p>
 </dd></dl>
 
@@ -839,32 +846,32 @@ request is finished already while iterating over the PushIterator</p>
 <div class="section" id="exceptions">
 <h2>Exceptions<a class="headerlink" href="#exceptions" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
-<dt id="asynctnt.exceptions.TarantoolError">
-<em class="property">class </em><code class="sig-prename descclassname">asynctnt.exceptions.</code><code class="sig-name descname">TarantoolError</code><a class="reference internal" href="_modules/asynctnt/exceptions.html#TarantoolError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#asynctnt.exceptions.TarantoolError" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="asynctnt.exceptions.TarantoolError">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">asynctnt.exceptions.</span></span><span class="sig-name descname"><span class="pre">TarantoolError</span></span><a class="reference internal" href="_modules/asynctnt/exceptions.html#TarantoolError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#asynctnt.exceptions.TarantoolError" title="Permalink to this definition">¶</a></dt>
 <dd><p>Base Tarantool Exception class</p>
 </dd></dl>
 
 <dl class="py class">
-<dt id="asynctnt.exceptions.TarantoolSchemaError">
-<em class="property">class </em><code class="sig-prename descclassname">asynctnt.exceptions.</code><code class="sig-name descname">TarantoolSchemaError</code><a class="reference internal" href="_modules/asynctnt/exceptions.html#TarantoolSchemaError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#asynctnt.exceptions.TarantoolSchemaError" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="asynctnt.exceptions.TarantoolSchemaError">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">asynctnt.exceptions.</span></span><span class="sig-name descname"><span class="pre">TarantoolSchemaError</span></span><a class="reference internal" href="_modules/asynctnt/exceptions.html#TarantoolSchemaError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#asynctnt.exceptions.TarantoolSchemaError" title="Permalink to this definition">¶</a></dt>
 <dd><p>Exception is raised when any problems with schema occurred</p>
 </dd></dl>
 
 <dl class="py class">
-<dt id="asynctnt.exceptions.TarantoolDatabaseError">
-<em class="property">class </em><code class="sig-prename descclassname">asynctnt.exceptions.</code><code class="sig-name descname">TarantoolDatabaseError</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">code</span></em>, <em class="sig-param"><span class="n">message</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/asynctnt/exceptions.html#TarantoolDatabaseError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#asynctnt.exceptions.TarantoolDatabaseError" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="asynctnt.exceptions.TarantoolDatabaseError">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">asynctnt.exceptions.</span></span><span class="sig-name descname"><span class="pre">TarantoolDatabaseError</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">code</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">message</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/asynctnt/exceptions.html#TarantoolDatabaseError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#asynctnt.exceptions.TarantoolDatabaseError" title="Permalink to this definition">¶</a></dt>
 <dd><p>Exception is raised when Tarantool responds with code != 0</p>
 </dd></dl>
 
 <dl class="py class">
-<dt id="asynctnt.exceptions.TarantoolNotConnectedError">
-<em class="property">class </em><code class="sig-prename descclassname">asynctnt.exceptions.</code><code class="sig-name descname">TarantoolNotConnectedError</code><a class="reference internal" href="_modules/asynctnt/exceptions.html#TarantoolNotConnectedError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#asynctnt.exceptions.TarantoolNotConnectedError" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="asynctnt.exceptions.TarantoolNotConnectedError">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">asynctnt.exceptions.</span></span><span class="sig-name descname"><span class="pre">TarantoolNotConnectedError</span></span><a class="reference internal" href="_modules/asynctnt/exceptions.html#TarantoolNotConnectedError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#asynctnt.exceptions.TarantoolNotConnectedError" title="Permalink to this definition">¶</a></dt>
 <dd><p>Raised when asynctnt is not connected to Tarantool</p>
 </dd></dl>
 
 <dl class="py class">
-<dt id="asynctnt.exceptions.ErrorCode">
-<em class="property">class </em><code class="sig-prename descclassname">asynctnt.exceptions.</code><code class="sig-name descname">ErrorCode</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">value</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/asynctnt/exceptions.html#ErrorCode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#asynctnt.exceptions.ErrorCode" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="asynctnt.exceptions.ErrorCode">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">asynctnt.exceptions.</span></span><span class="sig-name descname"><span class="pre">ErrorCode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/asynctnt/exceptions.html#ErrorCode"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#asynctnt.exceptions.ErrorCode" title="Permalink to this definition">¶</a></dt>
 <dd><p>Tarantool default error codes</p>
 </dd></dl>
 
@@ -876,35 +883,28 @@ request is finished already while iterating over the PushIterator</p>
            
           </div>
           <footer>
-  
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-      
-        <a href="pushes.html" class="btn btn-neutral float-left" title="Session Push" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
+        <a href="pushes.html" class="btn btn-neutral float-left" title="Session Push" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
-  
 
   <hr/>
 
   <div role="contentinfo">
     <p>
-        
-        &copy; Copyright 2017, igorcoding
+        &#169; Copyright 2017, igorcoding.
 
     </p>
   </div>
     
     
     
-    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
     
-    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
     
     provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
-
         </div>
       </div>
 
