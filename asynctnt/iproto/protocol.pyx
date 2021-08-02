@@ -158,7 +158,9 @@ cdef class BaseProtocol(CoreProtocol):
                 err = e
 
         # refetch schema if it is changed
-        if self.auto_refetch_schema \
+        if self.con_state == CONNECTION_FULL \
+                and req.check_schema_change \
+                and self.auto_refetch_schema \
                 and req.response._schema_id > 0 \
                 and req.response._schema_id != self._schema_id:
             self._refetch_schema()
@@ -187,7 +189,7 @@ cdef class BaseProtocol(CoreProtocol):
 
     cdef void _do_auth(self, str username, str password):
         # No extra error handling from Db.execute
-        fut = self._db._auth(self.salt, username, password, 0, False)
+        fut = self._db._auth(self.salt, username, password, 0, False, False)
 
         def on_authorized(f):
             if f.cancelled():
@@ -223,6 +225,10 @@ cdef class BaseProtocol(CoreProtocol):
                 return
             e = f.exception()
             if not e:
+                if fut is not None and fut.cancelled():
+                    # if the caller has cancelled waiting
+                    return
+
                 spaces, indexes = f.result()
                 logger.debug('Tarantool[%s:%s] Schema fetch succeeded. '
                              'Version: %d, Spaces: %d, Indexes: %d.',
@@ -241,26 +247,32 @@ cdef class BaseProtocol(CoreProtocol):
                     self.fetch_schema = False
                     self._schema_id = -1
                     self._set_connection_ready()
-                    if fut is not None:
+                    if fut is not None and not fut.done():
                         fut.set_result(None)
                     return
 
                 self._schema_id = self._schema.id
                 self._set_connection_ready()
-                if fut is not None:
+                if fut is not None and not fut.done():
                     fut.set_result(self._schema)
             else:
+                if self._closing:
+                    # show a diag message rather than Lost connection to Tarantool when disconnected (#19)
+                    logger.debug('Schema fetch stopped: connection is closed')
+                    return
+
                 logger.error('Tarantool[%s:%s] Schema fetch failed: %s',
                              self.host, self.port, str(e))
                 if isinstance(e, asyncio.TimeoutError):
                     e = asyncio.TimeoutError('Schema fetch timeout')
                 self._set_connection_error(e)
-                if fut is not None:
+                if fut is not None and not fut.done():
                     fut.set_exception(e)
 
-        self._schema_id = -1
-        fut_vspace = self._db.select(SPACE_VSPACE, timeout=0)
-        fut_vindex = self._db.select(SPACE_VINDEX, timeout=0)
+        fut_vspace = self._db.select(SPACE_VSPACE, timeout=0,
+                                     check_schema_change=False)
+        fut_vindex = self._db.select(SPACE_VINDEX, timeout=0,
+                                     check_schema_change=False)
         gather_fut = asyncio.gather(fut_vspace, fut_vindex,
                                     return_exceptions=False)
         gather_fut.add_done_callback(on_fetch)
@@ -393,10 +405,12 @@ cdef class BaseProtocol(CoreProtocol):
                             '(asynctnt.Iterator, int, str)')
 
     cdef object _refetch_schema(self):
-        if self._refetch_schema_future is None \
-                or self._refetch_schema_future.done():
-            self._refetch_schema_future = self.create_future()
-            self._do_fetch_schema(self._refetch_schema_future)
+        if self._refetch_schema_future is not None and not self._refetch_schema_future.done():
+            self._schema_fetch_in_progress = False
+            self._refetch_schema_future.cancel()
+
+        self._refetch_schema_future = self.create_future()
+        self._do_fetch_schema(self._refetch_schema_future)
 
         return self._refetch_schema_future
 

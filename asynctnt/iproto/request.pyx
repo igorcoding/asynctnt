@@ -8,7 +8,8 @@ cdef class Request:
     @staticmethod
     cdef inline Request new(tarantool.iproto_type op,
                             uint64_t sync, int64_t schema_id,
-                            SchemaSpace space, bint push_subscribe):
+                            SchemaSpace space, bint push_subscribe,
+                            bint check_schema_change):
         cdef Request req
         req = Request.__new__(Request)
         req.op = op
@@ -21,6 +22,7 @@ cdef class Request:
         req.parse_metadata = True
         req.push_subscribe = push_subscribe
         req.response = None
+        req.check_schema_change = check_schema_change
         return req
 
     def __repr__(self):  # pragma: nocover

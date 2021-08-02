@@ -4,7 +4,6 @@ import asynctnt
 from asynctnt._testbase import ensure_version
 from asynctnt.exceptions import TarantoolNotConnectedError, \
     TarantoolDatabaseError
-
 from tests import BaseTarantoolTestCase
 from tests.util import get_complex_param, get_big_param
 
@@ -35,7 +34,6 @@ class CommonTestCase(BaseTarantoolTestCase):
         res = await self.conn.select(self.TESTER_SPACE_ID)
         self.assertResponseEqual(res, [data_cmp], 'Body ok')
 
-    @ensure_version(max=(2, 0), max_included=True)
     async def test__schema_refetch_on_schema_change(self):
         await self.tnt_reconnect(auto_refetch_schema=True,
                                  username='t1', password='t1')
@@ -85,7 +83,6 @@ class CommonTestCase(BaseTarantoolTestCase):
         self.assertGreater(self.conn.schema_id, schema_before,
                            'Schema changed')
 
-    @ensure_version(max=(2, 0), max_included=True)
     async def test__schema_no_fetch_and_refetch(self):
         await self.tnt_reconnect(auto_refetch_schema=False,
                                  username='t1', password='t1',
@@ -104,6 +101,10 @@ class CommonTestCase(BaseTarantoolTestCase):
             await self.conn.ping()
         except Exception as e:
             self.fail(e)
+
+        await asyncio.sleep(1)  # wait for potential schema refetch
+
+        self.assertEqual(self.conn.schema_id, -1)
 
     async def test__parse_numeric_map_keys(self):
         res = await self.conn.eval(
@@ -158,7 +159,7 @@ class CommonTestCase(BaseTarantoolTestCase):
             self.fail(e)
 
     async def test__write_buffer_reallocate(self):
-        p = get_big_param(size=100*1024)
+        p = get_big_param(size=100 * 1024)
         try:
             res = await self.conn.call('func_param', [p])
         except Exception as e:
@@ -179,8 +180,9 @@ class CommonTestCase(BaseTarantoolTestCase):
     async def test__encode_unsupported_type(self):
         class A:
             pass
+
         with self.assertRaisesRegex(
-                TypeError, 'Type `(.+)` is not supported for encoding'):
+            TypeError, 'Type `(.+)` is not supported for encoding'):
             await self.conn.call('func_param', [{'a': A()}])
 
     async def test__schema_refetch_next_byte(self):
@@ -239,3 +241,13 @@ class CommonTestCase(BaseTarantoolTestCase):
             await f
         except (asyncio.TimeoutError, asyncio.CancelledError) as e:
             self.fail('Schema is not updated: %s %s' % (type(e), e))
+
+    async def test__schema_refetch_on_disconnect_race_condition(self):
+        conn = asynctnt.Connection(host=self.tnt.host,
+                                   port=self.tnt.port,
+                                   username='t1', password='t1')
+        await conn.connect()
+        await conn.eval("require('msgpack').cfg{encode_use_tostring = true}")
+        await conn.call('box.schema.space.create', ['geo', {"if_not_exists": True}])
+        await conn.call('box.space.geo:format', [[{"name": "id", "type": "string"}]])
+        await conn.disconnect()

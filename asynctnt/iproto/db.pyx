@@ -17,7 +17,10 @@ cdef class Db:
     cdef inline uint64_t next_sync(self):
         return self._protocol.next_sync()
 
-    cdef object _ping(self, float timeout, bint push_subscribe):
+    cdef object _ping(self,
+                      float timeout,
+                      bint push_subscribe,
+                      bint check_schema_change):
         cdef:
             tarantool.iproto_type op
             uint64_t sync
@@ -31,11 +34,15 @@ cdef class Db:
         buf.write_header(sync, op, schema_id)
         buf.write_length()
         return self._protocol.execute(
-            Request.new(op, sync, schema_id, None, push_subscribe),
+            Request.new(op, sync, schema_id, None, push_subscribe, check_schema_change),
             buf, timeout)
 
-    cdef object _call16(self, str func_name, args,
-                         float timeout, bint push_subscribe):
+    cdef object _call16(self,
+                        str func_name,
+                        args,
+                        float timeout,
+                        bint push_subscribe,
+                        bint check_schema_change):
         cdef:
             tarantool.iproto_type op
             uint64_t sync
@@ -50,11 +57,15 @@ cdef class Db:
         buf.encode_request_call(func_name, args)
         buf.write_length()
         return self._protocol.execute(
-            Request.new(op, sync, schema_id, None, push_subscribe),
+            Request.new(op, sync, schema_id, None, push_subscribe, check_schema_change),
             buf, timeout)
 
-    cdef object _call(self, str func_name, args,
-                         float timeout, bint push_subscribe):
+    cdef object _call(self,
+                      str func_name,
+                      args,
+                      float timeout,
+                      bint push_subscribe,
+                      bint check_schema_change):
         cdef:
             tarantool.iproto_type op
             uint64_t sync
@@ -69,11 +80,15 @@ cdef class Db:
         buf.encode_request_call(func_name, args)
         buf.write_length()
         return self._protocol.execute(
-            Request.new(op, sync, schema_id, None, push_subscribe),
+            Request.new(op, sync, schema_id, None, push_subscribe, check_schema_change),
             buf, timeout)
 
-    cdef object _eval(self, str expression, args,
-                         float timeout, bint push_subscribe):
+    cdef object _eval(self,
+                      str expression,
+                      args,
+                      float timeout,
+                      bint push_subscribe,
+                      bint check_schema_change):
         cdef:
             tarantool.iproto_type op
             uint64_t sync
@@ -88,12 +103,12 @@ cdef class Db:
         buf.encode_request_eval(expression, args)
         buf.write_length()
         return self._protocol.execute(
-            Request.new(op, sync, schema_id, None, push_subscribe),
+            Request.new(op, sync, schema_id, None, push_subscribe, check_schema_change),
             buf, timeout)
 
     cdef object _select(self, SchemaSpace space, SchemaIndex index, key,
                          uint64_t offset, uint64_t limit, uint32_t iterator,
-                         float timeout, bint push_subscribe):
+                         float timeout, bint push_subscribe, bint check_schema_change):
         cdef:
             tarantool.iproto_type op
             uint64_t sync
@@ -109,11 +124,11 @@ cdef class Db:
                                   offset, limit, iterator)
         buf.write_length()
         return self._protocol.execute(
-            Request.new(op, sync, schema_id, space, push_subscribe),
+            Request.new(op, sync, schema_id, space, push_subscribe, check_schema_change),
             buf, timeout)
 
     cdef object _insert(self, SchemaSpace space, t, bint replace,
-                         float timeout, bint push_subscribe):
+                         float timeout, bint push_subscribe, bint check_schema_change):
         cdef:
             tarantool.iproto_type op
             uint64_t sync
@@ -128,11 +143,11 @@ cdef class Db:
         buf.encode_request_insert(space, t)
         buf.write_length()
         return self._protocol.execute(
-            Request.new(op, sync, schema_id, space, push_subscribe),
+            Request.new(op, sync, schema_id, space, push_subscribe, check_schema_change),
             buf, timeout)
 
     cdef object _delete(self, SchemaSpace space, SchemaIndex index, key,
-                         float timeout, bint push_subscribe):
+                         float timeout, bint push_subscribe, bint check_schema_change):
         cdef:
             tarantool.iproto_type op
             uint64_t sync
@@ -147,12 +162,12 @@ cdef class Db:
         buf.encode_request_delete(space, index, key)
         buf.write_length()
         return self._protocol.execute(
-            Request.new(op, sync, schema_id, space, push_subscribe),
+            Request.new(op, sync, schema_id, space, push_subscribe, check_schema_change),
             buf, timeout)
 
     cdef object _update(self, SchemaSpace space, SchemaIndex index,
                          key, list operations,
-                         float timeout, bint push_subscribe):
+                         float timeout, bint push_subscribe, bint check_schema_change):
         cdef:
             tarantool.iproto_type op
             uint64_t sync
@@ -167,11 +182,11 @@ cdef class Db:
         buf.encode_request_update(space, index, key, operations)
         buf.write_length()
         return self._protocol.execute(
-            Request.new(op, sync, schema_id, space, push_subscribe),
+            Request.new(op, sync, schema_id, space, push_subscribe, check_schema_change),
             buf, timeout)
 
     cdef object _upsert(self, SchemaSpace space, t, list operations,
-                         float timeout, bint push_subscribe):
+                         float timeout, bint push_subscribe, bint check_schema_change):
         cdef:
             tarantool.iproto_type op
             uint64_t sync
@@ -186,11 +201,11 @@ cdef class Db:
         buf.encode_request_upsert(space, t, operations)
         buf.write_length()
         return self._protocol.execute(
-            Request.new(op, sync, schema_id, space, push_subscribe),
+            Request.new(op, sync, schema_id, space, push_subscribe, check_schema_change),
             buf, timeout)
 
     cdef object _sql(self, str query, args, bint parse_metadata,
-                      float timeout, bint push_subscribe):
+                      float timeout, bint push_subscribe, bint check_schema_change):
         cdef:
             tarantool.iproto_type op
             uint64_t sync
@@ -205,13 +220,13 @@ cdef class Db:
         buf.write_header(sync, op, schema_id)
         buf.encode_request_sql(query, args)
         buf.write_length()
-        req = Request.new(op, sync, schema_id, None, push_subscribe)
+        req = Request.new(op, sync, schema_id, None, push_subscribe, check_schema_change)
         req.parse_metadata = parse_metadata
         req.parse_as_tuples = True
         return self._protocol.execute(req, buf, timeout)
 
     cdef object _auth(self, bytes salt, str username, str password,
-                       float timeout, bint push_subscribe):
+                       float timeout, bint push_subscribe, bint check_schema_change):
         cdef:
             tarantool.iproto_type op
             uint64_t sync
@@ -239,7 +254,7 @@ cdef class Db:
 
         buf.write_length()
         return self._protocol.execute(
-            Request.new(op, sync, schema_id, None, push_subscribe),
+            Request.new(op, sync, schema_id, None, push_subscribe, check_schema_change),
             buf, timeout)
 
     @staticmethod
@@ -269,20 +284,23 @@ cdef class Db:
     # public methods
 
     def ping(self, timeout=-1):
-        return self._ping(timeout, False)
+        return self._ping(timeout, <bint> False, <bint> True)
 
     def call16(self, func_name, args=None, timeout=-1, push_subscribe=False):
-        return self._call16(func_name, args, timeout, push_subscribe)
+        return self._call16(func_name, args, timeout,
+                            <bint> push_subscribe, <bint> True)
 
     def call(self, func_name, args=None, timeout=-1, push_subscribe=False):
-        return self._call(func_name, args, timeout, push_subscribe)
+        return self._call(func_name, args, timeout,
+                          <bint> push_subscribe, <bint> True)
 
     def eval(self, expression, args=None, timeout=-1, push_subscribe=False):
-        return self._eval(expression, args, timeout, push_subscribe)
+        return self._eval(expression, args, timeout,
+                          <bint> push_subscribe, <bint> True)
 
     def select(self, space, key=None,
                offset=0, limit=0xffffffff, index=0, iterator=0,
-               timeout=-1):
+               timeout=-1, check_schema_change=True):
         cdef:
             SchemaSpace sp
             SchemaIndex idx
@@ -294,7 +312,7 @@ cdef class Db:
             iterator = 2  # ALL
 
         return self._select(sp, idx, key, offset, limit, iterator,
-                            timeout, False)
+                            timeout, <bint> False, <bint> check_schema_change)
 
     def insert(self, space, t, replace=False,
                timeout=-1):
@@ -302,14 +320,16 @@ cdef class Db:
             SchemaSpace sp
         sp = self._protocol._schema.get_or_create_space(space)
 
-        return self._insert(sp, t, replace, timeout, False)
+        return self._insert(sp, t, <bint> replace, timeout,
+                            <bint> False, <bint> True)
 
     def replace(self, space, t, timeout=-1):
         cdef:
             SchemaSpace sp
         sp = self._protocol._schema.get_or_create_space(space)
 
-        return self._insert(sp, t, True, timeout, False)
+        return self._insert(sp, t, <bint> True, timeout,
+                            <bint> False, <bint> True)
 
     def delete(self, space, key, index=0, timeout=-1):
         cdef:
@@ -318,7 +338,8 @@ cdef class Db:
         sp = self._protocol._schema.get_or_create_space(space)
         idx = sp.get_index(index)
 
-        return self._delete(sp, idx, key, timeout, False)
+        return self._delete(sp, idx, key, timeout,
+                            <bint> False, <bint> True)
 
     def update(self, space, key, operations, index=0, timeout=-1):
         cdef:
@@ -327,14 +348,17 @@ cdef class Db:
         sp = self._protocol._schema.get_or_create_space(space)
         idx = sp.get_index(index)
 
-        return self._update(sp, idx, key, operations, timeout, False)
+        return self._update(sp, idx, key, operations, timeout,
+                            <bint> False, <bint> True)
 
     def upsert(self, space, t, operations, timeout=-1):
         cdef:
             SchemaSpace sp
         sp = self._protocol._schema.get_or_create_space(space)
 
-        return self._upsert(sp, t, operations, timeout, False)
+        return self._upsert(sp, t, operations, timeout,
+                            <bint> False, <bint> True)
 
     def sql(self, query, args, parse_metadata=True, timeout=-1):
-        return self._sql(query, args, parse_metadata, timeout, False)
+        return self._sql(query, args, <bint> parse_metadata, timeout,
+                         <bint> False, <bint> True)

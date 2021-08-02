@@ -1,3 +1,8 @@
+## v.1.2.2
+**Bugs fixed:**
+* Show a diag message rather than Lost connection to Tarantool when disconnected (closes #19)
+
+
 ## v.1.2.1
 
 **Other changes:**
