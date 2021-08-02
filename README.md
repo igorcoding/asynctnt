@@ -1,17 +1,17 @@
 # asynctnt
 
-[![Build Status](https://travis-ci.org/igorcoding/asynctnt.svg?branch=master)](https://travis-ci.org/igorcoding/asynctnt)
+![Build](https://github.com/igorcoding/asynctnt/actions/workflows/actions.yaml/badge.svg?branch=master)
 [![PyPI](https://img.shields.io/pypi/v/asynctnt.svg)](https://pypi.python.org/pypi/asynctnt)
 [![Maintainability](https://api.codeclimate.com/v1/badges/6cec8adae280cda3e161/maintainability)](https://codeclimate.com/github/igorcoding/asynctnt/maintainability)
 <a href="http://tarantool.org">
 	<img src="https://avatars2.githubusercontent.com/u/2344919?v=2&s=250" align="right">
 </a>
 
-asynctnt is a high-performance [Tarantool](https://tarantool.org/) database 
-connector library for Python/asyncio. It is highly inspired by 
+asynctnt is a high-performance [Tarantool](https://tarantool.org/) database
+connector library for Python/asyncio. It is highly inspired by
 [asyncpg](https://github.com/MagicStack/asyncpg) module.
 
-asynctnt requires Python 3.5 or later and is supported for Tarantool 
+asynctnt requires Python 3.5 or later and is supported for Tarantool
 versions 1.6+.
 
 
@@ -30,23 +30,23 @@ Documentation is available [here](https://igorcoding.github.io/asynctnt).
 ## Key features
 
 * Support for all of the basic requests that Tarantool supports. This includes:
-  `insert`, `select`, `update`, `upsert`, `eval`, `sql` (for Tarantool 2.x), 
-  `call` and `call16`. _Note: For the difference between `call16` and `call` 
+  `insert`, `select`, `update`, `upsert`, `eval`, `sql` (for Tarantool 2.x),
+  `call` and `call16`. _Note: For the difference between `call16` and `call`
   please refer to Tarantool documentation._
-* **Schema fetching** on connection establishment, so you can use spaces and 
+* **Schema fetching** on connection establishment, so you can use spaces and
   indexes names rather than their ids.
 * Schema **auto refetching**. If schema in Tarantool is changed, `asynctnt`
   refetches it.
-* **Auto reconnect**. If connection is lost for some reason - asynctnt will 
-  start automatic reconnection procedure (with authorization and schema 
+* **Auto reconnect**. If connection is lost for some reason - asynctnt will
+  start automatic reconnection procedure (with authorization and schema
   fetching, of course).
-* Ability to use **dicts for tuples** with field names as keys in DML requests 
-  (select, insert, replace, delete, update, upsert). This is possible only 
-  if space.format is specified in Tarantool. Field names can also be used 
+* Ability to use **dicts for tuples** with field names as keys in DML requests
+  (select, insert, replace, delete, update, upsert). This is possible only
+  if space.format is specified in Tarantool. Field names can also be used
   in update operations instead of field numbers. Moreover, tuples are decoded
   into the special structures that can act either as `tuple`s or by `dict`s with
   the appropriate API.
-* All requests support specification of `timeout` value, so if request is 
+* All requests support specification of `timeout` value, so if request is
   executed for too long, asyncio.TimeoutError is raised. It drastically
   simplifies your code, as you don't need to use `asyncio.wait_for(...)`
   stuff anymore.
@@ -82,16 +82,16 @@ import asynctnt
 async def main():
     conn = asynctnt.Connection(host='127.0.0.1', port=3301)
     await conn.connect()
-    
+
     for i in range(1, 11):
         await conn.insert('tester', [i, 'hello{}'.format(i)])
-        
+
     data = await conn.select('tester', [])
     first_tuple = data[0]
     print('tuple:', first_tuple)
     print(f'tuple[0]: {first_tuple[0]}; tuple["id"]: {first_tuple["id"]}')
     print(f'tuple[1]: {first_tuple[1]}; tuple["name"]: {first_tuple["name"]}')
-    
+
     await conn.disconnect()
 
 asyncio.run(main())
@@ -99,7 +99,7 @@ asyncio.run(main())
 
 Stdout:
 
-*(note that you can simultaneously access fields either by indices 
+*(note that you can simultaneously access fields either by indices
 or by their names)*
 ```
 tuple: <TarantoolTuple id=1 name='hello1'>
@@ -109,7 +109,7 @@ tuple[1]: hello1; tuple["name"]: hello1
 
 ## SQL
 
-Tarantool 2 brings out an SQL interface to the database. You can easily use SQL 
+Tarantool 2 brings out an SQL interface to the database. You can easily use SQL
 through `asynctnt`
 
 ```lua
@@ -137,14 +137,14 @@ import asynctnt
 async def main():
     conn = asynctnt.Connection(host='127.0.0.1', port=3301)
     await conn.connect()
-    
+
     await conn.sql("insert into users (id, name) values (1, 'James Bond')")
     await conn.sql("insert into users (id, name) values (2, 'Ethan Hunt')")
     data = await conn.sql('select * from users')
-    
+
     for row in data:
         print(row)
-    
+
     await conn.disconnect()
 
 asyncio.run(main())
@@ -158,7 +158,7 @@ Stdout:
 
 ## Performance
 
-On all of the benchmarks below `wal_mode = none` 
+On all of the benchmarks below `wal_mode = none`
 
 ### Sequential
 
