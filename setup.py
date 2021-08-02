@@ -14,11 +14,8 @@ except ImportError:
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
 
 description = "A fast Tarantool Database connector for Python/asyncio."
-try:
-    import pypandoc
-    long_description = pypandoc.convert_file('README.md', 'rst')
-except (IOError, ImportError):
-    long_description = description
+with open('README.md') as f:
+    long_description = f.read()
 
 
 def find_version():
@@ -146,5 +143,6 @@ setup(
     ],
     description=description,
     long_description=long_description,
+    long_description_content_type='text/markdown',
     test_suite='run_tests.discover_tests'
 )

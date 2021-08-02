@@ -1,7 +1,7 @@
 .PHONY: build debug test coverage clean annotate all
 
 
-PYTHON ?= python
+PYTHON?=python
 
 
 all: build

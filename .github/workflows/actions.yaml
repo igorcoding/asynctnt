@@ -1,0 +1,144 @@
+name: Python package
+
+on: [push]
+
+jobs:
+  test:
+    strategy:
+      matrix:
+        os: [ ubuntu-latest, macos-latest ]
+        python-version: [3.6, 3.7, 3.8, 3.9]
+        tarantool: ['1.10', '2.7']
+        exclude:
+          - os: macos-latest
+            tarantool: '1.10'
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: recursive
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install Tarantool ${{ matrix.tarantool }}
+        run: |
+          if [ "$RUNNER_OS" == "Linux" ]; then
+            curl -L https://tarantool.io/nTmSHOX/release/${{ matrix.tarantool }}/installer.sh | bash
+            sudo apt-get -y install tarantool
+          elif [ "$RUNNER_OS" == "macOS" ]; then
+            brew install tarantool
+          else
+            echo "$RUNNER_OS not supported"
+            exit 1
+          fi
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip setuptools wheel coveralls
+          python -m pip install -r requirements.txt
+      - name: Run tests
+        run: |
+          if [[ "$RUNNER_OS" == "Linux" && ${{ matrix.python-version }} == "3.9" && ${{ matrix.tarantool }} == "2.7" ]]; then
+              make && make test
+              make clean && make debug && make test PYTHON='coverage run'
+              # coveralls
+          else
+              make && make quicktest
+          fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}"
+
+  build-wheels:
+    name: Build wheels on ${{ matrix.os }}
+    if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ ubuntu-latest, windows-latest, macos-latest ]
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: recursive
+
+      - uses: actions/setup-python@v2
+
+      - name: Install cibuildwheel
+        run: python -m pip install --upgrade cibuildwheel
+
+      - name: Build wheels
+        run: python -m cibuildwheel --output-dir wheelhouse
+        env:
+          CIBW_BUILD: "cp36-* cp37-* cp38-* cp39-*"
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: wheels
+          path: ./wheelhouse/*.whl
+
+  publish:
+    name: Publish wheels
+    if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
+    needs:
+      - build-wheels
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get tag
+        id: get_tag
+        run: echo ::set-output name=TAG::${GITHUB_REF/refs\/tags\//}
+      - run: echo "Current tag is ${{ steps.get_tag.outputs.TAG }}"
+      - uses: actions/checkout@v2
+        with:
+          submodules: recursive
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.9
+      - uses: actions/download-artifact@v2
+        with:
+          name: wheels
+          path: wheels
+      - run: tree
+      - run: |
+          python setup.py sdist
+          tree wheels
+          tree dist
+          # twine upload dist/* wheels/*
+      - uses: marvinpinto/action-automatic-releases@latest
+        with:
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          prerelease: false
+          title: ${{ steps.get_tag.outputs.TAG }}
+          files: |
+            wheels/*.whl
+            dist/*
+
+  docs:
+    name: Publish docs
+    if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: recursive
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.9
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip setuptools wheel
+          python -m pip install -r docs/requirements.txt
+
+      - name: Build docs
+        run: make docs
+
+      - name: Deploy
+        uses: JamesIves/github-pages-deploy-action@4.1.4
+        with:
+          branch: gh-pages
+          folder: docs/_build/html
