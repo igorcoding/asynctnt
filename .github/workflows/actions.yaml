@@ -107,11 +107,15 @@ jobs:
         with:
           name: wheels
           path: wheels
-      - run: |
+      - name: Publish dist
+        run: |
           python setup.py sdist
           tree wheels
           tree dist
           twine upload dist/* wheels/*
+        env:
+          TWINE_USERNAME: ${{ secrets.TWINE_USERNAME }}
+          TWINE_PASSWORD: ${{ secrets.TWINE_PASSWORD }}
       - uses: marvinpinto/action-automatic-releases@latest
         with:
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
