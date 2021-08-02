@@ -1,6 +1,6 @@
 # asynctnt
 
-![Build](https://github.com/igorcoding/asynctnt/actions/workflows/actions.yaml/badge.svg?branch=master)
+[![Build](https://github.com/igorcoding/asynctnt/actions/workflows/actions.yaml/badge.svg?branch=master)](https://github.com/igorcoding/asynctnt/actions)
 [![PyPI](https://img.shields.io/pypi/v/asynctnt.svg)](https://pypi.python.org/pypi/asynctnt)
 [![Maintainability](https://api.codeclimate.com/v1/badges/6cec8adae280cda3e161/maintainability)](https://codeclimate.com/github/igorcoding/asynctnt/maintainability)
 <a href="http://tarantool.org">
