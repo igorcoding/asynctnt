@@ -1,5 +1,7 @@
 cimport cpython
 cimport cpython.dict
+cimport cpython.bytes
+cimport cpython.bytearray
 
 from cpython.ref cimport PyObject
 
@@ -71,18 +73,25 @@ cdef class CoreProtocol:
             ssize_t data_len
             ssize_t buf_len
 
-        if not cpython.PyBytes_CheckExact(data):
-            raise BufferError('_on_data_received: expected bytes object')
-
         data_str = NULL
         data_len = 0
-        cpython.bytes.PyBytes_AsStringAndSize(<bytes>data,
-                                              &data_str,
-                                              &data_len)
+
+        if cpython.PyBytes_CheckExact(data):
+            cpython.bytes.PyBytes_AsStringAndSize(<bytes> data,
+                                                  &data_str,
+                                                  &data_len)
+            self.rbuf.extend(data_str, data_len)
+        elif cpython.bytearray.PyByteArray_CheckExact(data):
+            data_len = cpython.bytearray.PyByteArray_Size(<bytearray> data)
+            self.rbuf.extend(cpython.bytearray.PyByteArray_AsString(<bytearray> data), data_len)
+        else:
+            raise BufferError(
+                '_on_data_received: expected bytes or bytearray object, got {}'.format(
+                    type(data),
+                ))
+
         if data_len == 0:
             return
-
-        self.rbuf.extend(data_str, data_len)
 
         if self.state == PROTOCOL_GREETING:
             if self.rbuf.use < IPROTO_GREETING_SIZE:
