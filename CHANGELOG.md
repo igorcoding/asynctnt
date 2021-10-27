@@ -1,3 +1,6 @@
+## v.1.2.3
+* Support Python 3.10
+
 ## v.1.2.2
 **Bugs fixed:**
 * Show a diag message rather than Lost connection to Tarantool when disconnected (closes #19)

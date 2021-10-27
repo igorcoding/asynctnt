@@ -25,7 +25,7 @@ def find_version():
                 r"""__version__\s*=\s*(['"])([^'"]+)\1""", line).group(2)
 
 
-CYTHON_VERSION = '0.29.21'
+CYTHON_VERSION = '0.29.24'
 
 
 class build_ext(_build_ext.build_ext):
@@ -129,6 +129,9 @@ setup(
         "Programming Language :: Python :: 3.5",
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.9",
+        "Programming Language :: Python :: 3.10",
         'Programming Language :: Python :: Implementation :: CPython',
         "Intended Audience :: Developers",
         "License :: OSI Approved :: Apache Software License",
