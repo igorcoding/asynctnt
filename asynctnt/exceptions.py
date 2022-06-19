@@ -19,7 +19,7 @@ class TarantoolDatabaseError(TarantoolError):
     """
         Exception is raised when Tarantool responds with code != 0
     """
-    def __init__(self, code, message):
+    def __init__(self, code: int, message: str):
         super(TarantoolDatabaseError, self).__init__(code, message)
         self.code = code
         self.message = message

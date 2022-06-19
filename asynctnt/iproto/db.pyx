@@ -283,5 +283,3 @@ cdef class Db:
     def execute(self, query, args, parse_metadata=True, timeout=-1):
         return self._execute(query, args, <bint> parse_metadata, timeout,
                              <bint> False, <bint> True)
-
-    sql = execute

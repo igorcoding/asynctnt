@@ -2,8 +2,7 @@ import asyncio
 import enum
 import functools
 import os
-import typing
-from typing import Optional
+from typing import Optional, Union, Awaitable, Any, List, Tuple, Dict
 
 from .exceptions import TarantoolDatabaseError, \
     ErrorCode, TarantoolNotConnectedError
@@ -25,7 +24,11 @@ class ConnectionState(enum.IntEnum):
     DISCONNECTED = 5
 
 
-_MethodRet = typing.Union[typing.Awaitable[protocol.Response], asyncio.Future]
+_MethodRet = Union[Awaitable[protocol.Response], asyncio.Future]
+SpaceType = Union[str, int]
+IndexType = Union[str, int]
+KeyType = Union[List[Any], Tuple]
+TupleType = Union[List[Any], Tuple, Dict[str, Any]]
 
 
 class Connection:
@@ -41,18 +44,18 @@ class Connection:
     )
 
     def __init__(self, *,
-                 host='127.0.0.1',
-                 port=3301,
-                 username=None,
-                 password=None,
-                 fetch_schema=True,
-                 auto_refetch_schema=True,
-                 connect_timeout=3.,
-                 request_timeout=-1.,
-                 reconnect_timeout=1. / 3.,
-                 ping_timeout=5.,
-                 encoding=None,
-                 initial_read_buffer_size=None,
+                 host: str = '127.0.0.1',
+                 port: Union[int, str] = 3301,
+                 username: Optional[str] = None,
+                 password: Optional[str] = None,
+                 fetch_schema: bool = True,
+                 auto_refetch_schema: bool = True,
+                 connect_timeout: float = 3.,
+                 request_timeout: float = -1.,
+                 reconnect_timeout: float = 1. / 3.,
+                 ping_timeout: float = 5.,
+                 encoding: Optional[str] = None,
+                 initial_read_buffer_size: Optional[int] = None,
                  **kwargs):
 
         """
@@ -159,7 +162,7 @@ class Connection:
         else:
             self.__create_task = asyncio.ensure_future
 
-    def _set_state(self, new_state):
+    def _set_state(self, new_state: ConnectionState):
         if self._state != new_state:
             logger.debug('Changing state %s -> %s',
                          self._state.name, new_state.name)
@@ -196,7 +199,7 @@ class Connection:
 
             await asyncio.sleep(self._ping_timeout)
 
-    def _start_reconnect(self, return_exceptions=False):
+    def _start_reconnect(self, return_exceptions: bool = False):
         if self._state in [ConnectionState.CONNECTING,
                            ConnectionState.RECONNECTING]:
             logger.debug('%s Cannot start reconnect: already reconnecting',
@@ -213,7 +216,9 @@ class Connection:
             self._connect(return_exceptions=return_exceptions)
         )
 
-    def protocol_factory(self, connected_fut, cls=protocol.Protocol):
+    def protocol_factory(self,
+                         connected_fut: asyncio.Future,
+                         cls=protocol.Protocol):
         return cls(host=self._host,
                    port=self._port,
                    username=self._username,
@@ -228,7 +233,7 @@ class Connection:
                    on_connection_lost=self.connection_lost,
                    loop=self._loop)
 
-    async def _connect(self, return_exceptions=True):
+    async def _connect(self, return_exceptions: bool = True):
         async with self._connect_lock:
             while True:
                 try:
@@ -587,7 +592,7 @@ class Connection:
         """
         await self._protocol.refetch_schema()
 
-    def ping(self, *, timeout=-1.0) -> _MethodRet:
+    def ping(self, *, timeout: float = -1.0) -> _MethodRet:
         """
             Ping request coroutine
 
@@ -597,8 +602,12 @@ class Connection:
         """
         return self._db.ping(timeout=timeout)
 
-    def call16(self, func_name, args=None, *,
-               timeout=-1.0, push_subscribe=False) -> _MethodRet:
+    def call16(self,
+               func_name: str,
+               args: Optional[List[Any]] = None,
+               *,
+               timeout: float = -1.0,
+               push_subscribe: bool = False) -> _MethodRet:
         """
             Call16 request coroutine. It is a call with an old behaviour
             (return result of a Tarantool procedure is wrapped into a tuple,
@@ -615,8 +624,12 @@ class Connection:
                                timeout=timeout,
                                push_subscribe=push_subscribe)
 
-    def call(self, func_name, args=None, *,
-             timeout=-1.0, push_subscribe=False) -> _MethodRet:
+    def call(self,
+             func_name: str,
+             args: Optional[List[Any]] = None,
+             *,
+             timeout: float = -1.0,
+             push_subscribe: bool = False) -> _MethodRet:
         """
             Call request coroutine. It is a call with a new behaviour
             (return result of a Tarantool procedure is not wrapped into
@@ -648,8 +661,12 @@ class Connection:
         return self._db.call(func_name, args,
                              timeout=timeout, push_subscribe=push_subscribe)
 
-    def eval(self, expression, args=None, *,
-             timeout=-1.0, push_subscribe=False) -> _MethodRet:
+    def eval(self,
+             expression: str,
+             args: Optional[List[Any]] = None,
+             *,
+             timeout: float = -1.0,
+             push_subscribe: bool = False) -> _MethodRet:
         """
             Eval request coroutine.
 
@@ -675,7 +692,10 @@ class Connection:
         return self._db.eval(expression, args,
                              timeout=timeout, push_subscribe=push_subscribe)
 
-    def select(self, space, key=None, **kwargs) -> _MethodRet:
+    def select(self,
+               space: SpaceType,
+               key: Optional[KeyType] = None,
+               **kwargs) -> _MethodRet:
         """
             Select request coroutine.
 
@@ -720,7 +740,12 @@ class Connection:
         """
         return self._db.select(space, key, **kwargs)
 
-    def insert(self, space, t, *, replace=False, timeout=-1) -> _MethodRet:
+    def insert(self,
+               space: SpaceType,
+               t: TupleType,
+               *,
+               replace: bool = False,
+               timeout: float = -1) -> _MethodRet:
         """
             Insert request coroutine.
 
@@ -754,7 +779,11 @@ class Connection:
                                replace=replace,
                                timeout=timeout)
 
-    def replace(self, space, t, *, timeout=-1.0) -> _MethodRet:
+    def replace(self,
+                space: SpaceType,
+                t: TupleType,
+                *,
+                timeout: float = -1.0) -> _MethodRet:
         """
             Replace request coroutine. Same as insert, but replace.
 
@@ -766,7 +795,10 @@ class Connection:
         """
         return self._db.replace(space, t, timeout=timeout)
 
-    def delete(self, space, key, **kwargs) -> _MethodRet:
+    def delete(self,
+               space: SpaceType,
+               key: KeyType,
+               **kwargs) -> _MethodRet:
         """
             Delete request coroutine.
 
@@ -790,7 +822,11 @@ class Connection:
         """
         return self._db.delete(space, key, **kwargs)
 
-    def update(self, space, key, operations, **kwargs) -> _MethodRet:
+    def update(self,
+               space: SpaceType,
+               key: KeyType,
+               operations: List[Any],
+               **kwargs) -> _MethodRet:
         """
             Update request coroutine.
 
@@ -828,7 +864,11 @@ class Connection:
         """
         return self._db.update(space, key, operations, **kwargs)
 
-    def upsert(self, space, t, operations, **kwargs) -> _MethodRet:
+    def upsert(self,
+               space: SpaceType,
+               t: TupleType,
+               operations: List[Any],
+               **kwargs) -> _MethodRet:
         """
             Update request coroutine. Performs either insert or update
             (depending of either tuple exists or not)
@@ -858,8 +898,11 @@ class Connection:
         """
         return self._db.upsert(space, t, operations, **kwargs)
 
-    def sql(self, query, args=None, *,
-            parse_metadata=True, timeout=-1.0) -> _MethodRet:
+    def execute(self,
+                query: str,
+                args: Optional[List[Any]] = None, *,
+                parse_metadata: bool = True,
+                timeout: float = -1.0) -> _MethodRet:
         """
             Executes an SQL statement (only for Tarantool > 2)
 
@@ -867,17 +910,17 @@ class Connection:
 
             .. code-block:: pycon
 
-                >>> await conn.sql("select 1 as a, 2 as b")
+                >>> await conn.execute("select 1 as a, 2 as b")
                 <Response sync=3 rowcount=1 data=[<TarantoolTuple A=1 B=2>]>
 
-                >>> await conn.sql("select * from sql_space")
+                >>> await conn.execute("select * from sql_space")
                 <Response sync=3 rowcount=2 data=[
                     <TarantoolTuple ID=1 NAME='James Bond'>,
                     <TarantoolTuple ID=2 NAME='Ethan Hunt'>
                 ]>
 
-                >>> await conn.sql("select * from sql_space",
-                ...                parse_metadata=False)
+                >>> await conn.execute("select * from sql_space",
+                ...                    parse_metadata=False)
                 <Response sync=3 rowcount=2 data=[
                     <TarantoolTuple 0=1 1='James Bond'>,
                     <TarantoolTuple 0=2 1='Ethan Hunt'>
@@ -891,9 +934,9 @@ class Connection:
 
             :returns: :class:`asynctnt.Response` instance
         """
-        return self._db.sql(query, args,
-                            parse_metadata=parse_metadata,
-                            timeout=timeout)
+        return self._db.execute(query, args,
+                                parse_metadata=parse_metadata,
+                                timeout=timeout)
 
     def _normalize_api(self):
         if (1, 6) <= self.version < (1, 7):  # pragma: nocover
