@@ -5,6 +5,7 @@ from typing import Optional
 cimport cpython
 cimport cpython.list
 cimport cpython.dict
+cimport cython
 
 from libc.stdint cimport uint32_t
 from libc cimport stdio
@@ -19,7 +20,8 @@ cdef class Response:
         Response object for all the requests to Tarantool
     """
 
-    def __cinit__(self, bytes encoding, bint push_subscribe):
+    def __cinit__(self, bytes encoding, BaseRequest req):
+        self._request = req
         self._sync = 0
         self._code = -1
         self._return_code = -1
@@ -30,8 +32,8 @@ cdef class Response:
         self._encoding = encoding
         self._fields = None
         self._autoincrement_ids = None
-        self._push_subscribe = push_subscribe
-        if push_subscribe:
+        self._push_subscribe = req.push_subscribe
+        if req.push_subscribe:
             self._q = collections.deque()
             self._push_event = asyncio.Event()
 
@@ -267,7 +269,7 @@ cdef object _decode_obj(const char **p, bytes encoding):
 
 
 cdef list _response_parse_body_data(const char **b,
-                                    Response resp, Request req):
+                                    Response resp, BaseRequest req):
     cdef:
         uint32_t size
         uint32_t tuple_size
@@ -354,7 +356,7 @@ cdef ssize_t response_parse_header(const char *buf, uint32_t buf_len,
 
 
 cdef ssize_t response_parse_body(const char *buf, uint32_t buf_len,
-                                 Response resp, Request req,
+                                 Response resp, BaseRequest req,
                                  bint is_chunk) except -1:
     cdef:
         const char *b

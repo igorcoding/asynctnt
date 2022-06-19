@@ -8,10 +8,10 @@ all: build
 
 
 clean:
-	rm -rf asynctnt/*.c asynctnt/*.h
+	rm -rf asynctnt/*.c asynctnt/*.h asynctnt/*.cpp
 	rm -rf asynctnt/*.so asynctnt/*.html
 	rm -rf asynctnt/iproto/*.c asynctnt/iproto/*.h
-	rm -rf asynctnt/iproto/*.so asynctnt/iproto/*.html
+	rm -rf asynctnt/iproto/*.so asynctnt/iproto/*.html asynctnt/iproto/requests/*.html
 	rm -rf build *.egg-info .eggs dist
 	find . -name '__pycache__' | xargs rm -rf
 	rm -rf htmlcov

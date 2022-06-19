@@ -23,12 +23,12 @@ def main():
 
     scenarios = [
         ['ping', []],
-        ['call', ['test']],
-        ['call', ['test'], dict(push_subscribe=True)],
-        ['eval', ['return "hello"']],
-        ['select', [512]],
-        ['replace', [512, [2, 'hhhh']]],
-        ['update', [512, [2], [(':', 1, 1, 3, 'yo!')]]],
+        # ['call', ['test']],
+        # ['call', ['test'], dict(push_subscribe=True)],
+        # ['eval', ['return "hello"']],
+        # ['select', [512]],
+        # ['replace', [512, [2, 'hhhh']]],
+        # ['update', [512, [2], [(':', 1, 1, 3, 'yo!')]]],
         # ['sql', ['select 1 as a, 2 as b'], dict(parse_metadata=False)],
     ]
 
@@ -79,20 +79,20 @@ async def async_bench(name, conn,
         name, method, elapsed, n / elapsed.total_seconds()))
 
 
-async def create_asynctnt(loop):
+async def create_asynctnt():
     import asynctnt
     conn = asynctnt.Connection(host=HOST,
                                port=PORT,
                                username=USERNAME,
                                password=PASSWORD,
                                reconnect_timeout=1,
-                               fetch_schema=True,
-                               auto_refetch_schema=True)
+                               fetch_schema=False,
+                               auto_refetch_schema=False)
     await conn.connect()
     return conn
 
 
-async def create_aiotarantool(loop):
+async def create_aiotarantool():
     import aiotarantool
     conn = aiotarantool.connect(HOST, PORT,
                                 user=USERNAME,
