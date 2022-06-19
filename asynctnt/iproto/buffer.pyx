@@ -217,6 +217,7 @@ cdef class WriteBuffer:
             char *svp
             uint8_t sign
             tuple digits
+            uint32_t digits_count
             int exponent
             uint32_t length
 
@@ -225,7 +226,8 @@ cdef class WriteBuffer:
         digits = <tuple> decimal_tuple.digits
         exponent = <int> decimal_tuple.exponent
 
-        length = decimal_len(exponent, digits)
+        digits_count = <uint32_t> len(digits)
+        length = decimal_len(exponent, digits_count)
 
         p = begin = self._ensure_allocated(p, mp_sizeof_ext(length))
 
@@ -233,12 +235,9 @@ cdef class WriteBuffer:
         p = mp_encode_extl(p, tarantool.MP_DECIMAL, length)
 
         # encode decimal
-        p = decimal_encode(p, sign, digits, exponent)
+        p = decimal_encode(p, digits_count, sign, digits, exponent)
 
         self._length += (p - begin)
-
-        printf("%s\n", xd(begin, (p-begin)))
-
         return p
 
     cdef char *mp_encode_array(self, char *p, uint32_t len) except NULL:

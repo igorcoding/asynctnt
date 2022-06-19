@@ -1,33 +1,23 @@
-from libc cimport math
-
 from decimal import Decimal
 
-cdef uint32_t decimal_len(int exponent, tuple digits):
+cdef uint32_t decimal_len(int exponent, uint32_t digits_count):
     cdef:
         uint32_t length
-        uint32_t digits_len
-        bint is_odd
 
-    length = 0
+    length = bcd_len(digits_count)
     if exponent > 0:
         length += mp_sizeof_int(-exponent)
     else:
         length += mp_sizeof_uint(-exponent)
 
-    digits_len = <uint32_t> len(digits)
-    is_odd = (digits_len % 2 == 1)
-    length += 1 + <uint32_t> math.ceil((is_odd + digits_len) / 2)
     return length
 
-cdef char *decimal_encode(char *p, uint8_t sign, tuple digits, int exponent):
+cdef char *decimal_encode(char *p, uint32_t digits_count, uint8_t sign, tuple digits, int exponent):
     cdef:
-        uint8_t digit
         int i
         uint8_t byte
-        uint32_t n
-        uint32_t digits_len
-        bint is_even
-        uint32_t delta
+        char *out
+        uint32_t length
 
     # encode exponent
     if exponent > 0:
@@ -35,44 +25,29 @@ cdef char *decimal_encode(char *p, uint8_t sign, tuple digits, int exponent):
     else:
         p = mp_encode_uint(p, -exponent)
 
-    digits_len = <uint32_t> len(digits)
-    is_odd = (digits_len % 2 == 1)
+    length = bcd_len(digits_count)
 
-    print('encode', exponent, digits, sign)
-
-    # encode 1st digit
-    if is_odd:
-        p[0] = 0
-        p += 1
-        delta = 0
-    else:
-        byte = <uint8_t> digits[0]
-        p[0] = <char> byte
-        p += 1
-        delta = 1
-
-    n = <uint32_t> math.ceil((digits_len - (delta + 1)) / 2)
-    for i in range(n):
-        byte = 0
-        byte = <uint8_t> digits[delta + i]
-        byte <<= 4
-        byte |= <uint8_t> digits[delta + i + 1]
-        p[0] = <char> byte
-        p += 1
-
-    # encode last digit
-    byte = 0
-    byte = digits[digits_len - 1]
-    byte <<= 4
-
-    # encode nibble
+    out = &p[length - 1]
     if sign == 1:
-        byte |= 0x0d
+        byte = 0x0d
     else:
-        byte |= 0x0c
+        byte = 0x0c
 
-    p[0] = <char> byte
-    p += 1
+    i = digits_count - 1
+    while out >= p:
+        if i >= 0:
+            byte |= (<uint8_t> <object> cpython.tuple.PyTuple_GET_ITEM(digits, i)) << 4
+
+        out[0] = byte
+        byte = 0
+
+        if i > 0:
+            byte = <uint8_t> <object> cpython.tuple.PyTuple_GET_ITEM(digits, i - 1) & 0xf
+
+        out -= 1
+        i -= 2
+
+    p = &p[length]
     return p
 
 cdef object decimal_decode(const char ** p, uint32_t length):
@@ -80,13 +55,14 @@ cdef object decimal_decode(const char ** p, uint32_t length):
         int exponent
         uint8_t sign
         mp_type obj_type
-        const char *svp
+        const char *first
+        const char *last
         uint32_t digits_count
-        uint32_t i, total
-        uint8_t dig1, dig2
+        uint8_t nibble
 
     sign = 0
-    svp = &p[0][0]
+    first = &p[0][0]
+    last = first + length - 1
 
     # decode exponent
     obj_type = mp_typeof(p[0][0])
@@ -97,65 +73,44 @@ cdef object decimal_decode(const char ** p, uint32_t length):
     else:
         raise TypeError('unexpected exponent type: {}'.format(obj_type))
 
-    length -= (&p[0][0] - svp)
-    svp = &p[0][0]
+    length -= (&p[0][0] - first)
+    first = &p[0][0]
 
-    # decode digits
-    digits_count = 2 + 2 * (length - 2)
-    print('digits count:', digits_count)
-    digits = cpython.tuple.PyTuple_New(digits_count)
+    while first[0] == 0:
+        first += 1  # skipping leading zeros
 
-    # decode 1st digit
-    dig1 = <uint8_t> svp[0]
-    item = <object> <int> dig1
-    cpython.Py_INCREF(item)
-    cpython.tuple.PyTuple_SET_ITEM(digits, 0, item)
-    print(item)
-
-    svp += 1
-
-    # decode digits
-    total = 1
-    i = 1
-    for i in range(1, length - 1):
-        dig2 = <uint8_t> svp[0]
-        dig1 = dig2 >> 4
-        dig2 &= 0x0f
-        svp += 1
-
-        item = <object> <int> dig1
-        cpython.Py_INCREF(item)
-        cpython.tuple.PyTuple_SET_ITEM(digits, total, item)
-        total += 1
-        print(item)
-
-        item = <object> <int> dig2
-        cpython.Py_INCREF(item)
-        cpython.tuple.PyTuple_SET_ITEM(digits, total, item)
-        total += 1
-        print(item)
-
-    # decode last digit and nibble
-    dig2 = <uint8_t> svp[0]
-    dig1 = dig2 >> 4
-    dig2 &= 0x0f
-    svp += 1
-
-    item = <object> <int> dig1
-    cpython.Py_INCREF(item)
-    cpython.tuple.PyTuple_SET_ITEM(digits, total, item)
-    total += 1
-
-    sign = dig2
+    sign = last[0] & 0xf  # extract sign
     if sign == 0x0a or sign == 0x0c or sign == 0x0e or sign == 0x0f:
         sign = 0
     else:
         sign = 1
 
-    print(item, sign)
+    # decode digits
+    digits_count = (last - first) * 2 + 1
+    if first[0] & 0xf0 == 0:
+        digits_count -= 1  # adjust for leading zero nibble
 
-    print('length: ', length)
+    digits = cpython.tuple.PyTuple_New(digits_count)
+
+    if digits_count > 0:
+        while True:
+            nibble = (last[0] & 0xf0) >> 4  # left nibble first
+            item = <object> <int> nibble
+            cpython.tuple.PyTuple_SET_ITEM(digits, digits_count - 1, item)
+
+            digits_count -= 1
+            if digits_count == 0:
+                break
+            last -= 1
+
+            nibble = last[0] & 0x0f  # right nibble
+            item = <object> <int> nibble
+            cpython.tuple.PyTuple_SET_ITEM(digits, digits_count - 1, item)
+
+            digits_count -= 1
+            if digits_count == 0:
+                break
+
     p[0] += length
-    print('digits', digits)
 
     return Decimal((<object> <int> sign, digits, <object> exponent))

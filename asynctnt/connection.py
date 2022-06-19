@@ -938,6 +938,8 @@ class Connection:
                                 parse_metadata=parse_metadata,
                                 timeout=timeout)
 
+    sql = execute
+
     def _normalize_api(self):
         if (1, 6) <= self.version < (1, 7):  # pragma: nocover
             Connection.call = Connection.call16

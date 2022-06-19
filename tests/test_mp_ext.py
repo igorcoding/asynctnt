@@ -15,11 +15,19 @@ class MpExtTestCase(BaseTarantoolTestCase):
         res = await self.conn.replace(self.TESTER_EXT_SPACE_NAME, [1, dec])
         self.assertEqual(res[0][1], dec)
 
+        dec = Decimal('-12.345')
+        res = await self.conn.replace(self.TESTER_EXT_SPACE_NAME, [1, dec])
+        self.assertEqual(res[0][1], dec)
+
         dec = Decimal('-12.4')
         res = await self.conn.replace(self.TESTER_EXT_SPACE_NAME, [1, dec])
         self.assertEqual(res[0][1], dec)
 
         dec = Decimal('0')
+        res = await self.conn.replace(self.TESTER_EXT_SPACE_NAME, [1, dec])
+        self.assertEqual(res[0][1], dec)
+
+        dec = Decimal('0.000')
         res = await self.conn.replace(self.TESTER_EXT_SPACE_NAME, [1, dec])
         self.assertEqual(res[0][1], dec)
 
@@ -36,5 +44,17 @@ class MpExtTestCase(BaseTarantoolTestCase):
         self.assertEqual(res[0][1], dec)
 
         dec = Decimal('-0.000000000000000000000000000000000010')
+        res = await self.conn.replace(self.TESTER_EXT_SPACE_NAME, [1, dec])
+        self.assertEqual(res[0][1], dec)
+
+        dec = Decimal('0.1111111111111111')
+        res = await self.conn.replace(self.TESTER_EXT_SPACE_NAME, [1, dec])
+        self.assertEqual(res[0][1], dec)
+
+        dec = Decimal('-0.1111111111111111')
+        res = await self.conn.replace(self.TESTER_EXT_SPACE_NAME, [1, dec])
+        self.assertEqual(res[0][1], dec)
+
+        dec = Decimal('-0.111111')
         res = await self.conn.replace(self.TESTER_EXT_SPACE_NAME, [1, dec])
         self.assertEqual(res[0][1], dec)
