@@ -12,6 +12,9 @@ cdef class Db:
 
     cdef object _ping(self, float timeout, bint check_schema_change)
 
+    cdef object _auth(self, bytes salt, str username, str password,
+                      float timeout, bint push_subscribe, bint check_schema_change)
+
     cdef object _call(self, tarantool.iproto_type op, str func_name, object args,
                       float timeout, bint push_subscribe, bint check_schema_change)
 
@@ -35,8 +38,8 @@ cdef class Db:
     cdef object _upsert(self, object space, object t, list operations,
                         float timeout, bint push_subscribe, bint check_schema_change)
 
-    cdef object _execute(self, str query, object args, bint parse_metadata,
+    cdef object _execute(self, query, object args, bint parse_metadata,
                          float timeout, bint push_subscribe, bint check_schema_change)
 
-    cdef object _auth(self, bytes salt, str username, str password,
-                      float timeout, bint push_subscribe, bint check_schema_change)
+    cdef object _prepare(self, query, bint parse_metadata,
+                         float timeout, bint check_schema_change)

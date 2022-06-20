@@ -9,16 +9,19 @@ cdef struct Header:
 
 cdef class Response:
     cdef:
-        int32_t _code
-        int32_t _return_code
-        uint64_t _sync
-        int64_t _schema_id
-        str _errmsg
+        int32_t code_
+        int32_t return_code_
+        uint64_t sync_
+        int64_t schema_id_
+        readonly str errmsg
         int _rowcount
-        list _body
-        bytes _encoding
-        TntFields _fields
-        list _autoincrement_ids
+        readonly list body
+        readonly bytes encoding
+        readonly Metadata metadata
+        readonly Metadata params
+        readonly int params_count
+        readonly list autoincrement_ids
+        uint64_t stmt_id_
         bint _push_subscribe
         BaseRequest _request
         object _exception
@@ -34,7 +37,7 @@ cdef class Response:
     cdef inline uint32_t _len(self)
     cdef inline void add_push(self, push)
     cdef inline object pop_push(self)
-    cdef inline object push_len(self)
+    cdef inline int push_len(self)
     cdef inline void set_data(self, list data)
     cdef inline void set_exception(self, exc)
     cdef inline object get_exception(self)

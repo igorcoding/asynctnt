@@ -1,16 +1,16 @@
 cimport cython
 
 @cython.final
-cdef class ExecuteRequest(BaseRequest):
+cdef class PrepareRequest(BaseRequest):
 
     cdef inline WriteBuffer encode(self, bytes encoding):
         cdef WriteBuffer buffer = WriteBuffer.create(encoding)
         buffer.write_header(self.sync, self.op, self.schema_id)
-        self.encode_request_execute(buffer)
+        self.encode_request(buffer)
         buffer.write_length()
         return buffer
 
-    cdef int encode_request_execute(self, WriteBuffer buffer) except -1:
+    cdef int encode_request(self, WriteBuffer buffer) except -1:
         cdef:
             char *begin
             char *p
@@ -22,7 +22,7 @@ cdef class ExecuteRequest(BaseRequest):
             ssize_t query_len
             uint32_t kind
 
-        body_map_sz = 2
+        body_map_sz = 1
         max_body_len = 0
 
         query_str = NULL
@@ -65,6 +65,4 @@ cdef class ExecuteRequest(BaseRequest):
         else:
             p = mp_encode_uint(p, self.statement_id)
 
-        p = mp_encode_uint(p, tarantool.IPROTO_SQL_BIND)
         buffer._length += (p - begin)
-        p = encode_key_sequence(buffer, p, self.args, None, False)

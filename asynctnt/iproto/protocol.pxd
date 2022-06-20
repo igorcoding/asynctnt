@@ -22,6 +22,7 @@ include "requests/insert.pxd"
 include "requests/delete.pxd"
 include "requests/update.pxd"
 include "requests/upsert.pxd"
+include "requests/prepare.pxd"
 include "requests/execute.pxd"
 include "requests/auth.pxd"
 

@@ -181,7 +181,6 @@ cdef class CoreProtocol:
 
     def connection_lost(self, exc):
         self.con_state = CONNECTION_BAD
-        # self.schema = None
         self.version = None
         self.salt = None
         self.rbuf = None

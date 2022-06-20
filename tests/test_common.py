@@ -44,20 +44,26 @@ class CommonTestCase(BaseTarantoolTestCase):
 
         # Changing scheme
         await self.conn.eval(
-            "local s = box.schema.create_space('new_space');"
-            "s:drop();"
+            "box.schema.create_space('new_space');"
         )
 
         try:
-            await self.conn.ping()
-        except Exception as e:
-            self.fail(e)
+            try:
+                await self.conn.ping()
+            except Exception as e:
+                self.fail(e)
 
-        # wait for schema to refetch
-        await self.sleep(1)
+            # wait for schema to refetch
+            await self.sleep(1)
 
-        self.assertGreater(self.conn.schema_id, schema_before,
-                           'Schema changed')
+            self.assertGreater(self.conn.schema_id, schema_before,
+                               'Schema changed')
+            self.assertIn('new_space', self.conn.schema.spaces)
+        finally:
+            await self.conn.eval(
+                "local s = box.space.new_space;"
+                "if s ~= nil then s:drop(); end"
+            )
 
     async def test__schema_refetch_manual(self):
         await self.tnt_reconnect(fetch_schema=True,
@@ -82,6 +88,10 @@ class CommonTestCase(BaseTarantoolTestCase):
 
         self.assertGreater(self.conn.schema_id, schema_before,
                            'Schema changed')
+        sp = self.conn.schema.spaces[self.TESTER_SPACE_NAME]
+        self.assertEqual(6, len(sp.metadata.fields))
+        self.assertEqual('f6', sp.metadata.fields[5].name)
+        self.assertEqual('*', sp.metadata.fields[5].type)
 
     async def test__schema_no_fetch_and_refetch(self):
         await self.tnt_reconnect(auto_refetch_schema=False,

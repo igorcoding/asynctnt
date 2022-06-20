@@ -73,4 +73,4 @@ cdef class SelectRequest(BaseRequest):
 
         p = mp_encode_uint(p, tarantool.IPROTO_KEY)
         buffer._length += (p - begin)
-        p = encode_key_sequence(buffer, p, key, index.fields, False)
+        p = encode_key_sequence(buffer, p, key, index.metadata, False)

@@ -2,7 +2,7 @@ cimport cython
 
 @cython.final
 cdef class DeleteRequest(BaseRequest):
-    
+
     cdef inline WriteBuffer encode(self, bytes encoding):
         cdef WriteBuffer buffer = WriteBuffer.create(encoding)
         buffer.write_header(self.sync, self.op, self.schema_id)
@@ -49,4 +49,4 @@ cdef class DeleteRequest(BaseRequest):
 
         p = mp_encode_uint(p, tarantool.IPROTO_KEY)
         buffer._length += (p - begin)
-        p = encode_key_sequence(buffer, p, self.key, self.index.fields, False)
+        p = encode_key_sequence(buffer, p, self.key, self.index.metadata, False)

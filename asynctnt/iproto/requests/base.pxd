@@ -1,4 +1,4 @@
-from libc.stdint cimport uint32_t, uint64_t, int64_t
+from libc.stdint cimport uint64_t, int64_t
 
 
 cdef class BaseRequest:
@@ -14,13 +14,13 @@ cdef class BaseRequest:
         bint push_subscribe
         bint check_schema_change
 
-    cdef inline TntFields fields(self):
+    cdef inline Metadata metadata(self):
         if self.space is None:
             return None
-        return self.space.fields
+        return self.space.metadata
 
 
 cdef char *encode_key_sequence(WriteBuffer buffer,
                                char *p, object t,
-                               TntFields fields,
+                               Metadata metadata,
                                bint default_none) except NULL

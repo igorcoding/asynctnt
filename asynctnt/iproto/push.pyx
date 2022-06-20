@@ -63,7 +63,7 @@ cdef class PushIterator:
         cdef Response response
         response = self._response
 
-        if response.push_len() == 0 and response._code >= 0:
+        if response.push_len() == 0 and response.code_ >= 0:
             # no more data left
             raise StopAsyncIteration
 
@@ -87,7 +87,7 @@ cdef class PushIterator:
         if response.push_len() > 0:
             return response.pop_push()
 
-        if response._code >= 0:
+        if response.code_ >= 0:
             ev.clear()
             raise StopAsyncIteration
 

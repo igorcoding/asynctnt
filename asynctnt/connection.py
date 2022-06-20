@@ -2,7 +2,7 @@ import asyncio
 import enum
 import functools
 import os
-from typing import Optional, Union, Awaitable, Any, List, Tuple, Dict
+from typing import Optional, Union, Any, List, Dict
 
 from .exceptions import TarantoolDatabaseError, \
     ErrorCode, TarantoolNotConnectedError
@@ -13,6 +13,9 @@ __all__ = (
     'Connection', 'connect', 'ConnectionState'
 )
 
+from .prepared import PreparedStatement
+
+from .types import MethodRet, SpaceType, KeyType, TupleType
 from .utils import get_running_loop
 
 
@@ -22,13 +25,6 @@ class ConnectionState(enum.IntEnum):
     RECONNECTING = 3
     DISCONNECTING = 4
     DISCONNECTED = 5
-
-
-_MethodRet = Union[Awaitable[protocol.Response], asyncio.Future]
-SpaceType = Union[str, int]
-IndexType = Union[str, int]
-KeyType = Union[List[Any], Tuple]
-TupleType = Union[List[Any], Tuple, Dict[str, Any]]
 
 
 class Connection:
@@ -580,6 +576,12 @@ class Connection:
         return self._protocol.schema_id
 
     @property
+    def schema(self) -> Optional[protocol.Schema]:
+        if self._protocol is None:
+            return None
+        return self._protocol.schema
+
+    @property
     def initial_read_buffer_size(self) -> int:
         """
             initial_read_buffer_size value
@@ -592,7 +594,7 @@ class Connection:
         """
         await self._protocol.refetch_schema()
 
-    def ping(self, *, timeout: float = -1.0) -> _MethodRet:
+    def ping(self, *, timeout: float = -1.0) -> MethodRet:
         """
             Ping request coroutine
 
@@ -607,7 +609,7 @@ class Connection:
                args: Optional[List[Any]] = None,
                *,
                timeout: float = -1.0,
-               push_subscribe: bool = False) -> _MethodRet:
+               push_subscribe: bool = False) -> MethodRet:
         """
             Call16 request coroutine. It is a call with an old behaviour
             (return result of a Tarantool procedure is wrapped into a tuple,
@@ -629,7 +631,7 @@ class Connection:
              args: Optional[List[Any]] = None,
              *,
              timeout: float = -1.0,
-             push_subscribe: bool = False) -> _MethodRet:
+             push_subscribe: bool = False) -> MethodRet:
         """
             Call request coroutine. It is a call with a new behaviour
             (return result of a Tarantool procedure is not wrapped into
@@ -666,7 +668,7 @@ class Connection:
              args: Optional[List[Any]] = None,
              *,
              timeout: float = -1.0,
-             push_subscribe: bool = False) -> _MethodRet:
+             push_subscribe: bool = False) -> MethodRet:
         """
             Eval request coroutine.
 
@@ -695,7 +697,7 @@ class Connection:
     def select(self,
                space: SpaceType,
                key: Optional[KeyType] = None,
-               **kwargs) -> _MethodRet:
+               **kwargs) -> MethodRet:
         """
             Select request coroutine.
 
@@ -745,7 +747,7 @@ class Connection:
                t: TupleType,
                *,
                replace: bool = False,
-               timeout: float = -1) -> _MethodRet:
+               timeout: float = -1) -> MethodRet:
         """
             Insert request coroutine.
 
@@ -783,7 +785,7 @@ class Connection:
                 space: SpaceType,
                 t: TupleType,
                 *,
-                timeout: float = -1.0) -> _MethodRet:
+                timeout: float = -1.0) -> MethodRet:
         """
             Replace request coroutine. Same as insert, but replace.
 
@@ -798,7 +800,7 @@ class Connection:
     def delete(self,
                space: SpaceType,
                key: KeyType,
-               **kwargs) -> _MethodRet:
+               **kwargs) -> MethodRet:
         """
             Delete request coroutine.
 
@@ -826,7 +828,7 @@ class Connection:
                space: SpaceType,
                key: KeyType,
                operations: List[Any],
-               **kwargs) -> _MethodRet:
+               **kwargs) -> MethodRet:
         """
             Update request coroutine.
 
@@ -868,7 +870,7 @@ class Connection:
                space: SpaceType,
                t: TupleType,
                operations: List[Any],
-               **kwargs) -> _MethodRet:
+               **kwargs) -> MethodRet:
         """
             Update request coroutine. Performs either insert or update
             (depending of either tuple exists or not)
@@ -899,10 +901,10 @@ class Connection:
         return self._db.upsert(space, t, operations, **kwargs)
 
     def execute(self,
-                query: str,
-                args: Optional[List[Any]] = None, *,
+                query: Union[str, int],
+                args: Optional[List[Union[Dict[str, Any], Any]]] = None, *,
                 parse_metadata: bool = True,
-                timeout: float = -1.0) -> _MethodRet:
+                timeout: float = -1.0) -> MethodRet:
         """
             Executes an SQL statement (only for Tarantool > 2)
 
@@ -926,7 +928,7 @@ class Connection:
                     <TarantoolTuple 0=2 1='Ethan Hunt'>
                 ]>
 
-            :param query: SQL query
+            :param query: SQL query or statement_id
             :param args: Query arguments
             :param parse_metadata: Set to False to disable response's metadata
                                    parsing for better performance
@@ -938,7 +940,18 @@ class Connection:
                                 parse_metadata=parse_metadata,
                                 timeout=timeout)
 
-    sql = execute
+    def prepare(self, query: str) -> PreparedStatement:
+        return PreparedStatement(self, query)
+
+    def prepare_iproto(self,
+                       query: str,
+                       timeout: float = -1.0) -> MethodRet:
+        return self._db.prepare(query, timeout=timeout)
+
+    def unprepare_iproto(self,
+                         stmt_id: int,
+                         timeout: float = -1.0) -> MethodRet:
+        return self._db.prepare(stmt_id, timeout=timeout)
 
     def _normalize_api(self):
         if (1, 6) <= self.version < (1, 7):  # pragma: nocover

@@ -25,7 +25,7 @@ typedef struct {
 typedef struct {
     PyObject_VAR_HEAD
     Py_hash_t self_hash;
-    struct C_TntFields *fields;
+    struct C_Metadata *metadata;
     PyObject *ob_item[1];
 
     /* ob_item contains space for 'ob_size' elements.
@@ -42,7 +42,7 @@ extern PyTypeObject AtntTupleItems_Type;
 extern PyTypeObject AtntTupleDesc_Type;
 
 #define AtntTuple_CheckExact(o) (Py_TYPE(o) == &AtntTuple_Type)
-#define C_TntFields_CheckExact(o) (Py_TYPE(o) == &C_TntFields_Type)
+#define C_Metadata_CheckExact(o) (Py_TYPE(o) == &C_Metadata_Type)
 
 #define AtntTuple_SET_ITEM(op, i, v) \
             (((AtntTupleObject *)(op))->ob_item[i] = v)

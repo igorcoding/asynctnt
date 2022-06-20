@@ -2,7 +2,7 @@ cimport cython
 
 @cython.final
 cdef class InsertRequest(BaseRequest):
-    
+
     cdef inline WriteBuffer encode(self, bytes encoding):
         cdef WriteBuffer buffer = WriteBuffer.create(encoding)
         buffer.write_header(self.sync, self.op, self.schema_id)
@@ -40,4 +40,4 @@ cdef class InsertRequest(BaseRequest):
 
         p = mp_encode_uint(p, tarantool.IPROTO_TUPLE)
         buffer._length += (p - begin)
-        p = encode_key_sequence(buffer, p, t, space.fields, True)
+        p = encode_key_sequence(buffer, p, t, space.metadata, True)

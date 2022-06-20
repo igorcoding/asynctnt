@@ -24,9 +24,11 @@ include "requests/insert.pyx"
 include "requests/delete.pyx"
 include "requests/update.pyx"
 include "requests/upsert.pyx"
+include "requests/prepare.pyx"
 include "requests/execute.pyx"
 include "requests/auth.pyx"
 
+include "ttuple.pyx"
 include "response.pyx"
 include "db.pyx"
 include "push.pyx"
@@ -152,11 +154,11 @@ cdef class BaseProtocol(CoreProtocol):
 
         response = <Response> response_p
         req = response._request
-        response._sync = hdr.sync
-        response._schema_id = hdr.schema_id
+        response.sync_ = hdr.sync
+        response.schema_id_ = hdr.schema_id
         if not is_chunk:
-            response._code = hdr.code
-            response._return_code = hdr.return_code
+            response.code_ = hdr.code
+            response.return_code_ = hdr.return_code
             cpython.dict.PyDict_DelItem(self._reqs, sync_obj)
         else:
             if not req.push_subscribe:
@@ -176,8 +178,8 @@ cdef class BaseProtocol(CoreProtocol):
         if self.con_state == CONNECTION_FULL \
                 and req.check_schema_change \
                 and self.auto_refetch_schema \
-                and response._schema_id > 0 \
-                and response._schema_id != self._schema_id:
+                and response.schema_id_ > 0 \
+                and response.schema_id_ != self._schema_id:
             self._refetch_schema()
 
         # returning result
@@ -194,8 +196,8 @@ cdef class BaseProtocol(CoreProtocol):
             return
 
         if response.is_error():
-            err = TarantoolDatabaseError(response._return_code,
-                                         response._errmsg)
+            err = TarantoolDatabaseError(response.return_code_,
+                                         response.errmsg)
             response.set_exception(err)
             waiter.set_exception(err)
             return
@@ -443,5 +445,3 @@ cdef class BaseProtocol(CoreProtocol):
 class Protocol(BaseProtocol, asyncio.Protocol):
     pass
 
-
-TarantoolTuple = <object> tupleobj.AtntTuple_InitTypes()

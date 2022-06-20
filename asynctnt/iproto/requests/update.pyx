@@ -5,13 +5,13 @@ cdef class UpdateRequest(BaseRequest):
     cdef inline WriteBuffer encode(self, bytes encoding):
         cdef WriteBuffer buffer = WriteBuffer.create(encoding)
         buffer.write_header(self.sync, self.op, self.schema_id)
-        encode_request_update(buffer, self.space, self.index, 
+        encode_request_update(buffer, self.space, self.index,
                               self.key, self.operations, False)
         buffer.write_length()
         return buffer
 
 
-cdef char *encode_update_ops(WriteBuffer buffer, 
+cdef char *encode_update_ops(WriteBuffer buffer,
                              char *p, list operations,
                              SchemaSpace space) except NULL:
     cdef:
@@ -64,10 +64,10 @@ cdef char *encode_update_ops(WriteBuffer buffer,
 
         field_no_obj = operation[1]
         if isinstance(field_no_obj, int):
-            field_no = <uint64_t> field_no_obj
+            field_no = <int> field_no_obj
         elif isinstance(field_no_obj, str):
-            if space.fields is not None:
-                field_no = <uint64_t> space.fields.id_by_name(field_no_obj)
+            if space.metadata is not None:
+                field_no = <int> space.metadata.id_by_name(field_no_obj)
             else:
                 raise TypeError(
                     'Operation field_no must be int as there is '
@@ -171,7 +171,7 @@ cdef int encode_request_update(WriteBuffer buffer,
         uint32_t max_body_len
         uint32_t space_id, index_id
         uint32_t key_of_tuple, key_of_operations
-        TntFields fields
+        Metadata metadata
         bint default_fields_none
 
     space_id = space.sid
@@ -180,12 +180,12 @@ cdef int encode_request_update(WriteBuffer buffer,
     if not is_upsert:
         key_of_tuple = tarantool.IPROTO_KEY
         key_of_operations = tarantool.IPROTO_TUPLE
-        fields = index.fields
+        metadata = index.metadata
         default_fields_none = False
     else:
         key_of_tuple = tarantool.IPROTO_TUPLE
         key_of_operations = tarantool.IPROTO_OPS
-        fields = space.fields
+        metadata = space.metadata
         default_fields_none = True
 
     body_map_sz = 3 + <uint32_t> (index_id > 0)
@@ -218,7 +218,7 @@ cdef int encode_request_update(WriteBuffer buffer,
     buffer._length += (p - begin)
 
     p = buffer.mp_encode_uint(p, key_of_tuple)
-    p = encode_key_sequence(buffer, p, key_tuple, fields, default_fields_none)
+    p = encode_key_sequence(buffer, p, key_tuple, metadata, default_fields_none)
 
     p = buffer.mp_encode_uint(p, key_of_operations)
     p = encode_update_ops(buffer, p, operations, space)

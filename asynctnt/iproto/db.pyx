@@ -27,6 +27,27 @@ cdef class Db:
             <float> timeout
         )
 
+    cdef object _auth(self, bytes salt, str username, str password,
+                      float timeout, bint push_subscribe, bint check_schema_change):
+        cdef:
+            AuthRequest req
+
+        req = AuthRequest.__new__(AuthRequest)
+        req.op = tarantool.IPROTO_AUTH
+        req.sync = self.next_sync()
+        req.salt = salt
+        req.username = username
+        req.password = password
+        req.push_subscribe = False
+        req.parse_as_tuples = False
+        req.parse_metadata = False
+
+        return self._protocol.execute(
+            req,
+            req.encode(self._encoding),
+            <float> timeout
+        )
+
     cdef object _call(self, tarantool.iproto_type op, str func_name, object args,
                       float timeout, bint push_subscribe, bint check_schema_change):
         cdef CallRequest req = CallRequest.__new__(CallRequest)
@@ -195,15 +216,25 @@ cdef class Db:
             <float> timeout
         )
 
-    cdef object _execute(self, str query, object args, bint parse_metadata,
-                         float timeout, bint push_subscribe, bint check_schema_change):
+    cdef object _execute(self, query, object args, bint parse_metadata,
+                         float timeout, bint push_subscribe,
+                         bint check_schema_change):
         cdef:
             ExecuteRequest req
 
         req = ExecuteRequest.__new__(ExecuteRequest)
         req.op = tarantool.IPROTO_EXECUTE
         req.sync = self.next_sync()
-        req.query = query
+
+        if isinstance(query, str):
+            req.query = query
+            req.statement_id = 0
+        elif isinstance(query, int):
+            req.query = None
+            req.statement_id = <uint64_t> query
+        else:
+            raise TypeError('query must be either str or int')
+
         req.args = args
         req.push_subscribe = push_subscribe
         req.check_schema_change = check_schema_change
@@ -216,20 +247,29 @@ cdef class Db:
             <float> timeout
         )
 
-    cdef object _auth(self, bytes salt, str username, str password,
-                      float timeout, bint push_subscribe, bint check_schema_change):
+    cdef object _prepare(self, query, bint parse_metadata,
+                         float timeout,
+                         bint check_schema_change):
         cdef:
-            AuthRequest req
+            PrepareRequest req
 
-        req = AuthRequest.__new__(AuthRequest)
-        req.op = tarantool.IPROTO_AUTH
+        req = PrepareRequest.__new__(PrepareRequest)
+        req.op = tarantool.IPROTO_PREPARE
         req.sync = self.next_sync()
-        req.salt = salt
-        req.username = username
-        req.password = password
+
+        if isinstance(query, str):
+            req.query = query
+            req.statement_id = 0
+        elif isinstance(query, int):
+            req.query = None
+            req.statement_id = <uint64_t> query
+        else:
+            raise TypeError('query must be either str or int')
+
         req.push_subscribe = False
-        req.parse_as_tuples = False
-        req.parse_metadata = False
+        req.check_schema_change = check_schema_change
+        req.parse_as_tuples = True
+        req.parse_metadata = parse_metadata
 
         return self._protocol.execute(
             req,
@@ -280,6 +320,10 @@ cdef class Db:
     def upsert(self, space, t, operations, timeout=-1):
         return self._upsert(space, t, operations, timeout,
                             <bint> False, <bint> True)
+
     def execute(self, query, args, parse_metadata=True, timeout=-1):
         return self._execute(query, args, <bint> parse_metadata, timeout,
                              <bint> False, <bint> True)
+
+    def prepare(self, query, parse_metadata=True, timeout=-1):
+        return self._prepare(query, <bint> parse_metadata, timeout, <bint> True)

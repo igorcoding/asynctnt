@@ -12,7 +12,6 @@ from libc cimport stdio
 
 from asynctnt.log import logger
 
-
 @cython.final
 @cython.freelist(REQUEST_FREELIST)
 cdef class Response:
@@ -22,16 +21,19 @@ cdef class Response:
 
     def __cinit__(self, bytes encoding, BaseRequest req):
         self._request = req
-        self._sync = 0
-        self._code = -1
-        self._return_code = -1
-        self._schema_id = -1
-        self._errmsg = None
+        self.sync_ = 0
+        self.code_ = -1
+        self.return_code_ = -1
+        self.schema_id_ = -1
+        self.errmsg = None
         self._rowcount = 0
-        self._body = None
-        self._encoding = encoding
-        self._fields = None
-        self._autoincrement_ids = None
+        self.body = None
+        self.encoding = encoding
+        self.metadata = None
+        self.params = None
+        self.params_count = 0
+        self.autoincrement_ids = None
+        self.stmt_id_ = 0
         self._push_subscribe = req.push_subscribe
         if req.push_subscribe:
             self._q = collections.deque()
@@ -46,7 +48,7 @@ cdef class Response:
             self._push_event = None
 
     cdef inline bint is_error(self):
-        return self._code >= 0x8000
+        return self.code_ >= 0x8000
 
     cdef inline void add_push(self, push):
         if not self._push_subscribe:
@@ -55,7 +57,7 @@ cdef class Response:
         self._q_append(push)
         self.notify()
 
-    cdef inline object push_len(self):
+    cdef inline int push_len(self):
         return len(self._q)
 
     cdef inline object pop_push(self):
@@ -68,7 +70,7 @@ cdef class Response:
         return push
 
     cdef inline void set_data(self, list data):
-        self._body = data
+        self.body = data
         self.notify()
 
     cdef inline void set_exception(self, exc):
@@ -83,7 +85,7 @@ cdef class Response:
             self._push_event_set()  # Notify that there is no more data
 
     def __repr__(self):  # pragma: nocover
-        data = self._body
+        data = self.body
         if data is not None:
             if len(data) > 10:
                 parts = map(lambda x: ', '.join(map(repr, x)), [
@@ -102,85 +104,62 @@ cdef class Response:
         """
             Response's sync (incremental id) for the corresponding request
         """
-        return self._sync
+        return <int> self.sync_
 
     @property
     def code(self) -> int:
         """
             Response code (0 - success)
         """
-        return self._code
+        return <int> self.code_
 
     @property
     def return_code(self) -> int:
         """
             Response return code (It's essentially a code & 0x7FFF)
         """
-        return self._return_code
+        return <int> self.return_code_
 
     @property
     def schema_id(self) -> int:
         """
             Current scema id in Tarantool
         """
-        return self._schema_id
-
-    @property
-    def errmsg(self) -> Optional[str]:
-        """
-            If self.code != 0 then errmsg contains an error message
-        """
-        return self._errmsg
-
-    @property
-    def body(self) -> Optional[list]:
-        """
-            Response body
-        """
-        return self._body
-
-    @property
-    def encoding(self) -> str:
-        """
-            Response encoding
-        """
-        return self._encoding
+        return <int> self.schema_id_
 
     @property
     def rowcount(self) -> int:
-        if self._body is not None:
+        if self.body is not None:
             self_len = self._len()
             if self_len > 0:
                 return self_len
         return self._rowcount
 
     @property
-    def autoincrement_ids(self) -> Optional[list]:
+    def stmt_id(self) -> Optional[int]:
         """
-            Response autoincrement ids
+            Prepared statement id
         """
-        return self._autoincrement_ids
-
+        return self.stmt_id_
 
     def done(self):
-        return self._code >= 0
+        return self.code_ >= 0
 
     cdef inline uint32_t _len(self):
-        return <uint32_t>cpython.list.PyList_GET_SIZE(self._body)
+        return <uint32_t> cpython.list.PyList_GET_SIZE(self.body)
 
     def __len__(self) -> int:
-        if self._body is not None:
-            return <int>self._len()
+        if self.body is not None:
+            return <int> self._len()
         return 0
 
     def __getitem__(self, i):
-        return self._body[i]
+        return self.body[i]
 
     def __iter__(self):
-        return iter(self._body)
+        return iter(self.body)
 
-
-cdef object _decode_obj(const char **p, bytes encoding):
+cdef object _decode_obj(const char ** p, bytes encoding):
     cdef:
         uint32_t i
         mp_type obj_type
@@ -212,12 +191,12 @@ cdef object _decode_obj(const char **p, bytes encoding):
         try:
             return decode_string(s[:s_len], encoding)
         except UnicodeDecodeError:
-            return <bytes>s[:s_len]
+            return <bytes> s[:s_len]
     elif obj_type == MP_BIN:
         s = NULL
         s_len = 0
         s = mp_decode_bin(p, &s_len)
-        return <bytes>s[:s_len]
+        return <bytes> s[:s_len]
     elif obj_type == MP_BOOL:
         return mp_decode_bool(p)
     elif obj_type == MP_FLOAT:
@@ -240,17 +219,17 @@ cdef object _decode_obj(const char **p, bytes encoding):
             if map_key_type == MP_STR:
                 map_key_len = 0
                 map_key_str = mp_decode_str(p, &map_key_len)
-                map_key = <object>(
+                map_key = <object> (
                     decode_string(map_key_str[:map_key_len], encoding)
                 )
             elif map_key_type == MP_UINT:
-                map_key = <object>mp_decode_uint(p)
+                map_key = <object> mp_decode_uint(p)
             elif map_key_type == MP_INT:
-                map_key = <object>mp_decode_int(p)
+                map_key = <object> mp_decode_int(p)
             elif map_key_type == MP_FLOAT:
-                map_key = <object>mp_decode_float(p)
+                map_key = <object> mp_decode_float(p)
             elif map_key_type == MP_DOUBLE:
-                map_key = <object>mp_decode_double(p)
+                map_key = <object> mp_decode_double(p)
             else:  # pragma: nocover
                 mp_next(p)  # skip current key
                 mp_next(p)  # skip value
@@ -279,8 +258,7 @@ cdef object _decode_obj(const char **p, bytes encoding):
         logger.warning('Unexpected obj type: %s', obj_type)
         return None
 
-
-cdef list _response_parse_body_data(const char **b,
+cdef list _response_parse_body_data(const char ** b,
                                     Response resp, BaseRequest req):
     cdef:
         uint32_t size
@@ -288,7 +266,7 @@ cdef list _response_parse_body_data(const char **b,
         list tuples
         uint32_t i
 
-        TntFields fields
+        Metadata metadata
 
     size = mp_decode_array(b)
     tuples = []
@@ -296,9 +274,9 @@ cdef list _response_parse_body_data(const char **b,
     if req.parse_as_tuples:
         # decode as TarantoolTuples
 
-        fields = resp._fields
-        if fields is None:
-            fields = req.fields()
+        metadata = resp.metadata
+        if metadata is None:
+            metadata = req.metadata()
 
         for i in range(size):
             if mp_typeof(b[0][0]) != MP_ARRAY:  # pragma: nocover
@@ -307,9 +285,9 @@ cdef list _response_parse_body_data(const char **b,
                 )
 
             tuple_size = mp_decode_array(b)
-            t = tupleobj.AtntTuple_New(fields, <int>tuple_size)
+            t = tupleobj.AtntTuple_New(metadata, <int> tuple_size)
             for i in range(tuple_size):
-                value = _decode_obj(b, resp._encoding)
+                value = _decode_obj(b, resp.encoding)
                 cpython.Py_INCREF(value)
                 tupleobj.AtntTuple_SET_ITEM(t, i, value)
 
@@ -317,10 +295,9 @@ cdef list _response_parse_body_data(const char **b,
     else:
         # decode as raw objects
         for i in range(size):
-            tuples.append(_decode_obj(b, resp._encoding))
+            tuples.append(_decode_obj(b, resp.encoding))
 
     return tuples
-
 
 cdef ssize_t response_parse_header(const char *buf, uint32_t buf_len,
                                    Header *hdr) except -1:
@@ -329,7 +306,7 @@ cdef ssize_t response_parse_header(const char *buf, uint32_t buf_len,
         uint32_t size
         uint32_t key
 
-    b = <const char*>buf
+    b = <const char *> buf
     # mp_fprint(stdio.stdout, b)
     # stdio.fprintf(stdio.stdout, "\n")
 
@@ -347,7 +324,7 @@ cdef ssize_t response_parse_header(const char *buf, uint32_t buf_len,
             if mp_typeof(b[0]) != MP_UINT:  # pragma: nocover
                 raise TypeError('code type must be a MP_UINT')
 
-            hdr.code = <uint32_t>mp_decode_uint(&b)
+            hdr.code = <uint32_t> mp_decode_uint(&b)
             hdr.return_code = hdr.code & 0x7FFF
         elif key == tarantool.IPROTO_SYNC:
             if mp_typeof(b[0]) != MP_UINT:  # pragma: nocover
@@ -364,8 +341,84 @@ cdef ssize_t response_parse_header(const char *buf, uint32_t buf_len,
                 'Unknown key with code \'%d\' in header. Skipping.', key)
             mp_next(&b)
 
-    return <ssize_t>(b - buf)
+    return <ssize_t> (b - buf)
 
+cdef Metadata response_parse_metadata(const char ** b, bytes encoding):
+    cdef:
+        uint32_t arr_size
+        uint32_t field_map_size
+        uint32_t key
+        uint32_t s_len
+        uint32_t i
+        const char *s
+        Field field
+        Metadata metadata
+
+    metadata = <Metadata> Metadata.__new__(Metadata)
+    arr_size = mp_decode_array(b)
+    for i in range(arr_size):
+        field_map_size = mp_decode_map(b)
+        if field_map_size == 0:
+            raise RuntimeError('Field map must contain at least '
+                               '1 element - field_name')
+
+        field = <Field> Field.__new__(Field)
+        field_id = i
+        for _ in range(field_map_size):
+            key = mp_decode_uint(b)
+            if key == tarantool.IPROTO_FIELD_NAME:
+                s = NULL
+                s_len = 0
+                s = mp_decode_str(b, &s_len)
+                field.name = \
+                    decode_string(s[:s_len], encoding)
+
+            elif key == tarantool.IPROTO_FIELD_TYPE:
+                s = NULL
+                s_len = 0
+                s = mp_decode_str(b, &s_len)
+                field.type = \
+                    decode_string(s[:s_len], encoding)
+
+            elif key == tarantool.IPROTO_FIELD_COLL:
+                s = NULL
+                s_len = 0
+                s = mp_decode_str(b, &s_len)
+                field.collation = \
+                    decode_string(s[:s_len], encoding)
+
+            elif key == tarantool.IPROTO_FIELD_IS_NULLABLE:
+                field.is_nullable = mp_decode_bool(b)
+
+            elif key == tarantool.IPROTO_FIELD_IS_AUTOINCREMENT:
+                field.is_autoincrement = mp_decode_bool(b)
+
+            elif key == tarantool.IPROTO_FIELD_SPAN:
+                if mp_typeof(b[0][0]) == MP_NIL:  # pragma: nocover
+                    mp_next(b)
+                    field.span = None
+
+                elif mp_typeof(b[0][0]) == MP_STR:
+                    s = NULL
+                    s_len = 0
+                    s = mp_decode_str(b, &s_len)
+                    field.span = \
+                        decode_string(s[:s_len], encoding)
+
+                else:  # pragma: nocover
+                    raise TypeError(
+                        "IPROTO_FIELD_SPAN must be either STR or NIL"
+                    )
+            else:
+                logger.debug(
+                    'unknown key in metadata decoding: %d', key)
+                mp_next(b)
+
+        if field.name is None:
+            raise RuntimeError('field.name must not be None')
+
+        metadata.add(<int> field_id, field)
+    return metadata
 
 cdef ssize_t response_parse_body(const char *buf, uint32_t buf_len,
                                  Response resp, BaseRequest req,
@@ -380,9 +433,9 @@ cdef ssize_t response_parse_body(const char *buf, uint32_t buf_len,
         uint32_t i
         const char *s
         list data
-        str field_name, field_type
+        Field field
 
-    b = <const char*>buf
+    b = <const char *> buf
     # mp_fprint(stdio.stdout, b)
     # stdio.fprintf(stdio.stdout, "\n")
 
@@ -404,47 +457,30 @@ cdef ssize_t response_parse_body(const char *buf, uint32_t buf_len,
             s = NULL
             s_len = 0
             s = mp_decode_str(&b, &s_len)
-            resp._errmsg = decode_string(s[:s_len], resp._encoding)
+            resp.errmsg = decode_string(s[:s_len], resp.encoding)
+
+        elif key == tarantool.IPROTO_STMT_ID:
+            if mp_typeof(b[0]) != MP_UINT:  # pragma: nocover
+                raise TypeError(f'IPROTO_STMT_ID type must be a MP_UINT, but got {mp_typeof(b[0])}')
+            resp.stmt_id_ = mp_decode_uint(&b)
+
         elif key == tarantool.IPROTO_METADATA:
             if not req.parse_metadata:
                 mp_next(&b)
                 continue
 
-            resp._fields = TntFields.__new__(TntFields)
+            resp.metadata = response_parse_metadata(&b, resp.encoding)
 
-            arr_size = mp_decode_array(&b)
-            for i in range(arr_size):
-                field_map_size = mp_decode_map(&b)
-                if field_map_size == 0:
-                    raise RuntimeError('Field map must contain at least '
-                                       '1 element - field_name')
+        elif key == tarantool.IPROTO_BIND_METADATA:
+            if not req.parse_metadata:
+                mp_next(&b)
+                continue
 
-                field_id = i
-                field_name = None
-                field_type = None
-                for _ in range(field_map_size):
-                    key = mp_decode_uint(&b)
-                    if key == tarantool.IPROTO_FIELD_NAME:
-                        s = NULL
-                        s_len = 0
-                        s = mp_decode_str(&b, &s_len)
-                        field_name = \
-                            decode_string(s[:s_len], resp._encoding)
-                    elif key == tarantool.IPROTO_FIELD_TYPE:
-                        s = NULL
-                        s_len = 0
-                        s = mp_decode_str(&b, &s_len)
-                        field_type = \
-                            decode_string(s[:s_len], resp._encoding)
-                    else:
-                        logger.warning(
-                            'unknown key in metadata decoding: %d', key)
-                        mp_next(&b)
+            resp.params = response_parse_metadata(&b, resp.encoding)
 
-                if field_name is None:
-                    raise RuntimeError('field_name must not be None')
+        elif key == tarantool.IPROTO_BIND_COUNT:
 
-                resp._fields.add(field_id, field_name)
+            resp.params_count = <int> mp_decode_uint(&b)
 
         elif key == tarantool.IPROTO_SQL_INFO:
             field_map_size = mp_decode_map(&b)
@@ -460,12 +496,12 @@ cdef ssize_t response_parse_body(const char *buf, uint32_t buf_len,
                     arr_size = mp_decode_array(&b)
                     ids = cpython.list.PyList_New(arr_size)
                     for i in range(arr_size):
-                        el = <object>mp_decode_uint(&b)
+                        el = <object> mp_decode_uint(&b)
                         cpython.Py_INCREF(el)
                         cpython.list.PyList_SET_ITEM(ids, i, el)
-                    resp._autoincrement_ids = ids
+                    resp.autoincrement_ids = ids
                 else:
-                    logger.warning('unknown key in sql info decoding: %d', key)
+                    logger.debug('unknown key in sql info decoding: %d', key)
                     mp_next(&b)
 
         elif key == tarantool.IPROTO_DATA:
@@ -478,7 +514,7 @@ cdef ssize_t response_parse_body(const char *buf, uint32_t buf_len,
                 resp.set_data(data)
 
         else:
-            logger.warning('unknown key in body map: %d', int(key))
+            logger.debug('unknown key in body map: %d', int(key))
             mp_next(&b)
 
-    return <ssize_t>(b - buf)
+    return <ssize_t> (b - buf)

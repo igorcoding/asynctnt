@@ -17,16 +17,16 @@ static int numfree[AtntTuple_MAXSAVESIZE];
 
 
 PyObject *
-AtntTuple_New(PyObject *fields, Py_ssize_t size)
+AtntTuple_New(PyObject *metadata, Py_ssize_t size)
 {
     AtntTupleObject *o;
     Py_ssize_t i;
 
-    if (fields == Py_None) {
-        fields = NULL;
+    if (metadata == Py_None) {
+        metadata = NULL;
     }
 
-    if (size < 0 || (fields != NULL && !C_TntFields_CheckExact(fields))) {
+    if (size < 0 || (metadata != NULL && !C_Metadata_CheckExact(metadata))) {
         PyErr_BadInternalCall();
         return NULL;
     }
@@ -52,8 +52,8 @@ AtntTuple_New(PyObject *fields, Py_ssize_t size)
         o->ob_item[i] = NULL;
     }
 
-    Py_XINCREF(fields);
-    o->fields = (struct C_TntFields *) fields;
+    Py_XINCREF(metadata);
+    o->metadata = (struct C_Metadata *) metadata;
     o->self_hash = -1;
     PyObject_GC_Track(o);
     return (PyObject *) o;
@@ -70,7 +70,7 @@ ttuple_dealloc(AtntTupleObject *o)
 
     o->self_hash = -1;
 
-    Py_CLEAR(o->fields);
+    Py_CLEAR(o->metadata);
 
     Py_TRASHCAN_SAFE_BEGIN(o)
     if (len > 0) {
@@ -100,7 +100,7 @@ ttuple_traverse(AtntTupleObject *o, visitproc visit, void *arg)
 {
     Py_ssize_t i;
 
-    Py_VISIT(o->fields);
+    Py_VISIT(o->metadata);
 
     for (i = Py_SIZE(o); --i >= 0;) {
         if (o->ob_item[i] != NULL) {
@@ -261,7 +261,7 @@ ttuple_item(AtntTupleObject *o, Py_ssize_t i)
 static int
 ttuple_item_by_name(AtntTupleObject *o, PyObject *item, PyObject **result)
 {
-    if (o->fields == NULL) {
+    if (o->metadata == NULL) {
         goto noitem;
     }
 
@@ -269,7 +269,7 @@ ttuple_item_by_name(AtntTupleObject *o, PyObject *item, PyObject **result)
     Py_ssize_t i;
     PyObject *value;
 
-    mapped = PyObject_GetItem(o->fields->_mapping, item);
+    mapped = PyObject_GetItem(o->metadata->name_id_map, item);
     if (mapped == NULL) {
         goto noitem;
     }
@@ -371,8 +371,8 @@ ttuple_repr(AtntTupleObject *v)
         return PyUnicode_FromString("<TarantoolTuple>");
     }
 
-    if (v->fields != NULL) {
-        keys_iter = PyObject_GetIter(v->fields->_names);
+    if (v->metadata != NULL) {
+        keys_iter = PyObject_GetIter(v->metadata->names);
         if (keys_iter == NULL) {
             return NULL;
         }
@@ -485,12 +485,12 @@ ttuple_keys(PyObject *o, PyObject *args)
         return NULL;
     }
 
-    if (((AtntTupleObject *) o)->fields == NULL) {
+    if (((AtntTupleObject *) o)->metadata == NULL) {
         PyErr_SetString(PyExc_ValueError, "No keys for this tuple");
         return NULL;
     }
 
-    return PyObject_GetIter(((AtntTupleObject *) o)->fields->_names);
+    return PyObject_GetIter(((AtntTupleObject *) o)->metadata->names);
 }
 
 
@@ -502,7 +502,7 @@ ttuple_items(PyObject *o, PyObject *args)
         return NULL;
     }
 
-    if (((AtntTupleObject *) o)->fields == NULL) {
+    if (((AtntTupleObject *) o)->metadata == NULL) {
         PyErr_SetString(PyExc_ValueError, "No keys for this tuple");
         return NULL;
     }
@@ -519,12 +519,12 @@ ttuple_contains(AtntTupleObject *o, PyObject *arg)
         return -1;
     }
 
-    if (o->fields == NULL) {
+    if (o->metadata == NULL) {
         PyErr_SetString(PyExc_ValueError, "No keys for this tuple");
         return 0;
     }
 
-    return PySequence_Contains(o->fields->_mapping, arg);
+    return PySequence_Contains(o->metadata->name_id_map, arg);
 }
 
 
@@ -898,7 +898,7 @@ ttuple_new_items_iter(PyObject *seq)
         return NULL;
     }
 
-    key_iter = PyObject_GetIter(((AtntTupleObject*)seq)->fields->_names);
+    key_iter = PyObject_GetIter(((AtntTupleObject*)seq)->metadata->names);
     if (key_iter == NULL) {
         return NULL;
     }

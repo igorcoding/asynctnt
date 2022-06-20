@@ -1,12 +1,30 @@
-## v.1.2.3
+## v2.0.0b1
+**Breaking changes:**
+* `Connection.sql()` method is renamed to `Connection.execute()`
+
+**New features:**
+* Added support for `Decimal` and `UUID` types natively
+* Added support for SQL prepared statements with `Connection.prepare()` method and
+  `PreparedStatement` class
+* Bind metadata of parameters is available now in the `response.params` and `response.params_count` fields
+* Exposed an internal schema as a `Connection.schema` property, introducing new classes to operate the schema with
+* Exposed SQL metadata of responses as `response.metadata` field
+* Added typings to internal types such as `Connection`, `Response`, `Metadata`, `Schema`, `TarantoolTuple` and others
+
+**Other changes:**
+* Updated Cython to 0.29.30
+* Internal refactoring of requests payload encoding
+* Refactoring of schema parsing and unifying under `metadata` name and structure
+
+## v1.2.3
 * Support Python 3.10
 
-## v.1.2.2
+## v1.2.2
 **Bugs fixed:**
 * Show a diag message rather than Lost connection to Tarantool when disconnected (closes #19)
 
 
-## v.1.2.1
+## v1.2.1
 
 **Other changes:**
 * Updated Cython to 0.29.21

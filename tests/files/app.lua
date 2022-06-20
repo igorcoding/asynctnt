@@ -121,7 +121,7 @@ if B:check_version({2, 0}) then
         box.execute([[
             CREATE TABLE sql_space (
                 id INT PRIMARY KEY,
-                name TEXT
+                name TEXT COLLATE "unicode"
             )
         ]])
         box.execute([[

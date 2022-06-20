@@ -1,26 +1,36 @@
 from libc.stdint cimport uint64_t, int64_t
 
 
-cdef public class TntFields [object C_TntFields, type C_TntFields_Type]:
+cdef class Field:
     cdef:
-        list _names  # contains only field names ('f1', 'f2', ...)
-        dict _mapping  # contains field's name => id mappings
+        readonly str name
+        readonly str type
+        readonly str collation
+        readonly bint is_nullable
+        readonly bint is_autoincrement
+        readonly str span
+
+
+cdef public class Metadata [object C_Metadata, type C_Metadata_Type]:
+    cdef:
+        readonly list fields
+        readonly dict name_id_map
+        list names
 
     cdef inline int len(self)
-    cdef inline void add(self, uint64_t id, str name)
+    cdef inline void add(self, int id, Field field)
     cdef inline str name_by_id(self, int i)
-    cdef inline uint64_t id_by_name(self, str f) except *
+    cdef inline int id_by_name(self, str name) except *
 
 
 cdef class SchemaIndex:
     cdef:
-        int sid
-        int iid
-        str name
-        str index_type
-        object unique
-
-        TntFields fields
+        readonly int sid
+        readonly int iid
+        readonly str name
+        readonly str index_type
+        readonly object unique
+        readonly Metadata metadata
 
 
 cdef class SchemaDummyIndex(SchemaIndex):
@@ -29,15 +39,15 @@ cdef class SchemaDummyIndex(SchemaIndex):
 
 cdef class SchemaSpace:
     cdef:
-        int sid
-        int owner
-        str name
-        str engine
-        int field_count
-        object flags
+        readonly int sid
+        readonly int owner
+        readonly str name
+        readonly str engine
+        readonly int field_count
+        readonly object flags
 
-        TntFields fields
-        dict indexes
+        readonly Metadata metadata
+        readonly dict indexes
 
     cdef void add_index(self, SchemaIndex idx)
     cdef SchemaIndex get_index(self, index, create_dummy=*)
@@ -49,8 +59,8 @@ cdef class SchemaDummySpace(SchemaSpace):
 
 cdef class Schema:
     cdef:
-        dict schema
-        int64_t id
+        readonly dict spaces
+        readonly int id
 
     cdef SchemaSpace get_space(self, space)
     cdef SchemaSpace create_dummy_space(self, int space_id)
@@ -65,4 +75,4 @@ cdef class Schema:
     cdef Schema parse(int64_t schema_id, spaces, indexes)
 
 
-cdef list dict_to_list_fields(dict d, TntFields fields, bint default_none)
+cdef list dict_to_list_fields(dict d, Metadata metadata, bint default_none)
