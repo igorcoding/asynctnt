@@ -1,3 +1,4 @@
+from uuid import UUID
 from decimal import Decimal
 
 cdef uint32_t decimal_len(int exponent, uint32_t digits_count):
@@ -114,3 +115,9 @@ cdef object decimal_decode(const char ** p, uint32_t length):
     p[0] += length
 
     return Decimal((<object> <int> sign, digits, <object> exponent))
+
+
+cdef object uuid_decode(const char **p, uint32_t length):
+    data = cpython.bytes.PyBytes_FromStringAndSize(p[0], length)
+    p[0] += length
+    return UUID(bytes=data)

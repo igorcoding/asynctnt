@@ -269,6 +269,8 @@ cdef object _decode_obj(const char **p, bytes encoding):
         s_len = mp_decode_extl(p, &ext_type)
         if ext_type == tarantool.MP_DECIMAL:
             return decimal_decode(p, s_len)
+        elif ext_type == tarantool.MP_UUID:
+            return uuid_decode(p, s_len)
         else:
             logger.warning('Unexpected ext type: %d', ext_type)
             return None

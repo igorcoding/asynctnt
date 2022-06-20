@@ -60,12 +60,13 @@ local function bootstrap()
         b.types.string = 'string'
         b.types.unsigned = 'unsigned'
         b.types.integer = 'integer'
-        b.types.decimal = 'decimal'
     else
         b.types.string = 'str'
         b.types.unsigned = 'num'
         b.types.integer = 'int'
     end
+    b.types.decimal = 'decimal'
+    b.types.uuid = 'uuid'
     b.types.number = 'number'
     b.types.array = 'array'
     b.types.scalar = 'scalar'
@@ -138,12 +139,23 @@ if B:check_version({2, 0}) then
     end)
 
     box.once('v2.1', function()
-        local s = box.schema.create_space('tester_ext')
-        s:format({
-            {type=B.types.unsigned, name='f1'},
-            {type=B.types.decimal, name='f2'},
-        })
-        s:create_index('primary')
+        if B:check_version({2, 2}) then
+            local s = box.schema.create_space('tester_ext_dec')
+            s:format({
+                {type=B.types.unsigned, name='f1'},
+                {type=B.types.decimal, name='f2'},
+            })
+            s:create_index('primary')
+        end
+
+        if B:check_version({2, 4, 1}) then
+            s = box.schema.create_space('tester_ext_uuid')
+            s:format({
+                {type=B.types.unsigned, name='f1'},
+                {type=B.types.uuid, name='f2'},
+            })
+            s:create_index('primary')
+        end
     end)
 end
 

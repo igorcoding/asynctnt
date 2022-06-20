@@ -81,3 +81,4 @@ cdef enum iproto_update_operation:
 cdef enum mp_extension_type:
     MP_UNKNOWN_EXTENSION = 0
     MP_DECIMAL = 1
+    MP_UUID = 2

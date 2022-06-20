@@ -14,6 +14,7 @@ from libc.stdint cimport uint32_t, uint64_t, int64_t, uint8_t
 from libc.stdio cimport printf
 
 from decimal import Decimal
+from uuid import UUID
 
 # noinspection PyUnresolvedReferences
 # noinspection PyAttributeOutsideInit
@@ -214,7 +215,6 @@ cdef class WriteBuffer:
     cdef char *mp_encode_decimal(self, char *p, object value) except NULL:
         cdef:
             char *begin
-            char *svp
             uint8_t sign
             tuple digits
             uint32_t digits_count
@@ -236,6 +236,20 @@ cdef class WriteBuffer:
 
         # encode decimal
         p = decimal_encode(p, digits_count, sign, digits, exponent)
+
+        self._length += (p - begin)
+        return p
+
+    cdef char *mp_encode_uuid(self, char *p, object value) except NULL:
+        cdef:
+            char *begin
+            char *data_p
+
+        p = begin = self._ensure_allocated(p, mp_sizeof_ext(16))
+        data_p = cpython.bytes.PyBytes_AS_STRING(<bytes> value.bytes)
+
+        # encode header
+        p = mp_encode_ext(p, tarantool.MP_UUID, data_p, 16)  # uuid is exactly 16 bytes
 
         self._length += (p - begin)
         return p
@@ -366,6 +380,9 @@ cdef class WriteBuffer:
 
         elif isinstance(o, Decimal):
             return self.mp_encode_decimal(p, o)
+
+        elif isinstance(o, UUID):
+            return self.mp_encode_uuid(p, o)
 
         else:
             raise TypeError(

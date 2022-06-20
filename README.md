@@ -8,10 +8,10 @@
 </a>
 
 asynctnt is a high-performance [Tarantool](https://tarantool.org/) database
-connector library for Python/asyncio. It is highly inspired by
+connector library for Python/asyncio. It was highly inspired by
 [asyncpg](https://github.com/MagicStack/asyncpg) module.
 
-asynctnt requires Python 3.5 or later and is supported for Tarantool
+asynctnt requires Python 3.6 or later and is supported for Tarantool
 versions 1.6+.
 
 
@@ -29,14 +29,12 @@ Documentation is available [here](https://igorcoding.github.io/asynctnt).
 
 ## Key features
 
-* Support for all of the basic requests that Tarantool supports. This includes:
-  `insert`, `select`, `update`, `upsert`, `eval`, `sql` (for Tarantool 2.x),
-  `call` and `call16`. _Note: For the difference between `call16` and `call`
-  please refer to Tarantool documentation._
+* Support for all the basic requests that Tarantool supports. This includes:
+  `insert`, `select`, `update`, `upsert`, `call`, `eval`, `execute`.
 * **Schema fetching** on connection establishment, so you can use spaces and
   indexes names rather than their ids.
 * Schema **auto refetching**. If schema in Tarantool is changed, `asynctnt`
-  refetches it.
+  refreshes it internally.
 * **Auto reconnect**. If connection is lost for some reason - asynctnt will
   start automatic reconnection procedure (with authorization and schema
   fetching, of course).
@@ -50,6 +48,7 @@ Documentation is available [here](https://igorcoding.github.io/asynctnt).
   executed for too long, asyncio.TimeoutError is raised. It drastically
   simplifies your code, as you don't need to use `asyncio.wait_for(...)`
   stuff anymore.
+* Support of `Decimal` and `UUID` types natively (starting from Tarantool 2.4.1)
 
 
 ## Basic Usage
@@ -69,12 +68,15 @@ box.once('v1', function()
     s:format({
         { name = 'id', type = 'unsigned' },
         { name = 'name', type = 'string' },
+        { name = 'uuid', type = 'uuid' },
     })
 end)
 ```
 
 Python code:
+
 ```python
+import uuid
 import asyncio
 import asynctnt
 
@@ -84,15 +86,17 @@ async def main():
     await conn.connect()
 
     for i in range(1, 11):
-        await conn.insert('tester', [i, 'hello{}'.format(i)])
+        await conn.insert('tester', [i, 'hello{}'.format(i), uuid.uuid4()])
 
     data = await conn.select('tester', [])
-    first_tuple = data[0]
-    print('tuple:', first_tuple)
-    print(f'tuple[0]: {first_tuple[0]}; tuple["id"]: {first_tuple["id"]}')
-    print(f'tuple[1]: {first_tuple[1]}; tuple["name"]: {first_tuple["name"]}')
+    tup = data[0]
+    print('tuple:', tup)
+    print(f'{tup[0]=}; {tup["id"]=}')
+    print(f'{tup[1]=}; {tup["name"]=}')
+    print(f'{tup[2]=}; {tup["uuid"]=}')
 
     await conn.disconnect()
+
 
 asyncio.run(main())
 ```
@@ -102,15 +106,16 @@ Stdout:
 *(note that you can simultaneously access fields either by indices
 or by their names)*
 ```
-tuple: <TarantoolTuple id=1 name='hello1'>
-tuple[0]: 1; tuple["id"]: 1
-tuple[1]: hello1; tuple["name"]: hello1
+tuple: <TarantoolTuple id=1 name='hello1' uuid=UUID('ebbad14c-f78c-42e8-bd12-bfcc564443a6')>
+tup[0]=1; tup["id"]=1
+tup[1]='hello1'; tup["name"]='hello1'
+tup[2]=UUID('ebbad14c-f78c-42e8-bd12-bfcc564443a6'); tup["uuid"]=UUID('ebbad14c-f78c-42e8-bd12-bfcc564443a6')
 ```
 
 ## SQL
 
-Tarantool 2 brings out an SQL interface to the database. You can easily use SQL
-through `asynctnt`
+Tarantool 2.x brought out an SQL interface to the database. You can easily use it
+in `asynctnt`
 
 ```lua
 box.cfg {
@@ -138,9 +143,9 @@ async def main():
     conn = asynctnt.Connection(host='127.0.0.1', port=3301)
     await conn.connect()
 
-    await conn.sql("insert into users (id, name) values (1, 'James Bond')")
-    await conn.sql("insert into users (id, name) values (2, 'Ethan Hunt')")
-    data = await conn.sql('select * from users')
+    await conn.execute("insert into users (id, name) values (1, 'James Bond')")
+    await conn.execute("insert into users (id, name) values (2, 'Ethan Hunt')")
+    data = await conn.execute('select * from users')
 
     for row in data:
         print(row)
@@ -156,62 +161,25 @@ Stdout:
 <TarantoolTuple ID=2 NAME='Ethan Hunt'>
 ```
 
+More about SQL features in asynctnt please refer to the [documentation](https://igorcoding.github.io/asynctnt/examples.html#using-sql)
+
 ## Performance
 
-On all of the benchmarks below `wal_mode = none`
+Two performance tests were conducted:
+1. `Seq` -- Sequentially calling 40k requests and measuring performance
+2. `Parallel` -- Sending 200k in 300 parallel coroutines
 
-### Sequential
+On all the benchmarks below `wal_mode = none`
+Turning `uvloop` on has a massive effect on the performance, so it is recommended to use `asynctnt` with it
 
-RPS on running 40k requests (no `uvloop`):
-
-| Request       | aiotarantool  | asynctnt  |
-| ------------- |:-------------:| ---------:|
-| ping          | 5010.60       | 9037.07   |
-| call          | 4575.98       | 9113.32   |
-| eval          | 4096.32       | 8921.95   |
-| select        | 4063.15       | 9681.12   |
-| insert        | 4038.04       | 9332.21   |
-| update        | 3945.12       | 10532.75  |
-
-
-RPS on running 40k requests (with `uvloop`):
-
-| Request       | aiotarantool  | asynctnt  |
-| ------------- |:-------------:| ---------:|
-| ping          | 7204.31       | 20372.59  |
-| call          | 6723.58       | 17279.21  |
-| eval          | 7001.27       | 16642.67  |
-| select        | 7028.03       | 17730.24  |
-| insert        | 7054.06       | 17384.26  |
-| update        | 6618.01       | 15990.12  |
-
-
-### Parallel coroutines
-
-RPS on running 200k requests in 300 parallel coroutines (no `uvloop`):
-
-| Request       | aiotarantool  | asynctnt  |
-| ------------- |:-------------:| ---------:|
-| ping          | 32946.25      | 44090.53  |
-| call          | 29005.93      | 41129.16  |
-| eval          | 28792.84      | 44097.02  |
-| select        | 26929.76      | 35853.33  |
-| insert        | 27142.52      | 31329.85  |
-| update        | 25330.98      | 36281.59  |
-
-
-Let's enable uvloop. This is where asynctnt shines.
-RPS on running 200k requests in 300 parallel coroutines (with `uvloop`):
-
-
-| Request       | aiotarantool  | asynctnt   |
-| ------------- |:-------------:| ----------:|
-| ping          | 38962.01      | 134043.41  |
-| call          | 32799.71      | 99866.28   |
-| eval          | 27608.09      | 91056.69   |
-| select        | 27436.98      | 108940.41  |
-| insert        | 33247.57      | 102971.13  |
-| update        | 28544.68      | 98643.46   |
+|          | Seq (uvloop=off) | Seq (uvloop=on) | Parallel (uvloop=off) | Parallel (uvloop=on) |
+|----------|-----------------:|----------------:|----------------------:|---------------------:|
+| `ping`   |          9037.07 |        20372.59 |              44090.53 |            134043.41 |
+| `call`   |          9113.32 |        17279.21 |              41129.16 |             99866.28 |
+| `eval`   |          8921.95 |        16642.67 |              44097.02 |             91056.69 |
+| `select` |          9681.12 |        17730.24 |              35853.33 |            108940.41 |
+| `insert` |          9332.21 |        17384.26 |              31329.85 |            102971.13 |
+| `update` |         10532.75 |        15990.12 |              36281.59 |             98643.46 |
 
 
 ## License
