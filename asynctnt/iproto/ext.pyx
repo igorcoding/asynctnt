@@ -97,6 +97,7 @@ cdef object decimal_decode(const char ** p, uint32_t length):
         while True:
             nibble = (last[0] & 0xf0) >> 4  # left nibble first
             item = <object> <int> nibble
+            cpython.Py_INCREF(item)
             cpython.tuple.PyTuple_SET_ITEM(digits, digits_count - 1, item)
 
             digits_count -= 1
@@ -106,6 +107,7 @@ cdef object decimal_decode(const char ** p, uint32_t length):
 
             nibble = last[0] & 0x0f  # right nibble
             item = <object> <int> nibble
+            cpython.Py_INCREF(item)
             cpython.tuple.PyTuple_SET_ITEM(digits, digits_count - 1, item)
 
             digits_count -= 1
