@@ -13,6 +13,7 @@ cdef class DeleteRequest(BaseRequest):
     cdef int encode_request_delete(self, WriteBuffer buffer) except -1:
         cdef:
             char *p
+            char *begin
             uint32_t body_map_sz
             uint32_t max_body_len
             uint32_t space_id, index_id

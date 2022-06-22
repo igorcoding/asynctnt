@@ -24,6 +24,7 @@ include "requests/update.pxd"
 include "requests/upsert.pxd"
 include "requests/prepare.pxd"
 include "requests/execute.pxd"
+include "requests/id.pxd"
 include "requests/auth.pxd"
 
 include "response.pxd"
@@ -31,6 +32,14 @@ include "db.pxd"
 include "push.pxd"
 
 include "coreproto.pxd"
+
+
+cdef enum PostConnectionState:
+    POST_CONNECTION_NONE = 0
+    POST_CONNECTION_ID = 10
+    POST_CONNECTION_AUTH = 20
+    POST_CONNECTION_SCHEMA = 30
+    POST_CONNECTION_DONE = 100
 
 
 cdef class BaseProtocol(CoreProtocol):
@@ -41,6 +50,7 @@ cdef class BaseProtocol(CoreProtocol):
         bint fetch_schema
         bint auto_refetch_schema
         float request_timeout
+        int post_con_state
 
         object connected_fut
         object on_connection_made_cb
@@ -61,7 +71,9 @@ cdef class BaseProtocol(CoreProtocol):
 
     cdef void _set_connection_ready(self)
     cdef void _set_connection_error(self, e)
+    cdef void _post_con_state_machine(self)
 
+    cdef void _do_id(self)
     cdef void _do_auth(self, str username, str password)
     cdef void _do_fetch_schema(self, object fut)
     cdef object _refetch_schema(self)

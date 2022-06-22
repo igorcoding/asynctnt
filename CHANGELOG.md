@@ -10,6 +10,7 @@
 * Exposed an internal schema as a `Connection.schema` property, introducing new classes to operate the schema with
 * Exposed SQL metadata of responses as `response.metadata` field
 * Added typings to internal types such as `Connection`, `Response`, `Metadata`, `Schema`, `TarantoolTuple` and others
+* `asynctnt` now sends IPROTO_ID request before anything else to notify Tarantool of used features
 
 **Other changes:**
 * Updated Cython to 0.29.30

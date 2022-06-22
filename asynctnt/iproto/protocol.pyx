@@ -26,6 +26,7 @@ include "requests/update.pyx"
 include "requests/upsert.pyx"
 include "requests/prepare.pyx"
 include "requests/execute.pyx"
+include "requests/id.pyx"
 include "requests/auth.pyx"
 
 include "ttuple.pyx"
@@ -75,6 +76,7 @@ cdef class BaseProtocol(CoreProtocol):
         self.fetch_schema = fetch_schema
         self.auto_refetch_schema = auto_refetch_schema
         self.request_timeout = request_timeout or 0
+        self.post_con_state = POST_CONNECTION_NONE
 
         self.connected_fut = connected_fut
         self.on_connection_made_cb = on_connection_made
@@ -117,14 +119,43 @@ cdef class BaseProtocol(CoreProtocol):
         if not self.connected_fut.done():
             self.connected_fut.set_exception(e)
             self.con_state = CONNECTION_BAD
+            self.post_con_state = POST_CONNECTION_NONE
 
     cdef void _on_greeting_received(self):
-        if self.username and self.password:
-            self._do_auth(self.username, self.password)
-        elif self.fetch_schema:
-            self._refetch_schema()
-        else:
+        self.post_con_state = POST_CONNECTION_ID
+        self._post_con_state_machine()
+
+    cdef void _post_con_state_machine(self):
+        if self.post_con_state == POST_CONNECTION_ID:
+            assert self.version is not None
+            if self.version >= (2, 10, 0):
+                # send <id> request
+                self._do_id()
+                return
+            else:
+                # Tarantool does not support id call - call auth request
+                self.post_con_state = POST_CONNECTION_AUTH
+
+        if self.post_con_state == POST_CONNECTION_AUTH:
+            if self.username and self.password:
+                # send <auth> request
+                self._do_auth(self.username, self.password)
+                return
+            else:
+                # no need to auth - fetch schema
+                self.post_con_state = POST_CONNECTION_SCHEMA
+
+        if self.post_con_state == POST_CONNECTION_SCHEMA:
+            if self.fetch_schema:
+                self._refetch_schema()
+                return
+            else:
+                # nothing else to do - connection is done
+                self.post_con_state = POST_CONNECTION_DONE
+
+        if self.post_con_state == POST_CONNECTION_DONE:
             self._set_connection_ready()
+            return
 
     cdef void _on_response_received(self, const char *buf, uint32_t buf_len):
         cdef:
@@ -204,6 +235,27 @@ cdef class BaseProtocol(CoreProtocol):
 
         waiter.set_result(response)
 
+    cdef void _do_id(self):
+        fut = self._db._id(0.0)
+
+        def on_id(f):
+            if f.cancelled():
+                self._set_connection_error(asyncio.futures.CancelledError())
+                return
+            e = f.exception()
+            if not e:
+                logger.debug('Tarantool[%s:%s] identified successfully',
+                             self.host, self.port)
+
+                self.post_con_state = POST_CONNECTION_AUTH
+                self._post_con_state_machine()
+            else:
+                logger.error('Tarantool[%s:%s] identification failed: %s',
+                             self.host, self.port, str(e))
+                self._set_connection_error(e)
+
+        fut.add_done_callback(on_id)
+
     cdef void _do_auth(self, str username, str password):
         # No extra error handling from Db.execute
         fut = self._db._auth(self.salt, username, password, 0, False, False)
@@ -217,10 +269,8 @@ cdef class BaseProtocol(CoreProtocol):
                 logger.debug('Tarantool[%s:%s] Authorized successfully',
                              self.host, self.port)
 
-                if self.fetch_schema:
-                    self._do_fetch_schema(None)
-                else:
-                    self._set_connection_ready()
+                self.post_con_state = POST_CONNECTION_SCHEMA
+                self._post_con_state_machine()
             else:
                 logger.error('Tarantool[%s:%s] Authorization failed: %s',
                              self.host, self.port, str(e))
@@ -269,7 +319,8 @@ cdef class BaseProtocol(CoreProtocol):
                     return
 
                 self._schema_id = self._schema.id
-                self._set_connection_ready()
+                self.post_con_state = POST_CONNECTION_DONE
+                self._post_con_state_machine()
                 if fut is not None and not fut.done():
                     fut.set_result(self._schema)
             else:
@@ -313,6 +364,7 @@ cdef class BaseProtocol(CoreProtocol):
             return
 
         self._closing = True
+        self.post_con_state = POST_CONNECTION_NONE
 
         pos = 0
         while cpython.dict.PyDict_Next(self._reqs, &pos, &pkey, &pvalue):

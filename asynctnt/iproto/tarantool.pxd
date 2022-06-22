@@ -41,6 +41,11 @@ cdef enum iproto_key:
     IPROTO_SQL_INFO = 0x42
     IPROTO_STMT_ID = 0x43
 
+    IPROTO_VERSION = 0x54
+    IPROTO_FEATURES = 0x55
+    IPROTO_TIMEOUT = 0x56
+    IPROTO_TXN_ISOLATION = 0x59
+
     IPROTO_CHUNK = 0x80
 
 
@@ -94,3 +99,9 @@ cdef enum mp_extension_type:
     MP_UNKNOWN_EXTENSION = 0
     MP_DECIMAL = 1
     MP_UUID = 2
+
+cdef enum iproto_features:
+    IPROTO_FEATURE_STREAMS = 0
+    IPROTO_FEATURE_TRANSACTIONS = 1
+    IPROTO_FEATURE_ERROR_EXTENSION = 2
+    IPROTO_FEATURE_WATCHERS = 3

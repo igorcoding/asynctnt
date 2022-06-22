@@ -27,6 +27,17 @@ cdef class Db:
             <float> timeout
         )
 
+    cdef object _id(self, float timeout):
+        cdef IDRequest req = IDRequest.__new__(IDRequest)
+        req.op = tarantool.IPROTO_ID
+        req.sync = self.next_sync()
+        req.check_schema_change = False
+        return self._protocol.execute(
+            req,
+            req.encode(self._encoding),
+            <float> timeout
+        )
+
     cdef object _auth(self, bytes salt, str username, str password,
                       float timeout, bint push_subscribe, bint check_schema_change):
         cdef:

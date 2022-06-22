@@ -12,6 +12,8 @@ cdef class Db:
 
     cdef object _ping(self, float timeout, bint check_schema_change)
 
+    cdef object _id(self, float timeout)
+
     cdef object _auth(self, bytes salt, str username, str password,
                       float timeout, bint push_subscribe, bint check_schema_change)
 
