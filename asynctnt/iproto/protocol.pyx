@@ -28,6 +28,7 @@ include "requests/prepare.pyx"
 include "requests/execute.pyx"
 include "requests/id.pyx"
 include "requests/auth.pyx"
+include "requests/streams.pyx"
 
 include "ttuple.pyx"
 include "response.pyx"
@@ -88,11 +89,12 @@ cdef class BaseProtocol(CoreProtocol):
 
         self._reqs = {}
         self._sync = 0
+        self._last_stream_id = 0
         self._schema_id = -1
         self._schema = Schema.__new__(Schema, self._schema_id)
         self._schema_fetch_in_progress = False
         self._refetch_schema_future = None
-        self._db = self._create_db()
+        self._db = self._create_db(<bint> False)
         self.execute = self._execute_bad
 
         try:
@@ -412,6 +414,10 @@ cdef class BaseProtocol(CoreProtocol):
         self._sync += 1
         return self._sync
 
+    cdef inline uint64_t next_stream_id(self):
+        self._last_stream_id += 1
+        return self._last_stream_id
+
     def _on_request_timeout(self, waiter):
         cdef:
             BaseRequest req
@@ -451,11 +457,17 @@ cdef class BaseProtocol(CoreProtocol):
             fut.add_done_callback(self._on_request_completed_cb)
         return fut
 
-    cdef Db _create_db(self):
-        return Db.create(self)
+    cdef Db _create_db(self, bint gen_stream_id):
+        cdef uint64_t stream_id
+        if gen_stream_id:
+            stream_id = self.next_stream_id()
+        else:
+            stream_id = 0
 
-    def create_db(self):
-        return self._create_db()
+        return Db.create(self, stream_id)
+
+    def create_db(self, bint gen_stream_id = False):
+        return self._create_db(gen_stream_id)
 
     def get_common_db(self):
         return self._db

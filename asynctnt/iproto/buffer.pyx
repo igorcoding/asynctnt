@@ -131,14 +131,17 @@ cdef class WriteBuffer:
 
     cdef int write_header(self, uint64_t sync,
                           tarantool.iproto_type op,
-                          int64_t schema_id) except -1:
+                          int64_t schema_id,
+                          uint64_t stream_id) except -1:
         cdef:
             char *begin = NULL
             char *p = NULL
             uint32_t map_size
         self.ensure_allocated(HEADER_CONST_LEN)
 
-        map_size = 2 + <uint32_t> (schema_id > 0)
+        map_size = 2 \
+                    + (<uint32_t> (schema_id > 0)) \
+                    + (<uint32_t> (stream_id > 0))
 
         p = begin = &self._buf[self._length]
         p = mp_encode_map(&p[5], map_size)
@@ -151,6 +154,10 @@ cdef class WriteBuffer:
             p = mp_encode_uint(p, tarantool.IPROTO_SCHEMA_VERSION)
             p = mp_store_u8(p, 0xce)
             p = mp_store_u32(p, schema_id)
+
+        if stream_id > 0:
+            p = mp_encode_uint(p, tarantool.IPROTO_STREAM_ID)
+            p = mp_encode_uint(p, stream_id)
 
         self._length += (p - begin)
 

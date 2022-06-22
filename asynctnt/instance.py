@@ -103,6 +103,7 @@ class TarantoolInstance(metaclass=abc.ABCMeta):
                  cleanup=True,
                  initlua_template=None,
                  applua='-- app.lua --',
+                 extra_box_cfg='',
                  timeout=5.,
                  command_to_run='tarantool',
                  command_args=None):
@@ -136,6 +137,8 @@ class TarantoolInstance(metaclass=abc.ABCMeta):
                                  _create_initlua_template function)
         :param applua: Any extra lua script (a string)
                        (default = '-- app.lua --')
+        :param extra_box_cfg: Any extra box.cfg params
+                              (default = '')
         :param timeout: Timeout in seconds - how much to wait for tarantool
                         to become active
         :param command_to_run: command exe
@@ -159,6 +162,7 @@ class TarantoolInstance(metaclass=abc.ABCMeta):
         self._initlua_template = initlua_template or \
                                  self._create_initlua_template()
         self._applua = applua
+        self._extra_box_cfg = extra_box_cfg
         self._command_to_run = command_to_run
         self._command_args = command_args
 
@@ -249,7 +253,8 @@ class TarantoolInstance(metaclass=abc.ABCMeta):
               custom_proc_title = "${custom_proc_title}",
               slab_alloc_arena = ${slab_alloc_arena},
               work_dir = ${work_dir},
-              log_level = ${log_level}
+              log_level = ${log_level},
+              ${extra_box_cfg}
             }
             if check_version({1, 7}, _TARANTOOL) then
                 cfg.replication = ${replication_source}
@@ -295,7 +300,8 @@ class TarantoolInstance(metaclass=abc.ABCMeta):
             'replication_source': replication,
             'work_dir': work_dir,
             'log_level': self._log_level,
-            'applua': self._applua if self._applua else ''
+            'applua': self._applua if self._applua else '',
+            'extra_box_cfg': self._extra_box_cfg,
         }
         return template.substitute(d)
 
@@ -564,15 +570,27 @@ class TarantoolSyncInstance(TarantoolInstance):
             self._logger_thread.join()
         super().cleanup()
 
+    @staticmethod
+    def _parse_version(version: str) -> Optional[tuple]:
+        m = VERSION_STRING_REGEX.match(version)
+        if m is not None:
+            ver = m.group(1)
+            return tuple(map(int, ver.split('.')))
+        return None
+
     def version(self) -> Optional[tuple]:
         res = self.command("box.info.version")
         if not res:
             return None
-        res = res[0]
-        m = VERSION_STRING_REGEX.match(res)
-        if m is not None:
-            ver = m.group(1)
-            return tuple(map(int, ver.split('.')))
+        return self._parse_version(res[0])
+
+    @property
+    def bin_version(self) -> Optional[tuple]:
+        proc = subprocess.Popen([self._command_to_run, '-V'],
+                                stdout=subprocess.PIPE)
+        output = proc.stdout.read().decode()
+        version_str = output.split('\n')[0].split(' ')[1]
+        return self._parse_version(version_str)
 
     def command(self, cmd, print_greeting=True):
         s = TcpSocket(self._console_host, self._console_port)
@@ -776,3 +794,7 @@ class TarantoolSyncDockerInstance(TarantoolSyncInstance):
         args = cmd.split(' ')
         self._command_to_run = args[0]
         self._command_args = args[1:]
+
+    @property
+    def bin_version(self) -> Optional[tuple]:
+        return self._parse_version(self._docker_tag)

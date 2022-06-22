@@ -6,6 +6,7 @@ cdef class BaseRequest:
         tarantool.iproto_type op
         uint64_t sync
         int64_t schema_id
+        uint64_t stream_id
         SchemaSpace space
         object waiter
         object timeout_handle

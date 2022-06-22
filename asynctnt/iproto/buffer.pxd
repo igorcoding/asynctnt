@@ -25,7 +25,8 @@ cdef class WriteBuffer:
     cdef int write_buffer(self, WriteBuffer buf) except -1
     cdef int write_header(self, uint64_t sync,
                           tarantool.iproto_type op,
-                          int64_t schema_id) except -1
+                          int64_t schema_id,
+                          uint64_t stream_id) except -1
     cdef void write_length(self)
 
     cdef char *mp_encode_nil(self, char *p) except NULL

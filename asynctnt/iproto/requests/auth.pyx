@@ -34,7 +34,7 @@ cdef inline bytes _strxor(bytes hash1, bytes scramble):
 cdef class AuthRequest(BaseRequest):
     cdef inline WriteBuffer encode(self, bytes encoding):
         cdef WriteBuffer buffer = WriteBuffer.create(encoding)
-        buffer.write_header(self.sync, self.op, self.schema_id)
+        buffer.write_header(self.sync, self.op, self.schema_id, self.stream_id)
         username_bytes = encode_unicode_string(self.username, encoding)
         password_bytes = encode_unicode_string(self.password, encoding)
 

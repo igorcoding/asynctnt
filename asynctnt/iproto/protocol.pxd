@@ -26,6 +26,7 @@ include "requests/prepare.pxd"
 include "requests/execute.pxd"
 include "requests/id.pxd"
 include "requests/auth.pxd"
+include "requests/streams.pxd"
 
 include "response.pxd"
 include "db.pxd"
@@ -81,9 +82,10 @@ cdef class BaseProtocol(CoreProtocol):
     cdef object _refetch_schema(self)
 
     cdef inline uint64_t next_sync(self)
+    cdef inline uint64_t next_stream_id(self)
     cdef uint32_t transform_iterator(self, iterator) except *
 
     cdef object _new_waiter_for_request(self, Response response, BaseRequest req, float timeout)
-    cdef Db _create_db(self)
+    cdef Db _create_db(self, bint gen_stream_id)
     cdef object _execute_bad(self, BaseRequest req, WriteBuffer buf, float timeout)
     cdef object _execute_normal(self, BaseRequest req, WriteBuffer buf, float timeout)

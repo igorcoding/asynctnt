@@ -3,12 +3,14 @@ cimport cython
 @cython.final
 cdef class Db:
     def __cinit__(self):
+        self._stream_id = 0
         self._protocol = None
         self._encoding = None
 
     @staticmethod
-    cdef inline Db create(BaseProtocol protocol):
+    cdef inline Db create(BaseProtocol protocol, uint64_t stream_id):
         cdef Db db = Db.__new__(Db)
+        db._stream_id = stream_id
         db._protocol = protocol
         db._encoding = protocol.encoding
         return db
@@ -20,6 +22,7 @@ cdef class Db:
         cdef PingRequest req = PingRequest.__new__(PingRequest)
         req.op = tarantool.IPROTO_PING
         req.sync = self.next_sync()
+        req.stream_id = self._stream_id
         req.check_schema_change = True
         return self._protocol.execute(
             self._protocol,
@@ -32,6 +35,7 @@ cdef class Db:
         cdef IDRequest req = IDRequest.__new__(IDRequest)
         req.op = tarantool.IPROTO_ID
         req.sync = self.next_sync()
+        req.stream_id = self._stream_id
         req.check_schema_change = False
         return self._protocol.execute(
             self._protocol,
@@ -51,6 +55,7 @@ cdef class Db:
         req = AuthRequest.__new__(AuthRequest)
         req.op = tarantool.IPROTO_AUTH
         req.sync = self.next_sync()
+        req.stream_id = self._stream_id
         req.salt = salt
         req.username = username
         req.password = password
@@ -75,6 +80,7 @@ cdef class Db:
         cdef CallRequest req = CallRequest.__new__(CallRequest)
         req.op = op
         req.sync = self.next_sync()
+        req.stream_id = self._stream_id
         req.func_name = func_name
         req.args = args
         req.push_subscribe = push_subscribe
@@ -94,6 +100,7 @@ cdef class Db:
         cdef EvalRequest req = EvalRequest.__new__(EvalRequest)
         req.op = tarantool.IPROTO_EVAL
         req.sync = self.next_sync()
+        req.stream_id = self._stream_id
         req.expression = expression
         req.args = args
         req.push_subscribe = push_subscribe
@@ -132,6 +139,7 @@ cdef class Db:
         req = SelectRequest.__new__(SelectRequest)
         req.op = tarantool.IPROTO_SELECT
         req.sync = self.next_sync()
+        req.stream_id = self._stream_id
         req.space = sp
         req.index = idx
         req.key = key
@@ -163,6 +171,7 @@ cdef class Db:
         req = InsertRequest.__new__(InsertRequest)
         req.op = tarantool.IPROTO_REPLACE if replace else tarantool.IPROTO_INSERT
         req.sync = self.next_sync()
+        req.stream_id = self._stream_id
         req.space = sp
         req.t = t
         req.push_subscribe = False
@@ -192,6 +201,7 @@ cdef class Db:
         req = DeleteRequest.__new__(DeleteRequest)
         req.op = tarantool.IPROTO_DELETE
         req.sync = self.next_sync()
+        req.stream_id = self._stream_id
         req.space = sp
         req.index = idx
         req.key = key
@@ -223,6 +233,7 @@ cdef class Db:
         req = UpdateRequest.__new__(UpdateRequest)
         req.op = tarantool.IPROTO_UPDATE
         req.sync = self.next_sync()
+        req.stream_id = self._stream_id
         req.space = sp
         req.index = idx
         req.key = key
@@ -252,6 +263,7 @@ cdef class Db:
         req = UpsertRequest.__new__(UpsertRequest)
         req.op = tarantool.IPROTO_UPSERT
         req.sync = self.next_sync()
+        req.stream_id = self._stream_id
         req.space = sp
         req.t = t
         req.operations = operations
@@ -277,6 +289,7 @@ cdef class Db:
         req = ExecuteRequest.__new__(ExecuteRequest)
         req.op = tarantool.IPROTO_EXECUTE
         req.sync = self.next_sync()
+        req.stream_id = self._stream_id
 
         if isinstance(query, str):
             req.query = query
@@ -310,6 +323,7 @@ cdef class Db:
         req = PrepareRequest.__new__(PrepareRequest)
         req.op = tarantool.IPROTO_PREPARE
         req.sync = self.next_sync()
+        req.stream_id = self._stream_id
 
         if isinstance(query, str):
             req.query = query
@@ -332,7 +346,60 @@ cdef class Db:
             <float> timeout
         )
 
+    cdef object _begin(self,
+                       uint32_t isolation,
+                       double tx_timeout,
+                       float timeout):
+        cdef BeginRequest req = BeginRequest.__new__(BeginRequest)
+        req.op = tarantool.IPROTO_BEGIN
+        req.sync = self.next_sync()
+        req.stream_id = self._stream_id
+        req.check_schema_change = True
+        req.push_subscribe = False
+        req.isolation = isolation
+        req.tx_timeout = tx_timeout
+        return self._protocol.execute(
+            self._protocol,
+            req,
+            req.encode(self._encoding),
+            <float> timeout
+        )
+
+    cdef object _commit(self, float timeout):
+        cdef CommitRequest req = CommitRequest.__new__(CommitRequest)
+        req.op = tarantool.IPROTO_COMMIT
+        req.sync = self.next_sync()
+        req.stream_id = self._stream_id
+        req.check_schema_change = True
+        req.push_subscribe = False
+        return self._protocol.execute(
+            self._protocol,
+            req,
+            req.encode(self._encoding),
+            <float> timeout
+        )
+
+    cdef object _rollback(self, float timeout):
+        cdef RollbackRequest req = RollbackRequest.__new__(RollbackRequest)
+        req.op = tarantool.IPROTO_ROLLBACK
+        req.sync = self.next_sync()
+        req.stream_id = self._stream_id
+        req.check_schema_change = True
+        return self._protocol.execute(
+            self._protocol,
+            req,
+            req.encode(self._encoding),
+            <float> timeout
+        )
+
     # public methods
+
+    @property
+    def stream_id(self):
+        return <int> self._stream_id
+
+    def set_stream_id(self, int stream_id):
+        self._stream_id = <uint64_t> stream_id
 
     def ping(self, float timeout=-1):
         return self._ping(timeout)
@@ -428,3 +495,15 @@ cdef class Db:
                 bint parse_metadata=True,
                 float timeout=-1):
         return self._prepare(query, <bint> parse_metadata, timeout)
+
+    def begin(self,
+              uint32_t isolation,
+              float tx_timeout=0,
+              float timeout=-1):
+        return self._begin(isolation, <double> tx_timeout, timeout)
+
+    def commit(self, float timeout=-1):
+        return self._commit(timeout)
+
+    def rollback(self, float timeout=-1):
+        return self._rollback(timeout)

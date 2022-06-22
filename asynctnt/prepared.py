@@ -3,12 +3,17 @@ from typing import List, Optional, Union, Dict, Any, TYPE_CHECKING
 from .iproto import protocol
 
 if TYPE_CHECKING:
-    from .connection import Connection
+    from .api import Api
 
 
 class PreparedStatement:
-    def __init__(self, conn: 'Connection', query: str):
-        self._conn = conn
+    __slots__ = (
+        '_api', '_query', '_stmt_id',
+        '_params', '_params_count'
+    )
+
+    def __init__(self, api: 'Api', query: str):
+        self._api = api
         self._query = query
         self._stmt_id = None
         self._params = None
@@ -27,7 +32,7 @@ class PreparedStatement:
         return self._params
 
     async def prepare(self, timeout: float = -1.0) -> int:
-        resp = await self._conn.prepare_iproto(self._query, timeout=timeout)
+        resp = await self._api.prepare_iproto(self._query, timeout=timeout)
         self._stmt_id = resp.stmt_id
         self._params = resp.params
         self._params_count = resp.params_count
@@ -38,7 +43,7 @@ class PreparedStatement:
                       *,
                       parse_metadata: bool = True,
                       timeout: float = -1.0) -> protocol.Response:
-        return await self._conn.execute(
+        return await self._api.execute(
             query=self._stmt_id,
             args=args,
             parse_metadata=parse_metadata,
@@ -46,7 +51,7 @@ class PreparedStatement:
         )
 
     async def unprepare(self, timeout: float = -1.0):
-        await self._conn.unprepare_iproto(self._stmt_id, timeout=timeout)
+        await self._api.unprepare_iproto(self._stmt_id, timeout=timeout)
         self._stmt_id = None
 
     async def __aenter__(self):

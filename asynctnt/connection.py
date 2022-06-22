@@ -2,21 +2,19 @@ import asyncio
 import enum
 import functools
 import os
-from typing import Optional, Union, Any, List, Dict
+from typing import Optional, Union
 
+from .api import Api
 from .exceptions import TarantoolDatabaseError, \
-    ErrorCode, TarantoolNotConnectedError
+    ErrorCode, TarantoolError
 from .iproto import protocol
 from .log import logger
+from .stream import Stream
+from .utils import get_running_loop
 
 __all__ = (
     'Connection', 'connect', 'ConnectionState'
 )
-
-from .prepared import PreparedStatement
-
-from .types import MethodRet, SpaceType, KeyType, TupleType
-from .utils import get_running_loop
 
 
 class ConnectionState(enum.IntEnum):
@@ -27,13 +25,13 @@ class ConnectionState(enum.IntEnum):
     DISCONNECTED = 5
 
 
-class Connection:
+class Connection(Api):
     __slots__ = (
         '_host', '_port', '_username', '_password',
         '_fetch_schema', '_auto_refetch_schema', '_initial_read_buffer_size',
         '_encoding', '_connect_timeout', '_reconnect_timeout',
         '_request_timeout', '_ping_timeout', '_loop', '_state', '_state_prev',
-        '_transport', '_protocol', '_db',
+        '_transport', '_protocol',
         '_disconnect_waiter', '_reconnect_task',
         '_connect_lock', '_disconnect_lock',
         '_ping_task', '__create_task'
@@ -118,6 +116,7 @@ class Connection:
             :param loop:
                     (Deprecated) Asyncio event loop to use
         """
+        super().__init__()
         self._host = host
         self._port = port
         self._username = username
@@ -142,8 +141,7 @@ class Connection:
         self._loop = get_running_loop(kwargs.pop('loop', None))
 
         self._transport = None
-        self._protocol = None
-        self._db = _DbMock()
+        self._protocol: Optional[protocol.Protocol] = None
 
         self._state = ConnectionState.DISCONNECTED
         self._state_prev = ConnectionState.DISCONNECTED
@@ -298,7 +296,7 @@ class Connection:
 
                     self._transport = tr
                     self._protocol = pr
-                    self._db = self._protocol.get_common_db()
+                    self._set_db(self._protocol.get_common_db())
                     self._reconnect_task = None
                     self._normalize_api()
 
@@ -310,7 +308,7 @@ class Connection:
                     skip_errors = {
                         ErrorCode.ER_LOADING,
                         ErrorCode.ER_NO_SUCH_SPACE,
-                        ErrorCode.ER_NO_SUCH_INDEX
+                        ErrorCode.ER_NO_SUCH_INDEX_ID
                     }
                     if e.code in skip_errors:
                         # If Tarantool is still loading then reconnect
@@ -380,7 +378,7 @@ class Connection:
                 self._ping_task.cancel()
                 self._ping_task = None
 
-            self._db = _DbMock()
+            self._clear_db()
             if self._transport:
                 self._disconnect_waiter = _create_future(self._loop)
                 self._transport.close()
@@ -422,7 +420,7 @@ class Connection:
         self._transport = None
         self._protocol = None
         self._disconnect_waiter = None
-        self._db = _DbMock()
+        self._clear_db()
         self._set_state(ConnectionState.DISCONNECTED)
 
     async def reconnect(self):
@@ -594,368 +592,18 @@ class Connection:
         """
         await self._protocol.refetch_schema()
 
-    def ping(self, *, timeout: float = -1.0) -> MethodRet:
-        """
-            Ping request coroutine
-
-            :param timeout: Request timeout
-
-            :returns: :class:`asynctnt.Response` instance
-        """
-        return self._db.ping(timeout=timeout)
-
-    def call16(self,
-               func_name: str,
-               args: Optional[List[Any]] = None,
-               *,
-               timeout: float = -1.0,
-               push_subscribe: bool = False) -> MethodRet:
-        """
-            Call16 request coroutine. It is a call with an old behaviour
-            (return result of a Tarantool procedure is wrapped into a tuple,
-            if needed)
-
-            :param func_name: function name to call
-            :param args: arguments to pass to the function (list object)
-            :param timeout: Request timeout
-            :param push_subscribe: Subscribe to push notifications
-
-            :returns: :class:`asynctnt.Response` instance
-        """
-        return self._db.call16(func_name, args,
-                               timeout=timeout,
-                               push_subscribe=push_subscribe)
-
-    def call(self,
-             func_name: str,
-             args: Optional[List[Any]] = None,
-             *,
-             timeout: float = -1.0,
-             push_subscribe: bool = False) -> MethodRet:
-        """
-            Call request coroutine. It is a call with a new behaviour
-            (return result of a Tarantool procedure is not wrapped into
-            an extra tuple). If you're connecting to Tarantool with
-            version < 1.7, then this call method acts like a call16 method
-
-            Examples:
-
-            .. code-block:: pycon
-
-                # tarantool function:
-                # function f(...)
-                #     return ...
-                # end
-
-                >>> await conn.call('f')
-                <Response sync=3 rowcount=0 data=[]>
-
-                >>> await conn.call('f', [20, 42])
-                <Response sync=3 rowcount=2 data=[20, 42]>
-
-            :param func_name: function name to call
-            :param args: arguments to pass to the function (list object)
-            :param timeout: Request timeout
-            :param push_subscribe: Subscribe to push notifications
-
-            :returns: :class:`asynctnt.Response` instance
-        """
-        return self._db.call(func_name, args,
-                             timeout=timeout, push_subscribe=push_subscribe)
-
-    def eval(self,
-             expression: str,
-             args: Optional[List[Any]] = None,
-             *,
-             timeout: float = -1.0,
-             push_subscribe: bool = False) -> MethodRet:
-        """
-            Eval request coroutine.
-
-            Examples:
-
-            .. code-block:: pycon
-
-                >>> await conn.eval('return 42')
-                <Response sync=3 rowcount=1 data=[42]>
-
-
-                >>> await conn.eval('return box.info.version')
-                <Response sync=3 rowcount=1 data=['2.1.1-7-gd381a45b6']>
-
-            :param expression: expression to execute
-            :param args: arguments to pass to the function, that will
-                         execute your expression (list object)
-            :param timeout: Request timeout
-            :param push_subscribe: Subscribe to push messages
-
-            :returns: :class:`asynctnt.Response` instance
-        """
-        return self._db.eval(expression, args,
-                             timeout=timeout, push_subscribe=push_subscribe)
-
-    def select(self,
-               space: SpaceType,
-               key: Optional[KeyType] = None,
-               **kwargs) -> MethodRet:
-        """
-            Select request coroutine.
-
-            Examples:
-
-            .. code-block:: pycon
-
-                >>> await conn.select('tester')
-                <Response sync=3 rowcount=2 data=[
-                    <TarantoolTuple id=1 name='one'>,
-                    <TarantoolTuple id=2 name='two'>
-                ]>
-
-                >>> res = await conn.select('_space', ['tester'], index='name')
-                >>> res.data
-                [<TarantoolTuple id=512
-                                 owner=1
-                                 name='tester'
-                                 engine='memtx'
-                                 field_count=0
-                                 flags={}
-                                 format=[
-                                    {'name': 'id', 'type': 'unsigned'},
-                                    {'name': 'name', 'type': 'string'}
-                                 ]>]
-
-
-            :param space: space id or space name.
-            :param key: key to select
-            :param offset: offset to use
-            :param limit: limit to use
-            :param index: index id or name
-            :param iterator: one of the following
-
-                        * iterator id (int number),
-                        * :class:`asynctnt.Iterator` object
-                        * string with an iterator name
-
-            :param timeout: Request timeout
-
-            :returns: :class:`asynctnt.Response` instance
-        """
-        return self._db.select(space, key, **kwargs)
-
-    def insert(self,
-               space: SpaceType,
-               t: TupleType,
-               *,
-               replace: bool = False,
-               timeout: float = -1) -> MethodRet:
-        """
-            Insert request coroutine.
-
-            Examples:
-
-            .. code-block:: pycon
-
-                # Basic usage
-                >>> await conn.insert('tester', [0, 'hello'])
-                <Response sync=3 rowcount=1 data=[
-                    <TarantoolTuple id=0 name='hello'>
-                ]>
-
-                # Using dict as an argument tuple
-                >>> await conn.insert('tester', {
-                ...                     'id': 0
-                ...                     'text': 'hell0'
-                ...                   })
-                <Response sync=3 rowcount=1 data=[
-                    <TarantoolTuple id=0 name='hello'>
-                ]>
-
-            :param space: space id or space name.
-            :param t: tuple to insert (list object)
-            :param replace: performs replace request instead of insert
-            :param timeout: Request timeout
-
-            :returns: :class:`asynctnt.Response` instance
-        """
-        return self._db.insert(space, t,
-                               replace=replace,
-                               timeout=timeout)
-
-    def replace(self,
-                space: SpaceType,
-                t: TupleType,
-                *,
-                timeout: float = -1.0) -> MethodRet:
-        """
-            Replace request coroutine. Same as insert, but replace.
-
-            :param space: space id or space name.
-            :param t: tuple to insert (list object)
-            :param timeout: Request timeout
-
-            :returns: :class:`asynctnt.Response` instance
-        """
-        return self._db.replace(space, t, timeout=timeout)
-
-    def delete(self,
-               space: SpaceType,
-               key: KeyType,
-               **kwargs) -> MethodRet:
-        """
-            Delete request coroutine.
-
-            Examples:
-
-            .. code-block:: pycon
-
-                # Assuming tuple [0, 'hello'] is in space tester
-
-                >>> await conn.delete('tester', [0])
-                <Response sync=3 rowcount=1 data=[
-                    <TarantoolTuple id=0 name='hello'>
-                ]>
-
-            :param space: space id or space name.
-            :param key: key to delete
-            :param index: index id or name
-            :param timeout: Request timeout
-
-            :returns: :class:`asynctnt.Response` instance
-        """
-        return self._db.delete(space, key, **kwargs)
-
-    def update(self,
-               space: SpaceType,
-               key: KeyType,
-               operations: List[Any],
-               **kwargs) -> MethodRet:
-        """
-            Update request coroutine.
-
-            Examples:
-
-            .. code-block:: pycon
-
-                # Assuming tuple [0, 'hello'] is in space tester
-
-                >>> await conn.update('tester', [0], [ ['=', 1, 'hi!'] ])
-                <Response sync=3 rowcount=1 data=[
-                    <TarantoolTuple id=0 name='hi!'>
-                ]>
-
-                # you can use fields names as well
-                >>> res = await conn.update('tester', [0],
-                ...                         [ ['=', 'text', 'hola'] ])
-                <Response sync=3 rowcount=1 data=[
-                    <TarantoolTuple id=0 name='hola'>
-                ]>
-
-            :param space: space id or space name.
-            :param key: key to update
-            :param operations:
-                    Operations list of the following format:
-                    [ [op_type, field_no, ...], ... ]. Please refer to
-                    https://tarantool.org/doc/book/box/box_space.html?highlight=update#lua-function.space_object.update
-                    You can use field numbers as well as their names in space
-                    format as a field_no (if only fetch_schema is True).
-                    If field is unknown then TarantoolSchemaError is raised.
-            :param index: index id or name
-            :param timeout: Request timeout
-
-            :returns: :class:`asynctnt.Response` instance
-        """
-        return self._db.update(space, key, operations, **kwargs)
-
-    def upsert(self,
-               space: SpaceType,
-               t: TupleType,
-               operations: List[Any],
-               **kwargs) -> MethodRet:
-        """
-            Update request coroutine. Performs either insert or update
-            (depending of either tuple exists or not)
-
-            Examples:
-
-            .. code-block:: pycon
-
-                # upsert does not return anything
-                >>> await conn.upsert('tester', [0, 'hello'],
-                ...                   [ ['=', 1, 'hi!'] ])
-                <Response sync=3 rowcount=0 data=[]>
-
-            :param space: space id or space name.
-            :param t: tuple to insert if it's not in space
-            :param operations:
-                    Operations list to use for update if tuple is already in
-                    space. It has the same format as in update requets:
-                    [ [op_type, field_no, ...], ... ]. Please refer to
-                    https://tarantool.org/doc/book/box/box_space.html?highlight=update#lua-function.space_object.update
-                    You can use field numbers as well as their names in space
-                    format as a field_no (if only fetch_schema is True).
-                    If field is unknown then TarantoolSchemaError is raised.
-            :param timeout: Request timeout
-
-            :returns: :class:`asynctnt.Response` instance
-        """
-        return self._db.upsert(space, t, operations, **kwargs)
-
-    def execute(self,
-                query: Union[str, int],
-                args: Optional[List[Union[Dict[str, Any], Any]]] = None, *,
-                parse_metadata: bool = True,
-                timeout: float = -1.0) -> MethodRet:
-        """
-            Executes an SQL statement (only for Tarantool > 2)
-
-            Examples:
-
-            .. code-block:: pycon
-
-                >>> await conn.execute("select 1 as a, 2 as b")
-                <Response sync=3 rowcount=1 data=[<TarantoolTuple A=1 B=2>]>
-
-                >>> await conn.execute("select * from sql_space")
-                <Response sync=3 rowcount=2 data=[
-                    <TarantoolTuple ID=1 NAME='James Bond'>,
-                    <TarantoolTuple ID=2 NAME='Ethan Hunt'>
-                ]>
-
-                >>> await conn.execute("select * from sql_space",
-                ...                    parse_metadata=False)
-                <Response sync=3 rowcount=2 data=[
-                    <TarantoolTuple 0=1 1='James Bond'>,
-                    <TarantoolTuple 0=2 1='Ethan Hunt'>
-                ]>
-
-            :param query: SQL query or statement_id
-            :param args: Query arguments
-            :param parse_metadata: Set to False to disable response's metadata
-                                   parsing for better performance
-            :param timeout: Request timeout
-
-            :returns: :class:`asynctnt.Response` instance
-        """
-        return self._db.execute(query, args,
-                                parse_metadata=parse_metadata,
-                                timeout=timeout)
-
-    def prepare(self, query: str) -> PreparedStatement:
-        return PreparedStatement(self, query)
-
-    def prepare_iproto(self,
-                       query: str,
-                       timeout: float = -1.0) -> MethodRet:
-        return self._db.prepare(query, timeout=timeout)
-
-    def unprepare_iproto(self,
-                         stmt_id: int,
-                         timeout: float = -1.0) -> MethodRet:
-        return self._db.prepare(stmt_id, timeout=timeout)
-
     def _normalize_api(self):
         if (1, 6) <= self.version < (1, 7):  # pragma: nocover
+            Api.call = Api.call16
             Connection.call = Connection.call16
+
+        if self.version < (2, 10):
+            def stream_stub(_):
+                raise TarantoolError(
+                    "streams are available only in Tarantool 2.10+"
+                )
+
+            Connection.stream = stream_stub
 
     def __repr__(self):
         return "<asynctnt.Connection host={} port={} state={}>".format(
@@ -964,17 +612,18 @@ class Connection:
             repr(self.state)
         )
 
+    def stream(self) -> Stream:
+        stream = Stream()
+        db = self._protocol.create_db(True)
+        stream._set_db(db)
+        return stream
+
 
 def _create_future(loop):
     try:
         return loop.create_future()
     except AttributeError:  # pragma: nocover
         return asyncio.Future(loop=loop)
-
-
-class _DbMock:
-    def __getattr__(self, item):
-        raise TarantoolNotConnectedError('Tarantool is not connected')
 
 
 async def connect(**kwargs) -> Connection:

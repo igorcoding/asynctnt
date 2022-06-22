@@ -4,7 +4,7 @@ cimport cython
 cdef class UpdateRequest(BaseRequest):
     cdef inline WriteBuffer encode(self, bytes encoding):
         cdef WriteBuffer buffer = WriteBuffer.create(encoding)
-        buffer.write_header(self.sync, self.op, self.schema_id)
+        buffer.write_header(self.sync, self.op, self.schema_id, self.stream_id)
         encode_request_update(buffer, self.space, self.index,
                               self.key, self.operations, False)
         buffer.write_length()

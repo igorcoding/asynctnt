@@ -8,14 +8,17 @@ import time
 import unittest
 
 import sys
+from typing import Tuple, Optional
 
 import asynctnt
 from asynctnt.instance import \
     TarantoolSyncInstance, TarantoolSyncDockerInstance
 from asynctnt import TarantoolTuple
+from asynctnt.utils import get_running_loop
 
 __all__ = (
-    'TestCase', 'TarantoolTestCase', 'ensure_version', 'check_version'
+    'TestCase', 'TarantoolTestCase', 'ensure_version', 'check_version',
+    'ensure_bin_version',
 )
 
 
@@ -62,27 +65,47 @@ class TestCaseMeta(type(unittest.TestCase)):
             @functools.wraps(meth)
             def wrapper(self, *args, __meth__=meth, **kwargs):
                 self.loop.run_until_complete(__meth__(self, *args, **kwargs))
+
             ns[methname] = wrapper
 
         return super().__new__(mcls, name, bases, ns)
 
 
 class TestCase(unittest.TestCase, metaclass=TestCaseMeta):
-    loop = None
+    _loop = None
+    _use_uvloop = False
 
     @classmethod
     def setUpClass(cls):
-        use_uvloop = os.environ.get('USE_UVLOOP')
+        cls._use_uvloop = os.environ.get('USE_UVLOOP')
 
-        if use_uvloop:
+        if cls._use_uvloop:
             import uvloop
             uvloop.install()
 
-        cls.loop = asyncio.get_event_loop()
+        try:
+            loop = get_running_loop()
+            # if there is a running loop - close it
+            loop.close()
+        except RuntimeError:
+            pass
 
-        if use_uvloop:
+        cls._loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(cls._loop)
+
+        if cls._use_uvloop:
             import uvloop
-            assert isinstance(cls.loop, uvloop.Loop)
+            assert isinstance(cls._loop, uvloop.Loop)
+
+    @classmethod
+    def tearDownClass(cls):
+        if cls._loop is not None:
+            cls._loop.close()
+            cls._loop = None
+
+    @property
+    def loop(self):
+        return self._loop
 
     @contextlib.contextmanager
     def assertRunUnder(self, delta):
@@ -109,6 +132,7 @@ class TarantoolTestCase(TestCase):
     LOGGING_STREAM = sys.stderr
     TNT_APP_LUA_PATH = None
     TNT_CLEANUP = True
+    EXTRA_BOX_CFG = ""
 
     tnt = None
     in_docker = False
@@ -120,14 +144,26 @@ class TarantoolTestCase(TestCase):
                 return f.read()
 
     @classmethod
+    def init_instance(cls):
+        tnt, in_docker = cls._make_instance(
+            extra_box_cfg=cls.EXTRA_BOX_CFG
+        )
+        cls.tnt = tnt
+        cls.in_docker = in_docker
+
+    @classmethod
     def setUpClass(cls):
         TestCase.setUpClass()
         logging.basicConfig(level=cls.LOGGING_LEVEL,
                             stream=cls.LOGGING_STREAM)
-        tnt, in_docker = cls._make_instance()
-        tnt.start()
-        cls.tnt = tnt
-        cls.in_docker = in_docker
+        if cls.tnt is None:
+            tnt, in_docker = cls._make_instance(
+                extra_box_cfg=cls.EXTRA_BOX_CFG
+            )
+            cls.tnt = tnt
+            cls.in_docker = in_docker
+
+        cls.tnt.start()
 
     @classmethod
     def make_instance(cls):
@@ -135,7 +171,7 @@ class TarantoolTestCase(TestCase):
         return obj
 
     @classmethod
-    def _make_instance(cls, *args, **kwargs):
+    def _make_instance(cls, **kwargs):
         tarantool_docker_image = os.getenv('TARANTOOL_DOCKER_IMAGE')
         tarantool_docker_tag = os.getenv('TARANTOOL_DOCKER_VERSION')
         in_docker = False
@@ -148,7 +184,8 @@ class TarantoolTestCase(TestCase):
                 applua=cls.read_applua(),
                 docker_image=tarantool_docker_image,
                 docker_tag=tarantool_docker_tag,
-                timeout=4*60
+                timeout=4 * 60,
+                **kwargs
             )
             in_docker = True
         else:
@@ -158,7 +195,8 @@ class TarantoolTestCase(TestCase):
                     port=TarantoolSyncInstance.get_random_port(),
                     console_port=TarantoolSyncInstance.get_random_port(),
                     applua=cls.read_applua(),
-                    cleanup=cls.TNT_CLEANUP
+                    cleanup=cls.TNT_CLEANUP,
+                    **kwargs
                 )
             else:
                 tnt = TarantoolSyncInstance(
@@ -166,8 +204,10 @@ class TarantoolTestCase(TestCase):
                     port=unix_path,
                     console_host='127.0.0.1',
                     applua=cls.read_applua(),
-                    cleanup=cls.TNT_CLEANUP
+                    cleanup=cls.TNT_CLEANUP,
+                    **kwargs
                 )
+
         return tnt, in_docker
 
     @classmethod
@@ -193,7 +233,7 @@ class TarantoolTestCase(TestCase):
                           username=None, password=None,
                           fetch_schema=True,
                           auto_refetch_schema=False,
-                          connect_timeout=None, reconnect_timeout=1/3,
+                          connect_timeout=None, reconnect_timeout=1 / 3,
                           ping_timeout=0,
                           request_timeout=None, encoding='utf-8',
                           initial_read_buffer_size=None):
@@ -240,7 +280,7 @@ class TarantoolTestCase(TestCase):
 
 
 def ensure_version(*, min=None, max=None,
-                   min_included=False, max_included=False):
+                   min_included=True, max_included=False):
     def check_version_wrap(f):
         @functools.wraps(f)
         async def wrap(self, *args, **kwargs):
@@ -252,22 +292,52 @@ def ensure_version(*, min=None, max=None,
                 if inspect.isawaitable(res):
                     return await res
                 return res
+
         return wrap
+
+    return check_version_wrap
+
+
+def ensure_bin_version(*, min=None, max=None,
+                       min_included=True, max_included=False):
+    def check_version_wrap(cls):
+        assert issubclass(cls, TarantoolTestCase)
+        cls.init_instance()
+        ok, reason = _check_version(cls.tnt.bin_version,
+                                    min=min, max=max,
+                                    min_included=min_included,
+                                    max_included=max_included)
+
+        if not ok:
+            cls = unittest.skip(reason)(cls)
+
+        return cls
+
     return check_version_wrap
 
 
 def check_version(test, version, *, min=None, max=None,
                   min_included=False, max_included=False):
-    if min and (version < min or (min_included and version <= min)):
-        test.skipTest(
-            'version mismatch - required min={} got={}'.format(
-                min, version))
-        return False
+    ok, reason = _check_version(version, min=min, max=max,
+                                min_included=min_included,
+                                max_included=max_included)
 
-    if max and (version > max or (max_included and version >= max)):
-        test.skipTest(
-            'version mismatch - required max={} got={}'.format(
-                max, version))
+    if not ok:
+        test.skipTest(reason)
         return False
 
     return True
+
+
+def _check_version(version, *, min=None, max=None,
+                   min_included=False,
+                   max_included=False) -> Tuple[bool, Optional[str]]:
+    if min and (version < min or (min_included and version <= min)):
+        return False, \
+               'version mismatch - required min={} got={}'.format(min, version)
+
+    if max and (version > max or (max_included and version >= max)):
+        return False, \
+               'version mismatch - required max={} got={}'.format(max, version)
+
+    return True, None

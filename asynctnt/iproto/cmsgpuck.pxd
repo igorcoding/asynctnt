@@ -43,6 +43,7 @@ cdef extern from "../../third_party/msgpuck/msgpuck.h":
     cdef char *mp_encode_int(char *data, int64_t num)
     cdef int64_t mp_decode_int(const char **data)
 
+    cdef uint32_t mp_sizeof_float(float num)
     cdef char *mp_encode_float(char *data, float num)
     cdef float mp_decode_float(const char **data)
 

@@ -2,11 +2,12 @@ from libc.stdint cimport uint64_t, uint32_t
 
 cdef class Db:
     cdef:
+        uint64_t _stream_id
         BaseProtocol _protocol
         bytes _encoding
 
     @staticmethod
-    cdef inline Db create(BaseProtocol protocol)
+    cdef inline Db create(BaseProtocol protocol, uint64_t stream_id)
 
     cdef inline uint64_t next_sync(self)
 
@@ -78,3 +79,12 @@ cdef class Db:
                          query,
                          bint parse_metadata,
                          float timeout)
+
+    cdef object _begin(self,
+                       uint32_t isolation,
+                       double tx_timeout,
+                       float timeout)
+
+    cdef object _commit(self, float timeout)
+
+    cdef object _rollback(self, float timeout)

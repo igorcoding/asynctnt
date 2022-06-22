@@ -5,7 +5,7 @@ cimport asynctnt.iproto.tarantool as tarantool
 cdef class CallRequest(BaseRequest):
     cdef inline WriteBuffer encode(self, bytes encoding):
         cdef WriteBuffer buffer = WriteBuffer.create(encoding)
-        buffer.write_header(self.sync, self.op, self.schema_id)
+        buffer.write_header(self.sync, self.op, self.schema_id, self.stream_id)
         self.encode_request_call(buffer, self.func_name, self.args)
         buffer.write_length()
         return buffer

@@ -15,8 +15,9 @@ DEF REQUEST_FREELIST = 256
 # mp_sizeof_uint(TP_SYNC) +
 # sync len +
 # mp_sizeof_uint(TP_SCHEMA_ID) +
+# mp_sizeof_uint(STREAM_ID) +
 # schema_id len
-DEF HEADER_CONST_LEN = 5 + 1 + 1 + 1 + 1 + 5 + 1 + 9
+DEF HEADER_CONST_LEN = 5 + 1 + 1 + 1 + 1 + 5 + 1 + 9 + 9
 
 DEF IPROTO_GREETING_SIZE = 128
 DEF TARANTOOL_VERSION_LENGTH = 64

@@ -7,7 +7,7 @@ cdef class IDRequest(BaseRequest):
 
     cdef inline WriteBuffer encode(self, bytes encoding):
         cdef WriteBuffer buffer = WriteBuffer.create(encoding)
-        buffer.write_header(self.sync, self.op, self.schema_id)
+        buffer.write_header(self.sync, self.op, self.schema_id, self.stream_id)
         self.encode_request(buffer)
         buffer.write_length()
         return buffer
@@ -26,13 +26,13 @@ cdef class IDRequest(BaseRequest):
         # + mp_sizeof_uint(IPROTO_VERSION)
         # + mp_sizeof_uint(tarantool.IPROTO_FEATURES)
         # + mp_sizeof_array(0)
-        # + arr size
+        # + max arr size
         max_body_len = 1 \
                        + 1 \
                        + 1 \
                        + 1 \
                        + 1 \
-                       + 0
+                       + 4  # Note: maximum 4 elements in array
 
         buffer.ensure_allocated(max_body_len)
 
@@ -41,7 +41,8 @@ cdef class IDRequest(BaseRequest):
         p = mp_encode_uint(p, tarantool.IPROTO_VERSION)
         p = mp_encode_uint(p, IPROTO_VERSION)
         p = mp_encode_uint(p, tarantool.IPROTO_FEATURES)
-        p = mp_encode_array(p, 0)
-        # p = mp_encode_uint(p, tarantool.IPROTO_FEATURE_ERROR_EXTENSION)
+        p = mp_encode_array(p, 2)
+        p = mp_encode_uint(p, tarantool.IPROTO_FEATURE_STREAMS)
+        p = mp_encode_uint(p, tarantool.IPROTO_FEATURE_TRANSACTIONS)
 
         buffer._length += (p - begin)

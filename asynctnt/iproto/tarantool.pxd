@@ -7,6 +7,7 @@ cdef enum iproto_header_key:
     IPROTO_SCHEMA_VERSION = 0x05
     IPROTO_SERVER_VERSION = 0x06
     IPROTO_GROUP_ID = 0x07
+    IPROTO_STREAM_ID=0x0a
 
 
 cdef enum iproto_key:
