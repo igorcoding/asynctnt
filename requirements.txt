@@ -4,9 +4,7 @@ Cython==0.29.30
 pep8
 flake8
 twine
-Sphinx
-sphinx_rtd_theme
-sphinxcontrib-asyncio
 coverage
 pytz
 python-dateutil
+-r docs/requirements.txt

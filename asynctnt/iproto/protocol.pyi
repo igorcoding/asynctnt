@@ -86,7 +86,6 @@ class Response:
     errmsg: Optional[str]
     error: Optional[IProtoError]
     encoding: bytes
-    stmt_id: Optional[int]
     autoincrement_ids: Optional[List[int]]
     body: Optional[List[BodyItem]]
     metadata: Optional[Metadata]
@@ -104,6 +103,9 @@ class Response:
 
     @property
     def schema_id(self) -> int: ...
+
+    @property
+    def stmt_id(self) -> int: ...
 
     @property
     def rowcount(self) -> int: ...

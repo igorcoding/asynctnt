@@ -1,13 +1,15 @@
+# Changelog
+
 ## v2.0.0b1
 **Breaking changes:**
 * `Connection.sql()` method is renamed to `Connection.execute()`
-* Drop support for `loop` argument in the `Connection` (fixes #18)
+* Drop support for `loop` argument in the `Connection` (fixes [#18](https://github.com/igorcoding/asynctnt/issues/18))
 
 **New features:**
 * Added support for `Decimal`, `UUID` and `datetime` types natively using MessagePack extensions
 * Added support for SQL prepared statements with `Connection.prepare()` method and
   `PreparedStatement` class
-* Added support for interactive transactions and streams (fixes #21)
+* Added support for interactive transactions and streams (fixes [#21](https://github.com/igorcoding/asynctnt/issues/21))
 * Added support for MP_ERROR extensions
 * Bind metadata of parameters is available now in the `response.params` and `response.params_count` fields
 * Exposed an internal schema as a `Connection.schema` property, introducing new classes to operate the schema with
@@ -26,7 +28,7 @@
 
 ## v1.2.2
 **Bugs fixed:**
-* Show a diag message rather than Lost connection to Tarantool when disconnected (closes #19)
+* Show a diag message rather than Lost connection to Tarantool when disconnected (closes [#19](https://github.com/igorcoding/asynctnt/issues/19))
 
 
 ## v1.2.1
@@ -37,11 +39,11 @@
 
 ## v1.2
 **Bugs fixed:**
-* Fixed hanging PushIterator when connection to Tarantool is lost (#17).
+* Fixed hanging PushIterator when connection to Tarantool is lost ([#17](https://github.com/igorcoding/asynctnt/issues/17)).
 
 ## v1.1
 **New features:**
-* Parse autoincrement ids in sql response (#14). Thanks to @oleynikandrey
+* Parse autoincrement ids in sql response ([#14](https://github.com/igorcoding/asynctnt/issues/14)). Thanks to @oleynikandrey
 * Added Python 3.8 support. Removed all redundant `loop` arguments to functions
   and asyncio classes.
 
@@ -57,7 +59,7 @@
 
 **New features:**
 * Making Response objects contain TarantoolTuple objects if format information
-  is available either in space or in response from Tarantool (closes #3).
+  is available either in space or in response from Tarantool (closes [#3](https://github.com/igorcoding/asynctnt/issues/3)).
 * TarantoolTuple objects are index-agnostic, meaning one can access tuple value
   either by numeric index or by a key from `space:format()` specification.
 * You can directly access Response using indices
@@ -83,7 +85,7 @@
   in the tuple. One can acces those extra fields by index numbers.
 * `Connection`'s default `connect_timeout` changed from `60` to `3` seconds.
 * `select`: changed default iterator type to `ALL` if no key provided
-  (fixes #2)
+  (fixes [#2](https://github.com/igorcoding/asynctnt/issues/2))
 * `Response` new function `done()` indicates if Response is
   actually finished.
 * `schema_id` is not being sent to Tarantool to check against current schema
@@ -110,7 +112,7 @@
 * Added disconnect Lock
 
 **Bugs Fixed:**
-* Auto reconnect misbehaved on double on_connection_lost trigger (#11)
+* Auto reconnect misbehaved on double on_connection_lost trigger ([#11](https://github.com/igorcoding/asynctnt/issues/11))
 
 
 ## v0.1.13
@@ -123,9 +125,9 @@
 **Bugs fixed:**
 * Connect hanged indefinitely if asynctnt was accidentally disconnected from
   Tarantool and TCP connection was still alive for a moment while trying to
-  reconnect (#8).
+  reconnect ([#8](https://github.com/igorcoding/asynctnt/issues/8)).
 * Connect to LOADING Tarantool instance without username/password resulted in
-  exception NO_SUCH_SPACE (#10).
+  exception NO_SUCH_SPACE ([#10](https://github.com/igorcoding/asynctnt/issues/10)).
 
 
 ## v0.1.12

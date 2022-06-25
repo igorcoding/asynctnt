@@ -143,9 +143,6 @@ cdef class Response:
 
     @property
     def schema_id(self) -> int:
-        """
-            Current scema id in Tarantool
-        """
         return <int> self.schema_id_
 
     @property
@@ -158,9 +155,6 @@ cdef class Response:
 
     @property
     def stmt_id(self) -> Optional[int]:
-        """
-            Prepared statement id
-        """
         return self.stmt_id_
 
     def done(self):

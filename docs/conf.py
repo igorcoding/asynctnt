@@ -35,30 +35,36 @@ def find_version():
 
 _ver = find_version()
 
-
 # -- General configuration ------------------------------------------------
 
 extensions = ['sphinx.ext.autodoc',
               'sphinx.ext.viewcode',
               'sphinx.ext.githubpages',
-              'sphinxcontrib.asyncio']
+              'sphinxcontrib.asyncio',
+              'myst_parser',
+              'sphinx_autodoc_typehints',
+              'sphinx_rtd_theme',
+              # 'autoapi.extension'
+              ]
 
 templates_path = ['_templates']
-source_suffix = '.rst'
+source_suffix = {
+    '.rst': 'restructuredtext',
+    '.md': 'markdown',
+}
 master_doc = 'index'
 
 project = 'asynctnt'
-copyright = '2017, igorcoding'
+copyright = '2022, igorcoding'
 author = 'igorcoding'
 
 version = _ver
 release = _ver
 
-language = None
+language = "en"
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 pygments_style = 'sphinx'
 todo_include_todos = False
-
 
 # -- Options for HTML output ----------------------------------------------
 
@@ -66,10 +72,8 @@ html_theme = "sphinx_rtd_theme"
 html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
 html_static_path = ['_static']
 
-
 # -- Options for HTMLHelp output ------------------------------------------
 htmlhelp_basename = 'asynctntdoc'
-
 
 # -- Options for LaTeX output ---------------------------------------------
 
@@ -99,7 +103,6 @@ latex_documents = [
      'igorcoding', 'manual'),
 ]
 
-
 # -- Options for manual page output ---------------------------------------
 
 # One entry per manual page. List of tuples
@@ -108,7 +111,6 @@ man_pages = [
     (master_doc, 'asynctnt', 'asynctnt Documentation',
      [author], 1)
 ]
-
 
 # -- Options for Texinfo output -------------------------------------------
 
@@ -120,3 +122,16 @@ texinfo_documents = [
      author, 'asynctnt', 'One line description of project.',
      'Miscellaneous'),
 ]
+
+always_document_param_types = True
+typehints_defaults = 'comma'
+
+autoapi_type = 'python'
+autoapi_dirs = ['../asynctnt']
+
+html_context = {
+    'display_github': True,
+    'github_user': 'igorcoding',
+    'github_repo': 'asynctnt',
+    'github_version': 'v2/docs/',
+}

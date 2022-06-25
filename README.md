@@ -29,12 +29,14 @@ Documentation is available [here](https://igorcoding.github.io/asynctnt).
 
 ## Key features
 
-* Support for all the basic requests that Tarantool supports. This includes:
+* Support for all the **basic requests** that Tarantool supports. This includes:
   `insert`, `select`, `update`, `upsert`, `call`, `eval`, `execute`.
+* Full support for **SQL**, including prepared statements.
+* Support for **interactive transaction** via Tarantool streams.
+* Support of `Decimal` and `UUID` types natively (starting from Tarantool 2.4.1).
 * **Schema fetching** on connection establishment, so you can use spaces and
-  indexes names rather than their ids.
-* Schema **auto refetching**. If schema in Tarantool is changed, `asynctnt`
-  refreshes it internally.
+  indexes names rather than their ids, and **auto refetching** if schema in
+  Tarantool is changed
 * **Auto reconnect**. If connection is lost for some reason - asynctnt will
   start automatic reconnection procedure (with authorization and schema
   fetching, of course).
@@ -45,10 +47,7 @@ Documentation is available [here](https://igorcoding.github.io/asynctnt).
   into the special structures that can act either as `tuple`s or by `dict`s with
   the appropriate API.
 * All requests support specification of `timeout` value, so if request is
-  executed for too long, asyncio.TimeoutError is raised. It drastically
-  simplifies your code, as you don't need to use `asyncio.wait_for(...)`
-  stuff anymore.
-* Support of `Decimal` and `UUID` types natively (starting from Tarantool 2.4.1)
+  executed for too long, asyncio.TimeoutError is raised.
 
 
 ## Basic Usage

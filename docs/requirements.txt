@@ -1,3 +1,7 @@
-Sphinx
+Sphinx>=5
 sphinx_rtd_theme
 sphinxcontrib-asyncio
+# sphinx-book-theme
+myst-parser
+sphinx-autodoc-typehints
+sphinx-autoapi
