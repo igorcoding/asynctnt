@@ -13,8 +13,8 @@ from libc.string cimport memcpy
 from libc.stdint cimport uint32_t, uint64_t, int64_t, uint8_t
 from libc.stdio cimport printf
 
-from decimal import Decimal
-from uuid import UUID
+from decimal import Decimal  # pragma: nocover
+from uuid import UUID  # pragma: nocover
 
 # noinspection PyUnresolvedReferences
 # noinspection PyAttributeOutsideInit
@@ -35,7 +35,7 @@ cdef class WriteBuffer:
             self._buf = NULL
             self._size = 0
 
-        if self._view_count:
+        if self._view_count:  # pragma: nocover
             raise RuntimeError(
                 'Deallocating buffer with attached memoryviews')
 
@@ -51,7 +51,7 @@ cdef class WriteBuffer:
     def __releasebuffer__(self, Py_buffer *buffer):
         self._view_count -= 1
 
-    def hex(self):
+    def hex(self):  # pragma: nocover
         return ":".join("{:02x}".format(ord(<bytes> (self._buf[i])))
                         for i in range(self._length))
 
@@ -62,7 +62,7 @@ cdef class WriteBuffer:
         buf._encoding = encoding
         return buf
 
-    cdef inline _check_readonly(self):
+    cdef inline _check_readonly(self):  # pragma: nocover
         if self._view_count:
             raise BufferError('the buffer is in read-only mode')
 
@@ -99,7 +99,7 @@ cdef class WriteBuffer:
 
         if self._smallbuf_inuse:
             new_buf = <char*> PyMem_Malloc(sizeof(char) * <size_t> new_size)
-            if new_buf is NULL:
+            if new_buf is NULL:  # pragma: nocover
                 self._buf = NULL
                 self._size = 0
                 self._length = 0
@@ -150,7 +150,7 @@ cdef class WriteBuffer:
         p = mp_encode_uint(p, tarantool.IPROTO_SYNC)
         p = mp_encode_uint(p, sync)
 
-        if schema_id > 0:
+        if schema_id > 0:  # pragma: nocover  # asynctnt does not send schema_id
             p = mp_encode_uint(p, tarantool.IPROTO_SCHEMA_VERSION)
             p = mp_store_u8(p, 0xce)
             p = mp_store_u32(p, schema_id)
@@ -283,7 +283,7 @@ cdef class WriteBuffer:
 
         if arr is not None:
             arr_len = <uint32_t> cpython.list.PyList_GET_SIZE(arr)
-        else:
+        else:  # pragma: nocover
             arr_len = 0
         p = self.mp_encode_array(p, arr_len)
 
@@ -302,7 +302,7 @@ cdef class WriteBuffer:
 
         if t is not None:
             t_len = <uint32_t> cpython.tuple.PyTuple_GET_SIZE(t)
-        else:
+        else:  # pragma: nocover
             t_len = 0
         p = self.mp_encode_array(p, t_len)
 
@@ -323,7 +323,7 @@ cdef class WriteBuffer:
 
         if d is not None:
             d_len = <uint32_t> cpython.dict.PyDict_Size(d)
-        else:
+        else:  # pragma: nocover
             d_len = 0
         p = self.mp_encode_map(p, d_len)
 

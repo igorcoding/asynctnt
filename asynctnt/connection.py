@@ -153,7 +153,7 @@ class Connection(Api):
 
         if hasattr(self._loop, 'create_task'):
             self.__create_task = self._loop.create_task
-        else:
+        else:  # pragma: nocover
             self.__create_task = asyncio.ensure_future
 
     def _set_state(self, new_state: ConnectionState):
@@ -200,7 +200,7 @@ class Connection(Api):
                          self.fingerprint)
             return
 
-        if self._reconnect_task:
+        if self._reconnect_task:  # pragma: nocover
             return
 
         logger.info('%s Started reconnecting', self.fingerprint)
@@ -277,7 +277,7 @@ class Connection(Api):
 
                                 await asyncio.wait_for(connected_fut,
                                                        timeout=timeout)
-                            except asyncio.TimeoutError:
+                            except asyncio.TimeoutError:  # pragma: nocover
                                 tr.close()
                                 continue  # try again
                             except Exception:
@@ -575,7 +575,7 @@ class Connection(Api):
 
     @property
     def schema(self) -> Optional[protocol.Schema]:
-        if self._protocol is None:
+        if self._protocol is None:  # pragma: nocover
             return None
         return self._protocol.schema
 
@@ -597,7 +597,7 @@ class Connection(Api):
             Api.call = Api.call16
             Connection.call = Connection.call16
 
-        if self.version < (2, 10):
+        if self.version < (2, 10):  # pragma: nocover
             def stream_stub(_):
                 raise TarantoolError(
                     "streams are available only in Tarantool 2.10+"

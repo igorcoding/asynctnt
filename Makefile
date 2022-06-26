@@ -1,4 +1,4 @@
-.PHONY: build debug test coverage clean annotate all
+.PHONY: build debug test coverage clean annotate all style
 
 
 PYTHON?=python

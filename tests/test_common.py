@@ -1,7 +1,6 @@
 import asyncio
 
 import asynctnt
-from asynctnt._testbase import ensure_version
 from asynctnt.exceptions import TarantoolNotConnectedError, \
     TarantoolDatabaseError
 from tests import BaseTarantoolTestCase
@@ -192,7 +191,8 @@ class CommonTestCase(BaseTarantoolTestCase):
             pass
 
         with self.assertRaisesRegex(
-            TypeError, 'Type `(.+)` is not supported for encoding'):
+            TypeError, 'Type `(.+)` is not supported for encoding'
+        ):
             await self.conn.call('func_param', [{'a': A()}])
 
     async def test__schema_refetch_next_byte(self):
@@ -258,6 +258,8 @@ class CommonTestCase(BaseTarantoolTestCase):
                                    username='t1', password='t1')
         await conn.connect()
         await conn.eval("require('msgpack').cfg{encode_use_tostring = true}")
-        await conn.call('box.schema.space.create', ['geo', {"if_not_exists": True}])
-        await conn.call('box.space.geo:format', [[{"name": "id", "type": "string"}]])
+        await conn.call('box.schema.space.create',
+                        ['geo', {"if_not_exists": True}])
+        await conn.call('box.space.geo:format',
+                        [[{"name": "id", "type": "string"}]])
         await conn.disconnect()

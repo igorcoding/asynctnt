@@ -1,8 +1,8 @@
 PyYAML>=5.0
 uvloop>=0.12.0
 Cython==0.29.30
-pep8==1.7.1
-flake8==3.7.9
+pep8
+flake8
 twine
 Sphinx
 sphinx_rtd_theme

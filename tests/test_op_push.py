@@ -3,7 +3,8 @@ import asyncio
 import asynctnt
 from asynctnt import Response, PushIterator
 from asynctnt._testbase import ensure_version
-from asynctnt.exceptions import TarantoolDatabaseError, TarantoolNotConnectedError
+from asynctnt.exceptions import TarantoolDatabaseError, \
+    TarantoolNotConnectedError
 from tests import BaseTarantoolTestCase
 
 

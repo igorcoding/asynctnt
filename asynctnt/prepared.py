@@ -2,7 +2,7 @@ from typing import List, Optional, Union, Dict, Any, TYPE_CHECKING
 
 from .iproto import protocol
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: nocover
     from .api import Api
 
 

@@ -1,4 +1,4 @@
 [flake8]
-filename = *.pyx,*.px*,*.py
+filename = *.pyx, *.pxd, *.pxi, *.py, *.pyi
 exclude = .eggs,*.egg,build,env*,temp,asynctnt/__init__.py
-ignore = E999,E225,E227,E402,E127,E226,W503
+ignore = E999,E225,E227,E402,E127,E226,W503,E704

@@ -204,7 +204,8 @@ class ResponseTestCase(BaseTarantoolTestCase):
         self.assertIsNotNone(self.conn.schema.spaces)
         self.assertIn(self.TESTER_SPACE_NAME, self.conn.schema.spaces)
         self.assertIn(self.TESTER_SPACE_ID, self.conn.schema.spaces)
-        self.assertIs(self.conn.schema.spaces[self.TESTER_SPACE_NAME], self.conn.schema.spaces[self.TESTER_SPACE_ID])
+        self.assertIs(self.conn.schema.spaces[self.TESTER_SPACE_NAME],
+                      self.conn.schema.spaces[self.TESTER_SPACE_ID])
 
         sp = self.conn.schema.spaces[self.TESTER_SPACE_NAME]
         self.assertEqual(self.TESTER_SPACE_NAME, sp.name)
@@ -247,7 +248,8 @@ class ResponseTestCase(BaseTarantoolTestCase):
         """ % (sp_name,))
 
         try:
-            await self.conn.refetch_schema()  # just to be sure that schema is refreshed
+            # just to be sure that schema is refreshed
+            await self.conn.refetch_schema()
 
             self.assertIn(sp_name, self.conn.schema.spaces)
             sp = self.conn.schema.spaces[sp_name]

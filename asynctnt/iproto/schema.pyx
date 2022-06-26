@@ -18,7 +18,7 @@ cdef class Field:
         self.is_autoincrement = None
         self.span = None
 
-    def __repr__(self):
+    def __repr__(self):  # pragma: nocover
         return "<Field name={} type={} is_nullable={}>".format(
             self.name, self.type, self.is_nullable
         )
@@ -53,7 +53,7 @@ cdef class Metadata:
     cdef inline int len(self):
         return <int> cpython.list.PyList_GET_SIZE(self.fields)
 
-    def __repr__(self):
+    def __repr__(self):  # pragma: nocover
         return '<Metadata [fields_count={}]>'.format(self.len())
 
 @cython.final
@@ -66,7 +66,7 @@ cdef class SchemaIndex:
         self.unique = None
         self.metadata = None
 
-    def __repr__(self):
+    def __repr__(self):  # pragma: nocover
         return \
             '<{} sid={}, id={}, name={}, ' \
             'type={}, unique={}>'.format(
@@ -125,7 +125,7 @@ cdef class SchemaSpace:
                     )
                 )
 
-    def __repr__(self):
+    def __repr__(self):  # pragma: nocover
         return '<{} id={} name={} engine={}>'.format(
             self.__class__.__name__,
             self.sid, self.name, self.engine
@@ -320,7 +320,7 @@ cdef class Schema:
 
         return s
 
-    def __repr__(self):
+    def __repr__(self):  # pragma: nocover
         return '<Schema spaces={}>'.format(len(self.spaces))
 
 cdef list dict_to_list_fields(dict d, Metadata metadata, bint default_none):

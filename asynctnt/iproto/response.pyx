@@ -14,7 +14,12 @@ from asynctnt.log import logger
 
 @cython.final
 cdef class IProtoErrorStackFrame:
-    pass
+    def __repr__(self):
+        return "<Frame type={} code={} message={}>".format(
+            self.error_type,
+            self.code,
+            self.message,
+        )
 
 @cython.final
 cdef class IProtoError:
@@ -268,7 +273,7 @@ cdef object _decode_obj(const char ** p, bytes encoding):
             return uuid_decode(p, s_len)
         elif ext_type == tarantool.MP_ERROR:
             return parse_iproto_error(p, encoding)
-        else:
+        else:  # pragma: nocover
             logger.warning('Unexpected ext type: %d', ext_type)
             return None
     else:  # pragma: nocover
@@ -376,7 +381,7 @@ cdef Metadata response_parse_metadata(const char ** b, bytes encoding):
     arr_size = mp_decode_array(b)
     for i in range(arr_size):
         field_map_size = mp_decode_map(b)
-        if field_map_size == 0:
+        if field_map_size == 0:  # pragma: nocover
             raise RuntimeError('Field map must contain at least '
                                '1 element - field_name')
 
@@ -427,12 +432,12 @@ cdef Metadata response_parse_metadata(const char ** b, bytes encoding):
                     raise TypeError(
                         "IPROTO_FIELD_SPAN must be either STR or NIL"
                     )
-            else:
+            else:  # pragma: nocover
                 logger.debug(
                     'unknown key in metadata decoding: %d', key)
                 mp_next(b)
 
-        if field.name is None:
+        if field.name is None:  # pragma: nocover
             raise RuntimeError('field.name must not be None')
 
         metadata.add(<int> field_id, field)
@@ -490,7 +495,7 @@ cdef inline IProtoErrorStackFrame parse_iproto_error_stack_frame(const char ** b
 
             frame.fields = _decode_obj(b, encoding)
 
-        else:
+        else:  # pragma: nocover
             logger.debug(f"unknown iproto_error stack element with key {key}")
             mp_next(b)
 
@@ -521,7 +526,7 @@ cdef inline IProtoError parse_iproto_error(const char ** b, bytes encoding):
                 el = parse_iproto_error_stack_frame(b, encoding)
                 cpython.Py_INCREF(el)
                 cpython.list.PyList_SET_ITEM(error.trace, i, el)
-        else:
+        else:  # pragma: nocover
             logger.debug(f"unknown iproto_error map field with key {key}")
             mp_next(b)
 
@@ -632,7 +637,7 @@ cdef ssize_t response_parse_body(const char *buf, uint32_t buf_len,
         elif key == tarantool.IPROTO_FEATURES:
             logger.debug("IProto features available: %s", _decode_obj(&b, resp.encoding))
 
-        else:
+        else:  # pragma: nocover
             logger.debug('unknown key in body map: %d', int(key))
             mp_next(&b)
 

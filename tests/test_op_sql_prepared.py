@@ -87,3 +87,11 @@ class SQLPreparedStatementTestCase(BaseTarantoolTestCase):
             self.assertEqual(res.code, 0, 'success')
             self.assertGreater(res.sync, 0, 'sync > 0')
             self.assertResponseEqual(res, [], 'Body is empty')
+
+    @ensure_version(min=(2, 0))
+    async def test__context_manager_double_enter(self):
+        stmt = self.conn.prepare('select 1, 2 where 1 = ? and 2 = ?')
+        async with stmt:
+            async with stmt:  # does nothing
+                res = await stmt.execute([1, 2])
+                self.assertResponseEqual(res, [[1, 2]], 'Body ok')

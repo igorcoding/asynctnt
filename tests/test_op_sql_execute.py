@@ -45,7 +45,8 @@ class SQLExecuteTestCase(BaseTarantoolTestCase):
     @ensure_version(min=(2, 0))
     async def test__sql_with_param_cols_maps_and_positional(self):
         res = await self.conn.execute(
-            'select 1 as a, 2 as b where 1 = :p1 and 2 = :p2 and 3 = ? and 4 = ?', [
+            'select 1 as a, 2 as b '
+            'where 1 = :p1 and 2 = :p2 and 3 = ? and 4 = ?', [
                 {':p1': 1},
                 {':p2': 2},
                 3,
@@ -76,7 +77,9 @@ class SQLExecuteTestCase(BaseTarantoolTestCase):
     @ensure_version(min=(2, 0))
     async def test__sql_insert_autoincrement_multiple(self):
         res = await self.conn.execute(
-            "insert into sql_space_autoincrement_multiple (name) values ('name'), ('name2')")
+            "insert into sql_space_autoincrement_multiple (name) "
+            "values ('name'), ('name2')"
+        )
         self.assertEqual(2, res.rowcount, 'rowcount ok')
         self.assertEqual([1, 2], res.autoincrement_ids, 'autoincrement ok')
 
@@ -108,7 +111,9 @@ class SQLExecuteTestCase(BaseTarantoolTestCase):
     @ensure_version(min=(2, 0))
     async def test__sql_delete(self):
         await self.conn.execute("insert into sql_space values (1, 'one')")
-        res = await self.conn.execute("delete from sql_space where name = 'one'")
+        res = await self.conn.execute(
+            "delete from sql_space where name = 'one'"
+        )
         self.assertEqual(1, res.rowcount, 'rowcount ok')
 
     @ensure_version(min=(2, 0))
@@ -183,9 +188,11 @@ class SQLExecuteTestCase(BaseTarantoolTestCase):
         await self.conn.execute("insert into sql_space values (1, 'one')")
         await self.conn.execute("insert into sql_space values (2, 'two')")
 
-        await self.conn.update('_session_settings', ['sql_full_metadata'], [
-            ('=', 'value', True),
-        ])
+        await self.conn.update(
+            '_session_settings',
+            ['sql_full_metadata'],
+            [('=', 'value', True)]
+        )
 
         try:
             res = await self.conn.execute("select * from sql_space")
@@ -202,6 +209,8 @@ class SQLExecuteTestCase(BaseTarantoolTestCase):
             self.assertEqual(None, res.metadata.fields[1].is_autoincrement)
             self.assertEqual('unicode', res.metadata.fields[1].collation)
         finally:
-            await self.conn.update('_session_settings', ['sql_full_metadata'], [
-                ('=', 'value', False),
-            ])
+            await self.conn.update(
+                '_session_settings',
+                ['sql_full_metadata'],
+                [('=', 'value', False)]
+            )

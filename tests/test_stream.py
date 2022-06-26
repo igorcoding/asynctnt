@@ -178,4 +178,5 @@ class StreamTestCase(BaseTarantoolTestCase):
             await s.commit()
 
         self.assertEqual(ErrorCode.ER_TRANSACTION_TIMEOUT, exc.exception.code)
-        self.assertEqual('Transaction has been aborted by timeout', exc.exception.message)
+        self.assertEqual('Transaction has been aborted by timeout',
+                         exc.exception.message)

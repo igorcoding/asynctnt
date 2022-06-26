@@ -333,11 +333,9 @@ def _check_version(version, *, min=None, max=None,
                    min_included=False,
                    max_included=False) -> Tuple[bool, Optional[str]]:
     if min and (version < min or (min_included and version <= min)):
-        return False, \
-               'version mismatch - required min={} got={}'.format(min, version)
+        return False, f'version mismatch - required min={min} got={version}'
 
     if max and (version > max or (max_included and version >= max)):
-        return False, \
-               'version mismatch - required max={} got={}'.format(max, version)
+        return False, f'version mismatch - required max={max} got={version}'
 
     return True, None
