@@ -7,6 +7,7 @@
 * Added support for SQL prepared statements with `Connection.prepare()` method and
   `PreparedStatement` class
 * Added support for interactive transactions and streams
+* Added support for MP_ERROR extensions
 * Bind metadata of parameters is available now in the `response.params` and `response.params_count` fields
 * Exposed an internal schema as a `Connection.schema` property, introducing new classes to operate the schema with
 * Exposed SQL metadata of responses as `response.metadata` field

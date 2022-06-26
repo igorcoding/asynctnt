@@ -33,8 +33,9 @@ cdef class IDRequest(BaseRequest):
         p = mp_encode_uint(p, tarantool.IPROTO_VERSION)
         p = mp_encode_uint(p, IPROTO_VERSION)
         p = mp_encode_uint(p, tarantool.IPROTO_FEATURES)
-        p = mp_encode_array(p, 2)
+        p = mp_encode_array(p, 3)
         p = mp_encode_uint(p, tarantool.IPROTO_FEATURE_STREAMS)
         p = mp_encode_uint(p, tarantool.IPROTO_FEATURE_TRANSACTIONS)
+        p = mp_encode_uint(p, tarantool.IPROTO_FEATURE_ERROR_EXTENSION)
 
         buffer._length += (p - begin)

@@ -1,4 +1,7 @@
 import enum
+from typing import Optional
+
+from asynctnt.iproto.protocol import IProtoError
 
 
 class TarantoolError(Exception):
@@ -19,10 +22,14 @@ class TarantoolDatabaseError(TarantoolError):
     """
         Exception is raised when Tarantool responds with code != 0
     """
-    def __init__(self, code: int, message: str):
-        super(TarantoolDatabaseError, self).__init__(code, message)
+    def __init__(self,
+                 code: int,
+                 message: str,
+                 error: Optional[IProtoError]):
+        super(TarantoolDatabaseError, self).__init__(message)
         self.code = code
         self.message = message
+        self.error = error
 
 
 class TarantoolNetworkError(TarantoolError):

@@ -8,7 +8,20 @@ cdef struct Header:
     uint64_t sync
     int64_t schema_id
 
-@cython.final
+cdef class IProtoErrorStackFrame:
+    cdef:
+        readonly str error_type
+        readonly str file
+        readonly int line
+        readonly str message
+        readonly int err_no
+        readonly int code
+        readonly dict fields
+
+cdef class IProtoError:
+    cdef:
+        readonly list trace
+
 cdef class Response:
     cdef:
         int32_t code_
@@ -16,6 +29,7 @@ cdef class Response:
         uint64_t sync_
         int64_t schema_id_
         readonly str errmsg
+        readonly IProtoError error
         int _rowcount
         readonly list body
         readonly bytes encoding
@@ -51,3 +65,4 @@ cdef ssize_t response_parse_header(const char *buf, uint32_t buf_len,
 cdef ssize_t response_parse_body(const char *buf, uint32_t buf_len,
                                  Response resp, BaseRequest req,
                                  bint is_chunk) except -1
+cdef IProtoError parse_iproto_error(const char ** b, bytes encoding)

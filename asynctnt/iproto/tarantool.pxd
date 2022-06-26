@@ -32,7 +32,7 @@ cdef enum iproto_key:
     IPROTO_OPTIONS = 0x2b
 
     IPROTO_DATA = 0x30
-    IPROTO_ERROR = 0x31
+    IPROTO_ERROR_24 = 0x31
     IPROTO_METADATA = 0x32
     IPROTO_BIND_METADATA = 0x33
     IPROTO_BIND_COUNT = 0x34
@@ -42,6 +42,7 @@ cdef enum iproto_key:
     IPROTO_SQL_INFO = 0x42
     IPROTO_STMT_ID = 0x43
 
+    IPROTO_ERROR = 0x52
     IPROTO_VERSION = 0x54
     IPROTO_FEATURES = 0x55
     IPROTO_TIMEOUT = 0x56
@@ -100,9 +101,22 @@ cdef enum mp_extension_type:
     MP_UNKNOWN_EXTENSION = 0
     MP_DECIMAL = 1
     MP_UUID = 2
+    MP_ERROR = 3
 
 cdef enum iproto_features:
     IPROTO_FEATURE_STREAMS = 0
     IPROTO_FEATURE_TRANSACTIONS = 1
     IPROTO_FEATURE_ERROR_EXTENSION = 2
     IPROTO_FEATURE_WATCHERS = 3
+
+cdef enum iproto_error_fields:
+    MP_ERROR_STACK = 0x00
+
+cdef enum iproto_error_stack_fields:
+    MP_ERROR_TYPE = 0x00
+    MP_ERROR_FILE = 0x01
+    MP_ERROR_LINE = 0x02
+    MP_ERROR_MESSAGE = 0x03
+    MP_ERROR_ERRNO = 0x04
+    MP_ERROR_ERRCODE = 0x05
+    MP_ERROR_FIELDS = 0x06

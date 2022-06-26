@@ -1,7 +1,9 @@
 import uuid
 from decimal import Decimal
 
+from asynctnt import IProtoError
 from asynctnt._testbase import ensure_version
+from asynctnt.exceptions import TarantoolDatabaseError, ErrorCode
 from tests import BaseTarantoolTestCase
 
 
@@ -86,3 +88,59 @@ class MpExtTestCase(BaseTarantoolTestCase):
         val = uuid.uuid5(uuid.NAMESPACE_URL, "generalkenobi")
         res = await self.conn.replace(space, [1, val])
         self.assertEqual(res[0][1], val)
+
+    @ensure_version(min=(2, 4, 1))
+    async def test__ext_error(self):
+        try:
+            await self.conn.eval("""
+                box.schema.space.create('_space')
+            """)
+        except TarantoolDatabaseError as e:
+            self.assertIsNotNone(e.error)
+            self.assertGreater(len(e.error.trace), 0)
+            frame = e.error.trace[0]
+            self.assertEqual('ClientError', frame.error_type)
+            self.assertIsNotNone(frame.file)
+            self.assertIsNotNone(frame.line)
+            self.assertEqual("Space '_space' already exists", frame.message)
+            self.assertEqual(0, frame.err_no)
+            self.assertEqual(ErrorCode.ER_SPACE_EXISTS, frame.code)
+
+    @ensure_version(min=(2, 4, 1))
+    async def test__ext_error_custom(self):
+        try:
+            await self.conn.eval("""
+                local e = box.error.new{code=5,reason='A',type='B'}
+                box.error(e)
+            """)
+        except TarantoolDatabaseError as e:
+            self.assertIsNotNone(e.error)
+            self.assertGreater(len(e.error.trace), 0)
+            frame = e.error.trace[0]
+            self.assertEqual('CustomError', frame.error_type)
+            self.assertIsNotNone(frame.file)
+            self.assertIsNotNone(frame.line)
+            self.assertEqual("A", frame.message)
+            self.assertEqual(0, frame.err_no)
+            self.assertEqual(5, frame.code)
+            self.assertIn('custom_type', frame.fields)
+            self.assertEqual('B', frame.fields['custom_type'])
+
+    @ensure_version(min=(2, 4, 1))
+    async def test__ext_error_custom_return(self):
+        resp = await self.conn.eval("""
+            local e = box.error.new{code=5,reason='A',type='B'}
+            return e
+        """)
+        e = resp.body[0]
+        self.assertIsInstance(e, IProtoError)
+        self.assertGreater(len(e.trace), 0)
+        frame = e.trace[0]
+        self.assertEqual('CustomError', frame.error_type)
+        self.assertEqual('eval', frame.file)
+        self.assertEqual(2, frame.line)
+        self.assertEqual("A", frame.message)
+        self.assertEqual(0, frame.err_no)
+        self.assertEqual(5, frame.code)
+        self.assertIn('custom_type', frame.fields)
+        self.assertEqual('B', frame.fields['custom_type'])

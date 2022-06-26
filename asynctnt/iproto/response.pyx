@@ -13,6 +13,14 @@ from libc cimport stdio
 from asynctnt.log import logger
 
 @cython.final
+cdef class IProtoErrorStackFrame:
+    pass
+
+@cython.final
+cdef class IProtoError:
+    pass
+
+@cython.final
 @cython.freelist(REQUEST_FREELIST)
 cdef class Response:
     """
@@ -26,6 +34,7 @@ cdef class Response:
         self.return_code_ = -1
         self.schema_id_ = -1
         self.errmsg = None
+        self.error = None
         self._rowcount = 0
         self.body = None
         self.encoding = None
@@ -257,6 +266,8 @@ cdef object _decode_obj(const char ** p, bytes encoding):
             return decimal_decode(p, s_len)
         elif ext_type == tarantool.MP_UUID:
             return uuid_decode(p, s_len)
+        elif ext_type == tarantool.MP_ERROR:
+            return parse_iproto_error(p, encoding)
         else:
             logger.warning('Unexpected ext type: %d', ext_type)
             return None
@@ -427,6 +438,95 @@ cdef Metadata response_parse_metadata(const char ** b, bytes encoding):
         metadata.add(<int> field_id, field)
     return metadata
 
+cdef inline IProtoErrorStackFrame parse_iproto_error_stack_frame(const char ** b, bytes encoding):
+    cdef:
+        uint32_t size
+        uint32_t key
+        const char * s
+        uint32_t s_len
+        IProtoErrorStackFrame frame
+        uint32_t unum
+
+    size = 0
+    key = 0
+
+    frame = <IProtoErrorStackFrame> IProtoErrorStackFrame.__new__(IProtoErrorStackFrame)
+
+    size = mp_decode_map(b)
+    for _ in range(size):
+        key = mp_decode_uint(b)
+
+        if key == tarantool.MP_ERROR_TYPE:
+            s = NULL
+            s_len = 0
+            s = mp_decode_str(b, &s_len)
+            frame.error_type = decode_string(s[:s_len], encoding)
+
+        elif key == tarantool.MP_ERROR_FILE:
+            s = NULL
+            s_len = 0
+            s = mp_decode_str(b, &s_len)
+            frame.file = decode_string(s[:s_len], encoding)
+
+        elif key == tarantool.MP_ERROR_LINE:
+            frame.line = <int> mp_decode_uint(b)
+
+        elif key == tarantool.MP_ERROR_MESSAGE:
+            s = NULL
+            s_len = 0
+            s = mp_decode_str(b, &s_len)
+            frame.message = decode_string(s[:s_len], encoding)
+
+        elif key == tarantool.MP_ERROR_ERRNO:
+            frame.err_no = <int> mp_decode_uint(b)
+
+        elif key == tarantool.MP_ERROR_ERRCODE:
+            frame.code = <int> mp_decode_uint(b)
+
+        elif key == tarantool.MP_ERROR_FIELDS:
+            if mp_typeof(b[0][0]) != MP_MAP:  # pragma: nocover
+                raise TypeError(f'iproto_error stack frame fields must be a '
+                                f'map, but got {mp_typeof(b[0][0])}')
+
+            frame.fields = _decode_obj(b, encoding)
+
+        else:
+            logger.debug(f"unknown iproto_error stack element with key {key}")
+            mp_next(b)
+
+    return frame
+
+cdef inline IProtoError parse_iproto_error(const char ** b, bytes encoding):
+    cdef:
+        uint32_t size
+        uint32_t arr_size
+        uint32_t key
+        uint32_t i
+        IProtoError error
+
+    size = 0
+    arr_size = 0
+    key = 0
+
+    error = <IProtoError> IProtoError.__new__(IProtoError)
+
+    size = mp_decode_map(b)
+    for _ in range(size):
+        key = mp_decode_uint(b)
+
+        if key == tarantool.MP_ERROR_STACK:
+            arr_size = mp_decode_array(b)
+            error.trace = cpython.list.PyList_New(arr_size)
+            for i in range(arr_size):
+                el = parse_iproto_error_stack_frame(b, encoding)
+                cpython.Py_INCREF(el)
+                cpython.list.PyList_SET_ITEM(error.trace, i, el)
+        else:
+            logger.debug(f"unknown iproto_error map field with key {key}")
+            mp_next(b)
+
+    return error
+
 cdef ssize_t response_parse_body(const char *buf, uint32_t buf_len,
                                  Response resp, BaseRequest req,
                                  bint is_chunk) except -1:
@@ -457,7 +557,7 @@ cdef ssize_t response_parse_body(const char *buf, uint32_t buf_len,
             raise TypeError('Header key must be a MP_UINT')
 
         key = mp_decode_uint(&b)
-        if key == tarantool.IPROTO_ERROR:
+        if key == tarantool.IPROTO_ERROR_24:
             if mp_typeof(b[0]) != MP_STR:  # pragma: nocover
                 raise TypeError('errstr type must be a MP_STR')
 
@@ -465,6 +565,12 @@ cdef ssize_t response_parse_body(const char *buf, uint32_t buf_len,
             s_len = 0
             s = mp_decode_str(&b, &s_len)
             resp.errmsg = decode_string(s[:s_len], resp.encoding)
+
+        elif key == tarantool.IPROTO_ERROR:
+            if mp_typeof(b[0]) != MP_MAP:  # pragma: nocover
+                raise TypeError('IPROTO_ERROR type must be a MP_MAP')
+
+            resp.error = parse_iproto_error(&b, resp.encoding)
 
         elif key == tarantool.IPROTO_STMT_ID:
             if mp_typeof(b[0]) != MP_UINT:  # pragma: nocover
@@ -519,6 +625,12 @@ cdef ssize_t response_parse_body(const char *buf, uint32_t buf_len,
                 resp.add_push(data)
             else:
                 resp.set_data(data)
+
+        elif key == tarantool.IPROTO_VERSION:
+            logger.debug("IProto version: %s", _decode_obj(&b, resp.encoding))
+
+        elif key == tarantool.IPROTO_FEATURES:
+            logger.debug("IProto features available: %s", _decode_obj(&b, resp.encoding))
 
         else:
             logger.debug('unknown key in body map: %d', int(key))

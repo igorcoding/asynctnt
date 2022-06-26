@@ -65,10 +65,26 @@ class TarantoolTuple:
     def __next__(self): ...
 
 
-BodyItem = Union[TarantoolTuple, List[Any], Dict[Any, Any]]
+class IProtoErrorStackFrame:
+    error_type: str
+    file: str
+    line: int
+    message: str
+    err_no: int
+    code: int
+    fields: Dict[str, Any]
+
+
+class IProtoError:
+    trace: List[IProtoErrorStackFrame]
+
+
+BodyItem = Union[TarantoolTuple, List[Any], Dict[Any, Any], Any]
+
 
 class Response:
     errmsg: Optional[str]
+    error: Optional[IProtoError]
     encoding: bytes
     stmt_id: Optional[int]
     autoincrement_ids: Optional[List[int]]
@@ -161,7 +177,7 @@ class Protocol:
     def schema_id(self) -> int: ...
 
     @property
-    def schema(self) ->Schema: ...
+    def schema(self) -> Schema: ...
 
     def create_db(self, gen_stream_id: bool = False) -> Db: ...
 

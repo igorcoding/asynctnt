@@ -233,7 +233,8 @@ cdef class BaseProtocol(CoreProtocol):
 
         if response.is_error():
             err = TarantoolDatabaseError(response.return_code_,
-                                         response.errmsg)
+                                         response.errmsg,
+                                         response.error)
             response.set_exception(err)
             waiter.set_exception(err)
             return
