@@ -6,8 +6,8 @@ class Field:
     name: Optional[str]
     type: Optional[str]
     collation: Optional[str]
-    is_nullable: bool
-    is_autoincrement: bool
+    is_nullable: Optional[bool]
+    is_autoincrement: Optional[bool]
     span: Optional[str]
 
 

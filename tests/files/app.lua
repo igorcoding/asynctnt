@@ -95,6 +95,7 @@ box.once('v1', function()
 
     if B:check_version({2, 0}) then
         box.schema.user.grant('t1', 'read,write,execute,create,drop,alter', 'universe')
+        box.schema.user.grant('guest', 'read,write,execute,create,drop,alter', 'universe')
     else
         box.schema.user.grant('t1', 'read,write,execute', 'universe')
     end

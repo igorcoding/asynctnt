@@ -1,4 +1,4 @@
-from libc.stdint cimport uint64_t, int64_t
+from libc.stdint cimport  int64_t
 
 
 cdef class Field:
@@ -6,8 +6,8 @@ cdef class Field:
         readonly str name
         readonly str type
         readonly str collation
-        readonly bint is_nullable
-        readonly bint is_autoincrement
+        readonly object is_nullable
+        readonly object is_autoincrement
         readonly str span
 
 

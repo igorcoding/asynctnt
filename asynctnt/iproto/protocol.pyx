@@ -463,7 +463,7 @@ cdef class BaseProtocol(CoreProtocol):
         if self.con_state == CONNECTION_BAD:
             raise TarantoolNotConnectedError('Tarantool is not connected')
 
-        response = Response.__new__(Response, self.encoding, req)
+        response = <Response> Response.__new__(Response, self.encoding, req)
         cpython.dict.PyDict_SetItem(self._reqs, req.sync, response)
         self._write(buf)
 

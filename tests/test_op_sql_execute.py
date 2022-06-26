@@ -168,12 +168,14 @@ class SQLExecuteTestCase(BaseTarantoolTestCase):
         self.assertEqual(2, len(res.metadata.fields))
         self.assertEqual('ID', res.metadata.fields[0].name)
         self.assertEqual('integer', res.metadata.fields[0].type)
-        self.assertFalse(res.metadata.fields[0].is_nullable)
+        self.assertIsNone(res.metadata.fields[0].is_nullable)
+        self.assertIsNone(res.metadata.fields[0].is_autoincrement)
         self.assertIsNone(res.metadata.fields[0].collation)
 
         self.assertEqual('NAME', res.metadata.fields[1].name)
         self.assertEqual('string', res.metadata.fields[1].type)
-        self.assertFalse(res.metadata.fields[1].is_nullable)
+        self.assertIsNone(res.metadata.fields[1].is_nullable)
+        self.assertIsNone(res.metadata.fields[1].is_autoincrement)
         self.assertIsNone(res.metadata.fields[1].collation)
 
     @ensure_version(min=(2, 0))
@@ -190,12 +192,14 @@ class SQLExecuteTestCase(BaseTarantoolTestCase):
             self.assertEqual(2, len(res.metadata.fields))
             self.assertEqual('ID', res.metadata.fields[0].name)
             self.assertEqual('integer', res.metadata.fields[0].type)
-            self.assertFalse(res.metadata.fields[0].is_nullable)
+            self.assertEqual(False, res.metadata.fields[0].is_nullable)
+            self.assertEqual(None, res.metadata.fields[1].is_autoincrement)
             self.assertIsNone(res.metadata.fields[0].collation)
 
             self.assertEqual('NAME', res.metadata.fields[1].name)
             self.assertEqual('string', res.metadata.fields[1].type)
-            self.assertTrue(res.metadata.fields[1].is_nullable)
+            self.assertEqual(True, res.metadata.fields[1].is_nullable)
+            self.assertEqual(None, res.metadata.fields[1].is_autoincrement)
             self.assertEqual('unicode', res.metadata.fields[1].collation)
         finally:
             await self.conn.update('_session_settings', ['sql_full_metadata'], [

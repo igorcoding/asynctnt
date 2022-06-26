@@ -198,3 +198,77 @@ class ResponseTestCase(BaseTarantoolTestCase):
             str(res)
         except Exception as e:
             self.fail(e)
+
+    async def test__metadata(self):
+        self.assertIsNotNone(self.conn.schema.id)
+        self.assertIsNotNone(self.conn.schema.spaces)
+        self.assertIn(self.TESTER_SPACE_NAME, self.conn.schema.spaces)
+        self.assertIn(self.TESTER_SPACE_ID, self.conn.schema.spaces)
+        self.assertIs(self.conn.schema.spaces[self.TESTER_SPACE_NAME], self.conn.schema.spaces[self.TESTER_SPACE_ID])
+
+        sp = self.conn.schema.spaces[self.TESTER_SPACE_NAME]
+        self.assertEqual(self.TESTER_SPACE_NAME, sp.name)
+        self.assertEqual(self.TESTER_SPACE_ID, sp.sid)
+        self.assertEqual('memtx', sp.engine)
+        self.assertEqual(4, len(sp.indexes))
+        self.assertIn('primary', sp.indexes)
+        self.assertIn(0, sp.indexes)
+        self.assertIn('txt', sp.indexes)
+        self.assertIn(1, sp.indexes)
+        self.assertEqual(5, len(sp.metadata.fields))
+        self.assertEqual('f1', sp.metadata.fields[0].name)
+        self.assertEqual('unsigned', sp.metadata.fields[0].type)
+        self.assertEqual('f2', sp.metadata.fields[1].name)
+        self.assertEqual('string', sp.metadata.fields[1].type)
+        self.assertEqual('f5', sp.metadata.fields[4].name)
+        self.assertEqual('*', sp.metadata.fields[4].type)
+        self.assertEqual(5, len(sp.metadata.name_id_map))
+        self.assertEqual(0, sp.metadata.name_id_map['f1'])
+
+        idx = sp.indexes[0]
+        self.assertEqual(0, idx.iid)
+        self.assertEqual('primary', idx.name)
+        self.assertEqual(self.TESTER_SPACE_ID, idx.sid)
+        self.assertEqual('tree', idx.index_type)
+        self.assertEqual(1, len(idx.metadata.fields))
+        self.assertEqual('f1', idx.metadata.fields[0].name)
+        self.assertEqual('unsigned', idx.metadata.fields[0].type)
+        self.assertEqual(1, len(idx.metadata.name_id_map))
+        self.assertEqual(0, idx.metadata.name_id_map['f1'])
+
+    async def test__metadata_is_nullable(self):
+        sp_name = "test_space_with_nullable"
+        await self.conn.eval("""
+            local s = box.schema.space.create('%s')
+            s:format({
+                {name = "id", type = "unsigned"},
+                {name = "name", type = "string", is_nullable = true},
+            })
+        """ % (sp_name,))
+
+        try:
+            await self.conn.refetch_schema()  # just to be sure that schema is refreshed
+
+            self.assertIn(sp_name, self.conn.schema.spaces)
+            sp = self.conn.schema.spaces[sp_name]
+            self.assertEqual(sp_name, sp.name)
+            self.assertEqual('memtx', sp.engine)
+            self.assertEqual(0, len(sp.indexes))
+            self.assertEqual(2, len(sp.metadata.fields))
+            self.assertEqual('id', sp.metadata.fields[0].name)
+            self.assertEqual('unsigned', sp.metadata.fields[0].type)
+            self.assertEqual(None, sp.metadata.fields[0].is_nullable)
+            self.assertEqual('name', sp.metadata.fields[1].name)
+            self.assertEqual('string', sp.metadata.fields[1].type)
+            self.assertEqual(True, sp.metadata.fields[1].is_nullable)
+            self.assertEqual(2, len(sp.metadata.name_id_map))
+            self.assertEqual(0, sp.metadata.name_id_map['id'])
+            self.assertEqual(1, sp.metadata.name_id_map['name'])
+
+        finally:
+            await self.conn.eval("""
+                local s = box.space['%s']
+                if s ~= nil then
+                    s:drop()
+                end
+            """ % (sp_name,))

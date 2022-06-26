@@ -14,8 +14,8 @@ cdef class Field:
         self.name = None
         self.type = None
         self.collation = None
-        self.is_nullable = False
-        self.is_autoincrement = False
+        self.is_nullable = None
+        self.is_autoincrement = None
         self.span = None
 
     def __repr__(self):
@@ -221,6 +221,7 @@ cdef class Schema:
 
                     field.name = format_list[i]['name']
                     field.type = format_list[i]['type']
+                    field.is_nullable = format_list[i].get('is_nullable')
 
                     sp.metadata.add(field_id, field)
 
