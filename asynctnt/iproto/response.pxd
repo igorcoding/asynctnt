@@ -23,7 +23,7 @@ cdef class Response:
         readonly list autoincrement_ids
         uint64_t stmt_id_
         bint _push_subscribe
-        BaseRequest _request
+        BaseRequest request_
         object _exception
 
         readonly object _q
@@ -35,6 +35,7 @@ cdef class Response:
 
     cdef inline bint is_error(self)
     cdef inline uint32_t _len(self)
+    cdef inline void init_push(self)
     cdef inline void add_push(self, push)
     cdef inline object pop_push(self)
     cdef inline int push_len(self)

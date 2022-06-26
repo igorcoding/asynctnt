@@ -19,8 +19,8 @@ cdef class Response:
         Response object for all the requests to Tarantool
     """
 
-    def __cinit__(self, bytes encoding, BaseRequest req):
-        self._request = req
+    def __cinit__(self):
+        self.request_ = None
         self.sync_ = 0
         self.code_ = -1
         self.return_code_ = -1
@@ -28,27 +28,34 @@ cdef class Response:
         self.errmsg = None
         self._rowcount = 0
         self.body = None
-        self.encoding = encoding
+        self.encoding = None
         self.metadata = None
         self.params = None
         self.params_count = 0
         self.autoincrement_ids = None
         self.stmt_id_ = 0
-        self._push_subscribe = req.push_subscribe
-        if req.push_subscribe:
-            self._q = collections.deque()
-            self._push_event = asyncio.Event()
 
-            self._q_append = self._q.append
-            self._q_popleft = self._q.popleft
-            self._push_event_set = self._push_event.set
-            self._push_event_clear = self._push_event.clear
-        else:
-            self._q = None
-            self._push_event = None
+        self._push_subscribe = False
+        self._q = None
+        self._push_event = None
+        self._q_append = None
+        self._q_popleft = None
+        self._push_event_set = None
+        self._push_event_clear = None
 
     cdef inline bint is_error(self):
         return self.code_ >= 0x8000
+
+    # noinspection PyAttributeOutsideInit
+    cdef inline void init_push(self):
+        self._push_subscribe = True
+        self._q = collections.deque()
+        self._push_event = asyncio.Event()
+
+        self._q_append = self._q.append
+        self._q_popleft = self._q.popleft
+        self._push_event_set = self._push_event.set
+        self._push_event_clear = self._push_event.clear
 
     cdef inline void add_push(self, push):
         if not self._push_subscribe:

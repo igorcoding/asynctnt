@@ -93,6 +93,7 @@ cdef class BaseProtocol(CoreProtocol):
         self._schema_fetch_in_progress = False
         self._refetch_schema_future = None
         self._db = self._create_db()
+        self.execute = self._execute_bad
 
         try:
             self.create_future = self.loop.create_future
@@ -120,9 +121,11 @@ cdef class BaseProtocol(CoreProtocol):
             self.connected_fut.set_exception(e)
             self.con_state = CONNECTION_BAD
             self.post_con_state = POST_CONNECTION_NONE
+            self.execute = self._execute_bad
 
     cdef void _on_greeting_received(self):
         self.post_con_state = POST_CONNECTION_ID
+        self.execute = self._execute_normal
         self._post_con_state_machine()
 
     cdef void _post_con_state_machine(self):
@@ -184,7 +187,7 @@ cdef class BaseProtocol(CoreProtocol):
         is_chunk = (hdr.code == tarantool.IPROTO_CHUNK)
 
         response = <Response> response_p
-        req = response._request
+        req = response.request_
         response.sync_ = hdr.sync
         response.schema_id_ = hdr.schema_id
         if not is_chunk:
@@ -258,7 +261,7 @@ cdef class BaseProtocol(CoreProtocol):
 
     cdef void _do_auth(self, str username, str password):
         # No extra error handling from Db.execute
-        fut = self._db._auth(self.salt, username, password, 0, False, False)
+        fut = self._db._auth(self.salt, username, password, 0)
 
         def on_authorized(f):
             if f.cancelled():
@@ -365,12 +368,13 @@ cdef class BaseProtocol(CoreProtocol):
 
         self._closing = True
         self.post_con_state = POST_CONNECTION_NONE
+        self.execute = self._execute_bad
 
         pos = 0
         while cpython.dict.PyDict_Next(self._reqs, &pos, &pkey, &pvalue):
             sync = <uint64_t> <object> pkey
             response = <Response> pvalue
-            req = response._request
+            req = response.request_
 
             waiter = req.waiter
             if waiter and not waiter.done():
@@ -417,7 +421,7 @@ cdef class BaseProtocol(CoreProtocol):
             return
 
         response = waiter._response
-        req = response._request
+        req = response.request_
         req.timeout_handle.cancel()
         req.timeout_handle = None
         waiter.set_exception(
@@ -426,7 +430,7 @@ cdef class BaseProtocol(CoreProtocol):
         )
 
     def _on_request_completed(self, fut):
-        cdef BaseRequest req = (<Response> fut._response)._request
+        cdef BaseRequest req = (<Response> fut._response).request_
         fut._response = None
 
         if req.timeout_handle is not None:
@@ -456,14 +460,16 @@ cdef class BaseProtocol(CoreProtocol):
     def get_common_db(self):
         return self._db
 
-    cdef object execute(self, BaseRequest req, WriteBuffer buf, float timeout):
-        cdef:
-            Response response
+    cdef object _execute_bad(self, BaseRequest req, WriteBuffer buf, float timeout):
+        raise TarantoolNotConnectedError('Tarantool is not connected')
 
-        if self.con_state == CONNECTION_BAD:
-            raise TarantoolNotConnectedError('Tarantool is not connected')
-
-        response = <Response> Response.__new__(Response, self.encoding, req)
+    cdef object _execute_normal(self, BaseRequest req, WriteBuffer buf, float timeout):
+        cdef Response response
+        response = <Response> Response.__new__(Response)
+        response.request_ = req
+        response.encoding = self.encoding
+        if req.push_subscribe:
+            response.init_push()
         cpython.dict.PyDict_SetItem(self._reqs, req.sync, response)
         self._write(buf)
 

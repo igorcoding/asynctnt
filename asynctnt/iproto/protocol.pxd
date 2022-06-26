@@ -33,7 +33,6 @@ include "push.pxd"
 
 include "coreproto.pxd"
 
-
 cdef enum PostConnectionState:
     POST_CONNECTION_NONE = 0
     POST_CONNECTION_ID = 10
@@ -41,6 +40,8 @@ cdef enum PostConnectionState:
     POST_CONNECTION_SCHEMA = 30
     POST_CONNECTION_DONE = 100
 
+
+ctypedef object (*req_execute_func)(BaseProtocol, BaseRequest, WriteBuffer, float)
 
 cdef class BaseProtocol(CoreProtocol):
     cdef:
@@ -66,6 +67,7 @@ cdef class BaseProtocol(CoreProtocol):
         bint _schema_fetch_in_progress
         object _refetch_schema_future
         Db _db
+        req_execute_func execute
 
         object create_future
 
@@ -83,4 +85,5 @@ cdef class BaseProtocol(CoreProtocol):
 
     cdef object _new_waiter_for_request(self, Response response, BaseRequest req, float timeout)
     cdef Db _create_db(self)
-    cdef object execute(self, BaseRequest req, WriteBuffer buf, float timeout)
+    cdef object _execute_bad(self, BaseRequest req, WriteBuffer buf, float timeout)
+    cdef object _execute_normal(self, BaseRequest req, WriteBuffer buf, float timeout)

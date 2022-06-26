@@ -32,9 +32,9 @@ cdef class Metadata:
         self.name_id_map = {}
 
     cdef inline void add(self, int id, Field field):
-        self.fields.append(field)
-        self.names.append(field.name)
-        self.name_id_map[field.name] = id
+        cpython.list.PyList_Append(self.fields, field)
+        cpython.list.PyList_Append(self.names, field.name)
+        cpython.dict.PyDict_SetItem(self.name_id_map, field.name, id)
 
     cdef inline str name_by_id(self, int id):
         cdef Field field

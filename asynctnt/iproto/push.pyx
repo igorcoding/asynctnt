@@ -38,7 +38,7 @@ cdef class PushIterator:
                              'push_subscribe=True flag')
 
         response = <Response> fut._response
-        request = response._request
+        request = response.request_
 
         if not request.push_subscribe:
             raise ValueError('Future is invalid. Make sure to call with '
