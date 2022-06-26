@@ -16,6 +16,7 @@
 
 **Other changes:**
 * Updated Cython to 0.29.30
+* Update msgpuck to revision 0c6680a300e31714f475a7f90c2d95a02d001d80
 * Internal refactoring of requests payload encoding
 * Refactoring of schema parsing and unifying under `metadata` name and structure
 
