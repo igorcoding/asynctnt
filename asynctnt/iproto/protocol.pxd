@@ -42,7 +42,7 @@ cdef enum PostConnectionState:
     POST_CONNECTION_DONE = 100
 
 
-ctypedef object (*req_execute_func)(BaseProtocol, BaseRequest, WriteBuffer, float)
+ctypedef object (*req_execute_func)(BaseProtocol, BaseRequest, float)
 
 cdef class BaseProtocol(CoreProtocol):
     cdef:
@@ -87,5 +87,5 @@ cdef class BaseProtocol(CoreProtocol):
 
     cdef object _new_waiter_for_request(self, Response response, BaseRequest req, float timeout)
     cdef Db _create_db(self, bint gen_stream_id)
-    cdef object _execute_bad(self, BaseRequest req, WriteBuffer buf, float timeout)
-    cdef object _execute_normal(self, BaseRequest req, WriteBuffer buf, float timeout)
+    cdef object _execute_bad(self, BaseRequest req, float timeout)
+    cdef object _execute_normal(self, BaseRequest req, float timeout)

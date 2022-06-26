@@ -12,6 +12,16 @@ cdef class BaseRequest:
     #     self.parse_metadata = True
     #     self.push_subscribe = False
 
+    cdef inline WriteBuffer encode(self, bytes encoding):
+        cdef WriteBuffer buffer = WriteBuffer.create(encoding)
+        buffer.write_header(self.sync, self.op, self.schema_id, self.stream_id)
+        self.encode_body(buffer)
+        buffer.write_length()
+        return buffer
+
+    cdef int encode_body(self, WriteBuffer buffer) except -1:
+        return 0
+
     def __repr__(self):  # pragma: nocover
         return \
             '<Request op={} sync={} schema_id={} push_subscribe={}>'.format(

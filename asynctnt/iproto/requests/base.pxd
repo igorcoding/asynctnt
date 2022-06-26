@@ -20,6 +20,9 @@ cdef class BaseRequest:
             return None
         return self.space.metadata
 
+    cdef inline WriteBuffer encode(self, bytes encoding)
+    cdef int encode_body(self, WriteBuffer buffer) except -1
+
 
 cdef char *encode_key_sequence(WriteBuffer buffer,
                                char *p, object t,

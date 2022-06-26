@@ -4,15 +4,7 @@ DEF IPROTO_VERSION = 3
 
 @cython.final
 cdef class IDRequest(BaseRequest):
-
-    cdef inline WriteBuffer encode(self, bytes encoding):
-        cdef WriteBuffer buffer = WriteBuffer.create(encoding)
-        buffer.write_header(self.sync, self.op, self.schema_id, self.stream_id)
-        self.encode_request(buffer)
-        buffer.write_length()
-        return buffer
-
-    cdef int encode_request(self, WriteBuffer buffer) except -1:
+    cdef int encode_body(self, WriteBuffer buffer) except -1:
         cdef:
             char *p
             char *begin

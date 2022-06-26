@@ -2,14 +2,7 @@ cimport cython
 
 @cython.final
 cdef class EvalRequest(BaseRequest):
-    cdef inline WriteBuffer encode(self, bytes encoding):
-        cdef WriteBuffer buffer = WriteBuffer.create(encoding)
-        buffer.write_header(self.sync, self.op, self.schema_id, self.stream_id)
-        self.encode_request_eval(buffer, self.expression, self.args)
-        buffer.write_length()
-        return buffer
-
-    cdef int encode_request_eval(self, WriteBuffer buffer, str expression, args) except -1:
+    cdef int encode_body(self, WriteBuffer buffer) except -1:
         cdef:
             char *begin
             char *p
@@ -23,7 +16,7 @@ cdef class EvalRequest(BaseRequest):
         expression_str = NULL
         expression_len = 0
 
-        expression_temp = encode_unicode_string(expression, buffer._encoding)
+        expression_temp = encode_unicode_string(self.expression, buffer._encoding)
         cpython.bytes.PyBytes_AsStringAndSize(expression_temp,
                                               &expression_str,
                                               &expression_len)
@@ -47,4 +40,4 @@ cdef class EvalRequest(BaseRequest):
 
         p = mp_encode_uint(p, tarantool.IPROTO_TUPLE)
         buffer._length += (p - begin)
-        p = encode_key_sequence(buffer, p, args, None, False)
+        p = encode_key_sequence(buffer, p, self.args, None, False)

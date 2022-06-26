@@ -2,15 +2,7 @@ cimport cython
 
 @cython.final
 cdef class ExecuteRequest(BaseRequest):
-
-    cdef inline WriteBuffer encode(self, bytes encoding):
-        cdef WriteBuffer buffer = WriteBuffer.create(encoding)
-        buffer.write_header(self.sync, self.op, self.schema_id, self.stream_id)
-        self.encode_request_execute(buffer)
-        buffer.write_length()
-        return buffer
-
-    cdef int encode_request_execute(self, WriteBuffer buffer) except -1:
+    cdef int encode_body(self, WriteBuffer buffer) except -1:
         cdef:
             char *begin
             char *p

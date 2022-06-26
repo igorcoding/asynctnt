@@ -4,11 +4,9 @@ cdef class UpdateRequest(BaseRequest):
         object key
         list operations
 
-    cdef inline WriteBuffer encode(self, bytes encoding)
 
-
-cdef char *encode_update_ops(WriteBuffer buffer, 
-                             char *p, list operations,  
+cdef char *encode_update_ops(WriteBuffer buffer,
+                             char *p, list operations,
                              SchemaSpace space) except NULL
 cdef int encode_request_update(WriteBuffer buffer,
                                SchemaSpace space, SchemaIndex index,

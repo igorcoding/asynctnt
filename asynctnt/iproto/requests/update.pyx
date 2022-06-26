@@ -2,14 +2,9 @@ cimport cython
 
 @cython.final
 cdef class UpdateRequest(BaseRequest):
-    cdef inline WriteBuffer encode(self, bytes encoding):
-        cdef WriteBuffer buffer = WriteBuffer.create(encoding)
-        buffer.write_header(self.sync, self.op, self.schema_id, self.stream_id)
-        encode_request_update(buffer, self.space, self.index,
-                              self.key, self.operations, False)
-        buffer.write_length()
-        return buffer
-
+    cdef int encode_body(self, WriteBuffer buffer) except -1:
+        return encode_request_update(buffer, self.space, self.index,
+                                     self.key, self.operations, <bint> False)
 
 cdef char *encode_update_ops(WriteBuffer buffer,
                              char *p, list operations,
@@ -77,7 +72,7 @@ cdef char *encode_update_ops(WriteBuffer buffer,
                 'Operation field_no must be of either int or str type')
 
         cpython.bytes.PyBytes_AsStringAndSize(str_temp, &op_str_c,
-                                                &op_str_len)
+                                              &op_str_len)
         op = <char> 0
         if op_str_len == 1:
             op = op_str_c[0]
@@ -141,9 +136,9 @@ cdef char *encode_update_ops(WriteBuffer buffer,
 
             # mp_sizeof_array(5) + mp_sizeof_str(1) + ...
             extra_length = 1 + 2 \
-                            + mp_sizeof_uint(field_no) \
-                            + mp_sizeof_uint(splice_position) \
-                            + mp_sizeof_uint(splice_offset)
+                           + mp_sizeof_uint(field_no) \
+                           + mp_sizeof_uint(splice_position) \
+                           + mp_sizeof_uint(splice_offset)
             p = begin = buffer._ensure_allocated(p, extra_length)
 
             p = mp_encode_array(p, 5)
@@ -157,8 +152,6 @@ cdef char *encode_update_ops(WriteBuffer buffer,
             raise TypeError(
                 'Unknown update operation type `{}`'.format(op_type_str))
     return p
-
-
 
 cdef int encode_request_update(WriteBuffer buffer,
                                SchemaSpace space, SchemaIndex index,
@@ -194,8 +187,8 @@ cdef int encode_request_update(WriteBuffer buffer,
     # + mp_sizeof_uint(TP_SPACE)
     # + mp_sizeof_uint(space)
     max_body_len = 1 \
-                    + 1 \
-                    + 9
+                   + 1 \
+                   + 9
 
     if index_id > 0:
         # + mp_sizeof_uint(TP_INDEX)

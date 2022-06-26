@@ -1,4 +1,6 @@
+cimport cython
 
+@cython.final
 cdef class PushIterator:
     cdef:
         object _fut

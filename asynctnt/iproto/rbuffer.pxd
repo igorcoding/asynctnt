@@ -1,11 +1,10 @@
+cimport cython
 from libc.stdint cimport uint32_t
-
 
 cdef inline size_t size_t_max(size_t a, size_t b):
     if a > b:
         return a
     return b
-
 
 cdef inline uint32_t nearest_power_of_2(uint32_t v):
     v -= 1
@@ -17,7 +16,7 @@ cdef inline uint32_t nearest_power_of_2(uint32_t v):
     v += 1
     return v
 
-
+@cython.final
 cdef class ReadBuffer:
     cdef:
         char *buf
@@ -28,7 +27,7 @@ cdef class ReadBuffer:
         str encoding
 
     @staticmethod
-    cdef ReadBuffer create(str encoding, size_t initial_buffer_size=*)
+    cdef ReadBuffer create(str encoding, size_t initial_buffer_size= *)
 
     cdef void _reallocate(self, size_t new_size) except *
     cdef int extend(self, const char *data, size_t len) except -1

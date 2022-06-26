@@ -24,12 +24,7 @@ cdef class Db:
         req.sync = self.next_sync()
         req.stream_id = self._stream_id
         req.check_schema_change = True
-        return self._protocol.execute(
-            self._protocol,
-            req,
-            req.encode(self._encoding),
-            <float> timeout
-        )
+        return self._protocol.execute(self._protocol, req, timeout)
 
     cdef object _id(self, float timeout):
         cdef IDRequest req = IDRequest.__new__(IDRequest)
@@ -37,12 +32,7 @@ cdef class Db:
         req.sync = self.next_sync()
         req.stream_id = self._stream_id
         req.check_schema_change = False
-        return self._protocol.execute(
-            self._protocol,
-            req,
-            req.encode(self._encoding),
-            <float> timeout
-        )
+        return self._protocol.execute(self._protocol, req, timeout)
 
     cdef object _auth(self,
                       bytes salt,
@@ -64,12 +54,7 @@ cdef class Db:
         req.parse_metadata = False
         req.check_schema_change = False
 
-        return self._protocol.execute(
-            self._protocol,
-            req,
-            req.encode(self._encoding),
-            <float> timeout
-        )
+        return self._protocol.execute(self._protocol, req, timeout)
 
     cdef object _call(self,
                       tarantool.iproto_type op,
@@ -85,12 +70,7 @@ cdef class Db:
         req.args = args
         req.push_subscribe = push_subscribe
         req.check_schema_change = True
-        return self._protocol.execute(
-            self._protocol,
-            req,
-            req.encode(self._encoding),
-            <float> timeout
-        )
+        return self._protocol.execute(self._protocol, req, timeout)
 
     cdef object _eval(self,
                       str expression,
@@ -105,12 +85,7 @@ cdef class Db:
         req.args = args
         req.push_subscribe = push_subscribe
         req.check_schema_change = True
-        return self._protocol.execute(
-            self._protocol,
-            req,
-            req.encode(self._encoding),
-            <float> timeout
-        )
+        return self._protocol.execute(self._protocol, req, timeout)
 
     cdef object _select(self,
                         object space,
@@ -150,12 +125,7 @@ cdef class Db:
         req.check_schema_change = check_schema_change
         req.parse_as_tuples = True
 
-        return self._protocol.execute(
-            self._protocol,
-            req,
-            req.encode(self._encoding),
-            <float> timeout
-        )
+        return self._protocol.execute(self._protocol, req, timeout)
 
     cdef object _insert(self,
                         object space,
@@ -178,12 +148,7 @@ cdef class Db:
         req.check_schema_change = True
         req.parse_as_tuples = True
 
-        return self._protocol.execute(
-            self._protocol,
-            req,
-            req.encode(self._encoding),
-            <float> timeout
-        )
+        return self._protocol.execute(self._protocol, req, timeout)
 
     cdef object _delete(self,
                         object space,
@@ -209,12 +174,7 @@ cdef class Db:
         req.check_schema_change = True
         req.parse_as_tuples = True
 
-        return self._protocol.execute(
-            self._protocol,
-            req,
-            req.encode(self._encoding),
-            <float> timeout
-        )
+        return self._protocol.execute(self._protocol, req, timeout)
 
     cdef object _update(self,
                         object space,
@@ -242,12 +202,7 @@ cdef class Db:
         req.check_schema_change = True
         req.parse_as_tuples = True
 
-        return self._protocol.execute(
-            self._protocol,
-            req,
-            req.encode(self._encoding),
-            <float> timeout
-        )
+        return self._protocol.execute(self._protocol, req, timeout)
 
     cdef object _upsert(self,
                         object space,
@@ -271,12 +226,7 @@ cdef class Db:
         req.check_schema_change = True
         req.parse_as_tuples = True
 
-        return self._protocol.execute(
-            self._protocol,
-            req,
-            req.encode(self._encoding),
-            <float> timeout
-        )
+        return self._protocol.execute(self._protocol, req, timeout)
 
     cdef object _execute(self,
                          object query,
@@ -306,12 +256,7 @@ cdef class Db:
         req.check_schema_change = True
         req.parse_as_tuples = True
 
-        return self._protocol.execute(
-            self._protocol,
-            req,
-            req.encode(self._encoding),
-            <float> timeout
-        )
+        return self._protocol.execute(self._protocol, req, timeout)
 
     cdef object _prepare(self,
                          object query,
@@ -339,12 +284,7 @@ cdef class Db:
         req.parse_as_tuples = True
         req.parse_metadata = parse_metadata
 
-        return self._protocol.execute(
-            self._protocol,
-            req,
-            req.encode(self._encoding),
-            <float> timeout
-        )
+        return self._protocol.execute(self._protocol, req, timeout)
 
     cdef object _begin(self,
                        uint32_t isolation,
@@ -358,12 +298,7 @@ cdef class Db:
         req.push_subscribe = False
         req.isolation = isolation
         req.tx_timeout = tx_timeout
-        return self._protocol.execute(
-            self._protocol,
-            req,
-            req.encode(self._encoding),
-            <float> timeout
-        )
+        return self._protocol.execute(self._protocol, req, timeout)
 
     cdef object _commit(self, float timeout):
         cdef CommitRequest req = CommitRequest.__new__(CommitRequest)
@@ -372,12 +307,7 @@ cdef class Db:
         req.stream_id = self._stream_id
         req.check_schema_change = True
         req.push_subscribe = False
-        return self._protocol.execute(
-            self._protocol,
-            req,
-            req.encode(self._encoding),
-            <float> timeout
-        )
+        return self._protocol.execute(self._protocol, req, timeout)
 
     cdef object _rollback(self, float timeout):
         cdef RollbackRequest req = RollbackRequest.__new__(RollbackRequest)
@@ -385,12 +315,7 @@ cdef class Db:
         req.sync = self.next_sync()
         req.stream_id = self._stream_id
         req.check_schema_change = True
-        return self._protocol.execute(
-            self._protocol,
-            req,
-            req.encode(self._encoding),
-            <float> timeout
-        )
+        return self._protocol.execute(self._protocol, req, timeout)
 
     # public methods
 

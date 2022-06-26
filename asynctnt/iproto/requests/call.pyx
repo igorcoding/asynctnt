@@ -3,14 +3,7 @@ cimport asynctnt.iproto.tarantool as tarantool
 
 @cython.final
 cdef class CallRequest(BaseRequest):
-    cdef inline WriteBuffer encode(self, bytes encoding):
-        cdef WriteBuffer buffer = WriteBuffer.create(encoding)
-        buffer.write_header(self.sync, self.op, self.schema_id, self.stream_id)
-        self.encode_request_call(buffer, self.func_name, self.args)
-        buffer.write_length()
-        return buffer
-
-    cdef int encode_request_call(self, WriteBuffer buffer, str func_name, args) except -1:
+    cdef int encode_body(self, WriteBuffer buffer) except -1:
         cdef:
             char *begin
             char *p
@@ -24,7 +17,7 @@ cdef class CallRequest(BaseRequest):
         func_name_str = NULL
         func_name_len = 0
 
-        func_name_temp = encode_unicode_string(func_name, buffer._encoding)
+        func_name_temp = encode_unicode_string(self.func_name, buffer._encoding)
         cpython.bytes.PyBytes_AsStringAndSize(func_name_temp,
                                               &func_name_str,
                                               &func_name_len)
@@ -48,4 +41,4 @@ cdef class CallRequest(BaseRequest):
 
         p = mp_encode_uint(p, tarantool.IPROTO_TUPLE)
         buffer._length += (p - begin)
-        p = encode_key_sequence(buffer, p, args, None, False)
+        p = encode_key_sequence(buffer, p, self.args, None, False)

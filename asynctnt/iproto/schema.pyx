@@ -56,7 +56,7 @@ cdef class Metadata:
     def __repr__(self):
         return '<Metadata [fields_count={}]>'.format(self.len())
 
-
+@cython.final
 cdef class SchemaIndex:
     def __cinit__(self):
         self.iid = -1
@@ -74,9 +74,7 @@ cdef class SchemaIndex:
                 self.sid, self.iid, self.name, self.index_type, self.unique
             )
 
-cdef class SchemaDummyIndex(SchemaIndex):
-    pass
-
+@cython.final
 cdef class SchemaSpace:
     def __cinit__(self):
         self.sid = -1
@@ -114,7 +112,7 @@ cdef class SchemaSpace:
                     'Index %s not found in space %s/%s. Creating dummy.',
                     index, self.sid, self.name
                 )
-                idx = <SchemaDummyIndex> SchemaDummyIndex.__new__(SchemaDummyIndex)
+                idx = <SchemaIndex> SchemaIndex.__new__(SchemaIndex)
                 idx.iid = index
                 idx.sid = self.sid
                 idx.name = str(index)
@@ -133,9 +131,7 @@ cdef class SchemaSpace:
             self.sid, self.name, self.engine
         )
 
-cdef class SchemaDummySpace(SchemaSpace):
-    pass
-
+@cython.final
 cdef class Schema:
     def __cinit__(self, int schema_id):
         self.id = schema_id
@@ -171,7 +167,7 @@ cdef class Schema:
     cdef SchemaSpace create_dummy_space(self, int space_id):
         cdef SchemaSpace s
         logger.debug('Space %s not found. Creating dummy.', space_id)
-        s = <SchemaDummySpace> SchemaDummySpace.__new__(SchemaDummySpace)
+        s = <SchemaSpace> SchemaSpace.__new__(SchemaSpace)
         s.sid = space_id
         s.name = str(space_id)
         cpython.dict.PyDict_SetItem(self.spaces, space_id, s)

@@ -1,5 +1,7 @@
+cimport cython
 from libc.stdint cimport uint64_t, uint32_t
 
+@cython.final
 cdef class Db:
     cdef:
         uint64_t _stream_id

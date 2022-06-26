@@ -472,10 +472,10 @@ cdef class BaseProtocol(CoreProtocol):
     def get_common_db(self):
         return self._db
 
-    cdef object _execute_bad(self, BaseRequest req, WriteBuffer buf, float timeout):
+    cdef object _execute_bad(self, BaseRequest req, float timeout):
         raise TarantoolNotConnectedError('Tarantool is not connected')
 
-    cdef object _execute_normal(self, BaseRequest req, WriteBuffer buf, float timeout):
+    cdef object _execute_normal(self, BaseRequest req, float timeout):
         cdef Response response
         response = <Response> Response.__new__(Response)
         response.request_ = req
@@ -483,7 +483,7 @@ cdef class BaseProtocol(CoreProtocol):
         if req.push_subscribe:
             response.init_push()
         cpython.dict.PyDict_SetItem(self._reqs, req.sync, response)
-        self._write(buf)
+        self._write(req.encode(self.encoding))
 
         return self._new_waiter_for_request(response, req, timeout)
 

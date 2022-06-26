@@ -1,3 +1,5 @@
+cimport cython
+
 from libc.stdint cimport uint64_t, uint32_t, int64_t, int32_t
 
 cdef struct Header:
@@ -6,7 +8,7 @@ cdef struct Header:
     uint64_t sync
     int64_t schema_id
 
-
+@cython.final
 cdef class Response:
     cdef:
         int32_t code_
@@ -43,7 +45,6 @@ cdef class Response:
     cdef inline void set_exception(self, exc)
     cdef inline object get_exception(self)
     cdef inline void notify(self)
-
 
 cdef ssize_t response_parse_header(const char *buf, uint32_t buf_len,
                                    Header *hdr) except -1

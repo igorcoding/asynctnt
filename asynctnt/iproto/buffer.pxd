@@ -1,5 +1,7 @@
+cimport cython
 from libc.stdint cimport uint32_t, uint64_t, int64_t
 
+@cython.final
 cdef class WriteBuffer:
     cdef:
         # Preallocated small buffer

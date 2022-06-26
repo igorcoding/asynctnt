@@ -3,14 +3,7 @@ cimport cython
 @cython.final
 cdef class InsertRequest(BaseRequest):
 
-    cdef inline WriteBuffer encode(self, bytes encoding):
-        cdef WriteBuffer buffer = WriteBuffer.create(encoding)
-        buffer.write_header(self.sync, self.op, self.schema_id, self.stream_id)
-        self.encode_request_insert(buffer, self.space, self.t)
-        buffer.write_length()
-        return buffer
-
-    cdef int encode_request_insert(self, WriteBuffer buffer, SchemaSpace space, t) except -1:
+    cdef int encode_body(self, WriteBuffer buffer) except -1:
         cdef:
             char *begin
             char *p
@@ -18,7 +11,7 @@ cdef class InsertRequest(BaseRequest):
             uint32_t max_body_len
             uint32_t space_id
 
-        space_id = space.sid
+        space_id = self.space.sid
 
         body_map_sz = 2
         # Size description:
@@ -40,4 +33,4 @@ cdef class InsertRequest(BaseRequest):
 
         p = mp_encode_uint(p, tarantool.IPROTO_TUPLE)
         buffer._length += (p - begin)
-        p = encode_key_sequence(buffer, p, t, space.metadata, True)
+        p = encode_key_sequence(buffer, p, self.t, self.space.metadata, True)
