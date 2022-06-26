@@ -67,6 +67,7 @@ local function bootstrap()
     end
     b.types.decimal = 'decimal'
     b.types.uuid = 'uuid'
+    b.types.datetime = 'datetime'
     b.types.number = 'number'
     b.types.array = 'array'
     b.types.scalar = 'scalar'
@@ -157,6 +158,15 @@ if B:check_version({2, 0}) then
             })
             s:create_index('primary')
         end
+
+        if B:check_version({2, 10, 0}) then
+            s = box.schema.create_space('tester_ext_datetime')
+            s:format({
+                {type=B.types.unsigned, name='id'},
+                {type=B.types.datetime, name='dt'},
+            })
+            s:create_index('primary')
+        end
     end)
 end
 
@@ -167,24 +177,25 @@ function make_third_index(name)
 end
 
 
-function truncate()
+local function _truncate(sp)
+    if sp == nil then
+        return
+    end
+
     local keys = {}
-    for _, el in box.space.tester:pairs() do
+    for _, el in sp:pairs() do
         table.insert(keys, el[1])
     end
 
     for _, k in ipairs(keys) do
-        box.space.tester:delete({k})
+        sp:delete({k})
     end
+end
 
-    keys = {}
-    for _, el in box.space.no_schema_space:pairs() do
-        table.insert(keys, el[1])
-    end
 
-    for _, k in ipairs(keys) do
-        box.space.no_schema_space:delete({k})
-    end
+function truncate()
+    _truncate(box.space.tester)
+    _truncate(box.space.no_schema_space)
 
     if box.space.SQL_SPACE ~= nil then
         box.execute('DELETE FROM sql_space')
@@ -197,6 +208,10 @@ function truncate()
     if box.space.SQL_SPACE_AUTOINCREMENT_MULTIPLE ~= nil then
         box.execute('DELETE FROM sql_space_autoincrement_multiple')
     end
+
+    _truncate(box.space.tester_ext_dec)
+    _truncate(box.space.tester_ext_uuid)
+    _truncate(box.space.tester_ext_datetime)
 end
 
 

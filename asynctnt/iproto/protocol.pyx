@@ -1,6 +1,8 @@
 # cython: language_level=3
 
 cimport cpython.dict
+from cpython.datetime cimport import_datetime
+import_datetime()
 
 import asyncio
 import enum

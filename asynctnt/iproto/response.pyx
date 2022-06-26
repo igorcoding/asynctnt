@@ -199,6 +199,7 @@ cdef object _decode_obj(const char ** p, bytes encoding):
         object map_key
 
         int8_t ext_type
+        IProtoDateTime dt
 
     obj_type = mp_typeof(p[0][0])
     if obj_type == MP_UINT:
@@ -273,8 +274,13 @@ cdef object _decode_obj(const char ** p, bytes encoding):
             return uuid_decode(p, s_len)
         elif ext_type == tarantool.MP_ERROR:
             return parse_iproto_error(p, encoding)
+        elif ext_type == tarantool.MP_DATETIME:
+            datetime_zero(&dt)
+            datetime_decode(p, s_len, &dt)
+            return datetime_to_py(&dt)
         else:  # pragma: nocover
             logger.warning('Unexpected ext type: %d', ext_type)
+            p += s_len  # skip unknown ext
             return None
     else:  # pragma: nocover
         mp_next(p)

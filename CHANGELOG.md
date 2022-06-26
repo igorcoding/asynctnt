@@ -4,7 +4,7 @@
 * Drop support for `loop` argument in the `Connection` (fixes #18)
 
 **New features:**
-* Added support for `Decimal` and `UUID` types natively
+* Added support for `Decimal`, `UUID` and `datetime` types natively using MessagePack extensions
 * Added support for SQL prepared statements with `Connection.prepare()` method and
   `PreparedStatement` class
 * Added support for interactive transactions and streams (fixes #21)

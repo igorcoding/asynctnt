@@ -6,6 +6,7 @@ include "const.pxi"
 include "cmsgpuck.pxd"
 include "xd.pxd"
 include "python.pxd"
+include "bit.pxd"
 
 include "unicodeutil.pxd"
 include "schema.pxd"

@@ -8,6 +8,7 @@ cimport cpython.unicode
 
 from cpython.mem cimport PyMem_Malloc, PyMem_Realloc, PyMem_Free
 from cpython.ref cimport PyObject
+from cpython.datetime cimport datetime
 
 from libc.string cimport memcpy
 from libc.stdint cimport uint32_t, uint64_t, int64_t, uint8_t
@@ -261,6 +262,24 @@ cdef class WriteBuffer:
         self._length += (p - begin)
         return p
 
+    cdef char *mp_encode_datetime(self, char *p, object value) except NULL:
+        cdef:
+            char *begin
+            uint32_t length
+            datetime pydt
+            IProtoDateTime dt
+
+        pydt = <datetime> value
+        datetime_zero(&dt)
+        datetime_from_py(pydt, &dt)
+
+        length = datetime_len(&dt)
+        p = begin = self._ensure_allocated(p, mp_sizeof_ext(length))
+        p = mp_encode_extl(p, tarantool.MP_DATETIME, length)
+        p = datetime_encode(p, &dt)
+        self._length += (p - begin)
+        return p
+
     cdef char *mp_encode_array(self, char *p, uint32_t len) except NULL:
         cdef char *begin
         p = begin = self._ensure_allocated(p, mp_sizeof_array(len))
@@ -384,6 +403,9 @@ cdef class WriteBuffer:
 
         elif isinstance(o, dict):
             return self.mp_encode_dict(p, <dict> o)
+
+        elif isinstance(o, datetime):
+            return self.mp_encode_datetime(p, o)
 
         elif isinstance(o, Decimal):
             return self.mp_encode_decimal(p, o)

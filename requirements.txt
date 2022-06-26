@@ -8,3 +8,5 @@ Sphinx
 sphinx_rtd_theme
 sphinxcontrib-asyncio
 coverage
+pytz
+python-dateutil
