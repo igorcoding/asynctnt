@@ -49,8 +49,7 @@ class Connection(Api):
                  reconnect_timeout: float = 1. / 3.,
                  ping_timeout: float = 5.,
                  encoding: Optional[str] = None,
-                 initial_read_buffer_size: Optional[int] = None,
-                 **kwargs):
+                 initial_read_buffer_size: Optional[int] = None):
 
         """
             Connection constructor.
@@ -113,8 +112,6 @@ class Connection(Api):
                     Initial and minimum size of read buffer in bytes.
                     Higher value means less reallocations, but higher
                     memory usage (default is 131072).
-            :param loop:
-                    (Deprecated) Asyncio event loop to use
         """
         super().__init__()
         self._host = host
@@ -138,7 +135,8 @@ class Connection(Api):
         self._request_timeout = request_timeout
         self._ping_timeout = ping_timeout or 0
 
-        self._loop = get_running_loop(kwargs.pop('loop', None))
+        self._loop = None
+        self.__create_task = None
 
         self._transport = None
         self._protocol: Optional[protocol.Protocol] = None
@@ -150,11 +148,6 @@ class Connection(Api):
         self._connect_lock = asyncio.Lock()
         self._disconnect_lock = asyncio.Lock()
         self._ping_task = None
-
-        if hasattr(self._loop, 'create_task'):
-            self.__create_task = self._loop.create_task
-        else:  # pragma: nocover
-            self.__create_task = asyncio.ensure_future
 
     def _set_state(self, new_state: ConnectionState):
         if self._state != new_state:
@@ -228,6 +221,13 @@ class Connection(Api):
                    loop=self._loop)
 
     async def _connect(self, return_exceptions: bool = True):
+        if self._loop is None:
+            self._loop = get_running_loop()
+            if hasattr(self._loop, 'create_task'):
+                self.__create_task = self._loop.create_task
+            else:  # pragma: nocover
+                self.__create_task = asyncio.ensure_future
+
         async with self._connect_lock:
             while True:
                 try:
