@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>asynctnt &mdash; asynctnt 2.0.0b1 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="_static/doctools.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Installation" href="installation.html" />
+    <link rel="prev" title="asynctnt" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> asynctnt
+          </a>
+              <div class="version">
+                2.0.0b1
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">asynctnt</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#installation">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#documentation">Documentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#key-features">Key features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#basic-usage">Basic Usage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#sql">SQL</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#performance">Performance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#license">License</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#references">References</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html#running-tests">Running tests</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sql.html">SQL Support</a></li>
+<li class="toctree-l1"><a class="reference internal" href="metadata.html">Metadata</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pushes.html">Session Push</a></li>
+<li class="toctree-l1"><a class="reference internal" href="streams.html">Streams and Transactions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mpext.html">Type Extensions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CHANGELOG.html">Changelog</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">asynctnt</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>asynctnt</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/igorcoding/asynctnt/blob/v2/docs/overview.md" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="asynctnt">
+<h1>asynctnt<a class="headerlink" href="#asynctnt" title="Permalink to this heading"></a></h1>
+<p><a class="reference external" href="https://github.com/igorcoding/asynctnt/actions"><img alt="Build" src="https://github.com/igorcoding/asynctnt/actions/workflows/actions.yaml/badge.svg?branch=master" /></a>
+<a class="reference external" href="https://pypi.python.org/pypi/asynctnt"><img alt="PyPI" src="https://img.shields.io/pypi/v/asynctnt.svg" /></a>
+<a class="reference external" href="https://codeclimate.com/github/igorcoding/asynctnt/maintainability"><img alt="Maintainability" src="https://api.codeclimate.com/v1/badges/6cec8adae280cda3e161/maintainability" /></a>
+<a href="http://tarantool.org">
+<img src="https://avatars2.githubusercontent.com/u/2344919?v=2&s=250" align="right">
+</a></p>
+<p>asynctnt is a high-performance <a class="reference external" href="https://tarantool.org/">Tarantool</a> database
+connector library for Python/asyncio. It was highly inspired by
+<a class="reference external" href="https://github.com/MagicStack/asyncpg">asyncpg</a> module.</p>
+<p>asynctnt requires Python 3.6 or later and is supported for Tarantool
+versions 1.6+.</p>
+<section id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this heading"></a></h2>
+<p>Use pip to install:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ pip install asynctnt
+</pre></div>
+</div>
+</section>
+<section id="documentation">
+<h2>Documentation<a class="headerlink" href="#documentation" title="Permalink to this heading"></a></h2>
+<p>Documentation is available <a class="reference external" href="https://igorcoding.github.io/asynctnt">here</a>.</p>
+</section>
+<section id="key-features">
+<h2>Key features<a class="headerlink" href="#key-features" title="Permalink to this heading"></a></h2>
+<ul class="simple">
+<li><p>Support for all the <strong>basic requests</strong> that Tarantool supports. This includes:
+<code class="docutils literal notranslate"><span class="pre">insert</span></code>, <code class="docutils literal notranslate"><span class="pre">select</span></code>, <code class="docutils literal notranslate"><span class="pre">update</span></code>, <code class="docutils literal notranslate"><span class="pre">upsert</span></code>, <code class="docutils literal notranslate"><span class="pre">call</span></code>, <code class="docutils literal notranslate"><span class="pre">eval</span></code>, <code class="docutils literal notranslate"><span class="pre">execute</span></code>.</p></li>
+<li><p>Full support for <strong>SQL</strong>, including prepared statements.</p></li>
+<li><p>Support for <strong>interactive transaction</strong> via Tarantool streams.</p></li>
+<li><p>Support of <code class="docutils literal notranslate"><span class="pre">Decimal</span></code> and <code class="docutils literal notranslate"><span class="pre">UUID</span></code> types natively (starting from Tarantool 2.4.1).</p></li>
+<li><p><strong>Schema fetching</strong> on connection establishment, so you can use spaces and
+indexes names rather than their ids, and <strong>auto refetching</strong> if schema in
+Tarantool is changed</p></li>
+<li><p><strong>Auto reconnect</strong>. If connection is lost for some reason - asynctnt will
+start automatic reconnection procedure (with authorization and schema
+fetching, of course).</p></li>
+<li><p>Ability to use <strong>dicts for tuples</strong> with field names as keys in DML requests
+(select, insert, replace, delete, update, upsert). This is possible only
+if space.format is specified in Tarantool. Field names can also be used
+in update operations instead of field numbers. Moreover, tuples are decoded
+into the special structures that can act either as <code class="docutils literal notranslate"><span class="pre">tuple</span></code>s or by <code class="docutils literal notranslate"><span class="pre">dict</span></code>s with
+the appropriate API.</p></li>
+<li><p>All requests support specification of <code class="docutils literal notranslate"><span class="pre">timeout</span></code> value, so if request is
+executed for too long, asyncio.TimeoutError is raised.</p></li>
+</ul>
+</section>
+<section id="basic-usage">
+<h2>Basic Usage<a class="headerlink" href="#basic-usage" title="Permalink to this heading"></a></h2>
+<p>Tarantool config:</p>
+<div class="highlight-lua notranslate"><div class="highlight"><pre><span></span><span class="n">box</span><span class="p">.</span><span class="n">cfg</span> <span class="p">{</span>
+    <span class="n">listen</span> <span class="o">=</span> <span class="s1">&#39;127.0.0.1:3301&#39;</span>
+<span class="p">}</span>
+
+<span class="n">box</span><span class="p">.</span><span class="n">once</span><span class="p">(</span><span class="s1">&#39;v1&#39;</span><span class="p">,</span> <span class="kr">function</span><span class="p">()</span>
+    <span class="n">box</span><span class="p">.</span><span class="n">schema</span><span class="p">.</span><span class="n">user</span><span class="p">.</span><span class="n">grant</span><span class="p">(</span><span class="s1">&#39;guest&#39;</span><span class="p">,</span> <span class="s1">&#39;read,write,execute&#39;</span><span class="p">,</span> <span class="s1">&#39;universe&#39;</span><span class="p">)</span>
+
+    <span class="kd">local</span> <span class="n">s</span> <span class="o">=</span> <span class="n">box</span><span class="p">.</span><span class="n">schema</span><span class="p">.</span><span class="n">create_space</span><span class="p">(</span><span class="s1">&#39;tester&#39;</span><span class="p">)</span>
+    <span class="n">s</span><span class="p">:</span><span class="n">create_index</span><span class="p">(</span><span class="s1">&#39;primary&#39;</span><span class="p">)</span>
+    <span class="n">s</span><span class="p">:</span><span class="n">format</span><span class="p">({</span>
+        <span class="p">{</span> <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;id&#39;</span><span class="p">,</span> <span class="nb">type</span> <span class="o">=</span> <span class="s1">&#39;unsigned&#39;</span> <span class="p">},</span>
+        <span class="p">{</span> <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="nb">type</span> <span class="o">=</span> <span class="s1">&#39;string&#39;</span> <span class="p">},</span>
+        <span class="p">{</span> <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;uuid&#39;</span><span class="p">,</span> <span class="nb">type</span> <span class="o">=</span> <span class="s1">&#39;uuid&#39;</span> <span class="p">},</span>
+    <span class="p">})</span>
+<span class="kr">end</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Python code:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">uuid</span>
+<span class="kn">import</span> <span class="nn">asyncio</span>
+<span class="kn">import</span> <span class="nn">asynctnt</span>
+
+
+<span class="k">async</span> <span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+    <span class="n">conn</span> <span class="o">=</span> <span class="n">asynctnt</span><span class="o">.</span><span class="n">Connection</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s1">&#39;127.0.0.1&#39;</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">3301</span><span class="p">)</span>
+    <span class="k">await</span> <span class="n">conn</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">11</span><span class="p">):</span>
+        <span class="k">await</span> <span class="n">conn</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="s1">&#39;tester&#39;</span><span class="p">,</span> <span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="s1">&#39;hello</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">),</span> <span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">()])</span>
+
+    <span class="n">data</span> <span class="o">=</span> <span class="k">await</span> <span class="n">conn</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s1">&#39;tester&#39;</span><span class="p">,</span> <span class="p">[])</span>
+    <span class="n">tup</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;tuple:&#39;</span><span class="p">,</span> <span class="n">tup</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">tup</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">=}</span><span class="s1">; </span><span class="si">{</span><span class="n">tup</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">]</span><span class="si">=}</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">tup</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">=}</span><span class="s1">; </span><span class="si">{</span><span class="n">tup</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span><span class="si">=}</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">tup</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="si">=}</span><span class="s1">; </span><span class="si">{</span><span class="n">tup</span><span class="p">[</span><span class="s2">&quot;uuid&quot;</span><span class="p">]</span><span class="si">=}</span><span class="s1">&#39;</span><span class="p">)</span>
+
+    <span class="k">await</span> <span class="n">conn</span><span class="o">.</span><span class="n">disconnect</span><span class="p">()</span>
+
+
+<span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">main</span><span class="p">())</span>
+</pre></div>
+</div>
+<p>Stdout:</p>
+<p><em>(note that you can simultaneously access fields either by indices
+or by their names)</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">tuple</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">TarantoolTuple</span> <span class="nb">id</span><span class="o">=</span><span class="mi">1</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;hello1&#39;</span> <span class="n">uuid</span><span class="o">=</span><span class="n">UUID</span><span class="p">(</span><span class="s1">&#39;ebbad14c-f78c-42e8-bd12-bfcc564443a6&#39;</span><span class="p">)</span><span class="o">&gt;</span>
+<span class="n">tup</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">=</span><span class="mi">1</span><span class="p">;</span> <span class="n">tup</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">]</span><span class="o">=</span><span class="mi">1</span>
+<span class="n">tup</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">=</span><span class="s1">&#39;hello1&#39;</span><span class="p">;</span> <span class="n">tup</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span><span class="o">=</span><span class="s1">&#39;hello1&#39;</span>
+<span class="n">tup</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">=</span><span class="n">UUID</span><span class="p">(</span><span class="s1">&#39;ebbad14c-f78c-42e8-bd12-bfcc564443a6&#39;</span><span class="p">);</span> <span class="n">tup</span><span class="p">[</span><span class="s2">&quot;uuid&quot;</span><span class="p">]</span><span class="o">=</span><span class="n">UUID</span><span class="p">(</span><span class="s1">&#39;ebbad14c-f78c-42e8-bd12-bfcc564443a6&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="sql">
+<h2>SQL<a class="headerlink" href="#sql" title="Permalink to this heading"></a></h2>
+<p>Tarantool 2.x brought out an SQL interface to the database. You can easily use it
+in <code class="docutils literal notranslate"><span class="pre">asynctnt</span></code></p>
+<div class="highlight-lua notranslate"><div class="highlight"><pre><span></span><span class="n">box</span><span class="p">.</span><span class="n">cfg</span> <span class="p">{</span>
+    <span class="n">listen</span> <span class="o">=</span> <span class="s1">&#39;127.0.0.1:3301&#39;</span>
+<span class="p">}</span>
+
+<span class="n">box</span><span class="p">.</span><span class="n">once</span><span class="p">(</span><span class="s1">&#39;v1&#39;</span><span class="p">,</span> <span class="kr">function</span><span class="p">()</span>
+    <span class="n">box</span><span class="p">.</span><span class="n">schema</span><span class="p">.</span><span class="n">user</span><span class="p">.</span><span class="n">grant</span><span class="p">(</span><span class="s1">&#39;guest&#39;</span><span class="p">,</span> <span class="s1">&#39;read,write,execute&#39;</span><span class="p">,</span> <span class="s1">&#39;universe&#39;</span><span class="p">)</span>
+
+    <span class="n">box</span><span class="p">.</span><span class="n">execute</span><span class="p">(</span><span class="s">[[</span>
+<span class="s">        create table users (</span>
+<span class="s">            id int primary key,</span>
+<span class="s">            name text</span>
+<span class="s">        )</span>
+<span class="s">    ]]</span><span class="p">)</span>
+<span class="kr">end</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">asyncio</span>
+<span class="kn">import</span> <span class="nn">asynctnt</span>
+
+
+<span class="k">async</span> <span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+    <span class="n">conn</span> <span class="o">=</span> <span class="n">asynctnt</span><span class="o">.</span><span class="n">Connection</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s1">&#39;127.0.0.1&#39;</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">3301</span><span class="p">)</span>
+    <span class="k">await</span> <span class="n">conn</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span>
+
+    <span class="k">await</span> <span class="n">conn</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;insert into users (id, name) values (1, &#39;James Bond&#39;)&quot;</span><span class="p">)</span>
+    <span class="k">await</span> <span class="n">conn</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;insert into users (id, name) values (2, &#39;Ethan Hunt&#39;)&quot;</span><span class="p">)</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="k">await</span> <span class="n">conn</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s1">&#39;select * from users&#39;</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
+
+    <span class="k">await</span> <span class="n">conn</span><span class="o">.</span><span class="n">disconnect</span><span class="p">()</span>
+
+<span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">main</span><span class="p">())</span>
+</pre></div>
+</div>
+<p>Stdout:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">TarantoolTuple</span> <span class="n">ID</span><span class="o">=</span><span class="mi">1</span> <span class="n">NAME</span><span class="o">=</span><span class="s1">&#39;James Bond&#39;</span><span class="o">&gt;</span>
+<span class="o">&lt;</span><span class="n">TarantoolTuple</span> <span class="n">ID</span><span class="o">=</span><span class="mi">2</span> <span class="n">NAME</span><span class="o">=</span><span class="s1">&#39;Ethan Hunt&#39;</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>More about SQL features in asynctnt please refer to the <a class="reference external" href="https://igorcoding.github.io/asynctnt/examples.html#using-sql">documentation</a></p>
+</section>
+<section id="performance">
+<h2>Performance<a class="headerlink" href="#performance" title="Permalink to this heading"></a></h2>
+<p>Two performance tests were conducted:</p>
+<ol class="arabic simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">Seq</span></code> – Sequentially calling 40k requests and measuring performance</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Parallel</span></code> – Sending 200k in 300 parallel coroutines</p></li>
+</ol>
+<p>On all the benchmarks below <code class="docutils literal notranslate"><span class="pre">wal_mode</span> <span class="pre">=</span> <span class="pre">none</span></code>
+Turning <code class="docutils literal notranslate"><span class="pre">uvloop</span></code> on has a massive effect on the performance, so it is recommended to use <code class="docutils literal notranslate"><span class="pre">asynctnt</span></code> with it</p>
+<table class="colwidths-auto docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p></p></th>
+<th class="text-right head"><p>Seq (uvloop=off)</p></th>
+<th class="text-right head"><p>Seq (uvloop=on)</p></th>
+<th class="text-right head"><p>Parallel (uvloop=off)</p></th>
+<th class="text-right head"><p>Parallel (uvloop=on)</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ping</span></code></p></td>
+<td class="text-right"><p>9037.07</p></td>
+<td class="text-right"><p>20372.59</p></td>
+<td class="text-right"><p>44090.53</p></td>
+<td class="text-right"><p>134043.41</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">call</span></code></p></td>
+<td class="text-right"><p>9113.32</p></td>
+<td class="text-right"><p>17279.21</p></td>
+<td class="text-right"><p>41129.16</p></td>
+<td class="text-right"><p>99866.28</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">eval</span></code></p></td>
+<td class="text-right"><p>8921.95</p></td>
+<td class="text-right"><p>16642.67</p></td>
+<td class="text-right"><p>44097.02</p></td>
+<td class="text-right"><p>91056.69</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">select</span></code></p></td>
+<td class="text-right"><p>9681.12</p></td>
+<td class="text-right"><p>17730.24</p></td>
+<td class="text-right"><p>35853.33</p></td>
+<td class="text-right"><p>108940.41</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">insert</span></code></p></td>
+<td class="text-right"><p>9332.21</p></td>
+<td class="text-right"><p>17384.26</p></td>
+<td class="text-right"><p>31329.85</p></td>
+<td class="text-right"><p>102971.13</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">update</span></code></p></td>
+<td class="text-right"><p>10532.75</p></td>
+<td class="text-right"><p>15990.12</p></td>
+<td class="text-right"><p>36281.59</p></td>
+<td class="text-right"><p>98643.46</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="license">
+<h2>License<a class="headerlink" href="#license" title="Permalink to this heading"></a></h2>
+<p>asynctnt is developed and distributed under the Apache 2.0 license.</p>
+</section>
+<section id="references">
+<h2>References<a class="headerlink" href="#references" title="Permalink to this heading"></a></h2>
+<ol class="arabic simple">
+<li><p><a class="reference external" href="https://tarantool.org">Tarantool</a> - in-memory database and application server.</p></li>
+<li><p><a class="reference external" href="https://github.com/shveenkov/aiotarantool">aiotarantool</a> - alternative Python/asyncio connector</p></li>
+<li><p><a class="reference external" href="https://github.com/igorcoding/asynctnt-queue">asynctnt-queue</a> - bindings on top of <code class="docutils literal notranslate"><span class="pre">asynctnt</span></code> for <a class="reference external" href="https://github.com/tarantool/queue">tarantool-queue</a></p></li>
+</ol>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="asynctnt" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="installation.html" class="btn btn-neutral float-right" title="Installation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, igorcoding.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

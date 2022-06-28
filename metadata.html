@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Installation &mdash; asynctnt 2.0.0b1 documentation</title>
+  <title>Metadata &mdash; asynctnt 2.0.0b1 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -19,8 +19,8 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Examples" href="examples.html" />
-    <link rel="prev" title="asynctnt" href="overview.html" /> 
+    <link rel="next" title="Session Push" href="pushes.html" />
+    <link rel="prev" title="SQL Support" href="sql.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -43,11 +43,11 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="overview.html">asynctnt</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="#running-tests">Running tests</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html#running-tests">Running tests</a></li>
 <li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="sql.html">SQL Support</a></li>
-<li class="toctree-l1"><a class="reference internal" href="metadata.html">Metadata</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Metadata</a></li>
 <li class="toctree-l1"><a class="reference internal" href="pushes.html">Session Push</a></li>
 <li class="toctree-l1"><a class="reference internal" href="streams.html">Streams and Transactions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mpext.html">Type Extensions</a></li>
@@ -68,9 +68,9 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>Installation</li>
+      <li>Metadata</li>
       <li class="wy-breadcrumbs-aside">
-              <a href="https://github.com/igorcoding/asynctnt/blob/v2/docs/installation.md" class="fa fa-github"> Edit on GitHub</a>
+              <a href="https://github.com/igorcoding/asynctnt/blob/v2/docs/metadata.md" class="fa fa-github"> Edit on GitHub</a>
       </li>
   </ul>
   <hr/>
@@ -78,17 +78,19 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="installation">
-<h1>Installation<a class="headerlink" href="#installation" title="Permalink to this heading"></a></h1>
-<p>To install asynctnt through <strong>pip</strong> run:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ pip install asynctnt
-</pre></div>
-</div>
-</section>
-<section id="running-tests">
-<h1>Running tests<a class="headerlink" href="#running-tests" title="Permalink to this heading"></a></h1>
-<p>To execute the testsuite simply run:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ make <span class="nb">test</span>
+  <section id="metadata">
+<h1>Metadata<a class="headerlink" href="#metadata" title="Permalink to this heading"></a></h1>
+<p><code class="docutils literal notranslate"><span class="pre">asynctnt</span></code> fetches schema from Tarantool server in order to provide ability to use
+space and index names in the CRUD requests, as well as field names of the tuples.
+You can access this metadata in the <code class="docutils literal notranslate"><span class="pre">Connection</span></code> object directly. This schema may be
+refreshed if schema is changed in Tarantool.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">asynctnt</span>
+
+<span class="n">conn</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asynctnt</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;space id&#39;</span><span class="p">,</span> <span class="n">conn</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">spaces</span><span class="p">[</span><span class="s1">&#39;_space&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sid</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;space engine&#39;</span><span class="p">,</span> <span class="n">conn</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">spaces</span><span class="p">[</span><span class="s1">&#39;_space&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">engine</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;space format fields&#39;</span><span class="p">,</span> <span class="n">conn</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">spaces</span><span class="p">[</span><span class="s1">&#39;_space&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">fields</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -97,8 +99,8 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="overview.html" class="btn btn-neutral float-left" title="asynctnt" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="examples.html" class="btn btn-neutral float-right" title="Examples" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="sql.html" class="btn btn-neutral float-left" title="SQL Support" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="pushes.html" class="btn btn-neutral float-right" title="Session Push" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

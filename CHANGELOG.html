@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Changelog &mdash; asynctnt 2.0.0b1 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="_static/doctools.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Type Extensions" href="mpext.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> asynctnt
+          </a>
+              <div class="version">
+                2.0.0b1
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="overview.html">asynctnt</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html#running-tests">Running tests</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sql.html">SQL Support</a></li>
+<li class="toctree-l1"><a class="reference internal" href="metadata.html">Metadata</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pushes.html">Session Push</a></li>
+<li class="toctree-l1"><a class="reference internal" href="streams.html">Streams and Transactions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mpext.html">Type Extensions</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Changelog</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#v2-0-0b1">v2.0.0b1</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#v1-2-3">v1.2.3</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#v1-2-2">v1.2.2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#v1-2-1">v1.2.1</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#v1-2">v1.2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#v1-1">v1.1</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#v1-0">v1.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#v0-2-0">v0.2.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#v0-1-13">v0.1.13</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#v0-1-12">v0.1.12</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">asynctnt</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Changelog</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/igorcoding/asynctnt/blob/v2/docs/CHANGELOG.md" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="changelog">
+<h1>Changelog<a class="headerlink" href="#changelog" title="Permalink to this heading"></a></h1>
+<section id="v2-0-0b1">
+<h2>v2.0.0b1<a class="headerlink" href="#v2-0-0b1" title="Permalink to this heading"></a></h2>
+<p><strong>Breaking changes:</strong></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">Connection.sql()</span></code> method is renamed to <code class="docutils literal notranslate"><span class="pre">Connection.execute()</span></code></p></li>
+<li><p>Drop support for <code class="docutils literal notranslate"><span class="pre">loop</span></code> argument in the <code class="docutils literal notranslate"><span class="pre">Connection</span></code> (fixes <a class="reference external" href="https://github.com/igorcoding/asynctnt/issues/18">#18</a>)</p></li>
+</ul>
+<p><strong>New features:</strong></p>
+<ul class="simple">
+<li><p>Added support for <code class="docutils literal notranslate"><span class="pre">Decimal</span></code>, <code class="docutils literal notranslate"><span class="pre">UUID</span></code> and <code class="docutils literal notranslate"><span class="pre">datetime</span></code> types natively using MessagePack extensions</p></li>
+<li><p>Added support for SQL prepared statements with <code class="docutils literal notranslate"><span class="pre">Connection.prepare()</span></code> method and
+<code class="docutils literal notranslate"><span class="pre">PreparedStatement</span></code> class</p></li>
+<li><p>Added support for interactive transactions and streams (fixes <a class="reference external" href="https://github.com/igorcoding/asynctnt/issues/21">#21</a>)</p></li>
+<li><p>Added support for MP_ERROR extensions</p></li>
+<li><p>Bind metadata of parameters is available now in the <code class="docutils literal notranslate"><span class="pre">response.params</span></code> and <code class="docutils literal notranslate"><span class="pre">response.params_count</span></code> fields</p></li>
+<li><p>Exposed an internal schema as a <code class="docutils literal notranslate"><span class="pre">Connection.schema</span></code> property, introducing new classes to operate the schema with</p></li>
+<li><p>Exposed SQL metadata of responses as <code class="docutils literal notranslate"><span class="pre">response.metadata</span></code> field</p></li>
+<li><p>Added typings to internal types such as <code class="docutils literal notranslate"><span class="pre">Connection</span></code>, <code class="docutils literal notranslate"><span class="pre">Response</span></code>, <code class="docutils literal notranslate"><span class="pre">Metadata</span></code>, <code class="docutils literal notranslate"><span class="pre">Schema</span></code>, <code class="docutils literal notranslate"><span class="pre">TarantoolTuple</span></code> and others</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">asynctnt</span></code> now sends IPROTO_ID request before anything else to notify Tarantool of used features</p></li>
+</ul>
+<p><strong>Other changes:</strong></p>
+<ul class="simple">
+<li><p>Updated Cython to 0.29.30</p></li>
+<li><p>Update msgpuck to revision 0c6680a300e31714f475a7f90c2d95a02d001d80</p></li>
+<li><p>Internal refactoring of requests payload encoding</p></li>
+<li><p>Refactoring of schema parsing and unifying under <code class="docutils literal notranslate"><span class="pre">metadata</span></code> name and structure</p></li>
+</ul>
+</section>
+<section id="v1-2-3">
+<h2>v1.2.3<a class="headerlink" href="#v1-2-3" title="Permalink to this heading"></a></h2>
+<ul class="simple">
+<li><p>Support Python 3.10</p></li>
+</ul>
+</section>
+<section id="v1-2-2">
+<h2>v1.2.2<a class="headerlink" href="#v1-2-2" title="Permalink to this heading"></a></h2>
+<p><strong>Bugs fixed:</strong></p>
+<ul class="simple">
+<li><p>Show a diag message rather than Lost connection to Tarantool when disconnected (closes <a class="reference external" href="https://github.com/igorcoding/asynctnt/issues/19">#19</a>)</p></li>
+</ul>
+</section>
+<section id="v1-2-1">
+<h2>v1.2.1<a class="headerlink" href="#v1-2-1" title="Permalink to this heading"></a></h2>
+<p><strong>Other changes:</strong></p>
+<ul class="simple">
+<li><p>Updated Cython to 0.29.21</p></li>
+<li><p>Building wheels for Python 3.9</p></li>
+</ul>
+</section>
+<section id="v1-2">
+<h2>v1.2<a class="headerlink" href="#v1-2" title="Permalink to this heading"></a></h2>
+<p><strong>Bugs fixed:</strong></p>
+<ul class="simple">
+<li><p>Fixed hanging PushIterator when connection to Tarantool is lost (<a class="reference external" href="https://github.com/igorcoding/asynctnt/issues/17">#17</a>).</p></li>
+</ul>
+</section>
+<section id="v1-1">
+<h2>v1.1<a class="headerlink" href="#v1-1" title="Permalink to this heading"></a></h2>
+<p><strong>New features:</strong></p>
+<ul class="simple">
+<li><p>Parse autoincrement ids in sql response (<a class="reference external" href="https://github.com/igorcoding/asynctnt/issues/14">#14</a>). Thanks to &#64;oleynikandrey</p></li>
+<li><p>Added Python 3.8 support. Removed all redundant <code class="docutils literal notranslate"><span class="pre">loop</span></code> arguments to functions
+and asyncio classes.</p></li>
+</ul>
+<p><strong>Other changes:</strong></p>
+<ul class="simple">
+<li><p>Updated Cython to 0.29.14</p></li>
+<li><p>Updated msgpuck to most recent version.</p></li>
+<li><p>Added building wheels for Windows for Python 3.6, 3.7, 3.8</p></li>
+</ul>
+</section>
+<section id="v1-0">
+<h2>v1.0<a class="headerlink" href="#v1-0" title="Permalink to this heading"></a></h2>
+<p><strong>Breaking changes:</strong></p>
+<ul class="simple">
+<li><p>Removed method <code class="docutils literal notranslate"><span class="pre">body2yaml</span></code> from Response.</p></li>
+<li><p>Option <code class="docutils literal notranslate"><span class="pre">tuple_as_dict</span></code> is removed from <code class="docutils literal notranslate"><span class="pre">Connection</span></code> and all the methods.</p></li>
+</ul>
+<p><strong>New features:</strong></p>
+<ul class="simple">
+<li><p>Making Response objects contain TarantoolTuple objects if format information
+is available either in space or in response from Tarantool (closes <a class="reference external" href="https://github.com/igorcoding/asynctnt/issues/3">#3</a>).</p></li>
+<li><p>TarantoolTuple objects are index-agnostic, meaning one can access tuple value
+either by numeric index or by a key from <code class="docutils literal notranslate"><span class="pre">space:format()</span></code> specification.</p></li>
+<li><p>You can directly access Response using indices
+(<code class="docutils literal notranslate"><span class="pre">resp[0]</span></code> instead of <code class="docutils literal notranslate"><span class="pre">resp.body[0]</span></code>).</p></li>
+<li><p>Added supported for receiving <code class="docutils literal notranslate"><span class="pre">box.session.push()</span></code> messages from Tarantool
+by introducing new parameter <code class="docutils literal notranslate"><span class="pre">push_subscribe</span></code> to api methods in <code class="docutils literal notranslate"><span class="pre">Connection</span></code>
+and the PushIterator class to iterate over the push messages of a specific
+request.</p></li>
+<li><p>Added <code class="docutils literal notranslate"><span class="pre">Connection.sql</span></code> method to execute SQL statements for Tarantool 2
+(see asynctnt docs for details).</p></li>
+<li><p>Added internal background coroutine with pings periodically a Tarantool
+instance to check if it is alive and to refresh schema if it is changed
+(default period is 5 seconds and is configured by <code class="docutils literal notranslate"><span class="pre">Connection.ping_timeout</span></code>
+parameter).</p></li>
+</ul>
+<p><strong>Changes:</strong></p>
+<ul class="simple">
+<li><p>Iteration over TarantoolTuple results in iterating over a raw tuple by
+indices.</p></li>
+<li><p>TarantoolTuple has <code class="docutils literal notranslate"><span class="pre">.keys()</span></code>, <code class="docutils literal notranslate"><span class="pre">.values()</span></code> and <code class="docutils literal notranslate"><span class="pre">.items()</span></code> from the dict
+protocol. All these methods return iterators making it possible to iterate
+over keys, values or key-value pairs accordingly. <code class="docutils literal notranslate"><span class="pre">keys</span></code> and <code class="docutils literal notranslate"><span class="pre">items</span></code> methods
+ignore any extra fields if space format contains less fields than there are
+in the tuple. One can acces those extra fields by index numbers.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Connection</span></code>’s default <code class="docutils literal notranslate"><span class="pre">connect_timeout</span></code> changed from <code class="docutils literal notranslate"><span class="pre">60</span></code> to <code class="docutils literal notranslate"><span class="pre">3</span></code> seconds.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">select</span></code>: changed default iterator type to <code class="docutils literal notranslate"><span class="pre">ALL</span></code> if no key provided
+(fixes <a class="reference external" href="https://github.com/igorcoding/asynctnt/issues/2">#2</a>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Response</span></code> new function <code class="docutils literal notranslate"><span class="pre">done()</span></code> indicates if Response is
+actually finished.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">schema_id</span></code> is not being sent to Tarantool to check against current schema
+version. Instead schema is only checked and refetched if needed only <em>after</em>
+the request. This ensures that request is executed in a “constant” time
+rather than unpredicted with possible schema changes.</p></li>
+<li><p>Improved <code class="docutils literal notranslate"><span class="pre">Connection.refetch_schema()</span></code> method to ensure there is only one
+currently running refetch process.</p></li>
+</ul>
+<p><strong>Other changes:</strong></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">asynctnt</span></code> now ships with precompiled wheel packages.</p></li>
+<li><p>Changed version numbering.</p></li>
+<li><p>Updated <code class="docutils literal notranslate"><span class="pre">Cython</span></code> to version <code class="docutils literal notranslate"><span class="pre">0.29</span></code></p></li>
+<li><p>Updated <code class="docutils literal notranslate"><span class="pre">msgpuck</span></code> version</p></li>
+<li><p>Improved speed of asynctnt method calls a bit more</p></li>
+</ul>
+</section>
+<section id="v0-2-0">
+<h2>v0.2.0<a class="headerlink" href="#v0-2-0" title="Permalink to this heading"></a></h2>
+<p><strong>Changes:</strong></p>
+<ul class="simple">
+<li><p>Improved and simplified connect/reconnect process</p></li>
+<li><p>Added ContextManager async with protocol for Connection</p></li>
+<li><p>Added <code class="docutils literal notranslate"><span class="pre">is_fully_connected</span></code> property to Connection</p></li>
+<li><p>Added disconnect Lock</p></li>
+</ul>
+<p><strong>Bugs Fixed:</strong></p>
+<ul class="simple">
+<li><p>Auto reconnect misbehaved on double on_connection_lost trigger (<a class="reference external" href="https://github.com/igorcoding/asynctnt/issues/11">#11</a>)</p></li>
+</ul>
+</section>
+<section id="v0-1-13">
+<h2>v0.1.13<a class="headerlink" href="#v0-1-13" title="Permalink to this heading"></a></h2>
+<p><strong>Changes:</strong></p>
+<ul class="simple">
+<li><p>Now <code class="docutils literal notranslate"><span class="pre">connect()</span></code> method call of <code class="docutils literal notranslate"><span class="pre">Connection</span></code> class blocks until connected
+even if another <code class="docutils literal notranslate"><span class="pre">connect()</span></code> is happening in parallel. This resolves issue
+of cancelled coroutines if one tries to connect in parallel coroutines.</p></li>
+</ul>
+<p><strong>Bugs fixed:</strong></p>
+<ul class="simple">
+<li><p>Connect hanged indefinitely if asynctnt was accidentally disconnected from
+Tarantool and TCP connection was still alive for a moment while trying to
+reconnect (<a class="reference external" href="https://github.com/igorcoding/asynctnt/issues/8">#8</a>).</p></li>
+<li><p>Connect to LOADING Tarantool instance without username/password resulted in
+exception NO_SUCH_SPACE (<a class="reference external" href="https://github.com/igorcoding/asynctnt/issues/10">#10</a>).</p></li>
+</ul>
+</section>
+<section id="v0-1-12">
+<h2>v0.1.12<a class="headerlink" href="#v0-1-12" title="Permalink to this heading"></a></h2>
+<p><strong>Bugs fixed:</strong></p>
+<ul class="simple">
+<li><p>Fixed compatibility issues with Python 3.7</p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="mpext.html" class="btn btn-neutral float-left" title="Type Extensions" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, igorcoding.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
