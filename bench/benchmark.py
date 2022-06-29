@@ -32,7 +32,7 @@ def main():
         ['execute', ['select 1 as a, 2 as b'], dict(parse_metadata=False)],
     ]
 
-    for use_uvloop in [True, ]:
+    for use_uvloop in [True]:
         if use_uvloop:
             import uvloop
             asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
