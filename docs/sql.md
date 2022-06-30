@@ -64,3 +64,59 @@ Stdout:
 
 You can access all the metadata associated with the SQL response, like so:
 
+```python
+res = await conn.execute("select * from users")
+assert res.metadata.fields[0].name == 'ID'
+assert res.metadata.fields[0].type == 'integer'
+
+assert res.metadata.fields[1].name == 'NAME'
+assert res.metadata.fields[0].type == 'string'
+```
+
+## Prepared statement
+
+You can make use of [prepared statements](https://www.tarantool.io/en/doc/latest/reference/reference_lua/box_sql/prepare/)
+in order to execute the same requests more optimally. Simple example:
+
+```python
+stmt = conn.prepare('select id, name from users where id = ?')
+async with stmt:
+    user1 = stmt.execute([1])
+    assert user1.name == 'James Bond'
+
+    user2 = stmt.execute([2])
+    assert user2.name == 'Ethan Hunt'
+```
+
+`prepare()` and `unprepare()` calls are called automatically within a prepared statement context manager.
+You may want to control prepare/unprepare yourself:
+
+```python
+stmt = conn.prepare('select id, name from users where id = ?')
+
+await stmt.prepare()
+
+user1 = stmt.execute([1])
+assert user1.name == 'James Bond'
+
+user2 = stmt.execute([2])
+assert user2.name == 'Ethan Hunt'
+
+await stmt.unprepare()
+```
+
+Named parameters are also supported:
+
+```python
+stmt = conn.prepare('select id, name from users where id = :id')
+async with stmt:
+    user1 = stmt.execute([
+        {':id': 1}
+    ])
+    assert user1.name == 'James Bond'
+
+    user2 = stmt.execute([
+        {':id': 2}
+    ])
+    assert user2.name == 'Ethan Hunt'
+```

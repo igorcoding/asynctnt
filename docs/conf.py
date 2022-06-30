@@ -44,7 +44,7 @@ extensions = ['sphinx.ext.autodoc',
               'myst_parser',
               'sphinx_autodoc_typehints',
               'sphinx_rtd_theme',
-              # 'autoapi.extension'
+              'autoapi.extension'
               ]
 
 templates_path = ['_templates']

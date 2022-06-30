@@ -575,6 +575,9 @@ class Connection(Api):
 
     @property
     def schema(self) -> Optional[protocol.Schema]:
+        """
+            Current Tarantool schema with all spaces, indexes and fields
+        """
         if self._protocol is None:  # pragma: nocover
             return None
         return self._protocol.schema
@@ -613,6 +616,9 @@ class Connection(Api):
         )
 
     def stream(self) -> Stream:
+        """
+            Create new stream suitable for interactive transactions
+        """
         stream = Stream()
         db = self._protocol.create_db(True)
         stream._set_db(db)

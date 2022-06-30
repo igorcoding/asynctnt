@@ -4,21 +4,38 @@ from typing import Iterator, Tuple, Optional, List, Any, Union, Dict
 
 class Field:
     name: Optional[str]
+    """ Field name """
+
     type: Optional[str]
+    """ Field type """
+
     collation: Optional[str]
+    """ Field collation value """
+
     is_nullable: Optional[bool]
+    """ If field may be null """
+
     is_autoincrement: Optional[bool]
+    """ Is Autoincrement """
+
     span: Optional[str]
 
 
 class Metadata:
     fields: List[Field]
+    """ List of fields """
+
     name_id_map: Dict[str, int]
+    """ Mapping name -> id """
 
 
 class SchemaIndex:
     iid: int
+    """ Index id """
+
     sid: int
+    """ Space id """
+
     name: Optional[str]
     index_type: Optional[str]
     unique: Optional[bool]

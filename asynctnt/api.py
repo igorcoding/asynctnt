@@ -381,26 +381,55 @@ class Api:
                                 timeout=timeout)
 
     def prepare(self, query: str) -> PreparedStatement:
+        """
+            Create a :class:`asynctnt.prepared.PreparedStatement` instance
+            :param query: query to be prepared
+        """
         return PreparedStatement(self, query)
 
     def prepare_iproto(self,
                        query: str,
                        timeout: float = -1.0) -> MethodRet:
+        """
+            Low-level prepare() call
+            :param query: query to be prepared
+            :param timeout: request timeout
+        """
         return self._db.prepare(query, timeout=timeout)
 
     def unprepare_iproto(self,
                          stmt_id: int,
                          timeout: float = -1.0) -> MethodRet:
+        """
+            Low-level unprepare() call
+            :param stmt_id: query to be unprepared
+            :param timeout: request timeout
+        """
         return self._db.prepare(stmt_id, timeout=timeout)
 
     def begin(self,
               isolation: Isolation = Isolation.DEFAULT,
               tx_timeout: float = 0.0,
               timeout: float = -1.0) -> MethodRet:
+        """
+        Begin an interactive transaction within a stream
+        :param isolation: isolation level
+        :param tx_timeout: transaction timeout
+        :param timeout: request timeout
+        :return:
+        """
         return self._db.begin(isolation.value, tx_timeout, timeout)
 
     def commit(self, timeout: float = -1.0) -> MethodRet:
+        """
+        Commit a running transaction
+        :param timeout: request timeout
+        """
         return self._db.commit(timeout)
 
     def rollback(self, timeout: float = -1.0) -> MethodRet:
+        """
+        Rollback a running transaction
+        :param timeout: request timeout
+        """
         return self._db.rollback(timeout)
