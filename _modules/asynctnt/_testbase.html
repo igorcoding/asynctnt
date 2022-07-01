@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>asynctnt._testbase &mdash; asynctnt 2.0.0 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/graphviz.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html" class="icon icon-home"> asynctnt
+          </a>
+              <div class="version">
+                2.0.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../overview.html">asynctnt</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html#running-tests">Running tests</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../sql.html">SQL Support</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../metadata.html">Metadata</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pushes.html">Session Push</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../streams.html">Streams and Transactions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../mpext.html">Type Extensions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../CHANGELOG.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../autoapi/index.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">asynctnt</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+          <li><a href="../asynctnt.html">asynctnt</a> &raquo;</li>
+      <li>asynctnt._testbase</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for asynctnt._testbase</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">asyncio</span>
+<span class="kn">import</span> <span class="nn">contextlib</span>
+<span class="kn">import</span> <span class="nn">functools</span>
+<span class="kn">import</span> <span class="nn">inspect</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">unittest</span>
+
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Optional</span>
+
+<span class="kn">import</span> <span class="nn">asynctnt</span>
+<span class="kn">from</span> <span class="nn">asynctnt.instance</span> <span class="kn">import</span> \
+    <span class="n">TarantoolSyncInstance</span><span class="p">,</span> <span class="n">TarantoolSyncDockerInstance</span>
+<span class="kn">from</span> <span class="nn">asynctnt</span> <span class="kn">import</span> <span class="n">TarantoolTuple</span>
+<span class="kn">from</span> <span class="nn">asynctnt.utils</span> <span class="kn">import</span> <span class="n">get_running_loop</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="s1">&#39;TestCase&#39;</span><span class="p">,</span> <span class="s1">&#39;TarantoolTestCase&#39;</span><span class="p">,</span> <span class="s1">&#39;ensure_version&#39;</span><span class="p">,</span> <span class="s1">&#39;check_version&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;ensure_bin_version&#39;</span><span class="p">,</span>
+<span class="p">)</span>
+
+
+<span class="nd">@contextlib</span><span class="o">.</span><span class="n">contextmanager</span>
+<span class="k">def</span> <span class="nf">silence_asyncio_long_exec_warning</span><span class="p">():</span>
+    <span class="k">def</span> <span class="nf">flt</span><span class="p">(</span><span class="n">log_record</span><span class="p">):</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="n">log_record</span><span class="o">.</span><span class="n">getMessage</span><span class="p">()</span>
+        <span class="k">return</span> <span class="ow">not</span> <span class="n">msg</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;Executing &#39;</span><span class="p">)</span>
+
+    <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;asyncio&#39;</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">addFilter</span><span class="p">(</span><span class="n">flt</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">yield</span>
+    <span class="k">finally</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">removeFilter</span><span class="p">(</span><span class="n">flt</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">TestCaseMeta</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">)):</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_iter_methods</span><span class="p">(</span><span class="n">bases</span><span class="p">,</span> <span class="n">ns</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">base</span> <span class="ow">in</span> <span class="n">bases</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">methname</span> <span class="ow">in</span> <span class="nb">dir</span><span class="p">(</span><span class="n">base</span><span class="p">):</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">methname</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;test_&#39;</span><span class="p">):</span>
+                    <span class="k">continue</span>
+
+                <span class="n">meth</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">base</span><span class="p">,</span> <span class="n">methname</span><span class="p">)</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">inspect</span><span class="o">.</span><span class="n">iscoroutinefunction</span><span class="p">(</span><span class="n">meth</span><span class="p">):</span>
+                    <span class="k">continue</span>
+
+                <span class="k">yield</span> <span class="n">methname</span><span class="p">,</span> <span class="n">meth</span>
+
+        <span class="k">for</span> <span class="n">methname</span><span class="p">,</span> <span class="n">meth</span> <span class="ow">in</span> <span class="n">ns</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">methname</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;test_&#39;</span><span class="p">):</span>
+                <span class="k">continue</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">inspect</span><span class="o">.</span><span class="n">iscoroutinefunction</span><span class="p">(</span><span class="n">meth</span><span class="p">):</span>
+                <span class="k">continue</span>
+
+            <span class="k">yield</span> <span class="n">methname</span><span class="p">,</span> <span class="n">meth</span>
+
+    <span class="k">def</span> <span class="fm">__new__</span><span class="p">(</span><span class="n">mcls</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">bases</span><span class="p">,</span> <span class="n">ns</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">methname</span><span class="p">,</span> <span class="n">meth</span> <span class="ow">in</span> <span class="n">mcls</span><span class="o">.</span><span class="n">_iter_methods</span><span class="p">(</span><span class="n">bases</span><span class="p">,</span> <span class="n">ns</span><span class="p">):</span>
+            <span class="nd">@functools</span><span class="o">.</span><span class="n">wraps</span><span class="p">(</span><span class="n">meth</span><span class="p">)</span>
+            <span class="k">def</span> <span class="nf">wrapper</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">__meth__</span><span class="o">=</span><span class="n">meth</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">loop</span><span class="o">.</span><span class="n">run_until_complete</span><span class="p">(</span><span class="n">__meth__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">))</span>
+
+            <span class="n">ns</span><span class="p">[</span><span class="n">methname</span><span class="p">]</span> <span class="o">=</span> <span class="n">wrapper</span>
+
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="n">mcls</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">bases</span><span class="p">,</span> <span class="n">ns</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="TestCase"><a class="viewcode-back" href="../../autoapi/asynctnt/_testbase/index.html#asynctnt._testbase.TestCase">[docs]</a><span class="k">class</span> <span class="nc">TestCase</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">,</span> <span class="n">metaclass</span><span class="o">=</span><span class="n">TestCaseMeta</span><span class="p">):</span>
+<div class="viewcode-block" id="TestCase._loop"><a class="viewcode-back" href="../../autoapi/asynctnt/_testbase/index.html#asynctnt._testbase.TestCase._loop">[docs]</a>    <span class="n">_loop</span> <span class="o">=</span> <span class="kc">None</span></div>
+<div class="viewcode-block" id="TestCase._use_uvloop"><a class="viewcode-back" href="../../autoapi/asynctnt/_testbase/index.html#asynctnt._testbase.TestCase._use_uvloop">[docs]</a>    <span class="n">_use_uvloop</span> <span class="o">=</span> <span class="kc">False</span></div>
+
+    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="TestCase.setUpClass"><a class="viewcode-back" href="../../autoapi/asynctnt/_testbase/index.html#asynctnt._testbase.TestCase.setUpClass">[docs]</a>    <span class="k">def</span> <span class="nf">setUpClass</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">_use_uvloop</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;USE_UVLOOP&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_use_uvloop</span><span class="p">:</span>
+            <span class="kn">import</span> <span class="nn">uvloop</span>
+            <span class="n">uvloop</span><span class="o">.</span><span class="n">install</span><span class="p">()</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">loop</span> <span class="o">=</span> <span class="n">get_running_loop</span><span class="p">()</span>
+            <span class="c1"># if there is a running loop - close it</span>
+            <span class="n">loop</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">RuntimeError</span><span class="p">:</span>
+            <span class="k">pass</span>
+
+        <span class="bp">cls</span><span class="o">.</span><span class="n">_loop</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">new_event_loop</span><span class="p">()</span>
+        <span class="n">asyncio</span><span class="o">.</span><span class="n">set_event_loop</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">_loop</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_use_uvloop</span><span class="p">:</span>
+            <span class="kn">import</span> <span class="nn">uvloop</span>
+            <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">_loop</span><span class="p">,</span> <span class="n">uvloop</span><span class="o">.</span><span class="n">Loop</span><span class="p">)</span></div>
+
+    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="TestCase.tearDownClass"><a class="viewcode-back" href="../../autoapi/asynctnt/_testbase/index.html#asynctnt._testbase.TestCase.tearDownClass">[docs]</a>    <span class="k">def</span> <span class="nf">tearDownClass</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_loop</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">cls</span><span class="o">.</span><span class="n">_loop</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+            <span class="bp">cls</span><span class="o">.</span><span class="n">_loop</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="TestCase.loop"><a class="viewcode-back" href="../../autoapi/asynctnt/_testbase/index.html#asynctnt._testbase.TestCase.loop">[docs]</a>    <span class="k">def</span> <span class="nf">loop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_loop</span></div>
+
+    <span class="nd">@contextlib</span><span class="o">.</span><span class="n">contextmanager</span>
+<div class="viewcode-block" id="TestCase.assertRunUnder"><a class="viewcode-back" href="../../autoapi/asynctnt/_testbase/index.html#asynctnt._testbase.TestCase.assertRunUnder">[docs]</a>    <span class="k">def</span> <span class="nf">assertRunUnder</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">delta</span><span class="p">):</span>
+        <span class="n">st</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">monotonic</span><span class="p">()</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">yield</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">time</span><span class="o">.</span><span class="n">monotonic</span><span class="p">()</span> <span class="o">-</span> <span class="n">st</span> <span class="o">&gt;</span> <span class="n">delta</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">AssertionError</span><span class="p">(</span>
+                    <span class="s1">&#39;running block took longer than </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">delta</span><span class="p">))</span></div>
+
+    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="TestCase.ensure_future"><a class="viewcode-back" href="../../autoapi/asynctnt/_testbase/index.html#asynctnt._testbase.TestCase.ensure_future">[docs]</a>    <span class="k">def</span> <span class="nf">ensure_future</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">coro_or_future</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">ensure_future</span><span class="p">(</span><span class="n">coro_or_future</span><span class="p">)</span></div>
+
+    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="TestCase.sleep"><a class="viewcode-back" href="../../autoapi/asynctnt/_testbase/index.html#asynctnt._testbase.TestCase.sleep">[docs]</a>    <span class="k">def</span> <span class="nf">sleep</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">delay</span><span class="p">,</span> <span class="n">result</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">delay</span><span class="p">,</span> <span class="n">result</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="TarantoolTestCase"><a class="viewcode-back" href="../../autoapi/asynctnt/_testbase/index.html#asynctnt._testbase.TarantoolTestCase">[docs]</a><span class="k">class</span> <span class="nc">TarantoolTestCase</span><span class="p">(</span><span class="n">TestCase</span><span class="p">):</span>
+<div class="viewcode-block" id="TarantoolTestCase.DO_CONNECT"><a class="viewcode-back" href="../../autoapi/asynctnt/_testbase/index.html#asynctnt._testbase.TarantoolTestCase.DO_CONNECT">[docs]</a>    <span class="n">DO_CONNECT</span> <span class="o">=</span> <span class="kc">True</span></div>
+<div class="viewcode-block" id="TarantoolTestCase.LOGGING_LEVEL"><a class="viewcode-back" href="../../autoapi/asynctnt/_testbase/index.html#asynctnt._testbase.TarantoolTestCase.LOGGING_LEVEL">[docs]</a>    <span class="n">LOGGING_LEVEL</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">WARNING</span></div>
+<div class="viewcode-block" id="TarantoolTestCase.LOGGING_STREAM"><a class="viewcode-back" href="../../autoapi/asynctnt/_testbase/index.html#asynctnt._testbase.TarantoolTestCase.LOGGING_STREAM">[docs]</a>    <span class="n">LOGGING_STREAM</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">stderr</span></div>
+<div class="viewcode-block" id="TarantoolTestCase.TNT_APP_LUA_PATH"><a class="viewcode-back" href="../../autoapi/asynctnt/_testbase/index.html#asynctnt._testbase.TarantoolTestCase.TNT_APP_LUA_PATH">[docs]</a>    <span class="n">TNT_APP_LUA_PATH</span> <span class="o">=</span> <span class="kc">None</span></div>
+<div class="viewcode-block" id="TarantoolTestCase.TNT_CLEANUP"><a class="viewcode-back" href="../../autoapi/asynctnt/_testbase/index.html#asynctnt._testbase.TarantoolTestCase.TNT_CLEANUP">[docs]</a>    <span class="n">TNT_CLEANUP</span> <span class="o">=</span> <span class="kc">True</span></div>
+<div class="viewcode-block" id="TarantoolTestCase.EXTRA_BOX_CFG"><a class="viewcode-back" href="../../autoapi/asynctnt/_testbase/index.html#asynctnt._testbase.TarantoolTestCase.EXTRA_BOX_CFG">[docs]</a>    <span class="n">EXTRA_BOX_CFG</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span></div>
+
+<div class="viewcode-block" id="TarantoolTestCase.tnt"><a class="viewcode-back" href="../../autoapi/asynctnt/_testbase/index.html#asynctnt._testbase.TarantoolTestCase.tnt">[docs]</a>    <span class="n">tnt</span> <span class="o">=</span> <span class="kc">None</span></div>
+<div class="viewcode-block" id="TarantoolTestCase.in_docker"><a class="viewcode-back" href="../../autoapi/asynctnt/_testbase/index.html#asynctnt._testbase.TarantoolTestCase.in_docker">[docs]</a>    <span class="n">in_docker</span> <span class="o">=</span> <span class="kc">False</span></div>
+
+    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="TarantoolTestCase.read_applua"><a class="viewcode-back" href="../../autoapi/asynctnt/_testbase/index.html#asynctnt._testbase.TarantoolTestCase.read_applua">[docs]</a>    <span class="k">def</span> <span class="nf">read_applua</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">TNT_APP_LUA_PATH</span><span class="p">:</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">TNT_APP_LUA_PATH</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span></div>
+
+    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="TarantoolTestCase.init_instance"><a class="viewcode-back" href="../../autoapi/asynctnt/_testbase/index.html#asynctnt._testbase.TarantoolTestCase.init_instance">[docs]</a>    <span class="k">def</span> <span class="nf">init_instance</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+        <span class="n">tnt</span><span class="p">,</span> <span class="n">in_docker</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_make_instance</span><span class="p">(</span>
+            <span class="n">extra_box_cfg</span><span class="o">=</span><span class="bp">cls</span><span class="o">.</span><span class="n">EXTRA_BOX_CFG</span>
+        <span class="p">)</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">tnt</span> <span class="o">=</span> <span class="n">tnt</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">in_docker</span> <span class="o">=</span> <span class="n">in_docker</span></div>
+
+    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="TarantoolTestCase.setUpClass"><a class="viewcode-back" href="../../autoapi/asynctnt/_testbase/index.html#asynctnt._testbase.TarantoolTestCase.setUpClass">[docs]</a>    <span class="k">def</span> <span class="nf">setUpClass</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+        <span class="n">TestCase</span><span class="o">.</span><span class="n">setUpClass</span><span class="p">()</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="bp">cls</span><span class="o">.</span><span class="n">LOGGING_LEVEL</span><span class="p">,</span>
+                            <span class="n">stream</span><span class="o">=</span><span class="bp">cls</span><span class="o">.</span><span class="n">LOGGING_STREAM</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">tnt</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">tnt</span><span class="p">,</span> <span class="n">in_docker</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_make_instance</span><span class="p">(</span>
+                <span class="n">extra_box_cfg</span><span class="o">=</span><span class="bp">cls</span><span class="o">.</span><span class="n">EXTRA_BOX_CFG</span>
+            <span class="p">)</span>
+            <span class="bp">cls</span><span class="o">.</span><span class="n">tnt</span> <span class="o">=</span> <span class="n">tnt</span>
+            <span class="bp">cls</span><span class="o">.</span><span class="n">in_docker</span> <span class="o">=</span> <span class="n">in_docker</span>
+
+        <span class="bp">cls</span><span class="o">.</span><span class="n">tnt</span><span class="o">.</span><span class="n">start</span><span class="p">()</span></div>
+
+    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="TarantoolTestCase.make_instance"><a class="viewcode-back" href="../../autoapi/asynctnt/_testbase/index.html#asynctnt._testbase.TarantoolTestCase.make_instance">[docs]</a>    <span class="k">def</span> <span class="nf">make_instance</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+        <span class="n">obj</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_make_instance</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">obj</span></div>
+
+    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="TarantoolTestCase._make_instance"><a class="viewcode-back" href="../../autoapi/asynctnt/_testbase/index.html#asynctnt._testbase.TarantoolTestCase._make_instance">[docs]</a>    <span class="k">def</span> <span class="nf">_make_instance</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">tarantool_docker_image</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s1">&#39;TARANTOOL_DOCKER_IMAGE&#39;</span><span class="p">)</span>
+        <span class="n">tarantool_docker_tag</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s1">&#39;TARANTOOL_DOCKER_VERSION&#39;</span><span class="p">)</span>
+        <span class="n">in_docker</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="n">tarantool_docker_tag</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Running tarantool in docker: </span><span class="si">{}</span><span class="s1">:</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">tarantool_docker_image</span> <span class="ow">or</span> <span class="s1">&#39;tarantool/tarantool&#39;</span><span class="p">,</span>
+                <span class="n">tarantool_docker_tag</span><span class="p">))</span>
+
+            <span class="n">tnt</span> <span class="o">=</span> <span class="n">TarantoolSyncDockerInstance</span><span class="p">(</span>
+                <span class="n">applua</span><span class="o">=</span><span class="bp">cls</span><span class="o">.</span><span class="n">read_applua</span><span class="p">(),</span>
+                <span class="n">docker_image</span><span class="o">=</span><span class="n">tarantool_docker_image</span><span class="p">,</span>
+                <span class="n">docker_tag</span><span class="o">=</span><span class="n">tarantool_docker_tag</span><span class="p">,</span>
+                <span class="n">timeout</span><span class="o">=</span><span class="mi">4</span> <span class="o">*</span> <span class="mi">60</span><span class="p">,</span>
+                <span class="o">**</span><span class="n">kwargs</span>
+            <span class="p">)</span>
+            <span class="n">in_docker</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">unix_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s1">&#39;TARANTOOL_LISTEN_UNIX_PATH&#39;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">unix_path</span><span class="p">:</span>
+                <span class="n">tnt</span> <span class="o">=</span> <span class="n">TarantoolSyncInstance</span><span class="p">(</span>
+                    <span class="n">port</span><span class="o">=</span><span class="n">TarantoolSyncInstance</span><span class="o">.</span><span class="n">get_random_port</span><span class="p">(),</span>
+                    <span class="n">console_port</span><span class="o">=</span><span class="n">TarantoolSyncInstance</span><span class="o">.</span><span class="n">get_random_port</span><span class="p">(),</span>
+                    <span class="n">applua</span><span class="o">=</span><span class="bp">cls</span><span class="o">.</span><span class="n">read_applua</span><span class="p">(),</span>
+                    <span class="n">cleanup</span><span class="o">=</span><span class="bp">cls</span><span class="o">.</span><span class="n">TNT_CLEANUP</span><span class="p">,</span>
+                    <span class="o">**</span><span class="n">kwargs</span>
+                <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">tnt</span> <span class="o">=</span> <span class="n">TarantoolSyncInstance</span><span class="p">(</span>
+                    <span class="n">host</span><span class="o">=</span><span class="s1">&#39;unix/&#39;</span><span class="p">,</span>
+                    <span class="n">port</span><span class="o">=</span><span class="n">unix_path</span><span class="p">,</span>
+                    <span class="n">console_host</span><span class="o">=</span><span class="s1">&#39;127.0.0.1&#39;</span><span class="p">,</span>
+                    <span class="n">applua</span><span class="o">=</span><span class="bp">cls</span><span class="o">.</span><span class="n">read_applua</span><span class="p">(),</span>
+                    <span class="n">cleanup</span><span class="o">=</span><span class="bp">cls</span><span class="o">.</span><span class="n">TNT_CLEANUP</span><span class="p">,</span>
+                    <span class="o">**</span><span class="n">kwargs</span>
+                <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">tnt</span><span class="p">,</span> <span class="n">in_docker</span></div>
+
+    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="TarantoolTestCase.tearDownClass"><a class="viewcode-back" href="../../autoapi/asynctnt/_testbase/index.html#asynctnt._testbase.TarantoolTestCase.tearDownClass">[docs]</a>    <span class="k">def</span> <span class="nf">tearDownClass</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">tnt</span><span class="p">:</span>
+            <span class="bp">cls</span><span class="o">.</span><span class="n">tnt</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+        <span class="n">TestCase</span><span class="o">.</span><span class="n">tearDownClass</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="TarantoolTestCase.setUp"><a class="viewcode-back" href="../../autoapi/asynctnt/_testbase/index.html#asynctnt._testbase.TarantoolTestCase.setUp">[docs]</a>    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">TarantoolTestCase</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">setUp</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">DO_CONNECT</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">loop</span><span class="o">.</span><span class="n">run_until_complete</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tnt_connect</span><span class="p">())</span></div>
+
+<div class="viewcode-block" id="TarantoolTestCase.tearDown"><a class="viewcode-back" href="../../autoapi/asynctnt/_testbase/index.html#asynctnt._testbase.TarantoolTestCase.tearDown">[docs]</a>    <span class="k">def</span> <span class="nf">tearDown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">loop</span><span class="o">.</span><span class="n">run_until_complete</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tnt_disconnect</span><span class="p">())</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">TarantoolTestCase</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">tearDown</span><span class="p">()</span></div>
+
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="TarantoolTestCase.conn"><a class="viewcode-back" href="../../autoapi/asynctnt/_testbase/index.html#asynctnt._testbase.TarantoolTestCase.conn">[docs]</a>    <span class="k">def</span> <span class="nf">conn</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">asynctnt</span><span class="o">.</span><span class="n">Connection</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_conn</span></div>
+
+<div class="viewcode-block" id="TarantoolTestCase.tnt_connect"><a class="viewcode-back" href="../../autoapi/asynctnt/_testbase/index.html#asynctnt._testbase.TarantoolTestCase.tnt_connect">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">tnt_connect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span>
+                          <span class="n">username</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                          <span class="n">fetch_schema</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                          <span class="n">auto_refetch_schema</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                          <span class="n">connect_timeout</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">reconnect_timeout</span><span class="o">=</span><span class="mi">1</span> <span class="o">/</span> <span class="mi">3</span><span class="p">,</span>
+                          <span class="n">ping_timeout</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                          <span class="n">request_timeout</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">,</span>
+                          <span class="n">initial_read_buffer_size</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_conn</span> <span class="o">=</span> <span class="n">asynctnt</span><span class="o">.</span><span class="n">Connection</span><span class="p">(</span>
+            <span class="n">host</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tnt</span><span class="o">.</span><span class="n">host</span><span class="p">,</span>
+            <span class="n">port</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tnt</span><span class="o">.</span><span class="n">port</span><span class="p">,</span>
+            <span class="n">username</span><span class="o">=</span><span class="n">username</span><span class="p">,</span>
+            <span class="n">password</span><span class="o">=</span><span class="n">password</span><span class="p">,</span>
+            <span class="n">fetch_schema</span><span class="o">=</span><span class="n">fetch_schema</span><span class="p">,</span>
+            <span class="n">auto_refetch_schema</span><span class="o">=</span><span class="n">auto_refetch_schema</span><span class="p">,</span>
+            <span class="n">connect_timeout</span><span class="o">=</span><span class="n">connect_timeout</span><span class="p">,</span>
+            <span class="n">reconnect_timeout</span><span class="o">=</span><span class="n">reconnect_timeout</span><span class="p">,</span>
+            <span class="n">request_timeout</span><span class="o">=</span><span class="n">request_timeout</span><span class="p">,</span>
+            <span class="n">ping_timeout</span><span class="o">=</span><span class="n">ping_timeout</span><span class="p">,</span>
+            <span class="n">encoding</span><span class="o">=</span><span class="n">encoding</span><span class="p">,</span>
+            <span class="n">initial_read_buffer_size</span><span class="o">=</span><span class="n">initial_read_buffer_size</span><span class="p">)</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_conn</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_conn</span></div>
+
+<div class="viewcode-block" id="TarantoolTestCase.tnt_disconnect"><a class="viewcode-back" href="../../autoapi/asynctnt/_testbase/index.html#asynctnt._testbase.TarantoolTestCase.tnt_disconnect">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">tnt_disconnect</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;conn&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">conn</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_conn</span><span class="o">.</span><span class="n">disconnect</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_conn</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="TarantoolTestCase.tnt_reconnect"><a class="viewcode-back" href="../../autoapi/asynctnt/_testbase/index.html#asynctnt._testbase.TarantoolTestCase.tnt_reconnect">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">tnt_reconnect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">tnt_disconnect</span><span class="p">()</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">tnt_connect</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TarantoolTestCase.assertResponseEqual"><a class="viewcode-back" href="../../autoapi/asynctnt/_testbase/index.html#asynctnt._testbase.TarantoolTestCase.assertResponseEqual">[docs]</a>    <span class="k">def</span> <span class="nf">assertResponseEqual</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">resp</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+        <span class="n">tuples</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">resp</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">TarantoolTuple</span><span class="p">):</span>
+                <span class="n">item</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+            <span class="n">tuples</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertListEqual</span><span class="p">(</span><span class="n">tuples</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TarantoolTestCase.assertResponseEqualKV"><a class="viewcode-back" href="../../autoapi/asynctnt/_testbase/index.html#asynctnt._testbase.TarantoolTestCase.assertResponseEqualKV">[docs]</a>    <span class="k">def</span> <span class="nf">assertResponseEqualKV</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">resp</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+        <span class="n">tuples</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">resp</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">TarantoolTuple</span><span class="p">):</span>
+                <span class="n">item</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+            <span class="n">tuples</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertListEqual</span><span class="p">(</span><span class="n">tuples</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="ensure_version"><a class="viewcode-back" href="../../autoapi/asynctnt/_testbase/index.html#asynctnt._testbase.ensure_version">[docs]</a><span class="k">def</span> <span class="nf">ensure_version</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="nb">min</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                   <span class="n">min_included</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">max_included</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">check_version_wrap</span><span class="p">(</span><span class="n">f</span><span class="p">):</span>
+        <span class="nd">@functools</span><span class="o">.</span><span class="n">wraps</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+        <span class="k">async</span> <span class="k">def</span> <span class="nf">wrap</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">check_version</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">conn</span><span class="o">.</span><span class="n">version</span><span class="p">,</span>
+                             <span class="nb">min</span><span class="o">=</span><span class="nb">min</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="nb">max</span><span class="p">,</span>
+                             <span class="n">min_included</span><span class="o">=</span><span class="n">min_included</span><span class="p">,</span>
+                             <span class="n">max_included</span><span class="o">=</span><span class="n">max_included</span><span class="p">):</span>
+                <span class="n">res</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">inspect</span><span class="o">.</span><span class="n">isawaitable</span><span class="p">(</span><span class="n">res</span><span class="p">):</span>
+                    <span class="k">return</span> <span class="k">await</span> <span class="n">res</span>
+                <span class="k">return</span> <span class="n">res</span>
+
+        <span class="k">return</span> <span class="n">wrap</span>
+
+    <span class="k">return</span> <span class="n">check_version_wrap</span></div>
+
+
+<div class="viewcode-block" id="ensure_bin_version"><a class="viewcode-back" href="../../autoapi/asynctnt/_testbase/index.html#asynctnt._testbase.ensure_bin_version">[docs]</a><span class="k">def</span> <span class="nf">ensure_bin_version</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="nb">min</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                       <span class="n">min_included</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">max_included</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">check_version_wrap</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+        <span class="k">assert</span> <span class="nb">issubclass</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">TarantoolTestCase</span><span class="p">)</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">init_instance</span><span class="p">()</span>
+        <span class="n">ok</span><span class="p">,</span> <span class="n">reason</span> <span class="o">=</span> <span class="n">_check_version</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">tnt</span><span class="o">.</span><span class="n">bin_version</span><span class="p">,</span>
+                                    <span class="nb">min</span><span class="o">=</span><span class="nb">min</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="nb">max</span><span class="p">,</span>
+                                    <span class="n">min_included</span><span class="o">=</span><span class="n">min_included</span><span class="p">,</span>
+                                    <span class="n">max_included</span><span class="o">=</span><span class="n">max_included</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">ok</span><span class="p">:</span>
+            <span class="bp">cls</span> <span class="o">=</span> <span class="n">unittest</span><span class="o">.</span><span class="n">skip</span><span class="p">(</span><span class="n">reason</span><span class="p">)(</span><span class="bp">cls</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">cls</span>
+
+    <span class="k">return</span> <span class="n">check_version_wrap</span></div>
+
+
+<div class="viewcode-block" id="check_version"><a class="viewcode-back" href="../../autoapi/asynctnt/_testbase/index.html#asynctnt._testbase.check_version">[docs]</a><span class="k">def</span> <span class="nf">check_version</span><span class="p">(</span><span class="n">test</span><span class="p">,</span> <span class="n">version</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="nb">min</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                  <span class="n">min_included</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">max_included</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="n">ok</span><span class="p">,</span> <span class="n">reason</span> <span class="o">=</span> <span class="n">_check_version</span><span class="p">(</span><span class="n">version</span><span class="p">,</span> <span class="nb">min</span><span class="o">=</span><span class="nb">min</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="nb">max</span><span class="p">,</span>
+                                <span class="n">min_included</span><span class="o">=</span><span class="n">min_included</span><span class="p">,</span>
+                                <span class="n">max_included</span><span class="o">=</span><span class="n">max_included</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">ok</span><span class="p">:</span>
+        <span class="n">test</span><span class="o">.</span><span class="n">skipTest</span><span class="p">(</span><span class="n">reason</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="k">return</span> <span class="kc">True</span></div>
+
+
+<span class="k">def</span> <span class="nf">_check_version</span><span class="p">(</span><span class="n">version</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="nb">min</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                   <span class="n">min_included</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                   <span class="n">max_included</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
+    <span class="k">if</span> <span class="nb">min</span> <span class="ow">and</span> <span class="p">(</span><span class="n">version</span> <span class="o">&lt;</span> <span class="nb">min</span> <span class="ow">or</span> <span class="p">(</span><span class="n">min_included</span> <span class="ow">and</span> <span class="n">version</span> <span class="o">&lt;=</span> <span class="nb">min</span><span class="p">)):</span>
+        <span class="k">return</span> <span class="kc">False</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;version mismatch - required min=</span><span class="si">{</span><span class="nb">min</span><span class="si">}</span><span class="s1"> got=</span><span class="si">{</span><span class="n">version</span><span class="si">}</span><span class="s1">&#39;</span>
+
+    <span class="k">if</span> <span class="nb">max</span> <span class="ow">and</span> <span class="p">(</span><span class="n">version</span> <span class="o">&gt;</span> <span class="nb">max</span> <span class="ow">or</span> <span class="p">(</span><span class="n">max_included</span> <span class="ow">and</span> <span class="n">version</span> <span class="o">&gt;=</span> <span class="nb">max</span><span class="p">)):</span>
+        <span class="k">return</span> <span class="kc">False</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;version mismatch - required max=</span><span class="si">{</span><span class="nb">max</span><span class="si">}</span><span class="s1"> got=</span><span class="si">{</span><span class="n">version</span><span class="si">}</span><span class="s1">&#39;</span>
+
+    <span class="k">return</span> <span class="kc">True</span><span class="p">,</span> <span class="kc">None</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, igorcoding.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

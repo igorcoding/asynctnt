@@ -1,0 +1,454 @@
+:py:mod:`asynctnt.iproto.protocol`
+==================================
+
+.. py:module:: asynctnt.iproto.protocol
+
+
+Module Contents
+---------------
+
+Classes
+~~~~~~~
+
+.. autoapisummary::
+
+   asynctnt.iproto.protocol.Field
+   asynctnt.iproto.protocol.Metadata
+   asynctnt.iproto.protocol.SchemaIndex
+   asynctnt.iproto.protocol.SchemaSpace
+   asynctnt.iproto.protocol.Schema
+   asynctnt.iproto.protocol.TarantoolTuple
+   asynctnt.iproto.protocol.IProtoErrorStackFrame
+   asynctnt.iproto.protocol.IProtoError
+   asynctnt.iproto.protocol.Response
+   asynctnt.iproto.protocol.PushIterator
+   asynctnt.iproto.protocol.Db
+   asynctnt.iproto.protocol.Protocol
+
+
+
+
+Attributes
+~~~~~~~~~~
+
+.. autoapisummary::
+
+   asynctnt.iproto.protocol.BodyItem
+
+
+.. py:class:: Field
+
+   .. py:attribute:: name
+      :annotation: :Optional[str]
+
+      Field name 
+
+
+   .. py:attribute:: type
+      :annotation: :Optional[str]
+
+      Field type 
+
+
+   .. py:attribute:: collation
+      :annotation: :Optional[str]
+
+      Field collation value 
+
+
+   .. py:attribute:: is_nullable
+      :annotation: :Optional[bool]
+
+      If field may be null 
+
+
+   .. py:attribute:: is_autoincrement
+      :annotation: :Optional[bool]
+
+      Is Autoincrement 
+
+
+   .. py:attribute:: span
+      :annotation: :Optional[str]
+
+      
+
+
+.. py:class:: Metadata
+
+   .. py:attribute:: fields
+      :annotation: :List[Field]
+
+      List of fields 
+
+
+   .. py:attribute:: name_id_map
+      :annotation: :Dict[str, int]
+
+      Mapping name -> id 
+
+
+
+.. py:class:: SchemaIndex
+
+   .. py:attribute:: iid
+      :annotation: :int
+
+      Index id 
+
+
+   .. py:attribute:: sid
+      :annotation: :int
+
+      Space id 
+
+
+   .. py:attribute:: name
+      :annotation: :Optional[str]
+
+      
+
+   .. py:attribute:: index_type
+      :annotation: :Optional[str]
+
+      
+
+   .. py:attribute:: unique
+      :annotation: :Optional[bool]
+
+      
+
+   .. py:attribute:: metadata
+      :annotation: :Optional[Metadata]
+
+      
+
+
+.. py:class:: SchemaSpace
+
+   .. py:attribute:: sid
+      :annotation: :int
+
+      
+
+   .. py:attribute:: owner
+      :annotation: :int
+
+      
+
+   .. py:attribute:: name
+      :annotation: :Optional[str]
+
+      
+
+   .. py:attribute:: engine
+      :annotation: :Optional[str]
+
+      
+
+   .. py:attribute:: field_count
+      :annotation: :int
+
+      
+
+   .. py:attribute:: flags
+      :annotation: :Optional[Any]
+
+      
+
+   .. py:attribute:: metadata
+      :annotation: :Optional[Metadata]
+
+      
+
+   .. py:attribute:: indexes
+      :annotation: :Dict[Union[int, str], SchemaIndex]
+
+      
+
+
+.. py:class:: Schema
+
+   .. py:attribute:: id
+      :annotation: :int
+
+      
+
+   .. py:attribute:: spaces
+      :annotation: :Dict[Union[str, int], SchemaSpace]
+
+      
+
+
+.. py:class:: TarantoolTuple
+
+   .. py:method:: __repr__(self) -> str
+
+      Return repr(self).
+
+
+   .. py:method:: __index__(self, i: int) -> Any
+
+
+   .. py:method:: __len__(self) -> int
+
+
+   .. py:method:: __contains__(self, item: str) -> bool
+
+
+   .. py:method:: __getitem__(self, item: Union[int, str, slice]) -> Any
+
+
+   .. py:method:: keys(self) -> Iterator[str]
+
+
+   .. py:method:: values(self) -> Iterator[Any]
+
+
+   .. py:method:: items(self) -> Iterator[Tuple[str, Any]]
+
+
+   .. py:method:: get(self, item: str) -> Optional[Any]
+
+
+   .. py:method:: __iter__(self)
+
+
+   .. py:method:: __next__(self)
+
+
+
+.. py:class:: IProtoErrorStackFrame
+
+   .. py:attribute:: error_type
+      :annotation: :str
+
+      
+
+   .. py:attribute:: file
+      :annotation: :str
+
+      
+
+   .. py:attribute:: line
+      :annotation: :int
+
+      
+
+   .. py:attribute:: message
+      :annotation: :str
+
+      
+
+   .. py:attribute:: err_no
+      :annotation: :int
+
+      
+
+   .. py:attribute:: code
+      :annotation: :int
+
+      
+
+   .. py:attribute:: fields
+      :annotation: :Dict[str, Any]
+
+      
+
+
+.. py:class:: IProtoError
+
+   .. py:attribute:: trace
+      :annotation: :List[IProtoErrorStackFrame]
+
+      
+
+
+.. py:data:: BodyItem
+   
+
+   
+
+.. py:class:: Response
+
+   .. py:attribute:: errmsg
+      :annotation: :Optional[str]
+
+      
+
+   .. py:attribute:: error
+      :annotation: :Optional[IProtoError]
+
+      
+
+   .. py:attribute:: encoding
+      :annotation: :bytes
+
+      
+
+   .. py:attribute:: autoincrement_ids
+      :annotation: :Optional[List[int]]
+
+      
+
+   .. py:attribute:: body
+      :annotation: :Optional[List[BodyItem]]
+
+      
+
+   .. py:attribute:: metadata
+      :annotation: :Optional[Metadata]
+
+      
+
+   .. py:attribute:: params
+      :annotation: :Optional[Metadata]
+
+      
+
+   .. py:attribute:: params_count
+      :annotation: :int
+
+      
+
+   .. py:method:: sync(self) -> int
+      :property:
+
+
+   .. py:method:: code(self) -> int
+      :property:
+
+
+   .. py:method:: return_code(self) -> int
+      :property:
+
+
+   .. py:method:: schema_id(self) -> int
+      :property:
+
+
+   .. py:method:: stmt_id(self) -> int
+      :property:
+
+
+   .. py:method:: rowcount(self) -> int
+      :property:
+
+
+   .. py:method:: done(self) -> bool
+
+
+   .. py:method:: __len__(self) -> int
+
+
+   .. py:method:: __getitem__(self, i) -> BodyItem
+
+
+   .. py:method:: __iter__(self)
+
+
+
+.. py:class:: PushIterator(fut: asyncio.Future)
+
+   .. py:method:: __iter__(self)
+
+
+   .. py:method:: __next__(self)
+
+
+   .. py:method:: __aiter__(self)
+
+
+   .. py:method:: __anext__(self)
+      :async:
+
+
+   .. py:method:: response(self) -> Response
+      :property:
+
+
+
+.. py:class:: Db
+
+   .. py:method:: stream_id(self) -> int
+      :property:
+
+
+   .. py:method:: set_stream_id(self, stream_id: int)
+
+
+   .. py:method:: ping(self, timeout: float = -1)
+
+
+   .. py:method:: call16(self, func_name: str, args=None, timeout: float = -1, push_subscribe: bool = False)
+
+
+   .. py:method:: call(self, func_name: str, args=None, timeout: float = -1, push_subscribe: bool = False)
+
+
+   .. py:method:: eval(self, expression: str, args=None, timeout: float = -1, push_subscribe: bool = False)
+
+
+   .. py:method:: select(self, space, key=None, offset: int = 0, limit: int = 4294967295, index=0, iterator=0, timeout: float = -1, check_schema_change: bool = True)
+
+
+   .. py:method:: insert(self, space, t, replace: bool = False, timeout: float = -1)
+
+
+   .. py:method:: replace(self, space, t, timeout: float = -1)
+
+
+   .. py:method:: delete(self, space, key, index=0, timeout: float = -1)
+
+
+   .. py:method:: update(self, space, key, operations, index=0, timeout: float = -1)
+
+
+   .. py:method:: upsert(self, space, t, operations, timeout: float = -1)
+
+
+   .. py:method:: execute(self, query, args, parse_metadata: bool = True, timeout: float = -1)
+
+
+   .. py:method:: prepare(self, query, parse_metadata: bool = True, timeout: float = -1)
+
+
+   .. py:method:: begin(self, isolation: int, tx_timeout: float, timeout: float = -1)
+
+
+   .. py:method:: commit(self, timeout: float = -1)
+
+
+   .. py:method:: rollback(self, timeout: float = -1)
+
+
+
+.. py:class:: Protocol
+
+   .. py:method:: schema_id(self) -> int
+      :property:
+
+
+   .. py:method:: schema(self) -> Schema
+      :property:
+
+
+   .. py:method:: create_db(self, gen_stream_id: bool = False) -> Db
+
+
+   .. py:method:: get_common_db(self) -> Db
+
+
+   .. py:method:: refetch_schema(self) -> asyncio.Future
+
+
+   .. py:method:: is_connected(self) -> bool
+
+
+   .. py:method:: is_fully_connected(self) -> bool
+
+
+   .. py:method:: get_version(self) -> tuple
+
+
+

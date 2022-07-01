@@ -1,0 +1,675 @@
+:py:mod:`asynctnt`
+==================
+
+.. py:module:: asynctnt
+
+
+Subpackages
+-----------
+.. toctree::
+   :titlesonly:
+   :maxdepth: 3
+
+   iproto/index.rst
+
+
+Submodules
+----------
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+
+   _testbase/index.rst
+   api/index.rst
+   connection/index.rst
+   exceptions/index.rst
+   instance/index.rst
+   log/index.rst
+   prepared/index.rst
+   stream/index.rst
+   types/index.rst
+   utils/index.rst
+
+
+Package Contents
+----------------
+
+Classes
+~~~~~~~
+
+.. autoapisummary::
+
+   asynctnt.Connection
+   asynctnt.Response
+   asynctnt.TarantoolTuple
+   asynctnt.PushIterator
+   asynctnt.Schema
+   asynctnt.SchemaSpace
+   asynctnt.SchemaIndex
+   asynctnt.Metadata
+   asynctnt.Field
+   asynctnt.Db
+   asynctnt.IProtoError
+   asynctnt.IProtoErrorStackFrame
+
+
+
+Functions
+~~~~~~~~~
+
+.. autoapisummary::
+
+   asynctnt.connect
+
+
+
+Attributes
+~~~~~~~~~~
+
+.. autoapisummary::
+
+   asynctnt.__version__
+
+
+.. py:class:: Connection(*, host: str = '127.0.0.1', port: Union[int, str] = 3301, username: Optional[str] = None, password: Optional[str] = None, fetch_schema: bool = True, auto_refetch_schema: bool = True, connect_timeout: float = 3.0, request_timeout: float = -1.0, reconnect_timeout: float = 1.0 / 3.0, ping_timeout: float = 5.0, encoding: Optional[str] = None, initial_read_buffer_size: Optional[int] = None)
+
+   Bases: :py:obj:`asynctnt.api.Api`
+
+   .. py:attribute:: __slots__
+      :annotation: = ['_host', '_port', '_username', '_password', '_fetch_schema', '_auto_refetch_schema',...
+
+      
+
+   .. py:method:: _set_state(self, new_state: ConnectionState)
+
+
+   .. py:method:: connection_lost(self, exc)
+
+
+   .. py:method:: _ping_task_func(self)
+      :async:
+
+
+   .. py:method:: _start_reconnect(self, return_exceptions: bool = False)
+
+
+   .. py:method:: protocol_factory(self, connected_fut: asyncio.Future, cls=protocol.Protocol)
+
+
+   .. py:method:: _connect(self, return_exceptions: bool = True)
+      :async:
+
+
+   .. py:method:: _wait_reconnect(self, exc=None)
+      :async:
+
+
+   .. py:method:: connect(self) -> Connection
+      :async:
+
+      Connect coroutine
+
+
+   .. py:method:: disconnect(self)
+      :async:
+
+      Disconnect coroutine
+
+
+   .. py:method:: close(self)
+
+      Same as disconnect, but not a coroutine, i.e. it does not wait
+      for disconnect to finish.
+
+
+   .. py:method:: reconnect(self)
+      :async:
+
+      Reconnect coroutine.
+      Just calls disconnect() and connect()
+
+
+   .. py:method:: __aenter__(self)
+      :async:
+
+      Executed on entering the async with section.
+      Connects to Tarantool instance.
+
+
+   .. py:method:: __aexit__(self, exc_type, exc_val, exc_tb)
+      :async:
+
+      Executed on leaving the async with section.
+      Disconnects from Tarantool instance.
+
+
+   .. py:method:: fingerprint(self) -> str
+      :property:
+
+
+   .. py:method:: host(self) -> str
+      :property:
+
+      Tarantool host
+
+
+   .. py:method:: port(self) -> int
+      :property:
+
+      Tarantool port
+
+
+   .. py:method:: username(self) -> Optional[str]
+      :property:
+
+      Tarantool username
+
+
+   .. py:method:: password(self) -> Optional[str]
+      :property:
+
+      Tarantool password
+
+
+   .. py:method:: fetch_schema(self) -> bool
+      :property:
+
+      fetch_schema flag
+
+
+   .. py:method:: auto_refetch_schema(self) -> bool
+      :property:
+
+      auto_refetch_schema flag
+
+
+   .. py:method:: encoding(self) -> str
+      :property:
+
+      Connection encoding
+
+
+   .. py:method:: reconnect_timeout(self) -> float
+      :property:
+
+      Reconnect timeout value
+
+
+   .. py:method:: connect_timeout(self) -> float
+      :property:
+
+      Connect timeout value
+
+
+   .. py:method:: request_timeout(self) -> float
+      :property:
+
+      Request timeout value
+
+
+   .. py:method:: version(self) -> Optional[tuple]
+      :property:
+
+      Protocol version tuple. ex.: (1, 6, 7)
+
+
+   .. py:method:: loop(self)
+      :property:
+
+      Asyncio event loop
+
+
+   .. py:method:: state(self) -> ConnectionState
+      :property:
+
+      Current connection state
+
+      :rtype: ConnectionState
+
+
+   .. py:method:: is_connected(self) -> bool
+      :property:
+
+      Check if an underlying connection is active
+
+
+   .. py:method:: is_fully_connected(self) -> bool
+      :property:
+
+      Check if connection is fully active (performed auth
+      and schema fetching)
+
+
+   .. py:method:: schema_id(self) -> Optional[int]
+      :property:
+
+      Tarantool's current schema id
+
+
+   .. py:method:: schema(self) -> Optional[asynctnt.iproto.protocol.Schema]
+      :property:
+
+      Current Tarantool schema with all spaces, indexes and fields
+
+
+   .. py:method:: initial_read_buffer_size(self) -> int
+      :property:
+
+      initial_read_buffer_size value
+
+
+   .. py:method:: refetch_schema(self)
+      :async:
+
+      Coroutine to force refetch schema
+
+
+   .. py:method:: _normalize_api(self)
+
+
+   .. py:method:: __repr__(self)
+
+      Return repr(self).
+
+
+   .. py:method:: stream(self) -> asynctnt.stream.Stream
+
+      Create new stream suitable for interactive transactions
+
+
+
+.. py:function:: connect(**kwargs) -> Connection
+   :async:
+
+   connect shorthand. See :class:`asynctnt.Connection` for kwargs details
+
+   :return: :class:`asynctnt.Connection` object
+
+
+.. py:class:: Response
+
+   .. py:attribute:: errmsg
+      :annotation: :Optional[str]
+
+      
+
+   .. py:attribute:: error
+      :annotation: :Optional[IProtoError]
+
+      
+
+   .. py:attribute:: encoding
+      :annotation: :bytes
+
+      
+
+   .. py:attribute:: autoincrement_ids
+      :annotation: :Optional[List[int]]
+
+      
+
+   .. py:attribute:: body
+      :annotation: :Optional[List[BodyItem]]
+
+      
+
+   .. py:attribute:: metadata
+      :annotation: :Optional[Metadata]
+
+      
+
+   .. py:attribute:: params
+      :annotation: :Optional[Metadata]
+
+      
+
+   .. py:attribute:: params_count
+      :annotation: :int
+
+      
+
+   .. py:method:: sync(self) -> int
+      :property:
+
+
+   .. py:method:: code(self) -> int
+      :property:
+
+
+   .. py:method:: return_code(self) -> int
+      :property:
+
+
+   .. py:method:: schema_id(self) -> int
+      :property:
+
+
+   .. py:method:: stmt_id(self) -> int
+      :property:
+
+
+   .. py:method:: rowcount(self) -> int
+      :property:
+
+
+   .. py:method:: done(self) -> bool
+
+
+   .. py:method:: __len__(self) -> int
+
+
+   .. py:method:: __getitem__(self, i) -> BodyItem
+
+
+   .. py:method:: __iter__(self)
+
+
+
+.. py:class:: TarantoolTuple
+
+   .. py:method:: __repr__(self) -> str
+
+      Return repr(self).
+
+
+   .. py:method:: __index__(self, i: int) -> Any
+
+
+   .. py:method:: __len__(self) -> int
+
+
+   .. py:method:: __contains__(self, item: str) -> bool
+
+
+   .. py:method:: __getitem__(self, item: Union[int, str, slice]) -> Any
+
+
+   .. py:method:: keys(self) -> Iterator[str]
+
+
+   .. py:method:: values(self) -> Iterator[Any]
+
+
+   .. py:method:: items(self) -> Iterator[Tuple[str, Any]]
+
+
+   .. py:method:: get(self, item: str) -> Optional[Any]
+
+
+   .. py:method:: __iter__(self)
+
+
+   .. py:method:: __next__(self)
+
+
+
+.. py:class:: PushIterator(fut: asyncio.Future)
+
+   .. py:method:: __iter__(self)
+
+
+   .. py:method:: __next__(self)
+
+
+   .. py:method:: __aiter__(self)
+
+
+   .. py:method:: __anext__(self)
+      :async:
+
+
+   .. py:method:: response(self) -> Response
+      :property:
+
+
+
+.. py:class:: Schema
+
+   .. py:attribute:: id
+      :annotation: :int
+
+      
+
+   .. py:attribute:: spaces
+      :annotation: :Dict[Union[str, int], SchemaSpace]
+
+      
+
+
+.. py:class:: SchemaSpace
+
+   .. py:attribute:: sid
+      :annotation: :int
+
+      
+
+   .. py:attribute:: owner
+      :annotation: :int
+
+      
+
+   .. py:attribute:: name
+      :annotation: :Optional[str]
+
+      
+
+   .. py:attribute:: engine
+      :annotation: :Optional[str]
+
+      
+
+   .. py:attribute:: field_count
+      :annotation: :int
+
+      
+
+   .. py:attribute:: flags
+      :annotation: :Optional[Any]
+
+      
+
+   .. py:attribute:: metadata
+      :annotation: :Optional[Metadata]
+
+      
+
+   .. py:attribute:: indexes
+      :annotation: :Dict[Union[int, str], SchemaIndex]
+
+      
+
+
+.. py:class:: SchemaIndex
+
+   .. py:attribute:: iid
+      :annotation: :int
+
+      Index id 
+
+
+   .. py:attribute:: sid
+      :annotation: :int
+
+      Space id 
+
+
+   .. py:attribute:: name
+      :annotation: :Optional[str]
+
+      
+
+   .. py:attribute:: index_type
+      :annotation: :Optional[str]
+
+      
+
+   .. py:attribute:: unique
+      :annotation: :Optional[bool]
+
+      
+
+   .. py:attribute:: metadata
+      :annotation: :Optional[Metadata]
+
+      
+
+
+.. py:class:: Metadata
+
+   .. py:attribute:: fields
+      :annotation: :List[Field]
+
+      List of fields 
+
+
+   .. py:attribute:: name_id_map
+      :annotation: :Dict[str, int]
+
+      Mapping name -> id 
+
+
+
+.. py:class:: Field
+
+   .. py:attribute:: name
+      :annotation: :Optional[str]
+
+      Field name 
+
+
+   .. py:attribute:: type
+      :annotation: :Optional[str]
+
+      Field type 
+
+
+   .. py:attribute:: collation
+      :annotation: :Optional[str]
+
+      Field collation value 
+
+
+   .. py:attribute:: is_nullable
+      :annotation: :Optional[bool]
+
+      If field may be null 
+
+
+   .. py:attribute:: is_autoincrement
+      :annotation: :Optional[bool]
+
+      Is Autoincrement 
+
+
+   .. py:attribute:: span
+      :annotation: :Optional[str]
+
+      
+
+
+.. py:class:: Db
+
+   .. py:method:: stream_id(self) -> int
+      :property:
+
+
+   .. py:method:: set_stream_id(self, stream_id: int)
+
+
+   .. py:method:: ping(self, timeout: float = -1)
+
+
+   .. py:method:: call16(self, func_name: str, args=None, timeout: float = -1, push_subscribe: bool = False)
+
+
+   .. py:method:: call(self, func_name: str, args=None, timeout: float = -1, push_subscribe: bool = False)
+
+
+   .. py:method:: eval(self, expression: str, args=None, timeout: float = -1, push_subscribe: bool = False)
+
+
+   .. py:method:: select(self, space, key=None, offset: int = 0, limit: int = 4294967295, index=0, iterator=0, timeout: float = -1, check_schema_change: bool = True)
+
+
+   .. py:method:: insert(self, space, t, replace: bool = False, timeout: float = -1)
+
+
+   .. py:method:: replace(self, space, t, timeout: float = -1)
+
+
+   .. py:method:: delete(self, space, key, index=0, timeout: float = -1)
+
+
+   .. py:method:: update(self, space, key, operations, index=0, timeout: float = -1)
+
+
+   .. py:method:: upsert(self, space, t, operations, timeout: float = -1)
+
+
+   .. py:method:: execute(self, query, args, parse_metadata: bool = True, timeout: float = -1)
+
+
+   .. py:method:: prepare(self, query, parse_metadata: bool = True, timeout: float = -1)
+
+
+   .. py:method:: begin(self, isolation: int, tx_timeout: float, timeout: float = -1)
+
+
+   .. py:method:: commit(self, timeout: float = -1)
+
+
+   .. py:method:: rollback(self, timeout: float = -1)
+
+
+
+.. py:class:: IProtoError
+
+   .. py:attribute:: trace
+      :annotation: :List[IProtoErrorStackFrame]
+
+      
+
+
+.. py:class:: IProtoErrorStackFrame
+
+   .. py:attribute:: error_type
+      :annotation: :str
+
+      
+
+   .. py:attribute:: file
+      :annotation: :str
+
+      
+
+   .. py:attribute:: line
+      :annotation: :int
+
+      
+
+   .. py:attribute:: message
+      :annotation: :str
+
+      
+
+   .. py:attribute:: err_no
+      :annotation: :int
+
+      
+
+   .. py:attribute:: code
+      :annotation: :int
+
+      
+
+   .. py:attribute:: fields
+      :annotation: :Dict[str, Any]
+
+      
+
+
+.. py:data:: __version__
+   :annotation: = 2.0.0
+
+   
+

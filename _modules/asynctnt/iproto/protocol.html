@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>asynctnt.iproto.protocol &mdash; asynctnt 2.0.0 documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/graphviz.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../index.html" class="icon icon-home"> asynctnt
+          </a>
+              <div class="version">
+                2.0.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../overview.html">asynctnt</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html#running-tests">Running tests</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../sql.html">SQL Support</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../metadata.html">Metadata</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pushes.html">Session Push</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../streams.html">Streams and Transactions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../mpext.html">Type Extensions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../CHANGELOG.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../autoapi/index.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">asynctnt</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+          <li><a href="../../asynctnt.html">asynctnt</a> &raquo;</li>
+      <li>asynctnt.iproto.protocol</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for asynctnt.iproto.protocol</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">asyncio</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Iterator</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Dict</span>
+
+
+<div class="viewcode-block" id="Field"><a class="viewcode-back" href="../../../autoapi/asynctnt/iproto/protocol/index.html#asynctnt.Field">[docs]</a><span class="k">class</span> <span class="nc">Field</span><span class="p">:</span>
+<div class="viewcode-block" id="Field.name"><a class="viewcode-back" href="../../../autoapi/asynctnt/iproto/protocol/index.html#asynctnt.Field.name">[docs]</a>    <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span></div>
+    <span class="sd">&quot;&quot;&quot; Field name &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Field.type"><a class="viewcode-back" href="../../../autoapi/asynctnt/iproto/protocol/index.html#asynctnt.Field.type">[docs]</a>    <span class="nb">type</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span></div>
+    <span class="sd">&quot;&quot;&quot; Field type &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Field.collation"><a class="viewcode-back" href="../../../autoapi/asynctnt/iproto/protocol/index.html#asynctnt.Field.collation">[docs]</a>    <span class="n">collation</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span></div>
+    <span class="sd">&quot;&quot;&quot; Field collation value &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Field.is_nullable"><a class="viewcode-back" href="../../../autoapi/asynctnt/iproto/protocol/index.html#asynctnt.Field.is_nullable">[docs]</a>    <span class="n">is_nullable</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span></div>
+    <span class="sd">&quot;&quot;&quot; If field may be null &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Field.is_autoincrement"><a class="viewcode-back" href="../../../autoapi/asynctnt/iproto/protocol/index.html#asynctnt.Field.is_autoincrement">[docs]</a>    <span class="n">is_autoincrement</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span></div>
+    <span class="sd">&quot;&quot;&quot; Is Autoincrement &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Field.span"><a class="viewcode-back" href="../../../autoapi/asynctnt/iproto/protocol/index.html#asynctnt.Field.span">[docs]</a>    <span class="n">span</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span></div></div>
+
+
+<div class="viewcode-block" id="Metadata"><a class="viewcode-back" href="../../../autoapi/asynctnt/iproto/protocol/index.html#asynctnt.Metadata">[docs]</a><span class="k">class</span> <span class="nc">Metadata</span><span class="p">:</span>
+<div class="viewcode-block" id="Metadata.fields"><a class="viewcode-back" href="../../../autoapi/asynctnt/iproto/protocol/index.html#asynctnt.Metadata.fields">[docs]</a>    <span class="n">fields</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Field</span><span class="p">]</span></div>
+    <span class="sd">&quot;&quot;&quot; List of fields &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Metadata.name_id_map"><a class="viewcode-back" href="../../../autoapi/asynctnt/iproto/protocol/index.html#asynctnt.Metadata.name_id_map">[docs]</a>    <span class="n">name_id_map</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span></div>
+    <span class="sd">&quot;&quot;&quot; Mapping name -&gt; id &quot;&quot;&quot;</span></div>
+
+
+<div class="viewcode-block" id="SchemaIndex"><a class="viewcode-back" href="../../../autoapi/asynctnt/iproto/protocol/index.html#asynctnt.SchemaIndex">[docs]</a><span class="k">class</span> <span class="nc">SchemaIndex</span><span class="p">:</span>
+<div class="viewcode-block" id="SchemaIndex.iid"><a class="viewcode-back" href="../../../autoapi/asynctnt/iproto/protocol/index.html#asynctnt.SchemaIndex.iid">[docs]</a>    <span class="n">iid</span><span class="p">:</span> <span class="nb">int</span></div>
+    <span class="sd">&quot;&quot;&quot; Index id &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="SchemaIndex.sid"><a class="viewcode-back" href="../../../autoapi/asynctnt/iproto/protocol/index.html#asynctnt.SchemaIndex.sid">[docs]</a>    <span class="n">sid</span><span class="p">:</span> <span class="nb">int</span></div>
+    <span class="sd">&quot;&quot;&quot; Space id &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="SchemaIndex.name"><a class="viewcode-back" href="../../../autoapi/asynctnt/iproto/protocol/index.html#asynctnt.SchemaIndex.name">[docs]</a>    <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span></div>
+<div class="viewcode-block" id="SchemaIndex.index_type"><a class="viewcode-back" href="../../../autoapi/asynctnt/iproto/protocol/index.html#asynctnt.SchemaIndex.index_type">[docs]</a>    <span class="n">index_type</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span></div>
+<div class="viewcode-block" id="SchemaIndex.unique"><a class="viewcode-back" href="../../../autoapi/asynctnt/iproto/protocol/index.html#asynctnt.SchemaIndex.unique">[docs]</a>    <span class="n">unique</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span></div>
+<div class="viewcode-block" id="SchemaIndex.metadata"><a class="viewcode-back" href="../../../autoapi/asynctnt/iproto/protocol/index.html#asynctnt.SchemaIndex.metadata">[docs]</a>    <span class="n">metadata</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Metadata</span><span class="p">]</span></div></div>
+
+
+<div class="viewcode-block" id="SchemaSpace"><a class="viewcode-back" href="../../../autoapi/asynctnt/iproto/protocol/index.html#asynctnt.SchemaSpace">[docs]</a><span class="k">class</span> <span class="nc">SchemaSpace</span><span class="p">:</span>
+<div class="viewcode-block" id="SchemaSpace.sid"><a class="viewcode-back" href="../../../autoapi/asynctnt/iproto/protocol/index.html#asynctnt.SchemaSpace.sid">[docs]</a>    <span class="n">sid</span><span class="p">:</span> <span class="nb">int</span></div>
+<div class="viewcode-block" id="SchemaSpace.owner"><a class="viewcode-back" href="../../../autoapi/asynctnt/iproto/protocol/index.html#asynctnt.SchemaSpace.owner">[docs]</a>    <span class="n">owner</span><span class="p">:</span> <span class="nb">int</span></div>
+<div class="viewcode-block" id="SchemaSpace.name"><a class="viewcode-back" href="../../../autoapi/asynctnt/iproto/protocol/index.html#asynctnt.SchemaSpace.name">[docs]</a>    <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span></div>
+<div class="viewcode-block" id="SchemaSpace.engine"><a class="viewcode-back" href="../../../autoapi/asynctnt/iproto/protocol/index.html#asynctnt.SchemaSpace.engine">[docs]</a>    <span class="n">engine</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span></div>
+<div class="viewcode-block" id="SchemaSpace.field_count"><a class="viewcode-back" href="../../../autoapi/asynctnt/iproto/protocol/index.html#asynctnt.SchemaSpace.field_count">[docs]</a>    <span class="n">field_count</span><span class="p">:</span> <span class="nb">int</span></div>
+<div class="viewcode-block" id="SchemaSpace.flags"><a class="viewcode-back" href="../../../autoapi/asynctnt/iproto/protocol/index.html#asynctnt.SchemaSpace.flags">[docs]</a>    <span class="n">flags</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span></div>
+<div class="viewcode-block" id="SchemaSpace.metadata"><a class="viewcode-back" href="../../../autoapi/asynctnt/iproto/protocol/index.html#asynctnt.SchemaSpace.metadata">[docs]</a>    <span class="n">metadata</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Metadata</span><span class="p">]</span></div>
+<div class="viewcode-block" id="SchemaSpace.indexes"><a class="viewcode-back" href="../../../autoapi/asynctnt/iproto/protocol/index.html#asynctnt.SchemaSpace.indexes">[docs]</a>    <span class="n">indexes</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="n">SchemaIndex</span><span class="p">]</span></div></div>
+
+
+<div class="viewcode-block" id="Schema"><a class="viewcode-back" href="../../../autoapi/asynctnt/iproto/protocol/index.html#asynctnt.Schema">[docs]</a><span class="k">class</span> <span class="nc">Schema</span><span class="p">:</span>
+<div class="viewcode-block" id="Schema.id"><a class="viewcode-back" href="../../../autoapi/asynctnt/iproto/protocol/index.html#asynctnt.Schema.id">[docs]</a>    <span class="nb">id</span><span class="p">:</span> <span class="nb">int</span></div>
+<div class="viewcode-block" id="Schema.spaces"><a class="viewcode-back" href="../../../autoapi/asynctnt/iproto/protocol/index.html#asynctnt.Schema.spaces">[docs]</a>    <span class="n">spaces</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="n">SchemaSpace</span><span class="p">]</span></div></div>
+
+
+<div class="viewcode-block" id="TarantoolTuple"><a class="viewcode-back" href="../../../autoapi/asynctnt/iproto/protocol/index.html#asynctnt.TarantoolTuple">[docs]</a><span class="k">class</span> <span class="nc">TarantoolTuple</span><span class="p">:</span>
+<div class="viewcode-block" id="TarantoolTuple.__repr__"><a class="viewcode-back" href="../../../autoapi/asynctnt/iproto/protocol/index.html#asynctnt.TarantoolTuple.__repr__">[docs]</a>    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span> <span class="o">...</span></div>
+
+<div class="viewcode-block" id="TarantoolTuple.__index__"><a class="viewcode-back" href="../../../autoapi/asynctnt/iproto/protocol/index.html#asynctnt.TarantoolTuple.__index__">[docs]</a>    <span class="k">def</span> <span class="fm">__index__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span> <span class="o">...</span></div>
+
+<div class="viewcode-block" id="TarantoolTuple.__len__"><a class="viewcode-back" href="../../../autoapi/asynctnt/iproto/protocol/index.html#asynctnt.TarantoolTuple.__len__">[docs]</a>    <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span> <span class="o">...</span></div>
+
+<div class="viewcode-block" id="TarantoolTuple.__contains__"><a class="viewcode-back" href="../../../autoapi/asynctnt/iproto/protocol/index.html#asynctnt.TarantoolTuple.__contains__">[docs]</a>    <span class="k">def</span> <span class="fm">__contains__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span> <span class="o">...</span></div>
+
+<div class="viewcode-block" id="TarantoolTuple.__getitem__"><a class="viewcode-back" href="../../../autoapi/asynctnt/iproto/protocol/index.html#asynctnt.TarantoolTuple.__getitem__">[docs]</a>    <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">slice</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span> <span class="o">...</span></div>
+
+<div class="viewcode-block" id="TarantoolTuple.keys"><a class="viewcode-back" href="../../../autoapi/asynctnt/iproto/protocol/index.html#asynctnt.TarantoolTuple.keys">[docs]</a>    <span class="k">def</span> <span class="nf">keys</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span> <span class="o">...</span></div>
+
+<div class="viewcode-block" id="TarantoolTuple.values"><a class="viewcode-back" href="../../../autoapi/asynctnt/iproto/protocol/index.html#asynctnt.TarantoolTuple.values">[docs]</a>    <span class="k">def</span> <span class="nf">values</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">Any</span><span class="p">]:</span> <span class="o">...</span></div>
+
+<div class="viewcode-block" id="TarantoolTuple.items"><a class="viewcode-back" href="../../../autoapi/asynctnt/iproto/protocol/index.html#asynctnt.TarantoolTuple.items">[docs]</a>    <span class="k">def</span> <span class="nf">items</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span> <span class="o">...</span></div>
+
+<div class="viewcode-block" id="TarantoolTuple.get"><a class="viewcode-back" href="../../../autoapi/asynctnt/iproto/protocol/index.html#asynctnt.TarantoolTuple.get">[docs]</a>    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Any</span><span class="p">]:</span> <span class="o">...</span></div>
+
+<div class="viewcode-block" id="TarantoolTuple.__iter__"><a class="viewcode-back" href="../../../autoapi/asynctnt/iproto/protocol/index.html#asynctnt.TarantoolTuple.__iter__">[docs]</a>    <span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> <span class="o">...</span></div>
+
+<div class="viewcode-block" id="TarantoolTuple.__next__"><a class="viewcode-back" href="../../../autoapi/asynctnt/iproto/protocol/index.html#asynctnt.TarantoolTuple.__next__">[docs]</a>    <span class="k">def</span> <span class="fm">__next__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> <span class="o">...</span></div></div>
+
+
+<div class="viewcode-block" id="IProtoErrorStackFrame"><a class="viewcode-back" href="../../../autoapi/asynctnt/iproto/protocol/index.html#asynctnt.IProtoErrorStackFrame">[docs]</a><span class="k">class</span> <span class="nc">IProtoErrorStackFrame</span><span class="p">:</span>
+<div class="viewcode-block" id="IProtoErrorStackFrame.error_type"><a class="viewcode-back" href="../../../autoapi/asynctnt/iproto/protocol/index.html#asynctnt.IProtoErrorStackFrame.error_type">[docs]</a>    <span class="n">error_type</span><span class="p">:</span> <span class="nb">str</span></div>
+<div class="viewcode-block" id="IProtoErrorStackFrame.file"><a class="viewcode-back" href="../../../autoapi/asynctnt/iproto/protocol/index.html#asynctnt.IProtoErrorStackFrame.file">[docs]</a>    <span class="n">file</span><span class="p">:</span> <span class="nb">str</span></div>
+<div class="viewcode-block" id="IProtoErrorStackFrame.line"><a class="viewcode-back" href="../../../autoapi/asynctnt/iproto/protocol/index.html#asynctnt.IProtoErrorStackFrame.line">[docs]</a>    <span class="n">line</span><span class="p">:</span> <span class="nb">int</span></div>
+<div class="viewcode-block" id="IProtoErrorStackFrame.message"><a class="viewcode-back" href="../../../autoapi/asynctnt/iproto/protocol/index.html#asynctnt.IProtoErrorStackFrame.message">[docs]</a>    <span class="n">message</span><span class="p">:</span> <span class="nb">str</span></div>
+<div class="viewcode-block" id="IProtoErrorStackFrame.err_no"><a class="viewcode-back" href="../../../autoapi/asynctnt/iproto/protocol/index.html#asynctnt.IProtoErrorStackFrame.err_no">[docs]</a>    <span class="n">err_no</span><span class="p">:</span> <span class="nb">int</span></div>
+<div class="viewcode-block" id="IProtoErrorStackFrame.code"><a class="viewcode-back" href="../../../autoapi/asynctnt/iproto/protocol/index.html#asynctnt.IProtoErrorStackFrame.code">[docs]</a>    <span class="n">code</span><span class="p">:</span> <span class="nb">int</span></div>
+<div class="viewcode-block" id="IProtoErrorStackFrame.fields"><a class="viewcode-back" href="../../../autoapi/asynctnt/iproto/protocol/index.html#asynctnt.IProtoErrorStackFrame.fields">[docs]</a>    <span class="n">fields</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span></div></div>
+
+
+<div class="viewcode-block" id="IProtoError"><a class="viewcode-back" href="../../../autoapi/asynctnt/iproto/protocol/index.html#asynctnt.IProtoError">[docs]</a><span class="k">class</span> <span class="nc">IProtoError</span><span class="p">:</span>
+<div class="viewcode-block" id="IProtoError.trace"><a class="viewcode-back" href="../../../autoapi/asynctnt/iproto/protocol/index.html#asynctnt.IProtoError.trace">[docs]</a>    <span class="n">trace</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">IProtoErrorStackFrame</span><span class="p">]</span></div></div>
+
+
+<div class="viewcode-block" id="BodyItem"><a class="viewcode-back" href="../../../autoapi/asynctnt/iproto/protocol/index.html#asynctnt.BodyItem">[docs]</a><span class="n">BodyItem</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span><span class="n">TarantoolTuple</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">Any</span><span class="p">],</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">Any</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="Response"><a class="viewcode-back" href="../../../autoapi/asynctnt/iproto/protocol/index.html#asynctnt.Response">[docs]</a><span class="k">class</span> <span class="nc">Response</span><span class="p">:</span>
+<div class="viewcode-block" id="Response.errmsg"><a class="viewcode-back" href="../../../autoapi/asynctnt/iproto/protocol/index.html#asynctnt.Response.errmsg">[docs]</a>    <span class="n">errmsg</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span></div>
+<div class="viewcode-block" id="Response.error"><a class="viewcode-back" href="../../../autoapi/asynctnt/iproto/protocol/index.html#asynctnt.Response.error">[docs]</a>    <span class="n">error</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">IProtoError</span><span class="p">]</span></div>
+<div class="viewcode-block" id="Response.encoding"><a class="viewcode-back" href="../../../autoapi/asynctnt/iproto/protocol/index.html#asynctnt.Response.encoding">[docs]</a>    <span class="n">encoding</span><span class="p">:</span> <span class="nb">bytes</span></div>
+<div class="viewcode-block" id="Response.autoincrement_ids"><a class="viewcode-back" href="../../../autoapi/asynctnt/iproto/protocol/index.html#asynctnt.Response.autoincrement_ids">[docs]</a>    <span class="n">autoincrement_ids</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]]</span></div>
+<div class="viewcode-block" id="Response.body"><a class="viewcode-back" href="../../../autoapi/asynctnt/iproto/protocol/index.html#asynctnt.Response.body">[docs]</a>    <span class="n">body</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">BodyItem</span><span class="p">]]</span></div>
+<div class="viewcode-block" id="Response.metadata"><a class="viewcode-back" href="../../../autoapi/asynctnt/iproto/protocol/index.html#asynctnt.Response.metadata">[docs]</a>    <span class="n">metadata</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Metadata</span><span class="p">]</span></div>
+<div class="viewcode-block" id="Response.params"><a class="viewcode-back" href="../../../autoapi/asynctnt/iproto/protocol/index.html#asynctnt.Response.params">[docs]</a>    <span class="n">params</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Metadata</span><span class="p">]</span></div>
+<div class="viewcode-block" id="Response.params_count"><a class="viewcode-back" href="../../../autoapi/asynctnt/iproto/protocol/index.html#asynctnt.Response.params_count">[docs]</a>    <span class="n">params_count</span><span class="p">:</span> <span class="nb">int</span></div>
+
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="Response.sync"><a class="viewcode-back" href="../../../autoapi/asynctnt/iproto/protocol/index.html#asynctnt.Response.sync">[docs]</a>    <span class="k">def</span> <span class="nf">sync</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span> <span class="o">...</span></div>
+
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="Response.code"><a class="viewcode-back" href="../../../autoapi/asynctnt/iproto/protocol/index.html#asynctnt.Response.code">[docs]</a>    <span class="k">def</span> <span class="nf">code</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span> <span class="o">...</span></div>
+
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="Response.return_code"><a class="viewcode-back" href="../../../autoapi/asynctnt/iproto/protocol/index.html#asynctnt.Response.return_code">[docs]</a>    <span class="k">def</span> <span class="nf">return_code</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span> <span class="o">...</span></div>
+
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="Response.schema_id"><a class="viewcode-back" href="../../../autoapi/asynctnt/iproto/protocol/index.html#asynctnt.Response.schema_id">[docs]</a>    <span class="k">def</span> <span class="nf">schema_id</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span> <span class="o">...</span></div>
+
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="Response.stmt_id"><a class="viewcode-back" href="../../../autoapi/asynctnt/iproto/protocol/index.html#asynctnt.Response.stmt_id">[docs]</a>    <span class="k">def</span> <span class="nf">stmt_id</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span> <span class="o">...</span></div>
+
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="Response.rowcount"><a class="viewcode-back" href="../../../autoapi/asynctnt/iproto/protocol/index.html#asynctnt.Response.rowcount">[docs]</a>    <span class="k">def</span> <span class="nf">rowcount</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span> <span class="o">...</span></div>
+
+<div class="viewcode-block" id="Response.done"><a class="viewcode-back" href="../../../autoapi/asynctnt/iproto/protocol/index.html#asynctnt.Response.done">[docs]</a>    <span class="k">def</span> <span class="nf">done</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span> <span class="o">...</span></div>
+
+<div class="viewcode-block" id="Response.__len__"><a class="viewcode-back" href="../../../autoapi/asynctnt/iproto/protocol/index.html#asynctnt.Response.__len__">[docs]</a>    <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span> <span class="o">...</span></div>
+
+<div class="viewcode-block" id="Response.__getitem__"><a class="viewcode-back" href="../../../autoapi/asynctnt/iproto/protocol/index.html#asynctnt.Response.__getitem__">[docs]</a>    <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BodyItem</span><span class="p">:</span> <span class="o">...</span></div>
+
+<div class="viewcode-block" id="Response.__iter__"><a class="viewcode-back" href="../../../autoapi/asynctnt/iproto/protocol/index.html#asynctnt.Response.__iter__">[docs]</a>    <span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> <span class="o">...</span></div></div>
+
+
+<div class="viewcode-block" id="PushIterator"><a class="viewcode-back" href="../../../autoapi/asynctnt/iproto/protocol/index.html#asynctnt.PushIterator">[docs]</a><span class="k">class</span> <span class="nc">PushIterator</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fut</span><span class="p">:</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Future</span><span class="p">):</span> <span class="o">...</span>
+
+<div class="viewcode-block" id="PushIterator.__iter__"><a class="viewcode-back" href="../../../autoapi/asynctnt/iproto/protocol/index.html#asynctnt.PushIterator.__iter__">[docs]</a>    <span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> <span class="o">...</span></div>
+
+<div class="viewcode-block" id="PushIterator.__next__"><a class="viewcode-back" href="../../../autoapi/asynctnt/iproto/protocol/index.html#asynctnt.PushIterator.__next__">[docs]</a>    <span class="k">def</span> <span class="fm">__next__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> <span class="o">...</span></div>
+
+<div class="viewcode-block" id="PushIterator.__aiter__"><a class="viewcode-back" href="../../../autoapi/asynctnt/iproto/protocol/index.html#asynctnt.PushIterator.__aiter__">[docs]</a>    <span class="k">def</span> <span class="fm">__aiter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> <span class="o">...</span></div>
+
+<div class="viewcode-block" id="PushIterator.__anext__"><a class="viewcode-back" href="../../../autoapi/asynctnt/iproto/protocol/index.html#asynctnt.PushIterator.__anext__">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="fm">__anext__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> <span class="o">...</span></div>
+
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="PushIterator.response"><a class="viewcode-back" href="../../../autoapi/asynctnt/iproto/protocol/index.html#asynctnt.PushIterator.response">[docs]</a>    <span class="k">def</span> <span class="nf">response</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">:</span> <span class="o">...</span></div></div>
+
+
+<div class="viewcode-block" id="Db"><a class="viewcode-back" href="../../../autoapi/asynctnt/iproto/protocol/index.html#asynctnt.Db">[docs]</a><span class="k">class</span> <span class="nc">Db</span><span class="p">:</span>
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="Db.stream_id"><a class="viewcode-back" href="../../../autoapi/asynctnt/iproto/protocol/index.html#asynctnt.Db.stream_id">[docs]</a>    <span class="k">def</span> <span class="nf">stream_id</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span> <span class="o">...</span></div>
+
+<div class="viewcode-block" id="Db.set_stream_id"><a class="viewcode-back" href="../../../autoapi/asynctnt/iproto/protocol/index.html#asynctnt.Db.set_stream_id">[docs]</a>    <span class="k">def</span> <span class="nf">set_stream_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stream_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span> <span class="o">...</span></div>
+
+<div class="viewcode-block" id="Db.ping"><a class="viewcode-back" href="../../../autoapi/asynctnt/iproto/protocol/index.html#asynctnt.Db.ping">[docs]</a>    <span class="k">def</span> <span class="nf">ping</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">):</span> <span class="o">...</span></div>
+
+<div class="viewcode-block" id="Db.call16"><a class="viewcode-back" href="../../../autoapi/asynctnt/iproto/protocol/index.html#asynctnt.Db.call16">[docs]</a>    <span class="k">def</span> <span class="nf">call16</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+               <span class="n">func_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+               <span class="n">args</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+               <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
+               <span class="n">push_subscribe</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span> <span class="o">...</span></div>
+
+<div class="viewcode-block" id="Db.call"><a class="viewcode-back" href="../../../autoapi/asynctnt/iproto/protocol/index.html#asynctnt.Db.call">[docs]</a>    <span class="k">def</span> <span class="nf">call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+             <span class="n">func_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+             <span class="n">args</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+             <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
+             <span class="n">push_subscribe</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span> <span class="o">...</span></div>
+
+<div class="viewcode-block" id="Db.eval"><a class="viewcode-back" href="../../../autoapi/asynctnt/iproto/protocol/index.html#asynctnt.Db.eval">[docs]</a>    <span class="k">def</span> <span class="nf">eval</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+             <span class="n">expression</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+             <span class="n">args</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+             <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
+             <span class="n">push_subscribe</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span> <span class="o">...</span></div>
+
+<div class="viewcode-block" id="Db.select"><a class="viewcode-back" href="../../../autoapi/asynctnt/iproto/protocol/index.html#asynctnt.Db.select">[docs]</a>    <span class="k">def</span> <span class="nf">select</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+               <span class="n">space</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+               <span class="n">offset</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+               <span class="n">limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mh">0xffffffff</span><span class="p">,</span>
+               <span class="n">index</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+               <span class="n">iterator</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+               <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
+               <span class="n">check_schema_change</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span> <span class="o">...</span></div>
+
+<div class="viewcode-block" id="Db.insert"><a class="viewcode-back" href="../../../autoapi/asynctnt/iproto/protocol/index.html#asynctnt.Db.insert">[docs]</a>    <span class="k">def</span> <span class="nf">insert</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+               <span class="n">space</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span>
+               <span class="n">replace</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+               <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">):</span> <span class="o">...</span></div>
+
+<div class="viewcode-block" id="Db.replace"><a class="viewcode-back" href="../../../autoapi/asynctnt/iproto/protocol/index.html#asynctnt.Db.replace">[docs]</a>    <span class="k">def</span> <span class="nf">replace</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">space</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span>
+                <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">):</span> <span class="o">...</span></div>
+
+<div class="viewcode-block" id="Db.delete"><a class="viewcode-back" href="../../../autoapi/asynctnt/iproto/protocol/index.html#asynctnt.Db.delete">[docs]</a>    <span class="k">def</span> <span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">space</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+               <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">):</span> <span class="o">...</span></div>
+
+<div class="viewcode-block" id="Db.update"><a class="viewcode-back" href="../../../autoapi/asynctnt/iproto/protocol/index.html#asynctnt.Db.update">[docs]</a>    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+               <span class="n">space</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">operations</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+               <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">):</span> <span class="o">...</span></div>
+
+<div class="viewcode-block" id="Db.upsert"><a class="viewcode-back" href="../../../autoapi/asynctnt/iproto/protocol/index.html#asynctnt.Db.upsert">[docs]</a>    <span class="k">def</span> <span class="nf">upsert</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+               <span class="n">space</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">operations</span><span class="p">,</span>
+               <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">):</span> <span class="o">...</span></div>
+
+<div class="viewcode-block" id="Db.execute"><a class="viewcode-back" href="../../../autoapi/asynctnt/iproto/protocol/index.html#asynctnt.Db.execute">[docs]</a>    <span class="k">def</span> <span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                <span class="n">query</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span>
+                <span class="n">parse_metadata</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+                <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">):</span> <span class="o">...</span></div>
+
+<div class="viewcode-block" id="Db.prepare"><a class="viewcode-back" href="../../../autoapi/asynctnt/iproto/protocol/index.html#asynctnt.Db.prepare">[docs]</a>    <span class="k">def</span> <span class="nf">prepare</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                <span class="n">query</span><span class="p">,</span>
+                <span class="n">parse_metadata</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+                <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">):</span> <span class="o">...</span></div>
+
+<div class="viewcode-block" id="Db.begin"><a class="viewcode-back" href="../../../autoapi/asynctnt/iproto/protocol/index.html#asynctnt.Db.begin">[docs]</a>    <span class="k">def</span> <span class="nf">begin</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+              <span class="n">isolation</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+              <span class="n">tx_timeout</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+              <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">):</span> <span class="o">...</span></div>
+
+<div class="viewcode-block" id="Db.commit"><a class="viewcode-back" href="../../../autoapi/asynctnt/iproto/protocol/index.html#asynctnt.Db.commit">[docs]</a>    <span class="k">def</span> <span class="nf">commit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">):</span> <span class="o">...</span></div>
+
+<div class="viewcode-block" id="Db.rollback"><a class="viewcode-back" href="../../../autoapi/asynctnt/iproto/protocol/index.html#asynctnt.Db.rollback">[docs]</a>    <span class="k">def</span> <span class="nf">rollback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">):</span> <span class="o">...</span></div></div>
+
+
+<div class="viewcode-block" id="Protocol"><a class="viewcode-back" href="../../../autoapi/asynctnt/iproto/protocol/index.html#asynctnt.Protocol">[docs]</a><span class="k">class</span> <span class="nc">Protocol</span><span class="p">:</span>
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="Protocol.schema_id"><a class="viewcode-back" href="../../../autoapi/asynctnt/iproto/protocol/index.html#asynctnt.Protocol.schema_id">[docs]</a>    <span class="k">def</span> <span class="nf">schema_id</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span> <span class="o">...</span></div>
+
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="Protocol.schema"><a class="viewcode-back" href="../../../autoapi/asynctnt/iproto/protocol/index.html#asynctnt.Protocol.schema">[docs]</a>    <span class="k">def</span> <span class="nf">schema</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Schema</span><span class="p">:</span> <span class="o">...</span></div>
+
+<div class="viewcode-block" id="Protocol.create_db"><a class="viewcode-back" href="../../../autoapi/asynctnt/iproto/protocol/index.html#asynctnt.Protocol.create_db">[docs]</a>    <span class="k">def</span> <span class="nf">create_db</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gen_stream_id</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Db</span><span class="p">:</span> <span class="o">...</span></div>
+
+<div class="viewcode-block" id="Protocol.get_common_db"><a class="viewcode-back" href="../../../autoapi/asynctnt/iproto/protocol/index.html#asynctnt.Protocol.get_common_db">[docs]</a>    <span class="k">def</span> <span class="nf">get_common_db</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Db</span><span class="p">:</span> <span class="o">...</span></div>
+
+<div class="viewcode-block" id="Protocol.refetch_schema"><a class="viewcode-back" href="../../../autoapi/asynctnt/iproto/protocol/index.html#asynctnt.Protocol.refetch_schema">[docs]</a>    <span class="k">def</span> <span class="nf">refetch_schema</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Future</span><span class="p">:</span> <span class="o">...</span></div>
+
+<div class="viewcode-block" id="Protocol.is_connected"><a class="viewcode-back" href="../../../autoapi/asynctnt/iproto/protocol/index.html#asynctnt.Protocol.is_connected">[docs]</a>    <span class="k">def</span> <span class="nf">is_connected</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span> <span class="o">...</span></div>
+
+<div class="viewcode-block" id="Protocol.is_fully_connected"><a class="viewcode-back" href="../../../autoapi/asynctnt/iproto/protocol/index.html#asynctnt.Protocol.is_fully_connected">[docs]</a>    <span class="k">def</span> <span class="nf">is_fully_connected</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span> <span class="o">...</span></div>
+
+<div class="viewcode-block" id="Protocol.get_version"><a class="viewcode-back" href="../../../autoapi/asynctnt/iproto/protocol/index.html#asynctnt.Protocol.get_version">[docs]</a>    <span class="k">def</span> <span class="nf">get_version</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span> <span class="o">...</span></div></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, igorcoding.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,272 @@
+:py:mod:`asynctnt.instance`
+===========================
+
+.. py:module:: asynctnt.instance
+
+
+Module Contents
+---------------
+
+Classes
+~~~~~~~
+
+.. autoapisummary::
+
+   asynctnt.instance.TarantoolInstanceProtocol
+   asynctnt.instance.TarantoolInstance
+   asynctnt.instance.TarantoolSyncInstance
+   asynctnt.instance.TarantoolAsyncInstance
+   asynctnt.instance.TarantoolSyncDockerInstance
+
+
+
+
+.. py:class:: TarantoolInstanceProtocol(tnt, on_exit)
+
+   Bases: :py:obj:`asyncio.SubprocessProtocol`
+
+   Interface for protocol for subprocess calls.
+
+   .. py:method:: logger(self)
+      :property:
+
+
+   .. py:method:: pid(self)
+      :property:
+
+
+   .. py:method:: connection_made(self, transport)
+
+      Called when a connection is made.
+
+      The argument is the transport representing the pipe connection.
+      To receive data, wait for data_received() calls.
+      When the connection is closed, connection_lost() is called.
+
+
+   .. py:method:: pipe_data_received(self, fd, data)
+
+      Called when the subprocess writes data into stdout/stderr pipe.
+
+      fd is int file descriptor.
+      data is bytes object.
+
+
+   .. py:method:: process_exited(self)
+
+      Called when subprocess has exited.
+
+
+   .. py:method:: returncode(self)
+      :property:
+
+
+   .. py:method:: wait(self)
+      :async:
+
+      Wait until the process exit and return the process return code.
+
+      This method is a coroutine.
+
+
+   .. py:method:: send_signal(self, signal)
+
+
+   .. py:method:: terminate(self)
+
+
+   .. py:method:: kill(self)
+
+
+
+.. py:class:: TarantoolInstance(*, host='127.0.0.1', port=3301, console_host=None, console_port=3302, replication_source=None, title=None, logger=None, log_level=5, slab_alloc_arena=0.1, wal_mode='none', root=None, specify_work_dir=True, cleanup=True, initlua_template=None, applua='-- app.lua --', extra_box_cfg='', timeout=5.0, command_to_run='tarantool', command_args=None)
+
+   .. py:method:: replication_source(self)
+      :property:
+
+
+   .. py:method:: _random_string(self, length, *, source=string.ascii_uppercase + string.ascii_lowercase + string.digits)
+
+
+   .. py:method:: _generate_title(self)
+
+
+   .. py:method:: _generate_root_folder_name(self)
+
+
+   .. py:method:: get_random_port()
+      :staticmethod:
+
+
+   .. py:method:: _create_initlua_template(self)
+
+
+   .. py:method:: _render_initlua(self)
+
+
+   .. py:method:: _save_initlua(self, initlua)
+
+
+   .. py:method:: logger(self)
+      :property:
+
+
+   .. py:method:: fingerprint(self)
+      :property:
+
+
+   .. py:method:: prepare(self, recreate)
+
+
+   .. py:method:: host(self)
+      :property:
+
+
+   .. py:method:: port(self)
+      :property:
+
+
+   .. py:method:: console_port(self)
+      :property:
+
+
+   .. py:method:: is_running(self)
+      :property:
+
+
+   .. py:method:: pid(self)
+      :property:
+
+
+   .. py:method:: command(self, cmd, print_greeting=True)
+      :abstractmethod:
+
+
+   .. py:method:: start(self, *, wait=True, recreate=True)
+      :abstractmethod:
+
+
+   .. py:method:: stop(self)
+      :abstractmethod:
+
+
+   .. py:method:: terminate(self)
+      :abstractmethod:
+
+
+   .. py:method:: kill(self)
+      :abstractmethod:
+
+
+   .. py:method:: cleanup(self)
+
+
+
+.. py:class:: TarantoolSyncInstance(**kwargs)
+
+   Bases: :py:obj:`TarantoolInstance`
+
+   .. py:attribute:: WAIT_TIMEOUT
+      :annotation: = 5
+
+      
+
+   .. py:method:: __enter__(self)
+
+
+   .. py:method:: __exit__(self, exc_type, exc_val, exc_tb)
+
+
+   .. py:method:: pid(self)
+      :property:
+
+
+   .. py:method:: start(self, *, wait=True, recreate=True)
+
+
+   .. py:method:: _log_reader(self)
+
+
+   .. py:method:: stop(self)
+
+
+   .. py:method:: terminate(self)
+
+
+   .. py:method:: kill(self)
+
+
+   .. py:method:: _wait(self, timeout, wait=True)
+
+
+   .. py:method:: cleanup(self)
+
+
+   .. py:method:: _parse_version(version: str) -> Optional[tuple]
+      :staticmethod:
+
+
+   .. py:method:: version(self) -> Optional[tuple]
+
+
+   .. py:method:: bin_version(self) -> Optional[tuple]
+      :property:
+
+
+   .. py:method:: command(self, cmd, print_greeting=True)
+
+
+
+.. py:class:: TarantoolAsyncInstance(**kwargs)
+
+   Bases: :py:obj:`TarantoolInstance`
+
+   .. py:method:: pid(self)
+      :property:
+
+
+   .. py:method:: prepare(self, recreate)
+
+
+   .. py:method:: _on_process_exit(self, return_code)
+
+
+   .. py:method:: wait_stopped(self)
+      :async:
+
+
+   .. py:method:: version(self)
+      :async:
+
+
+   .. py:method:: command(self, cmd, print_greeting=True)
+      :async:
+
+
+   .. py:method:: start(self, *, wait=True, recreate=True)
+      :async:
+
+
+   .. py:method:: stop(self)
+      :async:
+
+
+   .. py:method:: terminate(self)
+
+
+   .. py:method:: kill(self)
+
+
+   .. py:method:: cleanup(self)
+
+
+
+.. py:class:: TarantoolSyncDockerInstance(*, docker_image=None, docker_tag=None, host='0.0.0.0', port=3301, console_host=None, console_port=3302, replication_source=None, title=None, logger=None, log_level=5, slab_alloc_arena=0.1, wal_mode='none', initlua_template=None, applua='-- app.lua --', timeout=10.0)
+
+   Bases: :py:obj:`TarantoolSyncInstance`
+
+   .. py:method:: bin_version(self) -> Optional[tuple]
+      :property:
+
+
+

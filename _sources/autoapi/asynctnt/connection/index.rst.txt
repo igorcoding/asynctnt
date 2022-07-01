@@ -1,0 +1,275 @@
+:py:mod:`asynctnt.connection`
+=============================
+
+.. py:module:: asynctnt.connection
+
+
+Module Contents
+---------------
+
+Classes
+~~~~~~~
+
+.. autoapisummary::
+
+   asynctnt.connection.ConnectionState
+   asynctnt.connection.Connection
+
+
+
+Functions
+~~~~~~~~~
+
+.. autoapisummary::
+
+   asynctnt.connection.connect
+
+
+
+.. py:class:: ConnectionState
+
+   Bases: :py:obj:`enum.IntEnum`
+
+   Enum where members are also (and must be) ints
+
+   .. py:attribute:: CONNECTING
+      :annotation: = 1
+
+      
+
+   .. py:attribute:: CONNECTED
+      :annotation: = 2
+
+      
+
+   .. py:attribute:: RECONNECTING
+      :annotation: = 3
+
+      
+
+   .. py:attribute:: DISCONNECTING
+      :annotation: = 4
+
+      
+
+   .. py:attribute:: DISCONNECTED
+      :annotation: = 5
+
+      
+
+
+.. py:class:: Connection(*, host: str = '127.0.0.1', port: Union[int, str] = 3301, username: Optional[str] = None, password: Optional[str] = None, fetch_schema: bool = True, auto_refetch_schema: bool = True, connect_timeout: float = 3.0, request_timeout: float = -1.0, reconnect_timeout: float = 1.0 / 3.0, ping_timeout: float = 5.0, encoding: Optional[str] = None, initial_read_buffer_size: Optional[int] = None)
+
+   Bases: :py:obj:`asynctnt.api.Api`
+
+   .. py:attribute:: __slots__
+      :annotation: = ['_host', '_port', '_username', '_password', '_fetch_schema', '_auto_refetch_schema',...
+
+      
+
+   .. py:method:: _set_state(self, new_state: ConnectionState)
+
+
+   .. py:method:: connection_lost(self, exc)
+
+
+   .. py:method:: _ping_task_func(self)
+      :async:
+
+
+   .. py:method:: _start_reconnect(self, return_exceptions: bool = False)
+
+
+   .. py:method:: protocol_factory(self, connected_fut: asyncio.Future, cls=protocol.Protocol)
+
+
+   .. py:method:: _connect(self, return_exceptions: bool = True)
+      :async:
+
+
+   .. py:method:: _wait_reconnect(self, exc=None)
+      :async:
+
+
+   .. py:method:: connect(self) -> Connection
+      :async:
+
+      Connect coroutine
+
+
+   .. py:method:: disconnect(self)
+      :async:
+
+      Disconnect coroutine
+
+
+   .. py:method:: close(self)
+
+      Same as disconnect, but not a coroutine, i.e. it does not wait
+      for disconnect to finish.
+
+
+   .. py:method:: reconnect(self)
+      :async:
+
+      Reconnect coroutine.
+      Just calls disconnect() and connect()
+
+
+   .. py:method:: __aenter__(self)
+      :async:
+
+      Executed on entering the async with section.
+      Connects to Tarantool instance.
+
+
+   .. py:method:: __aexit__(self, exc_type, exc_val, exc_tb)
+      :async:
+
+      Executed on leaving the async with section.
+      Disconnects from Tarantool instance.
+
+
+   .. py:method:: fingerprint(self) -> str
+      :property:
+
+
+   .. py:method:: host(self) -> str
+      :property:
+
+      Tarantool host
+
+
+   .. py:method:: port(self) -> int
+      :property:
+
+      Tarantool port
+
+
+   .. py:method:: username(self) -> Optional[str]
+      :property:
+
+      Tarantool username
+
+
+   .. py:method:: password(self) -> Optional[str]
+      :property:
+
+      Tarantool password
+
+
+   .. py:method:: fetch_schema(self) -> bool
+      :property:
+
+      fetch_schema flag
+
+
+   .. py:method:: auto_refetch_schema(self) -> bool
+      :property:
+
+      auto_refetch_schema flag
+
+
+   .. py:method:: encoding(self) -> str
+      :property:
+
+      Connection encoding
+
+
+   .. py:method:: reconnect_timeout(self) -> float
+      :property:
+
+      Reconnect timeout value
+
+
+   .. py:method:: connect_timeout(self) -> float
+      :property:
+
+      Connect timeout value
+
+
+   .. py:method:: request_timeout(self) -> float
+      :property:
+
+      Request timeout value
+
+
+   .. py:method:: version(self) -> Optional[tuple]
+      :property:
+
+      Protocol version tuple. ex.: (1, 6, 7)
+
+
+   .. py:method:: loop(self)
+      :property:
+
+      Asyncio event loop
+
+
+   .. py:method:: state(self) -> ConnectionState
+      :property:
+
+      Current connection state
+
+      :rtype: ConnectionState
+
+
+   .. py:method:: is_connected(self) -> bool
+      :property:
+
+      Check if an underlying connection is active
+
+
+   .. py:method:: is_fully_connected(self) -> bool
+      :property:
+
+      Check if connection is fully active (performed auth
+      and schema fetching)
+
+
+   .. py:method:: schema_id(self) -> Optional[int]
+      :property:
+
+      Tarantool's current schema id
+
+
+   .. py:method:: schema(self) -> Optional[asynctnt.iproto.protocol.Schema]
+      :property:
+
+      Current Tarantool schema with all spaces, indexes and fields
+
+
+   .. py:method:: initial_read_buffer_size(self) -> int
+      :property:
+
+      initial_read_buffer_size value
+
+
+   .. py:method:: refetch_schema(self)
+      :async:
+
+      Coroutine to force refetch schema
+
+
+   .. py:method:: _normalize_api(self)
+
+
+   .. py:method:: __repr__(self)
+
+      Return repr(self).
+
+
+   .. py:method:: stream(self) -> asynctnt.stream.Stream
+
+      Create new stream suitable for interactive transactions
+
+
+
+.. py:function:: connect(**kwargs) -> Connection
+   :async:
+
+   connect shorthand. See :class:`asynctnt.Connection` for kwargs details
+
+   :return: :class:`asynctnt.Connection` object
+
+

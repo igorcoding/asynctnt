@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>asynctnt.instance &mdash; asynctnt 2.0.0 documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/graphviz.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../index.html" class="icon icon-home"> asynctnt
+          </a>
+              <div class="version">
+                2.0.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../overview.html">asynctnt</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html#running-tests">Running tests</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../sql.html">SQL Support</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../metadata.html">Metadata</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pushes.html">Session Push</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../streams.html">Streams and Transactions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../mpext.html">Type Extensions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../CHANGELOG.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">asynctnt</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+      <li><code class="xref py py-mod docutils literal notranslate"><span class="pre">asynctnt.instance</span></code></li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/igorcoding/asynctnt/blob/v2/docs/autoapi/asynctnt/instance/index.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-asynctnt.instance">
+<span id="asynctnt-instance"></span><h1><a class="reference internal" href="#module-asynctnt.instance" title="asynctnt.instance"><code class="xref py py-mod docutils literal notranslate"><span class="pre">asynctnt.instance</span></code></a><a class="headerlink" href="#module-asynctnt.instance" title="Permalink to this heading"></a></h1>
+<section id="module-contents">
+<h2>Module Contents<a class="headerlink" href="#module-contents" title="Permalink to this heading"></a></h2>
+<section id="classes">
+<h3>Classes<a class="headerlink" href="#classes" title="Permalink to this heading"></a></h3>
+<table class="autosummary longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#asynctnt.instance.TarantoolInstanceProtocol" title="asynctnt.instance.TarantoolInstanceProtocol"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TarantoolInstanceProtocol</span></code></a></p></td>
+<td><p>Interface for protocol for subprocess calls.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#asynctnt.instance.TarantoolInstance" title="asynctnt.instance.TarantoolInstance"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TarantoolInstance</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#asynctnt.instance.TarantoolSyncInstance" title="asynctnt.instance.TarantoolSyncInstance"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TarantoolSyncInstance</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#asynctnt.instance.TarantoolAsyncInstance" title="asynctnt.instance.TarantoolAsyncInstance"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TarantoolAsyncInstance</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#asynctnt.instance.TarantoolSyncDockerInstance" title="asynctnt.instance.TarantoolSyncDockerInstance"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TarantoolSyncDockerInstance</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py class">
+<dt class="sig sig-object py" id="asynctnt.instance.TarantoolInstanceProtocol">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">asynctnt.instance.</span></span><span class="sig-name descname"><span class="pre">TarantoolInstanceProtocol</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tnt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">on_exit</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/asynctnt/instance.html#TarantoolInstanceProtocol"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#asynctnt.instance.TarantoolInstanceProtocol" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-obj docutils literal notranslate"><span class="pre">asyncio.SubprocessProtocol</span></code></p>
+<p>Interface for protocol for subprocess calls.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="asynctnt.instance.TarantoolInstanceProtocol.logger">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">logger</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/asynctnt/instance.html#TarantoolInstanceProtocol.logger"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#asynctnt.instance.TarantoolInstanceProtocol.logger" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="asynctnt.instance.TarantoolInstanceProtocol.pid">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">pid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/asynctnt/instance.html#TarantoolInstanceProtocol.pid"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#asynctnt.instance.TarantoolInstanceProtocol.pid" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="asynctnt.instance.TarantoolInstanceProtocol.connection_made">
+<span class="sig-name descname"><span class="pre">connection_made</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transport</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/asynctnt/instance.html#TarantoolInstanceProtocol.connection_made"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#asynctnt.instance.TarantoolInstanceProtocol.connection_made" title="Permalink to this definition"></a></dt>
+<dd><p>Called when a connection is made.</p>
+<p>The argument is the transport representing the pipe connection.
+To receive data, wait for data_received() calls.
+When the connection is closed, connection_lost() is called.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="asynctnt.instance.TarantoolInstanceProtocol.pipe_data_received">
+<span class="sig-name descname"><span class="pre">pipe_data_received</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fd</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/asynctnt/instance.html#TarantoolInstanceProtocol.pipe_data_received"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#asynctnt.instance.TarantoolInstanceProtocol.pipe_data_received" title="Permalink to this definition"></a></dt>
+<dd><p>Called when the subprocess writes data into stdout/stderr pipe.</p>
+<p>fd is int file descriptor.
+data is bytes object.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="asynctnt.instance.TarantoolInstanceProtocol.process_exited">
+<span class="sig-name descname"><span class="pre">process_exited</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/asynctnt/instance.html#TarantoolInstanceProtocol.process_exited"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#asynctnt.instance.TarantoolInstanceProtocol.process_exited" title="Permalink to this definition"></a></dt>
+<dd><p>Called when subprocess has exited.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="asynctnt.instance.TarantoolInstanceProtocol.returncode">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">returncode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/asynctnt/instance.html#TarantoolInstanceProtocol.returncode"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#asynctnt.instance.TarantoolInstanceProtocol.returncode" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="asynctnt.instance.TarantoolInstanceProtocol.wait">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">wait</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/asynctnt/instance.html#TarantoolInstanceProtocol.wait"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#asynctnt.instance.TarantoolInstanceProtocol.wait" title="Permalink to this definition"></a></dt>
+<dd><p>Wait until the process exit and return the process return code.</p>
+<p>This method is a coroutine.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="asynctnt.instance.TarantoolInstanceProtocol.send_signal">
+<span class="sig-name descname"><span class="pre">send_signal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">signal</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/asynctnt/instance.html#TarantoolInstanceProtocol.send_signal"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#asynctnt.instance.TarantoolInstanceProtocol.send_signal" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="asynctnt.instance.TarantoolInstanceProtocol.terminate">
+<span class="sig-name descname"><span class="pre">terminate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/asynctnt/instance.html#TarantoolInstanceProtocol.terminate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#asynctnt.instance.TarantoolInstanceProtocol.terminate" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="asynctnt.instance.TarantoolInstanceProtocol.kill">
+<span class="sig-name descname"><span class="pre">kill</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/asynctnt/instance.html#TarantoolInstanceProtocol.kill"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#asynctnt.instance.TarantoolInstanceProtocol.kill" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="asynctnt.instance.TarantoolInstance">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">asynctnt.instance.</span></span><span class="sig-name descname"><span class="pre">TarantoolInstance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">host</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'127.0.0.1'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">port</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3301</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">console_host</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">console_port</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3302</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">replication_source</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_level</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">slab_alloc_arena</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wal_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'none'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">root</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">specify_work_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cleanup</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initlua_template</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">applua</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'--</span> <span class="pre">app.lua</span> <span class="pre">--'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">extra_box_cfg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">command_to_run</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'tarantool'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">command_args</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/asynctnt/instance.html#TarantoolInstance"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#asynctnt.instance.TarantoolInstance" title="Permalink to this definition"></a></dt>
+<dd><dl class="py method">
+<dt class="sig sig-object py" id="asynctnt.instance.TarantoolInstance.replication_source">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">replication_source</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/asynctnt/instance.html#TarantoolInstance.replication_source"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#asynctnt.instance.TarantoolInstance.replication_source" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="asynctnt.instance.TarantoolInstance._random_string">
+<span class="sig-name descname"><span class="pre">_random_string</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">length</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">string.ascii_uppercase</span> <span class="pre">+</span> <span class="pre">string.ascii_lowercase</span> <span class="pre">+</span> <span class="pre">string.digits</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/asynctnt/instance.html#TarantoolInstance._random_string"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#asynctnt.instance.TarantoolInstance._random_string" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="asynctnt.instance.TarantoolInstance._generate_title">
+<span class="sig-name descname"><span class="pre">_generate_title</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/asynctnt/instance.html#TarantoolInstance._generate_title"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#asynctnt.instance.TarantoolInstance._generate_title" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="asynctnt.instance.TarantoolInstance._generate_root_folder_name">
+<span class="sig-name descname"><span class="pre">_generate_root_folder_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/asynctnt/instance.html#TarantoolInstance._generate_root_folder_name"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#asynctnt.instance.TarantoolInstance._generate_root_folder_name" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="asynctnt.instance.TarantoolInstance.get_random_port">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_random_port</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/asynctnt/instance.html#TarantoolInstance.get_random_port"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#asynctnt.instance.TarantoolInstance.get_random_port" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="asynctnt.instance.TarantoolInstance._create_initlua_template">
+<span class="sig-name descname"><span class="pre">_create_initlua_template</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/asynctnt/instance.html#TarantoolInstance._create_initlua_template"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#asynctnt.instance.TarantoolInstance._create_initlua_template" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="asynctnt.instance.TarantoolInstance._render_initlua">
+<span class="sig-name descname"><span class="pre">_render_initlua</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/asynctnt/instance.html#TarantoolInstance._render_initlua"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#asynctnt.instance.TarantoolInstance._render_initlua" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="asynctnt.instance.TarantoolInstance._save_initlua">
+<span class="sig-name descname"><span class="pre">_save_initlua</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initlua</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/asynctnt/instance.html#TarantoolInstance._save_initlua"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#asynctnt.instance.TarantoolInstance._save_initlua" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="asynctnt.instance.TarantoolInstance.logger">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">logger</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/asynctnt/instance.html#TarantoolInstance.logger"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#asynctnt.instance.TarantoolInstance.logger" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="asynctnt.instance.TarantoolInstance.fingerprint">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">fingerprint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/asynctnt/instance.html#TarantoolInstance.fingerprint"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#asynctnt.instance.TarantoolInstance.fingerprint" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="asynctnt.instance.TarantoolInstance.prepare">
+<span class="sig-name descname"><span class="pre">prepare</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">recreate</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/asynctnt/instance.html#TarantoolInstance.prepare"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#asynctnt.instance.TarantoolInstance.prepare" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="asynctnt.instance.TarantoolInstance.host">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">host</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/asynctnt/instance.html#TarantoolInstance.host"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#asynctnt.instance.TarantoolInstance.host" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="asynctnt.instance.TarantoolInstance.port">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">port</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/asynctnt/instance.html#TarantoolInstance.port"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#asynctnt.instance.TarantoolInstance.port" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="asynctnt.instance.TarantoolInstance.console_port">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">console_port</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/asynctnt/instance.html#TarantoolInstance.console_port"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#asynctnt.instance.TarantoolInstance.console_port" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="asynctnt.instance.TarantoolInstance.is_running">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_running</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/asynctnt/instance.html#TarantoolInstance.is_running"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#asynctnt.instance.TarantoolInstance.is_running" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="asynctnt.instance.TarantoolInstance.pid">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">pid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/asynctnt/instance.html#TarantoolInstance.pid"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#asynctnt.instance.TarantoolInstance.pid" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="asynctnt.instance.TarantoolInstance.command">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">command</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cmd</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">print_greeting</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/asynctnt/instance.html#TarantoolInstance.command"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#asynctnt.instance.TarantoolInstance.command" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="asynctnt.instance.TarantoolInstance.start">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">start</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wait</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">recreate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/asynctnt/instance.html#TarantoolInstance.start"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#asynctnt.instance.TarantoolInstance.start" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="asynctnt.instance.TarantoolInstance.stop">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">stop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/asynctnt/instance.html#TarantoolInstance.stop"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#asynctnt.instance.TarantoolInstance.stop" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="asynctnt.instance.TarantoolInstance.terminate">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">terminate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/asynctnt/instance.html#TarantoolInstance.terminate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#asynctnt.instance.TarantoolInstance.terminate" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="asynctnt.instance.TarantoolInstance.kill">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">kill</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/asynctnt/instance.html#TarantoolInstance.kill"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#asynctnt.instance.TarantoolInstance.kill" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="asynctnt.instance.TarantoolInstance.cleanup">
+<span class="sig-name descname"><span class="pre">cleanup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/asynctnt/instance.html#TarantoolInstance.cleanup"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#asynctnt.instance.TarantoolInstance.cleanup" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="asynctnt.instance.TarantoolSyncInstance">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">asynctnt.instance.</span></span><span class="sig-name descname"><span class="pre">TarantoolSyncInstance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/asynctnt/instance.html#TarantoolSyncInstance"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#asynctnt.instance.TarantoolSyncInstance" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#asynctnt.instance.TarantoolInstance" title="asynctnt.instance.TarantoolInstance"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TarantoolInstance</span></code></a></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="asynctnt.instance.TarantoolSyncInstance.WAIT_TIMEOUT">
+<span class="sig-name descname"><span class="pre">WAIT_TIMEOUT</span></span><em class="property"><span class="w"> </span><span class="pre">=</span> <span class="pre">5</span></em><a class="reference internal" href="../../../_modules/asynctnt/instance.html#TarantoolSyncInstance.WAIT_TIMEOUT"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#asynctnt.instance.TarantoolSyncInstance.WAIT_TIMEOUT" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="asynctnt.instance.TarantoolSyncInstance.__enter__">
+<span class="sig-name descname"><span class="pre">__enter__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/asynctnt/instance.html#TarantoolSyncInstance.__enter__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#asynctnt.instance.TarantoolSyncInstance.__enter__" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="asynctnt.instance.TarantoolSyncInstance.__exit__">
+<span class="sig-name descname"><span class="pre">__exit__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exc_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exc_val</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exc_tb</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/asynctnt/instance.html#TarantoolSyncInstance.__exit__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#asynctnt.instance.TarantoolSyncInstance.__exit__" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="asynctnt.instance.TarantoolSyncInstance.pid">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">pid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/asynctnt/instance.html#TarantoolSyncInstance.pid"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#asynctnt.instance.TarantoolSyncInstance.pid" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="asynctnt.instance.TarantoolSyncInstance.start">
+<span class="sig-name descname"><span class="pre">start</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wait</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">recreate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/asynctnt/instance.html#TarantoolSyncInstance.start"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#asynctnt.instance.TarantoolSyncInstance.start" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="asynctnt.instance.TarantoolSyncInstance._log_reader">
+<span class="sig-name descname"><span class="pre">_log_reader</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/asynctnt/instance.html#TarantoolSyncInstance._log_reader"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#asynctnt.instance.TarantoolSyncInstance._log_reader" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="asynctnt.instance.TarantoolSyncInstance.stop">
+<span class="sig-name descname"><span class="pre">stop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/asynctnt/instance.html#TarantoolSyncInstance.stop"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#asynctnt.instance.TarantoolSyncInstance.stop" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="asynctnt.instance.TarantoolSyncInstance.terminate">
+<span class="sig-name descname"><span class="pre">terminate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/asynctnt/instance.html#TarantoolSyncInstance.terminate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#asynctnt.instance.TarantoolSyncInstance.terminate" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="asynctnt.instance.TarantoolSyncInstance.kill">
+<span class="sig-name descname"><span class="pre">kill</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/asynctnt/instance.html#TarantoolSyncInstance.kill"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#asynctnt.instance.TarantoolSyncInstance.kill" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="asynctnt.instance.TarantoolSyncInstance._wait">
+<span class="sig-name descname"><span class="pre">_wait</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wait</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/asynctnt/instance.html#TarantoolSyncInstance._wait"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#asynctnt.instance.TarantoolSyncInstance._wait" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="asynctnt.instance.TarantoolSyncInstance.cleanup">
+<span class="sig-name descname"><span class="pre">cleanup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/asynctnt/instance.html#TarantoolSyncInstance.cleanup"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#asynctnt.instance.TarantoolSyncInstance.cleanup" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="asynctnt.instance.TarantoolSyncInstance._parse_version">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">_parse_version</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">version</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../../_modules/asynctnt/instance.html#TarantoolSyncInstance._parse_version"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#asynctnt.instance.TarantoolSyncInstance._parse_version" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="asynctnt.instance.TarantoolSyncInstance.version">
+<span class="sig-name descname"><span class="pre">version</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../../_modules/asynctnt/instance.html#TarantoolSyncInstance.version"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#asynctnt.instance.TarantoolSyncInstance.version" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="asynctnt.instance.TarantoolSyncInstance.bin_version">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">bin_version</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../../_modules/asynctnt/instance.html#TarantoolSyncInstance.bin_version"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#asynctnt.instance.TarantoolSyncInstance.bin_version" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="asynctnt.instance.TarantoolSyncInstance.command">
+<span class="sig-name descname"><span class="pre">command</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cmd</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">print_greeting</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/asynctnt/instance.html#TarantoolSyncInstance.command"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#asynctnt.instance.TarantoolSyncInstance.command" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="asynctnt.instance.TarantoolAsyncInstance">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">asynctnt.instance.</span></span><span class="sig-name descname"><span class="pre">TarantoolAsyncInstance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/asynctnt/instance.html#TarantoolAsyncInstance"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#asynctnt.instance.TarantoolAsyncInstance" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#asynctnt.instance.TarantoolInstance" title="asynctnt.instance.TarantoolInstance"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TarantoolInstance</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="asynctnt.instance.TarantoolAsyncInstance.pid">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">pid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/asynctnt/instance.html#TarantoolAsyncInstance.pid"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#asynctnt.instance.TarantoolAsyncInstance.pid" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="asynctnt.instance.TarantoolAsyncInstance.prepare">
+<span class="sig-name descname"><span class="pre">prepare</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">recreate</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/asynctnt/instance.html#TarantoolAsyncInstance.prepare"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#asynctnt.instance.TarantoolAsyncInstance.prepare" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="asynctnt.instance.TarantoolAsyncInstance._on_process_exit">
+<span class="sig-name descname"><span class="pre">_on_process_exit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_code</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/asynctnt/instance.html#TarantoolAsyncInstance._on_process_exit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#asynctnt.instance.TarantoolAsyncInstance._on_process_exit" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="asynctnt.instance.TarantoolAsyncInstance.wait_stopped">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">wait_stopped</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/asynctnt/instance.html#TarantoolAsyncInstance.wait_stopped"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#asynctnt.instance.TarantoolAsyncInstance.wait_stopped" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="asynctnt.instance.TarantoolAsyncInstance.version">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">version</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/asynctnt/instance.html#TarantoolAsyncInstance.version"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#asynctnt.instance.TarantoolAsyncInstance.version" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="asynctnt.instance.TarantoolAsyncInstance.command">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">command</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cmd</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">print_greeting</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/asynctnt/instance.html#TarantoolAsyncInstance.command"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#asynctnt.instance.TarantoolAsyncInstance.command" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="asynctnt.instance.TarantoolAsyncInstance.start">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">start</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wait</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">recreate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/asynctnt/instance.html#TarantoolAsyncInstance.start"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#asynctnt.instance.TarantoolAsyncInstance.start" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="asynctnt.instance.TarantoolAsyncInstance.stop">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">stop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/asynctnt/instance.html#TarantoolAsyncInstance.stop"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#asynctnt.instance.TarantoolAsyncInstance.stop" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="asynctnt.instance.TarantoolAsyncInstance.terminate">
+<span class="sig-name descname"><span class="pre">terminate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/asynctnt/instance.html#TarantoolAsyncInstance.terminate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#asynctnt.instance.TarantoolAsyncInstance.terminate" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="asynctnt.instance.TarantoolAsyncInstance.kill">
+<span class="sig-name descname"><span class="pre">kill</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/asynctnt/instance.html#TarantoolAsyncInstance.kill"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#asynctnt.instance.TarantoolAsyncInstance.kill" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="asynctnt.instance.TarantoolAsyncInstance.cleanup">
+<span class="sig-name descname"><span class="pre">cleanup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/asynctnt/instance.html#TarantoolAsyncInstance.cleanup"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#asynctnt.instance.TarantoolAsyncInstance.cleanup" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="asynctnt.instance.TarantoolSyncDockerInstance">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">asynctnt.instance.</span></span><span class="sig-name descname"><span class="pre">TarantoolSyncDockerInstance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">docker_image</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">docker_tag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">host</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'0.0.0.0'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">port</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3301</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">console_host</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">console_port</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3302</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">replication_source</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_level</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">slab_alloc_arena</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wal_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'none'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initlua_template</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">applua</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'--</span> <span class="pre">app.lua</span> <span class="pre">--'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/asynctnt/instance.html#TarantoolSyncDockerInstance"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#asynctnt.instance.TarantoolSyncDockerInstance" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#asynctnt.instance.TarantoolSyncInstance" title="asynctnt.instance.TarantoolSyncInstance"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TarantoolSyncInstance</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="asynctnt.instance.TarantoolSyncDockerInstance.bin_version">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">bin_version</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../../_modules/asynctnt/instance.html#TarantoolSyncDockerInstance.bin_version"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#asynctnt.instance.TarantoolSyncDockerInstance.bin_version" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, igorcoding.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,6 +1,6 @@
 # Changelog
 
-## v2.0.0b1
+## v2.0.0
 **Breaking changes:**
 * `Connection.sql()` method is renamed to `Connection.execute()`
 * Drop support for `loop` argument in the `Connection` (fixes [#18](https://github.com/igorcoding/asynctnt/issues/18))

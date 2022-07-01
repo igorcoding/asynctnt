@@ -31,9 +31,11 @@ Documentation is available [here](https://igorcoding.github.io/asynctnt).
 
 * Support for all the **basic requests** that Tarantool supports. This includes:
   `insert`, `select`, `update`, `upsert`, `call`, `eval`, `execute`.
-* Full support for **SQL**, including prepared statements.
-* Support for **interactive transaction** via Tarantool streams.
-* Support of `Decimal` and `UUID` types natively (starting from Tarantool 2.4.1).
+* Full support for [SQL](https://www.tarantool.io/en/doc/latest/tutorials/sql_tutorial/),
+  including [prepared statements](https://www.tarantool.io/en/doc/latest/reference/reference_lua/box_sql/prepare/).
+* Support for [interactive transaction](https://www.tarantool.io/en/doc/latest/book/box/atomic/txn_mode_mvcc/) via Tarantool streams.
+* Support of `Decimal`, `UUID` and `datetime` types natively.
+* Support for parsing [custom errors](https://www.tarantool.io/en/doc/latest/reference/reference_lua/box_error/new/).
 * **Schema fetching** on connection establishment, so you can use spaces and
   indexes names rather than their ids, and **auto refetching** if schema in
   Tarantool is changed
@@ -142,8 +144,8 @@ async def main():
     conn = asynctnt.Connection(host='127.0.0.1', port=3301)
     await conn.connect()
 
-    await conn.execute("insert into users (id, name) values (1, 'James Bond')")
-    await conn.execute("insert into users (id, name) values (2, 'Ethan Hunt')")
+    await conn.execute("insert into users (id, name) values (?, ?)", [1, 'James Bond'])
+    await conn.execute("insert into users (id, name) values (?, ?)", [2, 'Ethan Hunt'])
     data = await conn.execute('select * from users')
 
     for row in data:
@@ -160,7 +162,7 @@ Stdout:
 <TarantoolTuple ID=2 NAME='Ethan Hunt'>
 ```
 
-More about SQL features in asynctnt please refer to the [documentation](https://igorcoding.github.io/asynctnt/examples.html#using-sql)
+More about SQL features in asynctnt please refer to the [documentation](https://igorcoding.github.io/asynctnt/sql.html)
 
 ## Performance
 
@@ -168,17 +170,28 @@ Two performance tests were conducted:
 1. `Seq` -- Sequentially calling 40k requests and measuring performance
 2. `Parallel` -- Sending 200k in 300 parallel coroutines
 
-On all the benchmarks below `wal_mode = none`
+On all the benchmarks below `wal_mode = none`.
 Turning `uvloop` on has a massive effect on the performance, so it is recommended to use `asynctnt` with it
 
-|          | Seq (uvloop=off) | Seq (uvloop=on) | Parallel (uvloop=off) | Parallel (uvloop=on) |
-|----------|-----------------:|----------------:|----------------------:|---------------------:|
-| `ping`   |          9037.07 |        20372.59 |              44090.53 |            134043.41 |
-| `call`   |          9113.32 |        17279.21 |              41129.16 |             99866.28 |
-| `eval`   |          8921.95 |        16642.67 |              44097.02 |             91056.69 |
-| `select` |          9681.12 |        17730.24 |              35853.33 |            108940.41 |
-| `insert` |          9332.21 |        17384.26 |              31329.85 |            102971.13 |
-| `update` |         10532.75 |        15990.12 |              36281.59 |             98643.46 |
+**Benchmark environment**
+* MacBook Pro 2020
+* CPU: 2 GHz Quad-Core Intel Core i5
+* Memory: 16GB 3733 MHz LPDDR4X
+
+Tarantool:
+```lua
+box.cfg{wal_mode = 'none'}
+```
+
+|           |  Seq (uvloop=off) | Seq (uvloop=on) | Parallel (uvloop=off) | Parallel (uvloop=on) |
+|-----------|------------------:|----------------:|----------------------:|---------------------:|
+| `ping`    |          12940.93 |        19980.82 |              88341.95 |            215756.24 |
+| `call`    |          11586.38 |        18783.56 |              74651.40 |            137557.25 |
+| `eval`    |          10631.19 |        17040.57 |              61077.84 |            121542.42 |
+| `select`  |           9613.88 |        16718.97 |              61584.07 |            152526.21 |
+| `insert`  |          10077.10 |        16989.06 |              65594.82 |            135491.25 |
+| `update`  |          10832.16 |        16562.80 |              63003.31 |            121892.28 |
+| `execute` |          10431.75 |        16967.85 |              58377.81 |             96891.61 |
 
 
 ## License

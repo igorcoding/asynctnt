@@ -1,0 +1,81 @@
+:py:mod:`asynctnt.prepared`
+===========================
+
+.. py:module:: asynctnt.prepared
+
+
+Module Contents
+---------------
+
+Classes
+~~~~~~~
+
+.. autoapisummary::
+
+   asynctnt.prepared.PreparedStatement
+
+
+
+
+.. py:class:: PreparedStatement(api: asynctnt.api.Api, query: str)
+
+   .. py:attribute:: __slots__
+      :annotation: = ['_api', '_query', '_stmt_id', '_params', '_params_count']
+
+      
+
+   .. py:method:: id(self) -> int
+      :property:
+
+      Prepared statement id
+
+
+   .. py:method:: params_count(self) -> int
+      :property:
+
+      Bound params count
+
+
+   .. py:method:: params(self) -> Optional[asynctnt.iproto.protocol.Metadata]
+      :property:
+
+      Bound params metadata
+
+
+   .. py:method:: prepare(self, timeout: float = -1.0) -> int
+      :async:
+
+          Prepare statement
+
+      :param timeout: request timeout
+      :return: prepared statement id
+
+
+   .. py:method:: execute(self, args: Optional[List[Union[Dict[str, Any], Any]]] = None, *, parse_metadata: bool = True, timeout: float = -1.0) -> asynctnt.iproto.protocol.Response
+      :async:
+
+          Execute this prepared statement with specified args
+      :param args: arguments list
+      :param parse_metadata: whether to parse response metadata or not
+      :param timeout: request timeout
+
+
+   .. py:method:: unprepare(self, timeout: float = -1.0)
+      :async:
+
+          Unprepare current prepared statement
+      :param timeout: request timeout
+
+
+   .. py:method:: __aenter__(self)
+      :async:
+
+      If used as a Context Manager `prepare()` and `unprepare()` methods
+      are called automatically
+
+
+   .. py:method:: __aexit__(self, exc_type, exc_val, exc_tb)
+      :async:
+
+
+

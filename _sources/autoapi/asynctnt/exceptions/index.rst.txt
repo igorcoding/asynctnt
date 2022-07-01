@@ -1,0 +1,1286 @@
+:py:mod:`asynctnt.exceptions`
+=============================
+
+.. py:module:: asynctnt.exceptions
+
+
+Module Contents
+---------------
+
+Classes
+~~~~~~~
+
+.. autoapisummary::
+
+   asynctnt.exceptions.ErrorCode
+
+
+
+
+.. py:exception:: TarantoolError
+
+   Bases: :py:obj:`Exception`
+
+   Base Tarantool Exception class
+
+
+.. py:exception:: TarantoolSchemaError
+
+   Bases: :py:obj:`TarantoolError`
+
+   Exception is raised when any problems with schema occurred
+
+
+.. py:exception:: TarantoolDatabaseError(code: int, message: str, error: Optional[asynctnt.iproto.protocol.IProtoError])
+
+   Bases: :py:obj:`TarantoolError`
+
+   Exception is raised when Tarantool responds with code != 0
+
+
+.. py:exception:: TarantoolNetworkError
+
+   Bases: :py:obj:`TarantoolError`
+
+   Base Tarantool Exception class
+
+
+.. py:exception:: TarantoolNotConnectedError
+
+   Bases: :py:obj:`TarantoolNetworkError`
+
+   Raised when asynctnt is not connected to Tarantool
+
+
+.. py:class:: ErrorCode
+
+   Bases: :py:obj:`enum.IntEnum`
+
+   Tarantool default error codes
+
+   .. py:attribute:: ER_UNKNOWN
+      :annotation: = 0
+
+      
+
+   .. py:attribute:: ER_ILLEGAL_PARAMS
+      :annotation: = 1
+
+      
+
+   .. py:attribute:: ER_MEMORY_ISSUE
+      :annotation: = 2
+
+      
+
+   .. py:attribute:: ER_TUPLE_FOUND
+      :annotation: = 3
+
+      
+
+   .. py:attribute:: ER_TUPLE_NOT_FOUND
+      :annotation: = 4
+
+      
+
+   .. py:attribute:: ER_UNSUPPORTED
+      :annotation: = 5
+
+      
+
+   .. py:attribute:: ER_NONMASTER
+      :annotation: = 6
+
+      
+
+   .. py:attribute:: ER_READONLY
+      :annotation: = 7
+
+      
+
+   .. py:attribute:: ER_INJECTION
+      :annotation: = 8
+
+      
+
+   .. py:attribute:: ER_CREATE_SPACE
+      :annotation: = 9
+
+      
+
+   .. py:attribute:: ER_SPACE_EXISTS
+      :annotation: = 10
+
+      
+
+   .. py:attribute:: ER_DROP_SPACE
+      :annotation: = 11
+
+      
+
+   .. py:attribute:: ER_ALTER_SPACE
+      :annotation: = 12
+
+      
+
+   .. py:attribute:: ER_INDEX_TYPE
+      :annotation: = 13
+
+      
+
+   .. py:attribute:: ER_MODIFY_INDEX
+      :annotation: = 14
+
+      
+
+   .. py:attribute:: ER_LAST_DROP
+      :annotation: = 15
+
+      
+
+   .. py:attribute:: ER_TUPLE_FORMAT_LIMIT
+      :annotation: = 16
+
+      
+
+   .. py:attribute:: ER_DROP_PRIMARY_KEY
+      :annotation: = 17
+
+      
+
+   .. py:attribute:: ER_KEY_PART_TYPE
+      :annotation: = 18
+
+      
+
+   .. py:attribute:: ER_EXACT_MATCH
+      :annotation: = 19
+
+      
+
+   .. py:attribute:: ER_INVALID_MSGPACK
+      :annotation: = 20
+
+      
+
+   .. py:attribute:: ER_PROC_RET
+      :annotation: = 21
+
+      
+
+   .. py:attribute:: ER_TUPLE_NOT_ARRAY
+      :annotation: = 22
+
+      
+
+   .. py:attribute:: ER_FIELD_TYPE
+      :annotation: = 23
+
+      
+
+   .. py:attribute:: ER_INDEX_PART_TYPE_MISMATCH
+      :annotation: = 24
+
+      
+
+   .. py:attribute:: ER_UPDATE_SPLICE
+      :annotation: = 25
+
+      
+
+   .. py:attribute:: ER_UPDATE_ARG_TYPE
+      :annotation: = 26
+
+      
+
+   .. py:attribute:: ER_FORMAT_MISMATCH_INDEX_PART
+      :annotation: = 27
+
+      
+
+   .. py:attribute:: ER_UNKNOWN_UPDATE_OP
+      :annotation: = 28
+
+      
+
+   .. py:attribute:: ER_UPDATE_FIELD
+      :annotation: = 29
+
+      
+
+   .. py:attribute:: ER_FUNCTION_TX_ACTIVE
+      :annotation: = 30
+
+      
+
+   .. py:attribute:: ER_KEY_PART_COUNT
+      :annotation: = 31
+
+      
+
+   .. py:attribute:: ER_PROC_LUA
+      :annotation: = 32
+
+      
+
+   .. py:attribute:: ER_NO_SUCH_PROC
+      :annotation: = 33
+
+      
+
+   .. py:attribute:: ER_NO_SUCH_TRIGGER
+      :annotation: = 34
+
+      
+
+   .. py:attribute:: ER_NO_SUCH_INDEX_ID
+      :annotation: = 35
+
+      
+
+   .. py:attribute:: ER_NO_SUCH_SPACE
+      :annotation: = 36
+
+      
+
+   .. py:attribute:: ER_NO_SUCH_FIELD_NO
+      :annotation: = 37
+
+      
+
+   .. py:attribute:: ER_EXACT_FIELD_COUNT
+      :annotation: = 38
+
+      
+
+   .. py:attribute:: ER_FIELD_MISSING
+      :annotation: = 39
+
+      
+
+   .. py:attribute:: ER_WAL_IO
+      :annotation: = 40
+
+      
+
+   .. py:attribute:: ER_MORE_THAN_ONE_TUPLE
+      :annotation: = 41
+
+      
+
+   .. py:attribute:: ER_ACCESS_DENIED
+      :annotation: = 42
+
+      
+
+   .. py:attribute:: ER_CREATE_USER
+      :annotation: = 43
+
+      
+
+   .. py:attribute:: ER_DROP_USER
+      :annotation: = 44
+
+      
+
+   .. py:attribute:: ER_NO_SUCH_USER
+      :annotation: = 45
+
+      
+
+   .. py:attribute:: ER_USER_EXISTS
+      :annotation: = 46
+
+      
+
+   .. py:attribute:: ER_PASSWORD_MISMATCH
+      :annotation: = 47
+
+      
+
+   .. py:attribute:: ER_UNKNOWN_REQUEST_TYPE
+      :annotation: = 48
+
+      
+
+   .. py:attribute:: ER_UNKNOWN_SCHEMA_OBJECT
+      :annotation: = 49
+
+      
+
+   .. py:attribute:: ER_CREATE_FUNCTION
+      :annotation: = 50
+
+      
+
+   .. py:attribute:: ER_NO_SUCH_FUNCTION
+      :annotation: = 51
+
+      
+
+   .. py:attribute:: ER_FUNCTION_EXISTS
+      :annotation: = 52
+
+      
+
+   .. py:attribute:: ER_BEFORE_REPLACE_RET
+      :annotation: = 53
+
+      
+
+   .. py:attribute:: ER_MULTISTATEMENT_TRANSACTION
+      :annotation: = 54
+
+      
+
+   .. py:attribute:: ER_TRIGGER_EXISTS
+      :annotation: = 55
+
+      
+
+   .. py:attribute:: ER_USER_MAX
+      :annotation: = 56
+
+      
+
+   .. py:attribute:: ER_NO_SUCH_ENGINE
+      :annotation: = 57
+
+      
+
+   .. py:attribute:: ER_RELOAD_CFG
+      :annotation: = 58
+
+      
+
+   .. py:attribute:: ER_CFG
+      :annotation: = 59
+
+      
+
+   .. py:attribute:: ER_SAVEPOINT_EMPTY_TX
+      :annotation: = 60
+
+      
+
+   .. py:attribute:: ER_NO_SUCH_SAVEPOINT
+      :annotation: = 61
+
+      
+
+   .. py:attribute:: ER_UNKNOWN_REPLICA
+      :annotation: = 62
+
+      
+
+   .. py:attribute:: ER_REPLICASET_UUID_MISMATCH
+      :annotation: = 63
+
+      
+
+   .. py:attribute:: ER_INVALID_UUID
+      :annotation: = 64
+
+      
+
+   .. py:attribute:: ER_REPLICASET_UUID_IS_RO
+      :annotation: = 65
+
+      
+
+   .. py:attribute:: ER_INSTANCE_UUID_MISMATCH
+      :annotation: = 66
+
+      
+
+   .. py:attribute:: ER_REPLICA_ID_IS_RESERVED
+      :annotation: = 67
+
+      
+
+   .. py:attribute:: ER_INVALID_ORDER
+      :annotation: = 68
+
+      
+
+   .. py:attribute:: ER_MISSING_REQUEST_FIELD
+      :annotation: = 69
+
+      
+
+   .. py:attribute:: ER_IDENTIFIER
+      :annotation: = 70
+
+      
+
+   .. py:attribute:: ER_DROP_FUNCTION
+      :annotation: = 71
+
+      
+
+   .. py:attribute:: ER_ITERATOR_TYPE
+      :annotation: = 72
+
+      
+
+   .. py:attribute:: ER_REPLICA_MAX
+      :annotation: = 73
+
+      
+
+   .. py:attribute:: ER_INVALID_XLOG
+      :annotation: = 74
+
+      
+
+   .. py:attribute:: ER_INVALID_XLOG_NAME
+      :annotation: = 75
+
+      
+
+   .. py:attribute:: ER_INVALID_XLOG_ORDER
+      :annotation: = 76
+
+      
+
+   .. py:attribute:: ER_NO_CONNECTION
+      :annotation: = 77
+
+      
+
+   .. py:attribute:: ER_TIMEOUT
+      :annotation: = 78
+
+      
+
+   .. py:attribute:: ER_ACTIVE_TRANSACTION
+      :annotation: = 79
+
+      
+
+   .. py:attribute:: ER_CURSOR_NO_TRANSACTION
+      :annotation: = 80
+
+      
+
+   .. py:attribute:: ER_CROSS_ENGINE_TRANSACTION
+      :annotation: = 81
+
+      
+
+   .. py:attribute:: ER_NO_SUCH_ROLE
+      :annotation: = 82
+
+      
+
+   .. py:attribute:: ER_ROLE_EXISTS
+      :annotation: = 83
+
+      
+
+   .. py:attribute:: ER_CREATE_ROLE
+      :annotation: = 84
+
+      
+
+   .. py:attribute:: ER_INDEX_EXISTS
+      :annotation: = 85
+
+      
+
+   .. py:attribute:: ER_SESSION_CLOSED
+      :annotation: = 86
+
+      
+
+   .. py:attribute:: ER_ROLE_LOOP
+      :annotation: = 87
+
+      
+
+   .. py:attribute:: ER_GRANT
+      :annotation: = 88
+
+      
+
+   .. py:attribute:: ER_PRIV_GRANTED
+      :annotation: = 89
+
+      
+
+   .. py:attribute:: ER_ROLE_GRANTED
+      :annotation: = 90
+
+      
+
+   .. py:attribute:: ER_PRIV_NOT_GRANTED
+      :annotation: = 91
+
+      
+
+   .. py:attribute:: ER_ROLE_NOT_GRANTED
+      :annotation: = 92
+
+      
+
+   .. py:attribute:: ER_MISSING_SNAPSHOT
+      :annotation: = 93
+
+      
+
+   .. py:attribute:: ER_CANT_UPDATE_PRIMARY_KEY
+      :annotation: = 94
+
+      
+
+   .. py:attribute:: ER_UPDATE_INTEGER_OVERFLOW
+      :annotation: = 95
+
+      
+
+   .. py:attribute:: ER_GUEST_USER_PASSWORD
+      :annotation: = 96
+
+      
+
+   .. py:attribute:: ER_TRANSACTION_CONFLICT
+      :annotation: = 97
+
+      
+
+   .. py:attribute:: ER_UNSUPPORTED_PRIV
+      :annotation: = 98
+
+      
+
+   .. py:attribute:: ER_LOAD_FUNCTION
+      :annotation: = 99
+
+      
+
+   .. py:attribute:: ER_FUNCTION_LANGUAGE
+      :annotation: = 100
+
+      
+
+   .. py:attribute:: ER_RTREE_RECT
+      :annotation: = 101
+
+      
+
+   .. py:attribute:: ER_PROC_C
+      :annotation: = 102
+
+      
+
+   .. py:attribute:: ER_UNKNOWN_RTREE_INDEX_DISTANCE_TYPE
+      :annotation: = 103
+
+      
+
+   .. py:attribute:: ER_PROTOCOL
+      :annotation: = 104
+
+      
+
+   .. py:attribute:: ER_UPSERT_UNIQUE_SECONDARY_KEY
+      :annotation: = 105
+
+      
+
+   .. py:attribute:: ER_WRONG_INDEX_RECORD
+      :annotation: = 106
+
+      
+
+   .. py:attribute:: ER_WRONG_INDEX_PARTS
+      :annotation: = 107
+
+      
+
+   .. py:attribute:: ER_WRONG_INDEX_OPTIONS
+      :annotation: = 108
+
+      
+
+   .. py:attribute:: ER_WRONG_SCHEMA_VERSION
+      :annotation: = 109
+
+      
+
+   .. py:attribute:: ER_MEMTX_MAX_TUPLE_SIZE
+      :annotation: = 110
+
+      
+
+   .. py:attribute:: ER_WRONG_SPACE_OPTIONS
+      :annotation: = 111
+
+      
+
+   .. py:attribute:: ER_UNSUPPORTED_INDEX_FEATURE
+      :annotation: = 112
+
+      
+
+   .. py:attribute:: ER_VIEW_IS_RO
+      :annotation: = 113
+
+      
+
+   .. py:attribute:: ER_NO_TRANSACTION
+      :annotation: = 114
+
+      
+
+   .. py:attribute:: ER_SYSTEM
+      :annotation: = 115
+
+      
+
+   .. py:attribute:: ER_LOADING
+      :annotation: = 116
+
+      
+
+   .. py:attribute:: ER_CONNECTION_TO_SELF
+      :annotation: = 117
+
+      
+
+   .. py:attribute:: ER_KEY_PART_IS_TOO_LONG
+      :annotation: = 118
+
+      
+
+   .. py:attribute:: ER_COMPRESSION
+      :annotation: = 119
+
+      
+
+   .. py:attribute:: ER_CHECKPOINT_IN_PROGRESS
+      :annotation: = 120
+
+      
+
+   .. py:attribute:: ER_SUB_STMT_MAX
+      :annotation: = 121
+
+      
+
+   .. py:attribute:: ER_COMMIT_IN_SUB_STMT
+      :annotation: = 122
+
+      
+
+   .. py:attribute:: ER_ROLLBACK_IN_SUB_STMT
+      :annotation: = 123
+
+      
+
+   .. py:attribute:: ER_DECOMPRESSION
+      :annotation: = 124
+
+      
+
+   .. py:attribute:: ER_INVALID_XLOG_TYPE
+      :annotation: = 125
+
+      
+
+   .. py:attribute:: ER_ALREADY_RUNNING
+      :annotation: = 126
+
+      
+
+   .. py:attribute:: ER_INDEX_FIELD_COUNT_LIMIT
+      :annotation: = 127
+
+      
+
+   .. py:attribute:: ER_LOCAL_INSTANCE_ID_IS_READ_ONLY
+      :annotation: = 128
+
+      
+
+   .. py:attribute:: ER_BACKUP_IN_PROGRESS
+      :annotation: = 129
+
+      
+
+   .. py:attribute:: ER_READ_VIEW_ABORTED
+      :annotation: = 130
+
+      
+
+   .. py:attribute:: ER_INVALID_INDEX_FILE
+      :annotation: = 131
+
+      
+
+   .. py:attribute:: ER_INVALID_RUN_FILE
+      :annotation: = 132
+
+      
+
+   .. py:attribute:: ER_INVALID_VYLOG_FILE
+      :annotation: = 133
+
+      
+
+   .. py:attribute:: ER_CASCADE_ROLLBACK
+      :annotation: = 134
+
+      
+
+   .. py:attribute:: ER_VY_QUOTA_TIMEOUT
+      :annotation: = 135
+
+      
+
+   .. py:attribute:: ER_PARTIAL_KEY
+      :annotation: = 136
+
+      
+
+   .. py:attribute:: ER_TRUNCATE_SYSTEM_SPACE
+      :annotation: = 137
+
+      
+
+   .. py:attribute:: ER_LOAD_MODULE
+      :annotation: = 138
+
+      
+
+   .. py:attribute:: ER_VINYL_MAX_TUPLE_SIZE
+      :annotation: = 139
+
+      
+
+   .. py:attribute:: ER_WRONG_DD_VERSION
+      :annotation: = 140
+
+      
+
+   .. py:attribute:: ER_WRONG_SPACE_FORMAT
+      :annotation: = 141
+
+      
+
+   .. py:attribute:: ER_CREATE_SEQUENCE
+      :annotation: = 142
+
+      
+
+   .. py:attribute:: ER_ALTER_SEQUENCE
+      :annotation: = 143
+
+      
+
+   .. py:attribute:: ER_DROP_SEQUENCE
+      :annotation: = 144
+
+      
+
+   .. py:attribute:: ER_NO_SUCH_SEQUENCE
+      :annotation: = 145
+
+      
+
+   .. py:attribute:: ER_SEQUENCE_EXISTS
+      :annotation: = 146
+
+      
+
+   .. py:attribute:: ER_SEQUENCE_OVERFLOW
+      :annotation: = 147
+
+      
+
+   .. py:attribute:: ER_NO_SUCH_INDEX_NAME
+      :annotation: = 148
+
+      
+
+   .. py:attribute:: ER_SPACE_FIELD_IS_DUPLICATE
+      :annotation: = 149
+
+      
+
+   .. py:attribute:: ER_CANT_CREATE_COLLATION
+      :annotation: = 150
+
+      
+
+   .. py:attribute:: ER_WRONG_COLLATION_OPTIONS
+      :annotation: = 151
+
+      
+
+   .. py:attribute:: ER_NULLABLE_PRIMARY
+      :annotation: = 152
+
+      
+
+   .. py:attribute:: ER_NO_SUCH_FIELD_NAME_IN_SPACE
+      :annotation: = 153
+
+      
+
+   .. py:attribute:: ER_TRANSACTION_YIELD
+      :annotation: = 154
+
+      
+
+   .. py:attribute:: ER_NO_SUCH_GROUP
+      :annotation: = 155
+
+      
+
+   .. py:attribute:: ER_SQL_BIND_VALUE
+      :annotation: = 156
+
+      
+
+   .. py:attribute:: ER_SQL_BIND_TYPE
+      :annotation: = 157
+
+      
+
+   .. py:attribute:: ER_SQL_BIND_PARAMETER_MAX
+      :annotation: = 158
+
+      
+
+   .. py:attribute:: ER_SQL_EXECUTE
+      :annotation: = 159
+
+      
+
+   .. py:attribute:: ER_UPDATE_DECIMAL_OVERFLOW
+      :annotation: = 160
+
+      
+
+   .. py:attribute:: ER_SQL_BIND_NOT_FOUND
+      :annotation: = 161
+
+      
+
+   .. py:attribute:: ER_ACTION_MISMATCH
+      :annotation: = 162
+
+      
+
+   .. py:attribute:: ER_VIEW_MISSING_SQL
+      :annotation: = 163
+
+      
+
+   .. py:attribute:: ER_FOREIGN_KEY_CONSTRAINT
+      :annotation: = 164
+
+      
+
+   .. py:attribute:: ER_NO_SUCH_MODULE
+      :annotation: = 165
+
+      
+
+   .. py:attribute:: ER_NO_SUCH_COLLATION
+      :annotation: = 166
+
+      
+
+   .. py:attribute:: ER_CREATE_FK_CONSTRAINT
+      :annotation: = 167
+
+      
+
+   .. py:attribute:: ER_DROP_FK_CONSTRAINT
+      :annotation: = 168
+
+      
+
+   .. py:attribute:: ER_NO_SUCH_CONSTRAINT
+      :annotation: = 169
+
+      
+
+   .. py:attribute:: ER_CONSTRAINT_EXISTS
+      :annotation: = 170
+
+      
+
+   .. py:attribute:: ER_SQL_TYPE_MISMATCH
+      :annotation: = 171
+
+      
+
+   .. py:attribute:: ER_ROWID_OVERFLOW
+      :annotation: = 172
+
+      
+
+   .. py:attribute:: ER_DROP_COLLATION
+      :annotation: = 173
+
+      
+
+   .. py:attribute:: ER_ILLEGAL_COLLATION_MIX
+      :annotation: = 174
+
+      
+
+   .. py:attribute:: ER_SQL_NO_SUCH_PRAGMA
+      :annotation: = 175
+
+      
+
+   .. py:attribute:: ER_SQL_CANT_RESOLVE_FIELD
+      :annotation: = 176
+
+      
+
+   .. py:attribute:: ER_INDEX_EXISTS_IN_SPACE
+      :annotation: = 177
+
+      
+
+   .. py:attribute:: ER_INCONSISTENT_TYPES
+      :annotation: = 178
+
+      
+
+   .. py:attribute:: ER_SQL_SYNTAX_WITH_POS
+      :annotation: = 179
+
+      
+
+   .. py:attribute:: ER_SQL_STACK_OVERFLOW
+      :annotation: = 180
+
+      
+
+   .. py:attribute:: ER_SQL_SELECT_WILDCARD
+      :annotation: = 181
+
+      
+
+   .. py:attribute:: ER_SQL_STATEMENT_EMPTY
+      :annotation: = 182
+
+      
+
+   .. py:attribute:: ER_SQL_KEYWORD_IS_RESERVED
+      :annotation: = 183
+
+      
+
+   .. py:attribute:: ER_SQL_SYNTAX_NEAR_TOKEN
+      :annotation: = 184
+
+      
+
+   .. py:attribute:: ER_SQL_UNKNOWN_TOKEN
+      :annotation: = 185
+
+      
+
+   .. py:attribute:: ER_SQL_PARSER_GENERIC
+      :annotation: = 186
+
+      
+
+   .. py:attribute:: ER_SQL_ANALYZE_ARGUMENT
+      :annotation: = 187
+
+      
+
+   .. py:attribute:: ER_SQL_COLUMN_COUNT_MAX
+      :annotation: = 188
+
+      
+
+   .. py:attribute:: ER_HEX_LITERAL_MAX
+      :annotation: = 189
+
+      
+
+   .. py:attribute:: ER_INT_LITERAL_MAX
+      :annotation: = 190
+
+      
+
+   .. py:attribute:: ER_SQL_PARSER_LIMIT
+      :annotation: = 191
+
+      
+
+   .. py:attribute:: ER_INDEX_DEF_UNSUPPORTED
+      :annotation: = 192
+
+      
+
+   .. py:attribute:: ER_CK_DEF_UNSUPPORTED
+      :annotation: = 193
+
+      
+
+   .. py:attribute:: ER_MULTIKEY_INDEX_MISMATCH
+      :annotation: = 194
+
+      
+
+   .. py:attribute:: ER_CREATE_CK_CONSTRAINT
+      :annotation: = 195
+
+      
+
+   .. py:attribute:: ER_CK_CONSTRAINT_FAILED
+      :annotation: = 196
+
+      
+
+   .. py:attribute:: ER_SQL_COLUMN_COUNT
+      :annotation: = 197
+
+      
+
+   .. py:attribute:: ER_FUNC_INDEX_FUNC
+      :annotation: = 198
+
+      
+
+   .. py:attribute:: ER_FUNC_INDEX_FORMAT
+      :annotation: = 199
+
+      
+
+   .. py:attribute:: ER_FUNC_INDEX_PARTS
+      :annotation: = 200
+
+      
+
+   .. py:attribute:: ER_NO_SUCH_FIELD_NAME
+      :annotation: = 201
+
+      
+
+   .. py:attribute:: ER_FUNC_WRONG_ARG_COUNT
+      :annotation: = 202
+
+      
+
+   .. py:attribute:: ER_BOOTSTRAP_READONLY
+      :annotation: = 203
+
+      
+
+   .. py:attribute:: ER_SQL_FUNC_WRONG_RET_COUNT
+      :annotation: = 204
+
+      
+
+   .. py:attribute:: ER_FUNC_INVALID_RETURN_TYPE
+      :annotation: = 205
+
+      
+
+   .. py:attribute:: ER_SQL_PARSER_GENERIC_WITH_POS
+      :annotation: = 206
+
+      
+
+   .. py:attribute:: ER_REPLICA_NOT_ANON
+      :annotation: = 207
+
+      
+
+   .. py:attribute:: ER_CANNOT_REGISTER
+      :annotation: = 208
+
+      
+
+   .. py:attribute:: ER_SESSION_SETTING_INVALID_VALUE
+      :annotation: = 209
+
+      
+
+   .. py:attribute:: ER_SQL_PREPARE
+      :annotation: = 210
+
+      
+
+   .. py:attribute:: ER_WRONG_QUERY_ID
+      :annotation: = 211
+
+      
+
+   .. py:attribute:: ER_SEQUENCE_NOT_STARTED
+      :annotation: = 212
+
+      
+
+   .. py:attribute:: ER_NO_SUCH_SESSION_SETTING
+      :annotation: = 213
+
+      
+
+   .. py:attribute:: ER_UNCOMMITTED_FOREIGN_SYNC_TXNS
+      :annotation: = 214
+
+      
+
+   .. py:attribute:: ER_SYNC_MASTER_MISMATCH
+      :annotation: = 215
+
+      
+
+   .. py:attribute:: ER_SYNC_QUORUM_TIMEOUT
+      :annotation: = 216
+
+      
+
+   .. py:attribute:: ER_SYNC_ROLLBACK
+      :annotation: = 217
+
+      
+
+   .. py:attribute:: ER_TUPLE_METADATA_IS_TOO_BIG
+      :annotation: = 218
+
+      
+
+   .. py:attribute:: ER_XLOG_GAP
+      :annotation: = 219
+
+      
+
+   .. py:attribute:: ER_TOO_EARLY_SUBSCRIBE
+      :annotation: = 220
+
+      
+
+   .. py:attribute:: ER_SQL_CANT_ADD_AUTOINC
+      :annotation: = 221
+
+      
+
+   .. py:attribute:: ER_QUORUM_WAIT
+      :annotation: = 222
+
+      
+
+   .. py:attribute:: ER_INTERFERING_PROMOTE
+      :annotation: = 223
+
+      
+
+   .. py:attribute:: ER_ELECTION_DISABLED
+      :annotation: = 224
+
+      
+
+   .. py:attribute:: ER_TXN_ROLLBACK
+      :annotation: = 225
+
+      
+
+   .. py:attribute:: ER_NOT_LEADER
+      :annotation: = 226
+
+      
+
+   .. py:attribute:: ER_SYNC_QUEUE_UNCLAIMED
+      :annotation: = 227
+
+      
+
+   .. py:attribute:: ER_SYNC_QUEUE_FOREIGN
+      :annotation: = 228
+
+      
+
+   .. py:attribute:: ER_UNABLE_TO_PROCESS_IN_STREAM
+      :annotation: = 229
+
+      
+
+   .. py:attribute:: ER_UNABLE_TO_PROCESS_OUT_OF_STREAM
+      :annotation: = 230
+
+      
+
+   .. py:attribute:: ER_TRANSACTION_TIMEOUT
+      :annotation: = 231
+
+      
+
+   .. py:attribute:: ER_ACTIVE_TIMER
+      :annotation: = 232
+
+      
+
+   .. py:attribute:: ER_TUPLE_FIELD_COUNT_LIMIT
+      :annotation: = 233
+
+      
+
+   .. py:attribute:: ER_CREATE_CONSTRAINT
+      :annotation: = 234
+
+      
+
+   .. py:attribute:: ER_FIELD_CONSTRAINT_FAILED
+      :annotation: = 235
+
+      
+
+   .. py:attribute:: ER_TUPLE_CONSTRAINT_FAILED
+      :annotation: = 236
+
+      
+
+   .. py:attribute:: ER_CREATE_FOREIGN_KEY
+      :annotation: = 237
+
+      
+
+   .. py:attribute:: ER_FOREIGN_KEY_INTEGRITY
+      :annotation: = 238
+
+      
+
+   .. py:attribute:: ER_FIELD_FOREIGN_KEY_FAILED
+      :annotation: = 239
+
+      
+
+   .. py:attribute:: ER_COMPLEX_FOREIGN_KEY_FAILED
+      :annotation: = 240
+
+      
+
+   .. py:attribute:: ER_WRONG_SPACE_UPGRADE_OPTIONS
+      :annotation: = 241
+
+      
+
+   .. py:attribute:: ER_NO_ELECTION_QUORUM
+      :annotation: = 242
+
+      
+
+   .. py:attribute:: ER_SSL
+      :annotation: = 243
+
+      
+
+   .. py:attribute:: ER_SPLIT_BRAIN
+      :annotation: = 244
+
+      
+
+

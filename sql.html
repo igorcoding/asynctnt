@@ -4,9 +4,10 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>SQL Support &mdash; asynctnt 2.0.0b1 documentation</title>
+  <title>SQL Support &mdash; asynctnt 2.0.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
@@ -31,7 +32,7 @@
             <a href="index.html" class="icon icon-home"> asynctnt
           </a>
               <div class="version">
-                2.0.0b1
+                2.0.0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -49,6 +50,7 @@
 <li class="toctree-l1 current"><a class="current reference internal" href="#">SQL Support</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#basic-usage">Basic usage</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#metadata">Metadata</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#prepared-statement">Prepared statement</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="metadata.html">Metadata</a></li>
@@ -56,6 +58,7 @@
 <li class="toctree-l1"><a class="reference internal" href="streams.html">Streams and Transactions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mpext.html">Type Extensions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="CHANGELOG.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="autoapi/index.html">API Reference</a></li>
 </ul>
 
         </div>
@@ -139,6 +142,57 @@
 <section id="metadata">
 <h2>Metadata<a class="headerlink" href="#metadata" title="Permalink to this heading"></a></h2>
 <p>You can access all the metadata associated with the SQL response, like so:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">res</span> <span class="o">=</span> <span class="k">await</span> <span class="n">conn</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;select * from users&quot;</span><span class="p">)</span>
+<span class="k">assert</span> <span class="n">res</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">fields</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;ID&#39;</span>
+<span class="k">assert</span> <span class="n">res</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">fields</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s1">&#39;integer&#39;</span>
+
+<span class="k">assert</span> <span class="n">res</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">fields</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;NAME&#39;</span>
+<span class="k">assert</span> <span class="n">res</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">fields</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s1">&#39;string&#39;</span>
+</pre></div>
+</div>
+</section>
+<section id="prepared-statement">
+<h2>Prepared statement<a class="headerlink" href="#prepared-statement" title="Permalink to this heading"></a></h2>
+<p>You can make use of <a class="reference external" href="https://www.tarantool.io/en/doc/latest/reference/reference_lua/box_sql/prepare/">prepared statements</a>
+in order to execute the same requests more optimally. Simple example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">stmt</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">prepare</span><span class="p">(</span><span class="s1">&#39;select id, name from users where id = ?&#39;</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">with</span> <span class="n">stmt</span><span class="p">:</span>
+    <span class="n">user1</span> <span class="o">=</span> <span class="n">stmt</span><span class="o">.</span><span class="n">execute</span><span class="p">([</span><span class="mi">1</span><span class="p">])</span>
+    <span class="k">assert</span> <span class="n">user1</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;James Bond&#39;</span>
+
+    <span class="n">user2</span> <span class="o">=</span> <span class="n">stmt</span><span class="o">.</span><span class="n">execute</span><span class="p">([</span><span class="mi">2</span><span class="p">])</span>
+    <span class="k">assert</span> <span class="n">user2</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;Ethan Hunt&#39;</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">prepare()</span></code> and <code class="docutils literal notranslate"><span class="pre">unprepare()</span></code> calls are called automatically within a prepared statement context manager.
+You may want to control prepare/unprepare yourself:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">stmt</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">prepare</span><span class="p">(</span><span class="s1">&#39;select id, name from users where id = ?&#39;</span><span class="p">)</span>
+
+<span class="k">await</span> <span class="n">stmt</span><span class="o">.</span><span class="n">prepare</span><span class="p">()</span>
+
+<span class="n">user1</span> <span class="o">=</span> <span class="n">stmt</span><span class="o">.</span><span class="n">execute</span><span class="p">([</span><span class="mi">1</span><span class="p">])</span>
+<span class="k">assert</span> <span class="n">user1</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;James Bond&#39;</span>
+
+<span class="n">user2</span> <span class="o">=</span> <span class="n">stmt</span><span class="o">.</span><span class="n">execute</span><span class="p">([</span><span class="mi">2</span><span class="p">])</span>
+<span class="k">assert</span> <span class="n">user2</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;Ethan Hunt&#39;</span>
+
+<span class="k">await</span> <span class="n">stmt</span><span class="o">.</span><span class="n">unprepare</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Named parameters are also supported:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">stmt</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">prepare</span><span class="p">(</span><span class="s1">&#39;select id, name from users where id = :id&#39;</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">with</span> <span class="n">stmt</span><span class="p">:</span>
+    <span class="n">user1</span> <span class="o">=</span> <span class="n">stmt</span><span class="o">.</span><span class="n">execute</span><span class="p">([</span>
+        <span class="p">{</span><span class="s1">&#39;:id&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">}</span>
+    <span class="p">])</span>
+    <span class="k">assert</span> <span class="n">user1</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;James Bond&#39;</span>
+
+    <span class="n">user2</span> <span class="o">=</span> <span class="n">stmt</span><span class="o">.</span><span class="n">execute</span><span class="p">([</span>
+        <span class="p">{</span><span class="s1">&#39;:id&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">}</span>
+    <span class="p">])</span>
+    <span class="k">assert</span> <span class="n">user2</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;Ethan Hunt&#39;</span>
+</pre></div>
+</div>
 </section>
 </section>
 
