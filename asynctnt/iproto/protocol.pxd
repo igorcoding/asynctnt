@@ -28,6 +28,7 @@ include "requests/execute.pxd"
 include "requests/id.pxd"
 include "requests/auth.pxd"
 include "requests/streams.pxd"
+include "requests/watchers.pxd"
 
 include "response.pxd"
 include "db.pxd"
@@ -63,6 +64,7 @@ cdef class BaseProtocol(CoreProtocol):
         object _on_request_timeout_cb
 
         dict _reqs
+        dict _watchers
         uint64_t _sync
         Schema _schema
         int64_t _schema_id
@@ -77,6 +79,15 @@ cdef class BaseProtocol(CoreProtocol):
     cdef void _set_connection_error(self, e)
     cdef void _post_con_state_machine(self)
 
+    cdef void _handle_event(self,
+                            Header *hdr,
+                            const char *buf,
+                            uint32_t buf_len)
+    cdef void _handle_response(self,
+                               Header *hdr,
+                               const char *buf,
+                               uint32_t buf_len)
+
     cdef void _do_id(self)
     cdef void _do_auth(self, str username, str password)
     cdef void _do_fetch_schema(self, object fut)
@@ -90,3 +101,5 @@ cdef class BaseProtocol(CoreProtocol):
     cdef Db _create_db(self, bint gen_stream_id)
     cdef object _execute_bad(self, BaseRequest req, float timeout)
     cdef object _execute_normal(self, BaseRequest req, float timeout)
+    cdef void execute_watch(self, BaseRequest req, str key, object cb)
+    cdef void execute_unwatch(self, BaseRequest req, str key)

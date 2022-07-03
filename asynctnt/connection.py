@@ -9,6 +9,7 @@ from .exceptions import ErrorCode, TarantoolDatabaseError, TarantoolError
 from .iproto import protocol
 from .log import logger
 from .stream import Stream
+from .watcher import Watcher
 
 __all__ = ("Connection", "connect", "ConnectionState")
 
@@ -44,6 +45,7 @@ class Connection(Api):
         "_connect_lock",
         "_disconnect_lock",
         "_ping_task",
+        "_registered_watchers",
     )
 
     def __init__(
@@ -157,6 +159,7 @@ class Connection(Api):
         self._connect_lock = asyncio.Lock()
         self._disconnect_lock = asyncio.Lock()
         self._ping_task = None
+        self._registered_watchers = set()
 
     def _set_state(self, new_state: ConnectionState):
         if self._state != new_state:
@@ -312,6 +315,7 @@ class Connection(Api):
 
                     if self._ping_timeout:
                         self._ping_task = loop.create_task(self._ping_task_func())
+                    await self._reinit_watchers()
                     return
                 except TarantoolDatabaseError as e:
                     skip_errors = {
@@ -361,6 +365,15 @@ class Connection(Api):
         )
 
         await asyncio.sleep(self._reconnect_timeout)
+
+    async def _reinit_watchers(self):
+        if len(self._registered_watchers) == 0:
+            return
+
+        coros = []
+        for watcher in self._registered_watchers:
+            coros.append(asyncio.create_task(watcher.watch()))
+        await asyncio.gather(*coros)
 
     async def connect(self) -> "Connection":
         """
@@ -626,6 +639,19 @@ class Connection(Api):
         db = self._protocol.create_db(True)
         stream._set_db(db)
         return stream
+
+    def watch(self, key: str, *, watcher_cls: Type[Watcher] = Watcher) -> Watcher:
+        watcher = watcher_cls(self, key)
+        self.register_watcher(watcher)
+        return watcher
+
+    def register_watcher(self, watcher: Watcher):
+        self._registered_watchers.add(watcher)
+        watcher.set_on_unwatch(self.unregister_watcher)
+
+    def unregister_watcher(self, watcher: Watcher):
+        if watcher in self._registered_watchers:
+            self._registered_watchers.remove(watcher)
 
 
 async def connect(**kwargs) -> Connection:

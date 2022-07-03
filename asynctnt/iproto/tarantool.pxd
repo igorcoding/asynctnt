@@ -47,6 +47,8 @@ cdef enum iproto_key:
     IPROTO_FEATURES = 0x55
     IPROTO_AUTH_TYPE = 0x5b
     IPROTO_TIMEOUT = 0x56
+    IPROTO_EVENT_KEY = 0x57
+    IPROTO_EVENT_DATA = 0x58
     IPROTO_TXN_ISOLATION = 0x59
 
     IPROTO_CHUNK = 0x80
@@ -84,6 +86,9 @@ cdef enum iproto_type:
     IPROTO_ROLLBACK = 0x10
     IPROTO_PING = 0x40
     IPROTO_ID = 0x49
+    IPROTO_WATCH = 0x4A
+    IPROTO_UNWATCH = 0x4B
+    IPROTO_EVENT = 0x4C
 
 
 cdef enum iproto_update_operation:

@@ -1,5 +1,6 @@
 # cython: language_level=3
 
+cimport cpython
 cimport cpython.dict
 from cpython.datetime cimport import_datetime
 
@@ -32,6 +33,7 @@ include "requests/execute.pyx"
 include "requests/id.pyx"
 include "requests/auth.pyx"
 include "requests/streams.pyx"
+include "requests/watchers.pyx"
 
 include "ttuple.pyx"
 include "response.pyx"
@@ -91,6 +93,7 @@ cdef class BaseProtocol(CoreProtocol):
         self._on_request_timeout_cb = self._on_request_timeout
 
         self._reqs = {}
+        self._watchers = {}
         self._sync = 0
         self._last_stream_id = 0
         self._schema_id = -1
@@ -167,20 +170,33 @@ cdef class BaseProtocol(CoreProtocol):
 
     cdef void _on_response_received(self, const char *buf, uint32_t buf_len):
         cdef:
-            PyObject *req_p
-            Response response
-            BaseRequest req
             Header hdr
-            bint is_chunk
-            object waiter
-            object sync_obj
-            object err
-
+            bint is_event
             ssize_t length
 
         length = response_parse_header(buf, buf_len, &hdr)
         buf_len -= length
         buf = &buf[length]  # skip header
+
+        is_event = <bint> (hdr.code == tarantool.IPROTO_EVENT)
+
+        if is_event:
+            self._handle_event(&hdr, buf, buf_len)
+        else:
+            self._handle_response(&hdr, buf, buf_len)
+
+    cdef void _handle_response(self,
+                               Header *hdr,
+                               const char *buf,
+                               uint32_t buf_len):
+        cdef:
+            PyObject *response_p
+            Response response
+            BaseRequest req
+            bint is_chunk
+            object waiter
+            object sync_obj
+            object err
 
         sync_obj = <object> hdr.sync
 
@@ -189,7 +205,7 @@ cdef class BaseProtocol(CoreProtocol):
             logger.warning('sync %d not found', hdr.sync)
             return
 
-        is_chunk = (hdr.code == tarantool.IPROTO_CHUNK)
+        is_chunk = <bint> (hdr.code == tarantool.IPROTO_CHUNK)
 
         response = <Response> response_p
         req = response.request_
@@ -243,6 +259,44 @@ cdef class BaseProtocol(CoreProtocol):
             return
 
         waiter.set_result(response)
+
+    cdef void _handle_event(self,
+                            Header *hdr,
+                            const char *buf,
+                            uint32_t buf_len):
+        cdef:
+            EventBody ev
+            PyObject *cb_p
+
+            str key
+            object data
+
+        ev.key = NULL
+        ev.data = NULL
+        cb_p = NULL
+        data = None
+
+        try:
+            response_parse_event_body(buf, buf_len, &ev, self.encoding)
+        except Exception as e:
+            logger.error("Error parsing event body: %s\ndata:\n%s", e, "")  # TODO: use xd to print buf
+            return
+
+        key = <str> ev.key
+        cpython.Py_XDECREF(ev.key)
+
+        if ev.data is not NULL:
+            data = <object> ev.data
+            cpython.Py_XDECREF(ev.data)
+
+        cb_p = cpython.dict.PyDict_GetItem(self._watchers, key)
+        if cb_p is NULL:
+            logger.warning('watcher %s not found', key)
+            return
+
+        cb = <object> cb_p
+        cpython.dict.PyDict_DelItem(self._watchers, key)
+        cb(key, data)
 
     cdef void _do_id(self):
         fut = self._db._id(0.0)
@@ -491,6 +545,15 @@ cdef class BaseProtocol(CoreProtocol):
 
         return self._new_waiter_for_request(response, req, timeout)
 
+    cdef void execute_watch(self, BaseRequest req, str key, object cb):
+        cpython.dict.PyDict_SetItem(self._watchers, key, cb)
+        self._write(req.encode(self.encoding))
+
+    cdef void execute_unwatch(self, BaseRequest req, str key):
+        self._write(req.encode(self.encoding))
+        if cpython.dict.PyDict_Contains(self._watchers, key):
+            cpython.dict.PyDict_DelItem(self._watchers, key)
+
     cdef uint32_t transform_iterator(self, iterator) except *:
         if isinstance(iterator, int):
             return iterator
@@ -518,4 +581,3 @@ cdef class BaseProtocol(CoreProtocol):
 
 class Protocol(BaseProtocol, asyncio.Protocol):
     pass
-

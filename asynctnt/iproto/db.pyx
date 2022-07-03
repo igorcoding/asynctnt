@@ -318,6 +318,24 @@ cdef class Db:
         req.check_schema_change = True
         return self._protocol.execute(self._protocol, req, timeout)
 
+    cdef object _watch(self, str key, object cb):
+        cdef WatchRequest req = WatchRequest.__new__(WatchRequest)
+        req.op = tarantool.IPROTO_WATCH
+        req.sync = self.next_sync()
+        req.stream_id = 0
+        req.check_schema_change = False
+        req.key = key
+        return self._protocol.execute_watch(req, key, cb)
+
+    cdef object _unwatch(self, str key):
+        cdef WatchRequest req = WatchRequest.__new__(WatchRequest)
+        req.op = tarantool.IPROTO_UNWATCH
+        req.sync = self.next_sync()
+        req.stream_id = 0
+        req.check_schema_change = False
+        req.key = key
+        return self._protocol.execute_unwatch(req, key)
+
     # public methods
 
     @property
@@ -433,3 +451,9 @@ cdef class Db:
 
     def rollback(self, float timeout=-1):
         return self._rollback(timeout)
+
+    def watch(self, str key, object cb):
+        return self._watch(key, cb)
+
+    def unwatch(self, str key):
+        return self._unwatch(key)

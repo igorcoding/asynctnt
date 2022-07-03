@@ -91,3 +91,7 @@ cdef class Db:
     cdef object _commit(self, float timeout)
 
     cdef object _rollback(self, float timeout)
+
+    cdef object _watch(self, str key, object cb)
+
+    cdef object _unwatch(self, str key)

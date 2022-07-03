@@ -1,5 +1,5 @@
 import enum
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Callable, Dict, List, Optional, Union
 
 from asynctnt.iproto import protocol
 
@@ -458,3 +458,19 @@ class Api:
         :param timeout: request timeout
         """
         return self._db.rollback(timeout)
+
+    async def watch_iproto(self, key: str, cb: Callable[[str, Any], None]) -> None:
+        """
+            Watch a specified key and call cb as soon as an event on
+            this key is happened
+        :param key: a key to be watched
+        :param cb: callback to be called on event
+        """
+        return self._db.watch(key, cb)
+
+    async def unwatch_iproto(self, key: str) -> None:
+        """
+            Stop watching a specified key
+        :param key: a key to stop watchoing
+        """
+        return self._db.unwatch(key)

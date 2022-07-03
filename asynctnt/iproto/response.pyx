@@ -645,3 +645,52 @@ cdef ssize_t response_parse_body(const char *buf, uint32_t buf_len,
             mp_next(&b)
 
     return <ssize_t> (b - buf)
+
+cdef ssize_t response_parse_event_body(const char *buf, uint32_t buf_len,
+                                       EventBody *ev, bytes encoding) except -1:
+    cdef:
+        const char *b
+        uint32_t size
+        uint32_t key
+        uint32_t s_len
+        const char *s
+        PyObject *key_ptr
+        PyObject *data_ptr
+
+    b = <const char *> buf
+
+    # parsing body
+
+    if mp_typeof(b[0]) != MP_MAP:  # pragma: nocover
+        raise TypeError('Response body must be a MP_MAP')
+
+    size = mp_decode_map(&b)
+    for _ in range(size):
+        if mp_typeof(b[0]) != MP_UINT:  # pragma: nocover
+            raise TypeError('Header key must be a MP_UINT')
+
+        key = mp_decode_uint(&b)
+        if key == tarantool.IPROTO_EVENT_KEY:
+            if mp_typeof(b[0]) != MP_STR:  # pragma: nocover
+                raise TypeError('EVENT_KEY type must be a MP_STR')
+
+            s = NULL
+            s_len = 0
+            s = mp_decode_str(&b, &s_len)
+
+            ev_key = decode_string(s[:s_len], encoding)
+            key_ptr = <PyObject *>ev_key
+            cpython.Py_XINCREF(key_ptr)
+            ev.key = key_ptr
+
+        elif key == tarantool.IPROTO_EVENT_DATA:
+            ev_data = _decode_obj(&b, encoding)
+            data_ptr = <PyObject *>ev_data
+            cpython.Py_XINCREF(data_ptr)
+            ev.data = data_ptr
+
+        else:  # pragma: nocover
+            logger.debug('unknown key in body map: %d', int(key))
+            mp_next(&b)
+
+    return <ssize_t> (b - buf)

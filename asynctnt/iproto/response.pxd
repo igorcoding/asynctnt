@@ -1,4 +1,5 @@
 cimport cython
+from cpython.ref cimport PyObject
 from libc.stdint cimport int32_t, int64_t, uint32_t, uint64_t
 
 
@@ -7,6 +8,12 @@ cdef struct Header:
     int32_t return_code
     uint64_t sync
     int64_t schema_id
+
+
+cdef struct EventBody:
+    PyObject *key
+    PyObject *data
+
 
 cdef class IProtoErrorStackFrame:
     cdef:
@@ -65,4 +72,6 @@ cdef ssize_t response_parse_header(const char *buf, uint32_t buf_len,
 cdef ssize_t response_parse_body(const char *buf, uint32_t buf_len,
                                  Response resp, BaseRequest req,
                                  bint is_chunk) except -1
+cdef ssize_t response_parse_event_body(const char *buf, uint32_t buf_len,
+                                       EventBody *ev, bytes encoding) except -1
 cdef IProtoError parse_iproto_error(const char ** b, bytes encoding)
