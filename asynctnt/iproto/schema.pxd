@@ -3,12 +3,12 @@ from libc.stdint cimport  int64_t
 
 cdef class Field:
     cdef:
-        readonly str name
-        readonly str type
-        readonly str collation
-        readonly object is_nullable
-        readonly object is_autoincrement
-        readonly str span
+        public str name
+        public str type
+        public str collation
+        public object is_nullable
+        public object is_autoincrement
+        public str span
 
 
 cdef public class Metadata [object C_Metadata, type C_Metadata_Type]:

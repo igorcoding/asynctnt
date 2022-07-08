@@ -56,6 +56,14 @@ cdef class Metadata:
     def __repr__(self):  # pragma: nocover
         return '<Metadata [fields_count={}]>'.format(self.len())
 
+    def __len__(self):
+        return self.len()
+
+    def add_field(self, field, id=None):
+        if id is None:
+            id = len(self.fields)
+        self.add(id, field)
+
 @cython.final
 cdef class SchemaIndex:
     def __cinit__(self):

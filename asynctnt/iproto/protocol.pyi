@@ -28,6 +28,19 @@ class Metadata:
     name_id_map: Dict[str, int]
     """ Mapping name -> id """
 
+    def add_field(self, field: Field, id: Optional[int] = None):
+        """
+        Adds new field to metadata
+        :param id: field number
+        :param field: Field object
+        :return:
+        """
+        ...
+
+    def __len__(self) -> int: ...
+
+    def __repr__(self) -> str:  ...
+
 
 class SchemaIndex:
     iid: int
