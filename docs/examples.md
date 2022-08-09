@@ -65,3 +65,32 @@ async def main():
 
 asyncio.run(main())
 ```
+
+## Connect with SSL encryption
+```python
+import asyncio
+import asynctnt
+
+
+async def main():
+    conn = asynctnt.Connection(host='127.0.0.1',
+                               port=3301,
+                               transport=asynctnt.Transport.SSL,
+                               ssl_key_file='./ssl/host.key',
+                               ssl_cert_file='./ssl/host.crt',
+                               ssl_ca_file='./ssl/ca.crt',
+                               ssl_ciphers='ECDHE-RSA-AES256-GCM-SHA384')
+    await conn.connect()
+
+    resp = await conn.ping()
+    print(resp)
+
+    await conn.disconnect()
+
+asyncio.run(main())
+```
+
+Stdout:
+```
+<Response sync=4 rowcount=0 data=None>
+```

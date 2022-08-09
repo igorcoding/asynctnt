@@ -42,6 +42,12 @@ class TarantoolNotConnectedError(TarantoolNetworkError):
     """
     pass
 
+class SSLError(TarantoolError):
+    """
+        Raised when something is wrong with encrypted connection
+    """
+    pass
+
 
 class ErrorCode(enum.IntEnum):
     """

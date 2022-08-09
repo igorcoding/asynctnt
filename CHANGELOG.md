@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+**New features:**
+* Support SSL encrypted connection to Tarantool EE (closes [#22](https://github.com/igorcoding/asynctnt/issues/22))
+
 ## v2.0.1
 * Fixed an issue with encoding datetimes less than 01-01-1970 (fixes [#29](https://github.com/igorcoding/asynctnt/issues/29))
 * Fixed "Edit on Github" links in docs (fixes [#26](https://github.com/igorcoding/asynctnt/issues/26))
