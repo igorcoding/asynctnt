@@ -589,7 +589,7 @@ class TarantoolSyncInstance(TarantoolInstance):
         proc = subprocess.Popen([self._command_to_run, '-V'],
                                 stdout=subprocess.PIPE)
         output = proc.stdout.read().decode()
-        version_str = output.split('\n')[0].split(' ')[1]
+        version_str = output.split('\n')[0].replace('Tarantool ', '').replace('Enterprise ', '')
         return self._parse_version(version_str)
 
     def command(self, cmd, print_greeting=True):
