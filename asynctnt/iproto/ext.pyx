@@ -187,6 +187,10 @@ cdef void datetime_from_py(datetime ob, IProtoDateTime *dt):
     ts = <double> ob.timestamp()
     dt.seconds = <int64_t> ts
     dt.nsec = <int32_t> ((ts - <double> dt.seconds) * 1000000) * 1000
+    if dt.nsec < 0:
+        # correction for negative dates
+        dt.seconds -= 1
+        dt.nsec += 1000000000
 
     if datetime_tzinfo(ob) is not None:
         offset = ob.utcoffset().total_seconds()
