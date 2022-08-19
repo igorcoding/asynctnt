@@ -182,39 +182,39 @@ Attributes
 
 .. py:class:: TarantoolTuple
 
-   .. py:method:: __repr__(self) -> str
+   .. py:method:: __repr__() -> str
 
       Return repr(self).
 
 
-   .. py:method:: __index__(self, i: int) -> Any
+   .. py:method:: __index__(i: int) -> Any
 
 
-   .. py:method:: __len__(self) -> int
+   .. py:method:: __len__() -> int
 
 
-   .. py:method:: __contains__(self, item: str) -> bool
+   .. py:method:: __contains__(item: str) -> bool
 
 
-   .. py:method:: __getitem__(self, item: Union[int, str, slice]) -> Any
+   .. py:method:: __getitem__(item: Union[int, str, slice]) -> Any
 
 
-   .. py:method:: keys(self) -> Iterator[str]
+   .. py:method:: keys() -> Iterator[str]
 
 
-   .. py:method:: values(self) -> Iterator[Any]
+   .. py:method:: values() -> Iterator[Any]
 
 
-   .. py:method:: items(self) -> Iterator[Tuple[str, Any]]
+   .. py:method:: items() -> Iterator[Tuple[str, Any]]
 
 
-   .. py:method:: get(self, item: str) -> Optional[Any]
+   .. py:method:: get(item: str) -> Optional[Any]
 
 
-   .. py:method:: __iter__(self)
+   .. py:method:: __iter__()
 
 
-   .. py:method:: __next__(self)
+   .. py:method:: __next__()
 
 
 
@@ -311,144 +311,144 @@ Attributes
 
       
 
-   .. py:method:: sync(self) -> int
+   .. py:method:: sync() -> int
       :property:
 
 
-   .. py:method:: code(self) -> int
+   .. py:method:: code() -> int
       :property:
 
 
-   .. py:method:: return_code(self) -> int
+   .. py:method:: return_code() -> int
       :property:
 
 
-   .. py:method:: schema_id(self) -> int
+   .. py:method:: schema_id() -> int
       :property:
 
 
-   .. py:method:: stmt_id(self) -> int
+   .. py:method:: stmt_id() -> int
       :property:
 
 
-   .. py:method:: rowcount(self) -> int
+   .. py:method:: rowcount() -> int
       :property:
 
 
-   .. py:method:: done(self) -> bool
+   .. py:method:: done() -> bool
 
 
-   .. py:method:: __len__(self) -> int
+   .. py:method:: __len__() -> int
 
 
-   .. py:method:: __getitem__(self, i) -> BodyItem
+   .. py:method:: __getitem__(i) -> BodyItem
 
 
-   .. py:method:: __iter__(self)
+   .. py:method:: __iter__()
 
 
 
 .. py:class:: PushIterator(fut: asyncio.Future)
 
-   .. py:method:: __iter__(self)
+   .. py:method:: __iter__()
 
 
-   .. py:method:: __next__(self)
+   .. py:method:: __next__()
 
 
-   .. py:method:: __aiter__(self)
+   .. py:method:: __aiter__()
 
 
-   .. py:method:: __anext__(self)
+   .. py:method:: __anext__()
       :async:
 
 
-   .. py:method:: response(self) -> Response
+   .. py:method:: response() -> Response
       :property:
 
 
 
 .. py:class:: Db
 
-   .. py:method:: stream_id(self) -> int
+   .. py:method:: stream_id() -> int
       :property:
 
 
-   .. py:method:: set_stream_id(self, stream_id: int)
+   .. py:method:: set_stream_id(stream_id: int)
 
 
-   .. py:method:: ping(self, timeout: float = -1)
+   .. py:method:: ping(timeout: float = -1)
 
 
-   .. py:method:: call16(self, func_name: str, args=None, timeout: float = -1, push_subscribe: bool = False)
+   .. py:method:: call16(func_name: str, args=None, timeout: float = -1, push_subscribe: bool = False)
 
 
-   .. py:method:: call(self, func_name: str, args=None, timeout: float = -1, push_subscribe: bool = False)
+   .. py:method:: call(func_name: str, args=None, timeout: float = -1, push_subscribe: bool = False)
 
 
-   .. py:method:: eval(self, expression: str, args=None, timeout: float = -1, push_subscribe: bool = False)
+   .. py:method:: eval(expression: str, args=None, timeout: float = -1, push_subscribe: bool = False)
 
 
-   .. py:method:: select(self, space, key=None, offset: int = 0, limit: int = 4294967295, index=0, iterator=0, timeout: float = -1, check_schema_change: bool = True)
+   .. py:method:: select(space, key=None, offset: int = 0, limit: int = 4294967295, index=0, iterator=0, timeout: float = -1, check_schema_change: bool = True)
 
 
-   .. py:method:: insert(self, space, t, replace: bool = False, timeout: float = -1)
+   .. py:method:: insert(space, t, replace: bool = False, timeout: float = -1)
 
 
-   .. py:method:: replace(self, space, t, timeout: float = -1)
+   .. py:method:: replace(space, t, timeout: float = -1)
 
 
-   .. py:method:: delete(self, space, key, index=0, timeout: float = -1)
+   .. py:method:: delete(space, key, index=0, timeout: float = -1)
 
 
-   .. py:method:: update(self, space, key, operations, index=0, timeout: float = -1)
+   .. py:method:: update(space, key, operations, index=0, timeout: float = -1)
 
 
-   .. py:method:: upsert(self, space, t, operations, timeout: float = -1)
+   .. py:method:: upsert(space, t, operations, timeout: float = -1)
 
 
-   .. py:method:: execute(self, query, args, parse_metadata: bool = True, timeout: float = -1)
+   .. py:method:: execute(query, args, parse_metadata: bool = True, timeout: float = -1)
 
 
-   .. py:method:: prepare(self, query, parse_metadata: bool = True, timeout: float = -1)
+   .. py:method:: prepare(query, parse_metadata: bool = True, timeout: float = -1)
 
 
-   .. py:method:: begin(self, isolation: int, tx_timeout: float, timeout: float = -1)
+   .. py:method:: begin(isolation: int, tx_timeout: float, timeout: float = -1)
 
 
-   .. py:method:: commit(self, timeout: float = -1)
+   .. py:method:: commit(timeout: float = -1)
 
 
-   .. py:method:: rollback(self, timeout: float = -1)
+   .. py:method:: rollback(timeout: float = -1)
 
 
 
 .. py:class:: Protocol
 
-   .. py:method:: schema_id(self) -> int
+   .. py:method:: schema_id() -> int
       :property:
 
 
-   .. py:method:: schema(self) -> Schema
+   .. py:method:: schema() -> Schema
       :property:
 
 
-   .. py:method:: create_db(self, gen_stream_id: bool = False) -> Db
+   .. py:method:: create_db(gen_stream_id: bool = False) -> Db
 
 
-   .. py:method:: get_common_db(self) -> Db
+   .. py:method:: get_common_db() -> Db
 
 
-   .. py:method:: refetch_schema(self) -> asyncio.Future
+   .. py:method:: refetch_schema() -> asyncio.Future
 
 
-   .. py:method:: is_connected(self) -> bool
+   .. py:method:: is_connected() -> bool
 
 
-   .. py:method:: is_fully_connected(self) -> bool
+   .. py:method:: is_fully_connected() -> bool
 
 
-   .. py:method:: get_version(self) -> tuple
+   .. py:method:: get_version() -> tuple
 
 
 

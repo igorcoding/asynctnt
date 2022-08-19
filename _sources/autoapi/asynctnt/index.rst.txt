@@ -80,146 +80,146 @@ Attributes
 
       
 
-   .. py:method:: _set_state(self, new_state: ConnectionState)
+   .. py:method:: _set_state(new_state: ConnectionState)
 
 
-   .. py:method:: connection_lost(self, exc)
+   .. py:method:: connection_lost(exc)
 
 
-   .. py:method:: _ping_task_func(self)
+   .. py:method:: _ping_task_func()
       :async:
 
 
-   .. py:method:: _start_reconnect(self, return_exceptions: bool = False)
+   .. py:method:: _start_reconnect(return_exceptions: bool = False)
 
 
-   .. py:method:: protocol_factory(self, connected_fut: asyncio.Future, cls=protocol.Protocol)
+   .. py:method:: protocol_factory(connected_fut: asyncio.Future, cls=protocol.Protocol)
 
 
-   .. py:method:: _connect(self, return_exceptions: bool = True)
+   .. py:method:: _connect(return_exceptions: bool = True)
       :async:
 
 
-   .. py:method:: _wait_reconnect(self, exc=None)
+   .. py:method:: _wait_reconnect(exc=None)
       :async:
 
 
-   .. py:method:: connect(self) -> Connection
+   .. py:method:: connect() -> Connection
       :async:
 
       Connect coroutine
 
 
-   .. py:method:: disconnect(self)
+   .. py:method:: disconnect()
       :async:
 
       Disconnect coroutine
 
 
-   .. py:method:: close(self)
+   .. py:method:: close()
 
       Same as disconnect, but not a coroutine, i.e. it does not wait
       for disconnect to finish.
 
 
-   .. py:method:: reconnect(self)
+   .. py:method:: reconnect()
       :async:
 
       Reconnect coroutine.
       Just calls disconnect() and connect()
 
 
-   .. py:method:: __aenter__(self)
+   .. py:method:: __aenter__()
       :async:
 
       Executed on entering the async with section.
       Connects to Tarantool instance.
 
 
-   .. py:method:: __aexit__(self, exc_type, exc_val, exc_tb)
+   .. py:method:: __aexit__(exc_type, exc_val, exc_tb)
       :async:
 
       Executed on leaving the async with section.
       Disconnects from Tarantool instance.
 
 
-   .. py:method:: fingerprint(self) -> str
+   .. py:method:: fingerprint() -> str
       :property:
 
 
-   .. py:method:: host(self) -> str
+   .. py:method:: host() -> str
       :property:
 
       Tarantool host
 
 
-   .. py:method:: port(self) -> int
+   .. py:method:: port() -> int
       :property:
 
       Tarantool port
 
 
-   .. py:method:: username(self) -> Optional[str]
+   .. py:method:: username() -> Optional[str]
       :property:
 
       Tarantool username
 
 
-   .. py:method:: password(self) -> Optional[str]
+   .. py:method:: password() -> Optional[str]
       :property:
 
       Tarantool password
 
 
-   .. py:method:: fetch_schema(self) -> bool
+   .. py:method:: fetch_schema() -> bool
       :property:
 
       fetch_schema flag
 
 
-   .. py:method:: auto_refetch_schema(self) -> bool
+   .. py:method:: auto_refetch_schema() -> bool
       :property:
 
       auto_refetch_schema flag
 
 
-   .. py:method:: encoding(self) -> str
+   .. py:method:: encoding() -> str
       :property:
 
       Connection encoding
 
 
-   .. py:method:: reconnect_timeout(self) -> float
+   .. py:method:: reconnect_timeout() -> float
       :property:
 
       Reconnect timeout value
 
 
-   .. py:method:: connect_timeout(self) -> float
+   .. py:method:: connect_timeout() -> float
       :property:
 
       Connect timeout value
 
 
-   .. py:method:: request_timeout(self) -> float
+   .. py:method:: request_timeout() -> float
       :property:
 
       Request timeout value
 
 
-   .. py:method:: version(self) -> Optional[tuple]
+   .. py:method:: version() -> Optional[tuple]
       :property:
 
       Protocol version tuple. ex.: (1, 6, 7)
 
 
-   .. py:method:: loop(self)
+   .. py:method:: loop()
       :property:
 
       Asyncio event loop
 
 
-   .. py:method:: state(self) -> ConnectionState
+   .. py:method:: state() -> ConnectionState
       :property:
 
       Current connection state
@@ -227,52 +227,52 @@ Attributes
       :rtype: ConnectionState
 
 
-   .. py:method:: is_connected(self) -> bool
+   .. py:method:: is_connected() -> bool
       :property:
 
       Check if an underlying connection is active
 
 
-   .. py:method:: is_fully_connected(self) -> bool
+   .. py:method:: is_fully_connected() -> bool
       :property:
 
       Check if connection is fully active (performed auth
       and schema fetching)
 
 
-   .. py:method:: schema_id(self) -> Optional[int]
+   .. py:method:: schema_id() -> Optional[int]
       :property:
 
       Tarantool's current schema id
 
 
-   .. py:method:: schema(self) -> Optional[asynctnt.iproto.protocol.Schema]
+   .. py:method:: schema() -> Optional[asynctnt.iproto.protocol.Schema]
       :property:
 
       Current Tarantool schema with all spaces, indexes and fields
 
 
-   .. py:method:: initial_read_buffer_size(self) -> int
+   .. py:method:: initial_read_buffer_size() -> int
       :property:
 
       initial_read_buffer_size value
 
 
-   .. py:method:: refetch_schema(self)
+   .. py:method:: refetch_schema()
       :async:
 
       Coroutine to force refetch schema
 
 
-   .. py:method:: _normalize_api(self)
+   .. py:method:: _normalize_api()
 
 
-   .. py:method:: __repr__(self)
+   .. py:method:: __repr__()
 
       Return repr(self).
 
 
-   .. py:method:: stream(self) -> asynctnt.stream.Stream
+   .. py:method:: stream() -> asynctnt.stream.Stream
 
       Create new stream suitable for interactive transactions
 
@@ -328,97 +328,97 @@ Attributes
 
       
 
-   .. py:method:: sync(self) -> int
+   .. py:method:: sync() -> int
       :property:
 
 
-   .. py:method:: code(self) -> int
+   .. py:method:: code() -> int
       :property:
 
 
-   .. py:method:: return_code(self) -> int
+   .. py:method:: return_code() -> int
       :property:
 
 
-   .. py:method:: schema_id(self) -> int
+   .. py:method:: schema_id() -> int
       :property:
 
 
-   .. py:method:: stmt_id(self) -> int
+   .. py:method:: stmt_id() -> int
       :property:
 
 
-   .. py:method:: rowcount(self) -> int
+   .. py:method:: rowcount() -> int
       :property:
 
 
-   .. py:method:: done(self) -> bool
+   .. py:method:: done() -> bool
 
 
-   .. py:method:: __len__(self) -> int
+   .. py:method:: __len__() -> int
 
 
-   .. py:method:: __getitem__(self, i) -> BodyItem
+   .. py:method:: __getitem__(i) -> BodyItem
 
 
-   .. py:method:: __iter__(self)
+   .. py:method:: __iter__()
 
 
 
 .. py:class:: TarantoolTuple
 
-   .. py:method:: __repr__(self) -> str
+   .. py:method:: __repr__() -> str
 
       Return repr(self).
 
 
-   .. py:method:: __index__(self, i: int) -> Any
+   .. py:method:: __index__(i: int) -> Any
 
 
-   .. py:method:: __len__(self) -> int
+   .. py:method:: __len__() -> int
 
 
-   .. py:method:: __contains__(self, item: str) -> bool
+   .. py:method:: __contains__(item: str) -> bool
 
 
-   .. py:method:: __getitem__(self, item: Union[int, str, slice]) -> Any
+   .. py:method:: __getitem__(item: Union[int, str, slice]) -> Any
 
 
-   .. py:method:: keys(self) -> Iterator[str]
+   .. py:method:: keys() -> Iterator[str]
 
 
-   .. py:method:: values(self) -> Iterator[Any]
+   .. py:method:: values() -> Iterator[Any]
 
 
-   .. py:method:: items(self) -> Iterator[Tuple[str, Any]]
+   .. py:method:: items() -> Iterator[Tuple[str, Any]]
 
 
-   .. py:method:: get(self, item: str) -> Optional[Any]
+   .. py:method:: get(item: str) -> Optional[Any]
 
 
-   .. py:method:: __iter__(self)
+   .. py:method:: __iter__()
 
 
-   .. py:method:: __next__(self)
+   .. py:method:: __next__()
 
 
 
 .. py:class:: PushIterator(fut: asyncio.Future)
 
-   .. py:method:: __iter__(self)
+   .. py:method:: __iter__()
 
 
-   .. py:method:: __next__(self)
+   .. py:method:: __next__()
 
 
-   .. py:method:: __aiter__(self)
+   .. py:method:: __aiter__()
 
 
-   .. py:method:: __anext__(self)
+   .. py:method:: __anext__()
       :async:
 
 
-   .. py:method:: response(self) -> Response
+   .. py:method:: response() -> Response
       :property:
 
 
@@ -569,56 +569,56 @@ Attributes
 
 .. py:class:: Db
 
-   .. py:method:: stream_id(self) -> int
+   .. py:method:: stream_id() -> int
       :property:
 
 
-   .. py:method:: set_stream_id(self, stream_id: int)
+   .. py:method:: set_stream_id(stream_id: int)
 
 
-   .. py:method:: ping(self, timeout: float = -1)
+   .. py:method:: ping(timeout: float = -1)
 
 
-   .. py:method:: call16(self, func_name: str, args=None, timeout: float = -1, push_subscribe: bool = False)
+   .. py:method:: call16(func_name: str, args=None, timeout: float = -1, push_subscribe: bool = False)
 
 
-   .. py:method:: call(self, func_name: str, args=None, timeout: float = -1, push_subscribe: bool = False)
+   .. py:method:: call(func_name: str, args=None, timeout: float = -1, push_subscribe: bool = False)
 
 
-   .. py:method:: eval(self, expression: str, args=None, timeout: float = -1, push_subscribe: bool = False)
+   .. py:method:: eval(expression: str, args=None, timeout: float = -1, push_subscribe: bool = False)
 
 
-   .. py:method:: select(self, space, key=None, offset: int = 0, limit: int = 4294967295, index=0, iterator=0, timeout: float = -1, check_schema_change: bool = True)
+   .. py:method:: select(space, key=None, offset: int = 0, limit: int = 4294967295, index=0, iterator=0, timeout: float = -1, check_schema_change: bool = True)
 
 
-   .. py:method:: insert(self, space, t, replace: bool = False, timeout: float = -1)
+   .. py:method:: insert(space, t, replace: bool = False, timeout: float = -1)
 
 
-   .. py:method:: replace(self, space, t, timeout: float = -1)
+   .. py:method:: replace(space, t, timeout: float = -1)
 
 
-   .. py:method:: delete(self, space, key, index=0, timeout: float = -1)
+   .. py:method:: delete(space, key, index=0, timeout: float = -1)
 
 
-   .. py:method:: update(self, space, key, operations, index=0, timeout: float = -1)
+   .. py:method:: update(space, key, operations, index=0, timeout: float = -1)
 
 
-   .. py:method:: upsert(self, space, t, operations, timeout: float = -1)
+   .. py:method:: upsert(space, t, operations, timeout: float = -1)
 
 
-   .. py:method:: execute(self, query, args, parse_metadata: bool = True, timeout: float = -1)
+   .. py:method:: execute(query, args, parse_metadata: bool = True, timeout: float = -1)
 
 
-   .. py:method:: prepare(self, query, parse_metadata: bool = True, timeout: float = -1)
+   .. py:method:: prepare(query, parse_metadata: bool = True, timeout: float = -1)
 
 
-   .. py:method:: begin(self, isolation: int, tx_timeout: float, timeout: float = -1)
+   .. py:method:: begin(isolation: int, tx_timeout: float, timeout: float = -1)
 
 
-   .. py:method:: commit(self, timeout: float = -1)
+   .. py:method:: commit(timeout: float = -1)
 
 
-   .. py:method:: rollback(self, timeout: float = -1)
+   .. py:method:: rollback(timeout: float = -1)
 
 
 

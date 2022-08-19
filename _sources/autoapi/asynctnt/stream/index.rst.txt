@@ -21,13 +21,13 @@ Classes
 
    Bases: :py:obj:`asynctnt.api.Api`
 
-   .. py:method:: stream_id(self) -> int
+   .. py:method:: stream_id() -> int
       :property:
 
       Current stream is
 
 
-   .. py:method:: __aenter__(self)
+   .. py:method:: __aenter__()
       :async:
 
           If used as Context Manager `begin()` and `commit()`/`rollback()`
@@ -35,7 +35,7 @@ Classes
       :return:
 
 
-   .. py:method:: __aexit__(self, exc_type, exc_val, exc_tb)
+   .. py:method:: __aexit__(exc_type, exc_val, exc_tb)
       :async:
 
       Normally `commit()` is called on context manager exit, but

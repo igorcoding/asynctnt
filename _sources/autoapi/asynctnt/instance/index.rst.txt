@@ -27,15 +27,15 @@ Classes
 
    Interface for protocol for subprocess calls.
 
-   .. py:method:: logger(self)
+   .. py:method:: logger()
       :property:
 
 
-   .. py:method:: pid(self)
+   .. py:method:: pid()
       :property:
 
 
-   .. py:method:: connection_made(self, transport)
+   .. py:method:: connection_made(transport)
 
       Called when a connection is made.
 
@@ -44,7 +44,7 @@ Classes
       When the connection is closed, connection_lost() is called.
 
 
-   .. py:method:: pipe_data_received(self, fd, data)
+   .. py:method:: pipe_data_received(fd, data)
 
       Called when the subprocess writes data into stdout/stderr pipe.
 
@@ -52,16 +52,16 @@ Classes
       data is bytes object.
 
 
-   .. py:method:: process_exited(self)
+   .. py:method:: process_exited()
 
       Called when subprocess has exited.
 
 
-   .. py:method:: returncode(self)
+   .. py:method:: returncode()
       :property:
 
 
-   .. py:method:: wait(self)
+   .. py:method:: wait()
       :async:
 
       Wait until the process exit and return the process return code.
@@ -69,96 +69,96 @@ Classes
       This method is a coroutine.
 
 
-   .. py:method:: send_signal(self, signal)
+   .. py:method:: send_signal(signal)
 
 
-   .. py:method:: terminate(self)
+   .. py:method:: terminate()
 
 
-   .. py:method:: kill(self)
+   .. py:method:: kill()
 
 
 
 .. py:class:: TarantoolInstance(*, host='127.0.0.1', port=3301, console_host=None, console_port=3302, replication_source=None, title=None, logger=None, log_level=5, slab_alloc_arena=0.1, wal_mode='none', root=None, specify_work_dir=True, cleanup=True, initlua_template=None, applua='-- app.lua --', extra_box_cfg='', timeout=5.0, command_to_run='tarantool', command_args=None)
 
-   .. py:method:: replication_source(self)
+   .. py:method:: replication_source()
       :property:
 
 
-   .. py:method:: _random_string(self, length, *, source=string.ascii_uppercase + string.ascii_lowercase + string.digits)
+   .. py:method:: _random_string(length, *, source=string.ascii_uppercase + string.ascii_lowercase + string.digits)
 
 
-   .. py:method:: _generate_title(self)
+   .. py:method:: _generate_title()
 
 
-   .. py:method:: _generate_root_folder_name(self)
+   .. py:method:: _generate_root_folder_name()
 
 
    .. py:method:: get_random_port()
       :staticmethod:
 
 
-   .. py:method:: _create_initlua_template(self)
+   .. py:method:: _create_initlua_template()
 
 
-   .. py:method:: _render_initlua(self)
+   .. py:method:: _render_initlua()
 
 
-   .. py:method:: _save_initlua(self, initlua)
+   .. py:method:: _save_initlua(initlua)
 
 
-   .. py:method:: logger(self)
+   .. py:method:: logger()
       :property:
 
 
-   .. py:method:: fingerprint(self)
+   .. py:method:: fingerprint()
       :property:
 
 
-   .. py:method:: prepare(self, recreate)
+   .. py:method:: prepare(recreate)
 
 
-   .. py:method:: host(self)
+   .. py:method:: host()
       :property:
 
 
-   .. py:method:: port(self)
+   .. py:method:: port()
       :property:
 
 
-   .. py:method:: console_port(self)
+   .. py:method:: console_port()
       :property:
 
 
-   .. py:method:: is_running(self)
+   .. py:method:: is_running()
       :property:
 
 
-   .. py:method:: pid(self)
+   .. py:method:: pid()
       :property:
 
 
-   .. py:method:: command(self, cmd, print_greeting=True)
+   .. py:method:: command(cmd, print_greeting=True)
       :abstractmethod:
 
 
-   .. py:method:: start(self, *, wait=True, recreate=True)
+   .. py:method:: start(*, wait=True, recreate=True)
       :abstractmethod:
 
 
-   .. py:method:: stop(self)
+   .. py:method:: stop()
       :abstractmethod:
 
 
-   .. py:method:: terminate(self)
+   .. py:method:: terminate()
       :abstractmethod:
 
 
-   .. py:method:: kill(self)
+   .. py:method:: kill()
       :abstractmethod:
 
 
-   .. py:method:: cleanup(self)
+   .. py:method:: cleanup()
 
 
 
@@ -171,49 +171,49 @@ Classes
 
       
 
-   .. py:method:: __enter__(self)
+   .. py:method:: __enter__()
 
 
-   .. py:method:: __exit__(self, exc_type, exc_val, exc_tb)
+   .. py:method:: __exit__(exc_type, exc_val, exc_tb)
 
 
-   .. py:method:: pid(self)
+   .. py:method:: pid()
       :property:
 
 
-   .. py:method:: start(self, *, wait=True, recreate=True)
+   .. py:method:: start(*, wait=True, recreate=True)
 
 
-   .. py:method:: _log_reader(self)
+   .. py:method:: _log_reader()
 
 
-   .. py:method:: stop(self)
+   .. py:method:: stop()
 
 
-   .. py:method:: terminate(self)
+   .. py:method:: terminate()
 
 
-   .. py:method:: kill(self)
+   .. py:method:: kill()
 
 
-   .. py:method:: _wait(self, timeout, wait=True)
+   .. py:method:: _wait(timeout, wait=True)
 
 
-   .. py:method:: cleanup(self)
+   .. py:method:: cleanup()
 
 
    .. py:method:: _parse_version(version: str) -> Optional[tuple]
       :staticmethod:
 
 
-   .. py:method:: version(self) -> Optional[tuple]
+   .. py:method:: version() -> Optional[tuple]
 
 
-   .. py:method:: bin_version(self) -> Optional[tuple]
+   .. py:method:: bin_version() -> Optional[tuple]
       :property:
 
 
-   .. py:method:: command(self, cmd, print_greeting=True)
+   .. py:method:: command(cmd, print_greeting=True)
 
 
 
@@ -221,43 +221,43 @@ Classes
 
    Bases: :py:obj:`TarantoolInstance`
 
-   .. py:method:: pid(self)
+   .. py:method:: pid()
       :property:
 
 
-   .. py:method:: prepare(self, recreate)
+   .. py:method:: prepare(recreate)
 
 
-   .. py:method:: _on_process_exit(self, return_code)
+   .. py:method:: _on_process_exit(return_code)
 
 
-   .. py:method:: wait_stopped(self)
+   .. py:method:: wait_stopped()
       :async:
 
 
-   .. py:method:: version(self)
+   .. py:method:: version()
       :async:
 
 
-   .. py:method:: command(self, cmd, print_greeting=True)
+   .. py:method:: command(cmd, print_greeting=True)
       :async:
 
 
-   .. py:method:: start(self, *, wait=True, recreate=True)
+   .. py:method:: start(*, wait=True, recreate=True)
       :async:
 
 
-   .. py:method:: stop(self)
+   .. py:method:: stop()
       :async:
 
 
-   .. py:method:: terminate(self)
+   .. py:method:: terminate()
 
 
-   .. py:method:: kill(self)
+   .. py:method:: kill()
 
 
-   .. py:method:: cleanup(self)
+   .. py:method:: cleanup()
 
 
 
@@ -265,7 +265,7 @@ Classes
 
    Bases: :py:obj:`TarantoolSyncInstance`
 
-   .. py:method:: bin_version(self) -> Optional[tuple]
+   .. py:method:: bin_version() -> Optional[tuple]
       :property:
 
 

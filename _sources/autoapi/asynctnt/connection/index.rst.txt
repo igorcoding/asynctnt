@@ -67,146 +67,146 @@ Functions
 
       
 
-   .. py:method:: _set_state(self, new_state: ConnectionState)
+   .. py:method:: _set_state(new_state: ConnectionState)
 
 
-   .. py:method:: connection_lost(self, exc)
+   .. py:method:: connection_lost(exc)
 
 
-   .. py:method:: _ping_task_func(self)
+   .. py:method:: _ping_task_func()
       :async:
 
 
-   .. py:method:: _start_reconnect(self, return_exceptions: bool = False)
+   .. py:method:: _start_reconnect(return_exceptions: bool = False)
 
 
-   .. py:method:: protocol_factory(self, connected_fut: asyncio.Future, cls=protocol.Protocol)
+   .. py:method:: protocol_factory(connected_fut: asyncio.Future, cls=protocol.Protocol)
 
 
-   .. py:method:: _connect(self, return_exceptions: bool = True)
+   .. py:method:: _connect(return_exceptions: bool = True)
       :async:
 
 
-   .. py:method:: _wait_reconnect(self, exc=None)
+   .. py:method:: _wait_reconnect(exc=None)
       :async:
 
 
-   .. py:method:: connect(self) -> Connection
+   .. py:method:: connect() -> Connection
       :async:
 
       Connect coroutine
 
 
-   .. py:method:: disconnect(self)
+   .. py:method:: disconnect()
       :async:
 
       Disconnect coroutine
 
 
-   .. py:method:: close(self)
+   .. py:method:: close()
 
       Same as disconnect, but not a coroutine, i.e. it does not wait
       for disconnect to finish.
 
 
-   .. py:method:: reconnect(self)
+   .. py:method:: reconnect()
       :async:
 
       Reconnect coroutine.
       Just calls disconnect() and connect()
 
 
-   .. py:method:: __aenter__(self)
+   .. py:method:: __aenter__()
       :async:
 
       Executed on entering the async with section.
       Connects to Tarantool instance.
 
 
-   .. py:method:: __aexit__(self, exc_type, exc_val, exc_tb)
+   .. py:method:: __aexit__(exc_type, exc_val, exc_tb)
       :async:
 
       Executed on leaving the async with section.
       Disconnects from Tarantool instance.
 
 
-   .. py:method:: fingerprint(self) -> str
+   .. py:method:: fingerprint() -> str
       :property:
 
 
-   .. py:method:: host(self) -> str
+   .. py:method:: host() -> str
       :property:
 
       Tarantool host
 
 
-   .. py:method:: port(self) -> int
+   .. py:method:: port() -> int
       :property:
 
       Tarantool port
 
 
-   .. py:method:: username(self) -> Optional[str]
+   .. py:method:: username() -> Optional[str]
       :property:
 
       Tarantool username
 
 
-   .. py:method:: password(self) -> Optional[str]
+   .. py:method:: password() -> Optional[str]
       :property:
 
       Tarantool password
 
 
-   .. py:method:: fetch_schema(self) -> bool
+   .. py:method:: fetch_schema() -> bool
       :property:
 
       fetch_schema flag
 
 
-   .. py:method:: auto_refetch_schema(self) -> bool
+   .. py:method:: auto_refetch_schema() -> bool
       :property:
 
       auto_refetch_schema flag
 
 
-   .. py:method:: encoding(self) -> str
+   .. py:method:: encoding() -> str
       :property:
 
       Connection encoding
 
 
-   .. py:method:: reconnect_timeout(self) -> float
+   .. py:method:: reconnect_timeout() -> float
       :property:
 
       Reconnect timeout value
 
 
-   .. py:method:: connect_timeout(self) -> float
+   .. py:method:: connect_timeout() -> float
       :property:
 
       Connect timeout value
 
 
-   .. py:method:: request_timeout(self) -> float
+   .. py:method:: request_timeout() -> float
       :property:
 
       Request timeout value
 
 
-   .. py:method:: version(self) -> Optional[tuple]
+   .. py:method:: version() -> Optional[tuple]
       :property:
 
       Protocol version tuple. ex.: (1, 6, 7)
 
 
-   .. py:method:: loop(self)
+   .. py:method:: loop()
       :property:
 
       Asyncio event loop
 
 
-   .. py:method:: state(self) -> ConnectionState
+   .. py:method:: state() -> ConnectionState
       :property:
 
       Current connection state
@@ -214,52 +214,52 @@ Functions
       :rtype: ConnectionState
 
 
-   .. py:method:: is_connected(self) -> bool
+   .. py:method:: is_connected() -> bool
       :property:
 
       Check if an underlying connection is active
 
 
-   .. py:method:: is_fully_connected(self) -> bool
+   .. py:method:: is_fully_connected() -> bool
       :property:
 
       Check if connection is fully active (performed auth
       and schema fetching)
 
 
-   .. py:method:: schema_id(self) -> Optional[int]
+   .. py:method:: schema_id() -> Optional[int]
       :property:
 
       Tarantool's current schema id
 
 
-   .. py:method:: schema(self) -> Optional[asynctnt.iproto.protocol.Schema]
+   .. py:method:: schema() -> Optional[asynctnt.iproto.protocol.Schema]
       :property:
 
       Current Tarantool schema with all spaces, indexes and fields
 
 
-   .. py:method:: initial_read_buffer_size(self) -> int
+   .. py:method:: initial_read_buffer_size() -> int
       :property:
 
       initial_read_buffer_size value
 
 
-   .. py:method:: refetch_schema(self)
+   .. py:method:: refetch_schema()
       :async:
 
       Coroutine to force refetch schema
 
 
-   .. py:method:: _normalize_api(self)
+   .. py:method:: _normalize_api()
 
 
-   .. py:method:: __repr__(self)
+   .. py:method:: __repr__()
 
       Return repr(self).
 
 
-   .. py:method:: stream(self) -> asynctnt.stream.Stream
+   .. py:method:: stream() -> asynctnt.stream.Stream
 
       Create new stream suitable for interactive transactions
 
