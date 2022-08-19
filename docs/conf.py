@@ -133,5 +133,5 @@ html_context = {
     'display_github': True,
     'github_user': 'igorcoding',
     'github_repo': 'asynctnt',
-    'github_version': 'v2/docs/',
+    'github_version': 'master/docs/',
 }
