@@ -5,4 +5,4 @@ from .iproto.protocol import (
     Db, IProtoError, IProtoErrorStackFrame
 )
 
-__version__ = '2.0.0'
+__version__ = '2.0.1'
