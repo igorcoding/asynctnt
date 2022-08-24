@@ -26,6 +26,7 @@ __all__ = (
 )
 
 from asynctnt.utils import get_running_loop
+from asynctnt.const import Transport
 
 VERSION_STRING_REGEX = re.compile(r'\s*([\d.]+).*')
 
@@ -90,6 +91,11 @@ class TarantoolInstance(metaclass=abc.ABCMeta):
     def __init__(self, *,
                  host='127.0.0.1',
                  port=3301,
+                 transport=Transport.DEFAULT,
+                 ssl_key_file=None,
+                 ssl_cert_file=None,
+                 ssl_ca_file=None,
+                 ssl_ciphers=None,
                  console_host=None,
                  console_port=3302,
                  replication_source=None,
@@ -113,6 +119,22 @@ class TarantoolInstance(metaclass=abc.ABCMeta):
                      to be listening on (default = 127.0.0.1)
         :param port: The port which Tarantool instance is going
                      to be listening on (default = 3301)
+        :param transport:
+                This parameter can be used to configure traffic encryption.
+                Pass ``asynctnt.Transport.SSL`` value to enable SSL
+                encryption (by default there is no encryption)
+        :param str ssl_key_file:
+                A path to a private SSL key file.
+                Mandatory if server uses SSL encryption
+        :param str ssl_cert_file:
+                A path to an SSL certificate file.
+                Mandatory if server uses SSL encryption
+        :param str ssl_ca_file:
+                A path to a trusted certificate authorities (CA) file.
+                Optional
+        :param str ssl_ciphers:
+                A colon-separated (:) list of SSL cipher suites
+                the server can use. Optional
         :param console_host: The host which Tarantool console is going
                              to be listening on (to execute admin commands)
                              (default = host)
@@ -147,6 +169,11 @@ class TarantoolInstance(metaclass=abc.ABCMeta):
 
         self._host = host
         self._port = port
+        self._parameter_transport = transport
+        self._ssl_key_file = ssl_key_file
+        self._ssl_cert_file = ssl_cert_file
+        self._ssl_ca_file = ssl_ca_file
+        self._ssl_ciphers = ssl_ciphers
         self._console_host = console_host or host
         self._console_port = console_port
         self._replication_source = replication_source
@@ -248,7 +275,7 @@ class TarantoolInstance(metaclass=abc.ABCMeta):
                 return check_version_internal(expected, version)
             end
             local cfg = {
-              listen = "${host}:${port}",
+              listen = "${host}:${port}${listen_params}",
               wal_mode = "${wal_mode}",
               custom_proc_title = "${custom_proc_title}",
               slab_alloc_arena = ${slab_alloc_arena},
@@ -289,9 +316,23 @@ class TarantoolInstance(metaclass=abc.ABCMeta):
         if self._specify_work_dir:
             work_dir = '"' + self._root + '"'
 
+        listen_params = ''
+        if self._parameter_transport == Transport.SSL:
+            listen_params = "?transport=ssl&"
+            if self._ssl_key_file:
+                listen_params += "ssl_key_file={}&".format(self._ssl_key_file)
+            if self._ssl_cert_file:
+                listen_params += "ssl_cert_file={}&".format(self._ssl_cert_file)
+            if self._ssl_ca_file:
+                listen_params += "ssl_ca_file={}&".format(self._ssl_ca_file)
+            if self._ssl_ciphers:
+                listen_params += "ssl_ciphers={}&".format(self._ssl_ciphers)
+            listen_params = listen_params[:-1]
+
         d = {
             'host': self._host,
             'port': self._port,
+            'listen_params': listen_params,
             'console_host': self._console_host,
             'console_port': self._console_port,
             'wal_mode': self._wal_mode,
@@ -589,7 +630,7 @@ class TarantoolSyncInstance(TarantoolInstance):
         proc = subprocess.Popen([self._command_to_run, '-V'],
                                 stdout=subprocess.PIPE)
         output = proc.stdout.read().decode()
-        version_str = output.split('\n')[0].split(' ')[1]
+        version_str = output.split('\n')[0].replace('Tarantool ', '').replace('Enterprise ', '')
         return self._parse_version(version_str)
 
     def command(self, cmd, print_greeting=True):
