@@ -2,149 +2,127 @@
 import os
 import re
 
-from setuptools import Extension
-
-from setuptools.command import build_ext as _build_ext
-
-try:
-    from setuptools import setup
-except ImportError:
-    from distutils.core import setup
-
-CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
-
-description = "A fast Tarantool Database connector for Python/asyncio."
-with open('README.md') as f:
-    long_description = f.read()
+import setuptools
+from setuptools.command import build_ext as setuptools_build_ext
 
 
 def find_version():
     for line in open("asynctnt/__init__.py"):
         if line.startswith("__version__"):
-            return re.match(
-                r"""__version__\s*=\s*(['"])([^'"]+)\1""", line).group(2)
+            return re.match(r"""__version__\s*=\s*(['"])([^'"]+)\1""", line).group(2)
 
 
-CYTHON_VERSION = '0.29.30'
+CYTHON_VERSION = "3.0.0"
 
 
-class build_ext(_build_ext.build_ext):
-    user_options = _build_ext.build_ext.user_options + [
-        ('cython-always', None,
-            'run cythonize() even if .c files are present'),
-        ('cython-annotate', None,
-            'Produce a colorized HTML version of the Cython source.'),
-        ('cython-directives=', None,
-            'Cython compiler directives'),
+class build_ext(setuptools_build_ext.build_ext):
+    user_options = setuptools_build_ext.build_ext.user_options + [
+        ("cython-always", None, "run cythonize() even if .c files are present"),
+        (
+            "cython-annotate",
+            None,
+            "Produce a colorized HTML version of the Cython source.",
+        ),
+        ("cython-directives=", None, "Cython compiler directives"),
     ]
 
     def initialize_options(self):
+        if getattr(self, "_initialized", False):
+            return
+
         super(build_ext, self).initialize_options()
-        self.cython_always = False
-        self.cython_annotate = None
-        self.cython_directives = None
+
+        if os.environ.get("ASYNCTNT_DEBUG"):
+            self.cython_always = True
+            self.cython_annotate = True
+            self.cython_directives = {
+                "linetrace": True,
+            }
+            self.define = "CYTHON_TRACE,CYTHON_TRACE_NOGIL"
+            self.debug = True
+            self.gdb_debug = True
+        else:
+            self.cython_always = False
+            self.cython_annotate = None
+            self.cython_directives = None
+            self.gdb_debug = False
 
     def finalize_options(self):
+        if getattr(self, "_initialized", False):
+            return
+
         need_cythonize = self.cython_always
-        cfiles = {}
 
-        for extension in self.distribution.ext_modules:
-            for i, sfile in enumerate(extension.sources):
-                if sfile.endswith('.pyx'):
-                    prefix, ext = os.path.splitext(sfile)
-                    cfile = prefix + '.c'
+        if not need_cythonize:
+            for extension in self.distribution.ext_modules:
+                for i, sfile in enumerate(extension.sources):
+                    if sfile.endswith(".pyx"):
+                        prefix, ext = os.path.splitext(sfile)
+                        cfile = prefix + ".c"
 
-                    if os.path.exists(cfile) and not self.cython_always:
-                        extension.sources[i] = cfile
-                    else:
-                        if os.path.exists(cfile):
-                            cfiles[cfile] = os.path.getmtime(cfile)
+                        if os.path.exists(cfile) and not self.cython_always:
+                            extension.sources[i] = cfile
                         else:
-                            cfiles[cfile] = 0
-                        need_cythonize = True
+                            need_cythonize = True
 
         if need_cythonize:
-            try:
-                import Cython
-            except ImportError:
-                raise RuntimeError(
-                    'please install Cython to compile asynctnt from source')
-
-            import pkg_resources
-            cython_dep = pkg_resources.Requirement.parse(CYTHON_VERSION)
-            if Cython.__version__ not in cython_dep:
-                raise RuntimeError(
-                    'asynctnt requires Cython version {}'.format(
-                        CYTHON_VERSION))
-
-            from Cython.Build import cythonize
-
-            directives = {
-                'language_level': '3'
-            }
-            if self.cython_directives:
-                for directive in self.cython_directives.split(','):
-                    k, _, v = directive.partition('=')
-                    if v.lower() == 'false':
-                        v = False
-                    if v.lower() == 'true':
-                        v = True
-
-                    directives[k] = v
-
-            self.distribution.ext_modules[:] = cythonize(
-                self.distribution.ext_modules,
-                compiler_directives=directives,
-                annotate=self.cython_annotate)
+            self.cythonize()
 
         super(build_ext, self).finalize_options()
 
+    def cythonize(self):
+        try:
+            import Cython
+        except ImportError as e:
+            raise RuntimeError("please install Cython to compile asynctnt from source") from e
 
-setup(
-    name="asynctnt",
-    packages=["asynctnt"],
-    include_package_data=True,
-    cmdclass={'build_ext': build_ext},
-    ext_modules=[
-        Extension("asynctnt.iproto.protocol",
-                  sources=[
-                      "asynctnt/iproto/protocol.pyx",
-                      "third_party/msgpuck/msgpuck.c",
-                      "third_party/msgpuck/hints.c",
-                      "asynctnt/iproto/tupleobj/tupleobj.c"
-                  ],
-                  include_dirs=[
-                      'third_party',
-                      'asynctnt/iproto',
-                  ])
-    ],
+        if Cython.__version__ != CYTHON_VERSION:
+            raise RuntimeError(
+                "asynctnt requires Cython version {}, got {}".format(
+                    CYTHON_VERSION, Cython.__version__
+                )
+            )
+
+        from Cython.Build import cythonize
+
+        directives = {"language_level": "3"}
+        if self.cython_directives:
+            if isinstance(self.cython_directives, str):
+                for directive in self.cython_directives.split(","):
+                    k, _, v = directive.partition("=")
+                    if v.lower() == "false":
+                        v = False
+                    if v.lower() == "true":
+                        v = True
+
+                    directives[k] = v
+            elif isinstance(self.cython_directives, dict):
+                directives.update(self.cython_directives)
+
+        self.distribution.ext_modules[:] = cythonize(
+            self.distribution.ext_modules,
+            compiler_directives=directives,
+            annotate=self.cython_annotate,
+            gdb_debug=self.gdb_debug,
+        )
+
+
+setuptools.setup(
     version=find_version(),
-    author="igorcoding",
-    author_email="igorcoding@gmail.com",
-    url='https://github.com/igorcoding/asynctnt',
-    license='Apache Software License',
-    classifiers=[
-        "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3 :: Only",
-        "Programming Language :: Python :: 3.6",
-        "Programming Language :: Python :: 3.7",
-        "Programming Language :: Python :: 3.8",
-        "Programming Language :: Python :: 3.9",
-        "Programming Language :: Python :: 3.10",
-        'Programming Language :: Python :: Implementation :: CPython',
-        "Intended Audience :: Developers",
-        "License :: OSI Approved :: Apache Software License",
-        "Topic :: Software Development :: Libraries :: Python Modules",
-        "Topic :: Database :: Front-Ends"
+    cmdclass={"build_ext": build_ext},
+    ext_modules=[
+        setuptools.extension.Extension(
+            "asynctnt.iproto.protocol",
+            sources=[
+                "asynctnt/iproto/protocol.pyx",
+                "third_party/msgpuck/msgpuck.c",
+                "third_party/msgpuck/hints.c",
+                "asynctnt/iproto/tupleobj/tupleobj.c",
+            ],
+            include_dirs=[
+                "third_party",
+                "asynctnt/iproto",
+            ],
+        )
     ],
-    install_requires=[
-        "PyYAML >= 5.0"
-    ],
-    setup_requires=[
-        "Cython=={}".format(CYTHON_VERSION)
-    ],
-    description=description,
-    long_description=long_description,
-    long_description_content_type='text/markdown',
-    test_suite='run_tests.discover_tests'
 )

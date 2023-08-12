@@ -39,11 +39,13 @@ cdef char *encode_update_ops(WriteBuffer buffer,
         return p
 
     for operation in operations:
-        if not isinstance(operation, (list, tuple)):
+        if isinstance(operation, tuple):
+            op_len = cpython.tuple.PyTuple_GET_SIZE(operation)
+        elif isinstance(operation, list):
+            op_len = cpython.list.PyList_GET_SIZE(operation)
+        else:
             raise TypeError(
                 'Single operation must be a tuple or list')
-
-        op_len = <uint32_t> cpython.list.PyList_GET_SIZE(operation)
         if op_len < 3:
             raise IndexError(
                 'Operation length must be at least 3')

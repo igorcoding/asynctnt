@@ -86,15 +86,15 @@ cdef enum iproto_type:
 
 
 cdef enum iproto_update_operation:
-    IPROTO_OP_ADD = b'+'
-    IPROTO_OP_SUB = b'-'
-    IPROTO_OP_AND = b'&'
-    IPROTO_OP_XOR = b'^'
-    IPROTO_OP_OR = b'|'
-    IPROTO_OP_DELETE = b'#'
-    IPROTO_OP_INSERT = b'!'
-    IPROTO_OP_ASSIGN = b'='
-    IPROTO_OP_SPLICE = b':'
+    IPROTO_OP_ADD = 43  # ord('+')
+    IPROTO_OP_SUB = 45  # ord('-')
+    IPROTO_OP_AND = 38  # ord('&')
+    IPROTO_OP_XOR = 94  # ord('^')
+    IPROTO_OP_OR = 124  # ord('|')
+    IPROTO_OP_DELETE = 35  # ord('#')
+    IPROTO_OP_INSERT = 33  # ord('!')
+    IPROTO_OP_ASSIGN = 61  # ord('=')
+    IPROTO_OP_SPLICE = 58  # ord(':')
 
 
 cdef enum mp_extension_type:

@@ -663,6 +663,9 @@ class ConnectTestCase(BaseTarantoolTestCase):
             await conn.disconnect()
 
     async def test__connect_invalid_user_no_reconnect(self):
+        async with asynctnt.Connection(host=self.tnt.host, port=self.tnt.port) as conn:
+            version = conn.version
+
         conn = asynctnt.Connection(host=self.tnt.host, port=self.tnt.port,
                                    username='fancy', password='man',
                                    connect_timeout=1,
@@ -670,7 +673,10 @@ class ConnectTestCase(BaseTarantoolTestCase):
         with self.assertRaises(TarantoolDatabaseError) as e:
             await conn.connect()
 
-        self.assertEqual(e.exception.code, ErrorCode.ER_NO_SUCH_USER)
+        err_code = ErrorCode.ER_PASSWORD_MISMATCH
+        if version < (2, 11):
+            err_code = ErrorCode.ER_NO_SUCH_USER
+        self.assertEqual(e.exception.code, err_code)
 
     async def test__connect_invalid_user_with_reconnect(self):
         conn = asynctnt.Connection(host=self.tnt.host, port=self.tnt.port,

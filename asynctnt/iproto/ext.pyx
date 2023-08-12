@@ -209,7 +209,7 @@ cdef object datetime_to_py(IProtoDateTime *dt):
 
     timestamp = dt.seconds + (<double> dt.nsec) / 1e9
     return PyDateTimeAPI.DateTime_FromTimestamp(
-        <object> PyDateTimeAPI.DateTimeType,
+        <PyObject *>PyDateTimeAPI.DateTimeType,
         (timestamp,) if tz is None else (timestamp, tz),
-        <object> NULL,
+        NULL,
     )

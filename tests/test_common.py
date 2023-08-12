@@ -211,7 +211,7 @@ class CommonTestCase(BaseTarantoolTestCase):
             self.fail(e)
 
         try:
-            for i in range(1, 255):
+            for _ in range(1, 255):
                 await self.conn.call('func_hello')
         except TarantoolDatabaseError as e:
             self.fail(e)

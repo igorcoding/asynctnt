@@ -1,0 +1,138 @@
+[project]
+name = "asynctnt"
+description = "A fast Tarantool Database connector for Python/asyncio."
+authors = [
+    { name = "igorcoding", email = "igorcoding@gmail.com" }
+]
+license = {text = "Apache License, Version 2.0"}
+dynamic = ["version"]
+classifiers=[
+    "Development Status :: 5 - Production/Stable",
+    "Framework :: AsyncIO",
+    "Operating System :: POSIX",
+    "Operating System :: MacOS :: MacOS X",
+    "Operating System :: Microsoft :: Windows",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    'Programming Language :: Python :: Implementation :: CPython',
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: Apache Software License",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Database :: Front-Ends"
+]
+requires-python = '>=3.7.0'
+readme = "README.md"
+dependencies = [
+    'PyYAML >= 5.0',
+]
+
+[project.urls]
+github = "https://github.com/igorcoding/asynctnt"
+
+[project.optional-dependencies]
+test = [
+    'isort',
+    'black',
+    'ruff',
+    'uvloop>=0.12.3; platform_system != "Windows"',
+    'pytest',
+    'pytest-cov',
+    'coverage[toml]',
+    'pytz',
+    'python-dateutil',
+]
+
+docs = [
+    'Sphinx>=5',
+    'sphinx_rtd_theme',
+    'sphinxcontrib-asyncio',
+    'myst-parser',
+    'sphinx-autodoc-typehints',
+    'sphinx-autoapi',
+]
+
+[build-system]
+requires = [
+    "setuptools>=60",
+    "wheel",
+
+    "Cython(>=3.0.0,<3.1.0)",
+]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+zip-safe = false
+
+[tool.setuptools.packages.find]
+include = ["asynctnt", "asynctnt.*"]
+
+[tool.setuptools.exclude-package-data]
+"*" = ["*.c", "*.h"]
+
+[tool.pytest.ini_options]
+addopts = "--strict --tb native"
+testpaths = "tests"
+filterwarnings = "default"
+
+[tool.coverage.run]
+branch = true
+plugins = ["Cython.Coverage"]
+parallel = true
+source = ["asynctnt/", "tests/"]
+omit = [
+    "*.pxd",
+    "asynctnt/_testbase.py",
+    "asynctnt/instance.py",
+]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "if self\\.debug",
+    "if debug",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.",
+]
+show_missing = true
+
+[tool.coverage.html]
+directory = "htmlcov"
+
+[tool.black]
+extend-exclude = '(env|.env|venv|.venv).*'
+
+[tool.isort]
+profile = "black"
+multi_line_output = 3
+skip_glob = [
+    "env*",
+    "venv*",
+]
+
+
+[tool.ruff]
+select = [
+    "E",  # pycodestyle errors
+    "W",  # pycodestyle warnings
+    "F",  # pyflakes
+    # "I",  # isort
+    "C",  # flake8-comprehensions
+    "B",  # flake8-bugbear
+]
+ignore = [
+    "E501",  # line too long, handled by black
+    "B008",  # do not perform function calls in argument defaults
+    "C901",  # too complex
+]
+
+extend-exclude = [
+    "app/store/migrations",
+]

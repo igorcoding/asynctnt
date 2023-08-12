@@ -1,3 +1,5 @@
+# ruff: noqa: F401
+
 from .connection import Connection, connect
 from .iproto.protocol import (
     Iterator, Response, TarantoolTuple, PushIterator,
@@ -5,4 +7,4 @@ from .iproto.protocol import (
     Db, IProtoError, IProtoErrorStackFrame
 )
 
-__version__ = '2.0.1'
+__version__ = '2.1.0'

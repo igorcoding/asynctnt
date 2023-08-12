@@ -24,12 +24,12 @@ def main():
     scenarios = [
         ['ping', []],
         ['call', ['test']],
-        ['call', ['test'], dict(push_subscribe=True)],
+        ['call', ['test'], {'push_subscribe': True}],
         ['eval', ['return "hello"']],
         ['select', [512]],
         ['replace', [512, [2, 'hhhh']]],
         ['update', [512, [2], [(':', 1, 1, 3, 'yo!')]]],
-        ['execute', ['select 1 as a, 2 as b'], dict(parse_metadata=False)],
+        ['execute', ['select 1 as a, 2 as b'], {'parse_metadata': False}],
     ]
 
     for use_uvloop in [True]:
@@ -61,7 +61,11 @@ def main():
 
 
 async def async_bench(name, conn,
-                      n, b, method, args=[], kwargs={}):
+                      n, b, method, args=None, kwargs=None):
+    if kwargs is None:
+        kwargs = {}
+    if args is None:
+        args = []
     n_requests_per_bulk = math.ceil(n / b)
 
     async def bulk_f():
