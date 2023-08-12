@@ -33,9 +33,13 @@ def main():
         ["execute", ["select 1 as a, 2 as b"], {"parse_metadata": False}],
     ]
 
-    for use_uvloop in [True]:
+    for use_uvloop in [False, True]:
         if use_uvloop:
-            import uvloop
+            try:
+                import uvloop
+            except ImportError:
+                print("No uvloop installed. Skipping.")
+                continue
 
             asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
         else:
@@ -77,7 +81,7 @@ async def async_bench(name, conn, n, b, method, args=None, kwargs=None):
             await getattr(conn, method)(*args, **kwargs)
 
     start = datetime.datetime.now()
-    coros = [bulk_f() for _ in range(b)]
+    coros = [asyncio.create_task(bulk_f()) for _ in range(b)]
 
     await asyncio.wait(coros)
     end = datetime.datetime.now()

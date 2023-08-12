@@ -2,9 +2,9 @@ import asyncio
 
 import asynctnt
 from asynctnt import PushIterator, Response
-from asynctnt._testbase import ensure_version
 from asynctnt.exceptions import TarantoolDatabaseError, TarantoolNotConnectedError
 from tests import BaseTarantoolTestCase
+from tests._testbase import ensure_version
 
 
 class PushTestCase(BaseTarantoolTestCase):

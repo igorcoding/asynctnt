@@ -2,7 +2,6 @@ import asyncio
 import uuid
 
 import asynctnt
-from asynctnt._testbase import check_version
 from asynctnt.connection import ConnectionState
 from asynctnt.exceptions import (
     ErrorCode,
@@ -11,6 +10,7 @@ from asynctnt.exceptions import (
 )
 from asynctnt.instance import TarantoolSyncInstance
 from tests import BaseTarantoolTestCase
+from tests._testbase import check_version
 
 
 class ConnectTestCase(BaseTarantoolTestCase):

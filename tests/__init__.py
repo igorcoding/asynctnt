@@ -3,7 +3,7 @@ import os
 import sys
 import unittest
 
-from asynctnt._testbase import TarantoolTestCase
+from ._testbase import TarantoolTestCase
 
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
 

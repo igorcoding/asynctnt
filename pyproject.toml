@@ -40,12 +40,13 @@ test = [
     'isort',
     'black',
     'ruff',
-    'uvloop>=0.12.3; platform_system != "Windows"',
+    'uvloop>=0.12.3; platform_system != "Windows" and python_version < "3.12" and platform.python_implementation != "PyPy"',
     'pytest',
     'pytest-cov',
     'coverage[toml]',
     'pytz',
     'python-dateutil',
+    "Cython(>=3.0.0,<3.1.0)",  # for coverage
 ]
 
 docs = [

@@ -7,9 +7,9 @@ import dateutil.parser
 import pytz
 
 from asynctnt import IProtoError
-from asynctnt._testbase import ensure_version
 from asynctnt.exceptions import ErrorCode, TarantoolDatabaseError
 from tests import BaseTarantoolTestCase
+from tests._testbase import ensure_version
 
 
 class MpExtTestCase(BaseTarantoolTestCase):

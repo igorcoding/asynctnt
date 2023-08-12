@@ -1,7 +1,7 @@
 from asynctnt import Response
-from asynctnt._testbase import ensure_version
 from asynctnt.prepared import PreparedStatement
 from tests import BaseTarantoolTestCase
+from tests._testbase import ensure_version
 
 
 class SQLPreparedStatementTestCase(BaseTarantoolTestCase):

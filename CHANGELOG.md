@@ -5,7 +5,9 @@
 * Dropped support for Python 3.6
 
 **New features:**
-* Added building wheels for Python 3.11 and 3.12
+* Added building wheels for Python 3.11 and initial support for 3.12
+* Added support for PyPy 3.10. It's compiling and working, but there is an obvious performance downgrade compared to CPython.
+* Now repr() of TarantoolTuple objects is being truncated to 50 fields
 
 **Bug fixes:**
 * Fixed an issue with encoding of update operations as tuples on PyPy
@@ -14,6 +16,7 @@
 * Upgraded to Cython 3.0.0
 * Using pyproject.toml for building spec
 * Using black, isort & ruff for linting
+* _testbase.py was moved to tests/_testbase.py
 
 ## v2.0.1
 * Fixed an issue with encoding datetimes less than 01-01-1970 (fixes [#29](https://github.com/igorcoding/asynctnt/issues/29))

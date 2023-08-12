@@ -25,7 +25,7 @@ local:
 
 
 debug: clean
-	ASYNCTNT_DEBUG=1 $(PYTHON) -m pip install -e .
+	ASYNCTNT_DEBUG=1 $(PYTHON) -m pip install -e '.[test]'
 
 
 annotate:

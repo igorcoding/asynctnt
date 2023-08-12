@@ -1,8 +1,8 @@
 import asyncio
 
-from asynctnt._testbase import ensure_bin_version, ensure_version
 from asynctnt.exceptions import ErrorCode, TarantoolDatabaseError
 from tests import BaseTarantoolTestCase
+from tests._testbase import ensure_bin_version, ensure_version
 
 
 @ensure_bin_version(min=(2, 10))

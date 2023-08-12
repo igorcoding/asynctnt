@@ -1,6 +1,6 @@
 from asynctnt import Response
-from asynctnt._testbase import ensure_version
 from tests import BaseTarantoolTestCase
+from tests._testbase import ensure_version
 
 
 class SQLExecuteTestCase(BaseTarantoolTestCase):

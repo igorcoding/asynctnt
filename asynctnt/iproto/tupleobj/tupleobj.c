@@ -364,11 +364,16 @@ ttuple_repr(AtntTupleObject *v)
 {
     Py_ssize_t i, n;
     PyObject *keys_iter = NULL;
-    _PyUnicodeWriter writer;
+    int oversize = 0;
 
     n = Py_SIZE(v);
     if (n == 0) {
         return PyUnicode_FromString("<TarantoolTuple>");
+    }
+
+    if (n >= 50) {
+        n = 50;
+        oversize = 1;
     }
 
     if (v->metadata != NULL) {
@@ -384,6 +389,22 @@ ttuple_repr(AtntTupleObject *v)
         return i > 0 ? PyUnicode_FromString("<TarantoolTuple ...>") : NULL;
     }
 
+#if defined(PYPY_VERSION)
+
+    // we must have a separate implementation for PyPy because _PyUnicodeWriter is a private API
+    // it may become available in the future, but for now we have to use a workaround
+    // by building strings using only public API
+    // but this may change in future and _PyUnicodeWriter will become public:
+    // https://github.com/python/cpython/issues/107076#issuecomment-1646840936
+
+    PyObject *part = NULL;
+    PyObject *parts = PyList_New(n);
+    if (parts == NULL) {
+        goto error;
+    }
+
+#else
+    _PyUnicodeWriter writer;
     _PyUnicodeWriter_Init(&writer);
     writer.overallocate = 1;
     writer.min_length = 12; /* <TarantoolTuple a=1> */
@@ -392,17 +413,13 @@ ttuple_repr(AtntTupleObject *v)
         goto error;
     }
 
+#endif
+
     for (i = 0; i < n; ++i) {
         PyObject *key = NULL;
         PyObject *key_repr = NULL;
         PyObject *val_repr = NULL;
         PyObject *i_obj = NULL;
-
-        if (i > 0) {
-            if (_PyUnicodeWriter_WriteChar(&writer, ' ') < 0) {
-                goto error;
-            }
-        }
 
         if (Py_EnterRecursiveCall(" while getting the repr of a tarantool tuple")) {
             goto error;
@@ -433,6 +450,25 @@ ttuple_repr(AtntTupleObject *v)
             }
         }
 
+#if defined(PYPY_VERSION)
+
+        part = PyUnicode_FromFormat("%U=%U", key_repr, val_repr);
+        if (part == NULL) {
+            Py_DECREF(key_repr);
+            Py_DECREF(val_repr);
+            goto error;
+        }
+        PyList_SET_ITEM(parts, i, part);
+
+#else
+        if (i > 0) {
+            if (_PyUnicodeWriter_WriteChar(&writer, ' ') < 0) {
+                Py_DECREF(key_repr);
+                Py_DECREF(val_repr);
+                goto error;
+            }
+        }
+
         if (_PyUnicodeWriter_WriteStr(&writer, key_repr) < 0) {
             Py_DECREF(key_repr);
             Py_DECREF(val_repr);
@@ -450,20 +486,58 @@ ttuple_repr(AtntTupleObject *v)
             goto error;
         }
         Py_DECREF(val_repr);
+#endif
     }
 
-    writer.overallocate = 0;
-    if (_PyUnicodeWriter_WriteChar(&writer, '>') < 0) {
+    PyObject *result = NULL;
+
+#if defined(PYPY_VERSION)
+    PyObject *space = NULL;
+    PyObject *parts_joined = NULL;
+
+    space = PyUnicode_FromString(" ");
+    if (space == NULL) {
         goto error;
     }
+    parts_joined = PyUnicode_Join(space, parts);
+    if (parts_joined == NULL) {
+        Py_DECREF(space);
+        goto error;
+    }
+    Py_DECREF(space);
+    Py_XDECREF(parts);
+
+    if (oversize) {
+        result = PyUnicode_FromFormat("<TarantoolTuple %U ...>", parts_joined);
+    } else {
+        result = PyUnicode_FromFormat("<TarantoolTuple %U>", parts_joined);
+    }
+    Py_XDECREF(parts_joined);
+#else
+    writer.overallocate = 0;
+    if (oversize) {
+        if (_PyUnicodeWriter_WriteASCIIString(&writer, " ...>", 5) < 0) {
+            goto error;
+        }
+    } else {
+        if (_PyUnicodeWriter_WriteChar(&writer, '>') < 0) {
+            goto error;
+        }
+    }
+    result = _PyUnicodeWriter_Finish(&writer);
+#endif
 
     Py_XDECREF(keys_iter);
     Py_ReprLeave((PyObject *)v);
-    return _PyUnicodeWriter_Finish(&writer);
+    return result;
 
 error:
     Py_XDECREF(keys_iter);
+#if defined(PYPY_VERSION)
+    Py_XDECREF(parts);
+#else
     _PyUnicodeWriter_Dealloc(&writer);
+#endif
     Py_ReprLeave((PyObject *)v);
     return NULL;
 }

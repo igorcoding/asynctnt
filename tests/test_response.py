@@ -188,6 +188,29 @@ class ResponseTestCase(BaseTarantoolTestCase):
             "repr ok",
         )
 
+    async def test__response_repr_trunc(self):
+        data = [0, "hello", 5, 6, "help", "common", "yo"]
+        for _ in range(50):
+            data.append("x")
+
+        await self.conn.insert(self.TESTER_SPACE_ID, data)
+
+        res = await self.conn.select("tester")
+        self.assertEqual(1, res.rowcount, "count correct")
+        self.assertTrue(
+            isinstance(res[0], TarantoolTuple), "expecting a TarantoolTuple"
+        )
+
+        tail = []
+        for i in range(7, 50):  # 50: maximum number of fields to show in repr
+            tail.append(f"{i}={repr('x')}")
+
+        self.assertEqual(
+            f"<TarantoolTuple f1=0 f2='hello' f3=5 f4=6 f5='help' 5='common' 6='yo' {' '.join(tail)} ...>",
+            repr(res[0]),
+            "repr ok",
+        )
+
     async def test__response_str(self):
         data = [0, "hello", 5, 6, "help", "common", "yo"]
         await self.conn.insert(self.TESTER_SPACE_ID, data)

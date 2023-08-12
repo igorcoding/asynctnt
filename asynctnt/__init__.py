@@ -16,4 +16,4 @@ from .iproto.protocol import (
     TarantoolTuple,
 )
 
-__version__ = "2.1.0"
+__version__ = "2.1.0a1"
