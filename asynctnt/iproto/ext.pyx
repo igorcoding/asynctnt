@@ -1,10 +1,11 @@
-from libc.stdint cimport uint32_t
-from cpython.datetime cimport PyDateTimeAPI, timedelta_new, datetime, datetime_tzinfo
 cimport cpython.datetime
+from cpython.datetime cimport PyDateTimeAPI, datetime, datetime_tzinfo, timedelta_new
+from libc.stdint cimport uint32_t
 from libc.string cimport memcpy
 
-from uuid import UUID
 from decimal import Decimal
+from uuid import UUID
+
 
 cdef uint32_t decimal_len(int exponent, uint32_t digits_count):
     cdef:

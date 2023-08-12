@@ -1,7 +1,5 @@
 cimport cython
-
-from cpython.mem cimport PyMem_Malloc, PyMem_Realloc, PyMem_Free
-
+from cpython.mem cimport PyMem_Free, PyMem_Malloc, PyMem_Realloc
 from libc.string cimport memcpy, memmove
 
 

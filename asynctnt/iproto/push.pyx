@@ -4,6 +4,7 @@ cimport cython
 
 import asynctnt
 
+
 cdef class PushIterator:
     def __init__(self, fut: asyncio.Future):
         """

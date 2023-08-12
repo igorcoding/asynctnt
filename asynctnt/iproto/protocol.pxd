@@ -1,5 +1,5 @@
-cimport asynctnt.iproto.tupleobj as tupleobj
 cimport asynctnt.iproto.tarantool as tarantool
+cimport asynctnt.iproto.tupleobj as tupleobj
 
 include "const.pxi"
 

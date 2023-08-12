@@ -1,5 +1,6 @@
 cimport cython
 
+
 @cython.final
 cdef class EvalRequest(BaseRequest):
     cdef int encode_body(self, WriteBuffer buffer) except -1:

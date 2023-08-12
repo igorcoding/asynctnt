@@ -1,11 +1,8 @@
-.PHONY: build debug test coverage clean annotate all style local
-
+.PHONY: clean build local debug annotate dist docs style mypy ruff style-check lint test quicktest coverage
 
 PYTHON?=python
 
-
 all: local
-
 
 clean:
 	pip uninstall -y asynctnt
@@ -34,20 +31,6 @@ debug: clean
 annotate:
 	cython -3 -a asynctnt/iproto/protocol.pyx
 
-
-test:
-	PYTHONASYNCIODEBUG=1 $(PYTHON) -m pytest
-	$(PYTHON) -m pytest
-	USE_UVLOOP=1 $(PYTHON) -m pytest
-
-quicktest:
-	$(PYTHON) -m pytest
-
-coverage:
-	$(PYTHON) -m pytest --cov
-	./scripts/run_until_success.sh $(PYTHON) -m coverage report -m
-	./scripts/run_until_success.sh $(PYTHON) -m coverage html
-
 dist:
 	$(PYTHON) -m build .
 
@@ -69,3 +52,16 @@ style-check:
 	$(PYTHON) -m isort --check --diff .
 
 lint: style-check ruff
+
+test: lint
+	PYTHONASYNCIODEBUG=1 $(PYTHON) -m pytest
+	$(PYTHON) -m pytest
+	USE_UVLOOP=1 $(PYTHON) -m pytest
+
+quicktest:
+	$(PYTHON) -m pytest
+
+coverage:
+	$(PYTHON) -m pytest --cov
+	./scripts/run_until_success.sh $(PYTHON) -m coverage report -m
+	./scripts/run_until_success.sh $(PYTHON) -m coverage html

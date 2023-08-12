@@ -1,21 +1,20 @@
 cimport cpython
-cimport cython
 cimport cpython.bytes
+cimport cpython.dict
 cimport cpython.list
 cimport cpython.tuple
-cimport cpython.dict
 cimport cpython.unicode
-
-from cpython.mem cimport PyMem_Malloc, PyMem_Realloc, PyMem_Free
-from cpython.ref cimport PyObject
+cimport cython
 from cpython.datetime cimport datetime
-
-from libc.string cimport memcpy
-from libc.stdint cimport uint32_t, uint64_t, int64_t, uint8_t
+from cpython.mem cimport PyMem_Free, PyMem_Malloc, PyMem_Realloc
+from cpython.ref cimport PyObject
+from libc.stdint cimport int64_t, uint8_t, uint32_t, uint64_t
 from libc.stdio cimport printf
+from libc.string cimport memcpy
 
 from decimal import Decimal  # pragma: nocover
 from uuid import UUID  # pragma: nocover
+
 
 # noinspection PyUnresolvedReferences
 # noinspection PyAttributeOutsideInit

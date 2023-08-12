@@ -1,5 +1,6 @@
 cimport cython
 
+
 @cython.final
 cdef class UpsertRequest(BaseRequest):
     cdef int encode_body(self, WriteBuffer buffer) except -1:

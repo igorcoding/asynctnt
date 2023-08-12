@@ -1,5 +1,5 @@
 import asyncio
-from typing import Union, Awaitable, List, Any, Tuple, Dict
+from typing import Any, Awaitable, Dict, List, Tuple, Union
 
 from asynctnt.iproto import protocol
 

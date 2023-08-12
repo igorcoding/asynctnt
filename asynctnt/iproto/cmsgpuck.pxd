@@ -1,5 +1,6 @@
-from libc.stdint cimport uint32_t, uint64_t, int64_t, uint8_t, uint16_t, int8_t
+from libc.stdint cimport int8_t, int64_t, uint8_t, uint16_t, uint32_t, uint64_t
 from libc.stdio cimport FILE
+
 
 cdef extern from "../../third_party/msgpuck/msgpuck.h":
     cdef enum mp_type:

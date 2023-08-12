@@ -1,7 +1,7 @@
 import asyncio
 
-from asynctnt._testbase import ensure_version, ensure_bin_version
-from asynctnt.exceptions import TarantoolDatabaseError, ErrorCode
+from asynctnt._testbase import ensure_bin_version, ensure_version
+from asynctnt.exceptions import ErrorCode, TarantoolDatabaseError
 from tests import BaseTarantoolTestCase
 
 
@@ -15,7 +15,7 @@ class StreamTestCase(BaseTarantoolTestCase):
         self.assertGreater(s.stream_id, 0)
 
         await s.begin()
-        data = [1, 'hello', 1, 4, 'what is up']
+        data = [1, "hello", 1, 4, "what is up"]
         await s.insert(self.TESTER_SPACE_NAME, data)
         res = await s.select(self.TESTER_SPACE_NAME)
         self.assertResponseEqual(res, [data])
@@ -29,7 +29,7 @@ class StreamTestCase(BaseTarantoolTestCase):
     async def test__transaction_rolled_back(self):
         s = self.conn.stream()
         await s.begin()
-        data = [1, 'hello', 1, 4, 'what is up']
+        data = [1, "hello", 1, 4, "what is up"]
         await s.insert(self.TESTER_SPACE_NAME, data)
         res = await s.select(self.TESTER_SPACE_NAME)
         self.assertResponseEqual(res, [data])
@@ -42,8 +42,8 @@ class StreamTestCase(BaseTarantoolTestCase):
     @ensure_version(min=(2, 10))
     async def test__transaction_begin_through_call(self):
         s = self.conn.stream()
-        await s.call('box.begin')
-        data = [1, 'hello', 1, 4, 'what is up']
+        await s.call("box.begin")
+        data = [1, "hello", 1, 4, "what is up"]
         await s.insert(self.TESTER_SPACE_NAME, data)
         res = await s.select(self.TESTER_SPACE_NAME)
         self.assertResponseEqual(res, [data])
@@ -57,12 +57,12 @@ class StreamTestCase(BaseTarantoolTestCase):
     async def test__transaction_commit_through_call(self):
         s = self.conn.stream()
         await s.begin()
-        data = [1, 'hello', 1, 4, 'what is up']
+        data = [1, "hello", 1, 4, "what is up"]
         await s.insert(self.TESTER_SPACE_NAME, data)
         res = await s.select(self.TESTER_SPACE_NAME)
         self.assertResponseEqual(res, [data])
 
-        await s.call('box.commit')
+        await s.call("box.commit")
 
         res = await self.conn.select(self.TESTER_SPACE_NAME)
         self.assertResponseEqual(res, [data])
@@ -71,12 +71,12 @@ class StreamTestCase(BaseTarantoolTestCase):
     async def test__transaction_rolled_back_through_call(self):
         s = self.conn.stream()
         await s.begin()
-        data = [1, 'hello', 1, 4, 'what is up']
+        data = [1, "hello", 1, 4, "what is up"]
         await s.insert(self.TESTER_SPACE_NAME, data)
         res = await s.select(self.TESTER_SPACE_NAME)
         self.assertResponseEqual(res, [data])
 
-        await s.call('box.rollback')
+        await s.call("box.rollback")
 
         res = await self.conn.select(self.TESTER_SPACE_NAME)
         self.assertResponseEqual(res, [])
@@ -84,13 +84,13 @@ class StreamTestCase(BaseTarantoolTestCase):
     @ensure_version(min=(2, 10))
     async def test__transaction_commit_through_sql(self):
         s = self.conn.stream()
-        await s.execute('START TRANSACTION')
-        data = [1, 'hello', 1, 4, 'what is up']
+        await s.execute("START TRANSACTION")
+        data = [1, "hello", 1, 4, "what is up"]
         await s.insert(self.TESTER_SPACE_NAME, data)
         res = await s.select(self.TESTER_SPACE_NAME)
         self.assertResponseEqual(res, [data])
 
-        await s.execute('COMMIT')
+        await s.execute("COMMIT")
 
         res = await self.conn.select(self.TESTER_SPACE_NAME)
         self.assertResponseEqual(res, [data])
@@ -98,20 +98,20 @@ class StreamTestCase(BaseTarantoolTestCase):
     @ensure_version(min=(2, 10))
     async def test__transaction_rollback_through_sql(self):
         s = self.conn.stream()
-        await s.execute('START TRANSACTION')
-        data = [1, 'hello', 1, 4, 'what is up']
+        await s.execute("START TRANSACTION")
+        data = [1, "hello", 1, 4, "what is up"]
         await s.insert(self.TESTER_SPACE_NAME, data)
         res = await s.select(self.TESTER_SPACE_NAME)
         self.assertResponseEqual(res, [data])
 
-        await s.execute('ROLLBACK')
+        await s.execute("ROLLBACK")
 
         res = await self.conn.select(self.TESTER_SPACE_NAME)
         self.assertResponseEqual(res, [])
 
     @ensure_version(min=(2, 10))
     async def test__transaction_context_manager_commit(self):
-        data = [1, 'hello', 1, 4, 'what is up']
+        data = [1, "hello", 1, 4, "what is up"]
 
         async with self.conn.stream() as s:
             await s.insert(self.TESTER_SPACE_NAME, data)
@@ -126,7 +126,7 @@ class StreamTestCase(BaseTarantoolTestCase):
         class ExpectedError(Exception):
             pass
 
-        data = [1, 'hello', 1, 4, 'what is up']
+        data = [1, "hello", 1, 4, "what is up"]
 
         try:
             async with self.conn.stream() as s:
@@ -143,8 +143,8 @@ class StreamTestCase(BaseTarantoolTestCase):
 
     @ensure_version(min=(2, 10))
     async def test__transaction_2_streams(self):
-        data1 = [1, 'hello', 1, 4, 'what is up']
-        data2 = [2, 'hi', 100, 400, 'nothing match']
+        data1 = [1, "hello", 1, 4, "what is up"]
+        data2 = [2, "hi", 100, 400, "nothing match"]
 
         s1 = self.conn.stream()
         s2 = self.conn.stream()
@@ -178,5 +178,6 @@ class StreamTestCase(BaseTarantoolTestCase):
             await s.commit()
 
         self.assertEqual(ErrorCode.ER_TRANSACTION_TIMEOUT, exc.exception.code)
-        self.assertEqual('Transaction has been aborted by timeout',
-                         exc.exception.message)
+        self.assertEqual(
+            "Transaction has been aborted by timeout", exc.exception.message
+        )

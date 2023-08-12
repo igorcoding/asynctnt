@@ -46,7 +46,7 @@ jobs:
               make clean && make debug && make coverage
               # coveralls
           else
-              make build && make quicktest
+              make build && make lint && make quicktest
           fi
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}"

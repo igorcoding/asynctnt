@@ -22,58 +22,59 @@ import sys
 
 import sphinx_rtd_theme
 
-sys.path.insert(0, os.path.abspath('..'))
+sys.path.insert(0, os.path.abspath(".."))
 
 
 def find_version():
     import re
+
     for line in open("../asynctnt/__init__.py"):
         if line.startswith("__version__"):
-            return re.match(
-                r"""__version__\s*=\s*(['"])([^'"]+)\1""", line).group(2)
+            return re.match(r"""__version__\s*=\s*(['"])([^'"]+)\1""", line).group(2)
 
 
 _ver = find_version()
 
 # -- General configuration ------------------------------------------------
 
-extensions = ['sphinx.ext.autodoc',
-              'sphinx.ext.viewcode',
-              'sphinx.ext.githubpages',
-              'sphinxcontrib.asyncio',
-              'myst_parser',
-              'sphinx_autodoc_typehints',
-              'sphinx_rtd_theme',
-              'autoapi.extension'
-              ]
+extensions = [
+    "sphinx.ext.autodoc",
+    "sphinx.ext.viewcode",
+    "sphinx.ext.githubpages",
+    "sphinxcontrib.asyncio",
+    "myst_parser",
+    "sphinx_autodoc_typehints",
+    "sphinx_rtd_theme",
+    "autoapi.extension",
+]
 
-templates_path = ['_templates']
+templates_path = ["_templates"]
 source_suffix = {
-    '.rst': 'restructuredtext',
-    '.md': 'markdown',
+    ".rst": "restructuredtext",
+    ".md": "markdown",
 }
-master_doc = 'index'
+master_doc = "index"
 
-project = 'asynctnt'
-copyright = '2022, igorcoding'
-author = 'igorcoding'
+project = "asynctnt"
+copyright = "2022, igorcoding"
+author = "igorcoding"
 
 version = _ver
 release = _ver
 
 language = "en"
-exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
-pygments_style = 'sphinx'
+exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
+pygments_style = "sphinx"
 todo_include_todos = False
 
 # -- Options for HTML output ----------------------------------------------
 
 html_theme = "sphinx_rtd_theme"
 html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
-html_static_path = ['_static']
+html_static_path = ["_static"]
 
 # -- Options for HTMLHelp output ------------------------------------------
-htmlhelp_basename = 'asynctntdoc'
+htmlhelp_basename = "asynctntdoc"
 
 # -- Options for LaTeX output ---------------------------------------------
 
@@ -81,15 +82,12 @@ latex_elements = {
     # The paper size ('letterpaper' or 'a4paper').
     #
     # 'papersize': 'letterpaper',
-
     # The font size ('10pt', '11pt' or '12pt').
     #
     # 'pointsize': '10pt',
-
     # Additional stuff for the LaTeX preamble.
     #
     # 'preamble': '',
-
     # Latex figure (float) alignment
     #
     # 'figure_align': 'htbp',
@@ -99,18 +97,14 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, 'asynctnt.tex', 'asynctnt Documentation',
-     'igorcoding', 'manual'),
+    (master_doc, "asynctnt.tex", "asynctnt Documentation", "igorcoding", "manual"),
 ]
 
 # -- Options for manual page output ---------------------------------------
 
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
-man_pages = [
-    (master_doc, 'asynctnt', 'asynctnt Documentation',
-     [author], 1)
-]
+man_pages = [(master_doc, "asynctnt", "asynctnt Documentation", [author], 1)]
 
 # -- Options for Texinfo output -------------------------------------------
 
@@ -118,20 +112,26 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    (master_doc, 'asynctnt', 'asynctnt Documentation',
-     author, 'asynctnt', 'One line description of project.',
-     'Miscellaneous'),
+    (
+        master_doc,
+        "asynctnt",
+        "asynctnt Documentation",
+        author,
+        "asynctnt",
+        "One line description of project.",
+        "Miscellaneous",
+    ),
 ]
 
 always_document_param_types = True
-typehints_defaults = 'comma'
+typehints_defaults = "comma"
 
-autoapi_type = 'python'
-autoapi_dirs = ['../asynctnt']
+autoapi_type = "python"
+autoapi_dirs = ["../asynctnt"]
 
 html_context = {
-    'display_github': True,
-    'github_user': 'igorcoding',
-    'github_repo': 'asynctnt',
-    'github_version': 'master/docs/',
+    "display_github": True,
+    "github_user": "igorcoding",
+    "github_repo": "asynctnt",
+    "github_version": "master/docs/",
 }

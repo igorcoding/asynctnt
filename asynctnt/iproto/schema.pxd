@@ -1,4 +1,4 @@
-from libc.stdint cimport  int64_t
+from libc.stdint cimport int64_t
 
 
 cdef class Field:

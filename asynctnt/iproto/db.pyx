@@ -1,5 +1,6 @@
 cimport cython
 
+
 @cython.final
 cdef class Db:
     def __cinit__(self):

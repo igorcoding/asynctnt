@@ -74,7 +74,9 @@ class build_ext(setuptools_build_ext.build_ext):
         try:
             import Cython
         except ImportError as e:
-            raise RuntimeError("please install Cython to compile asynctnt from source") from e
+            raise RuntimeError(
+                "please install Cython to compile asynctnt from source"
+            ) from e
 
         if Cython.__version__ != CYTHON_VERSION:
             raise RuntimeError(

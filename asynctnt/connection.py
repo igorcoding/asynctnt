@@ -5,16 +5,13 @@ import os
 from typing import Optional, Union
 
 from .api import Api
-from .exceptions import TarantoolDatabaseError, \
-    ErrorCode, TarantoolError
+from .exceptions import ErrorCode, TarantoolDatabaseError, TarantoolError
 from .iproto import protocol
 from .log import logger
 from .stream import Stream
 from .utils import get_running_loop
 
-__all__ = (
-    'Connection', 'connect', 'ConnectionState'
-)
+__all__ = ("Connection", "connect", "ConnectionState")
 
 
 class ConnectionState(enum.IntEnum):
@@ -27,91 +24,108 @@ class ConnectionState(enum.IntEnum):
 
 class Connection(Api):
     __slots__ = (
-        '_host', '_port', '_username', '_password',
-        '_fetch_schema', '_auto_refetch_schema', '_initial_read_buffer_size',
-        '_encoding', '_connect_timeout', '_reconnect_timeout',
-        '_request_timeout', '_ping_timeout', '_loop', '_state', '_state_prev',
-        '_transport', '_protocol',
-        '_disconnect_waiter', '_reconnect_task',
-        '_connect_lock', '_disconnect_lock',
-        '_ping_task', '__create_task'
+        "_host",
+        "_port",
+        "_username",
+        "_password",
+        "_fetch_schema",
+        "_auto_refetch_schema",
+        "_initial_read_buffer_size",
+        "_encoding",
+        "_connect_timeout",
+        "_reconnect_timeout",
+        "_request_timeout",
+        "_ping_timeout",
+        "_loop",
+        "_state",
+        "_state_prev",
+        "_transport",
+        "_protocol",
+        "_disconnect_waiter",
+        "_reconnect_task",
+        "_connect_lock",
+        "_disconnect_lock",
+        "_ping_task",
+        "__create_task",
     )
 
-    def __init__(self, *,
-                 host: str = '127.0.0.1',
-                 port: Union[int, str] = 3301,
-                 username: Optional[str] = None,
-                 password: Optional[str] = None,
-                 fetch_schema: bool = True,
-                 auto_refetch_schema: bool = True,
-                 connect_timeout: float = 3.,
-                 request_timeout: float = -1.,
-                 reconnect_timeout: float = 1. / 3.,
-                 ping_timeout: float = 5.,
-                 encoding: Optional[str] = None,
-                 initial_read_buffer_size: Optional[int] = None):
-
+    def __init__(
+        self,
+        *,
+        host: str = "127.0.0.1",
+        port: Union[int, str] = 3301,
+        username: Optional[str] = None,
+        password: Optional[str] = None,
+        fetch_schema: bool = True,
+        auto_refetch_schema: bool = True,
+        connect_timeout: float = 3.0,
+        request_timeout: float = -1.0,
+        reconnect_timeout: float = 1.0 / 3.0,
+        ping_timeout: float = 5.0,
+        encoding: Optional[str] = None,
+        initial_read_buffer_size: Optional[int] = None,
+    ):
         """
-            Connection constructor.
+        Connection constructor.
 
-            To manipulate a Connection instance there are several functions:
+        To manipulate a Connection instance there are several functions:
 
-                * await connect() - performs connecting, authorization and
-                                    schema fetching.
+            * await connect() - performs connecting, authorization and
+                                schema fetching.
 
-                * await disconnect() - performs disconnection.
+            * await disconnect() - performs disconnection.
 
-                * close() - closes connection (not a coroutine)
+            * close() - closes connection (not a coroutine)
 
-            Connection also supports context manager protocol, which connects
-            on entering and disconnecting on leaving a block.
+        Connection also supports context manager protocol, which connects
+        on entering and disconnecting on leaving a block.
 
-            So one can simply use it as follows:
+        So one can simply use it as follows:
 
-            .. code-block:: python
+        .. code-block:: python
 
-                async with asynctnt.Connection() as conn:
-                    await conn.call('box.info')
+            async with asynctnt.Connection() as conn:
+                await conn.call('box.info')
 
-            :param host:
-                    Tarantool host (pass ``unix/`` to connect to unix socket)
-            :param port:
-                    Tarantool port
-                    (pass ``/path/to/sockfile`` to connect ot unix socket)
-            :param username:
-                    Username to use for auth
-                    (if ``None`` you are connected as a guest)
-            :param password:
-                    Password to use for auth
-            :param fetch_schema:
-                    Pass ``True`` to be able to use spaces and indexes names in
-                    data manipulation routines (default is ``True``)
-            :param auto_refetch_schema:
-                    If set to ``True`` then when ER_WRONG_SCHEMA_VERSION error
-                    occurs on a request, schema is refetched and the initial
-                    request is resent. If set to ``False`` then schema will not
-                    be checked by Tarantool, so no errors will occur
-            :param connect_timeout:
-                    Time in seconds how long to wait for connecting to socket
-            :param request_timeout:
-                    Request timeout (in seconds) for all requests
-                    (by default there is no timeout)
-            :param reconnect_timeout:
-                    Time in seconds to wait before automatic reconnect
-                    (set to ``0`` or ``None`` to disable auto reconnect)
-            :param ping_timeout:
-                    If specified (default is 5 seconds) a background task
-                    will be created which will ping Tarantool instance
-                    periodically to check if it is alive and update schema
-                    if it is changed
-                    (set to ``0`` or ``None`` to disable this task)
-            :param encoding:
-                    The encoding to use for all strings
-                    encoding and decoding (default is ``utf-8``)
-            :param initial_read_buffer_size:
-                    Initial and minimum size of read buffer in bytes.
-                    Higher value means less reallocations, but higher
-                    memory usage (default is 131072).
+        :param host:
+                Tarantool host (pass ``unix/`` to connect to unix socket)
+        :param port:
+                Tarantool port
+                (pass ``/path/to/sockfile`` to connect ot unix socket)
+        :param username:
+                Username to use for auth
+                (if ``None`` you are connected as a guest)
+        :param password:
+                Password to use for auth
+        :param fetch_schema:
+                Pass ``True`` to be able to use spaces and indexes names in
+                data manipulation routines (default is ``True``)
+        :param auto_refetch_schema:
+                If set to ``True`` then when ER_WRONG_SCHEMA_VERSION error
+                occurs on a request, schema is refetched and the initial
+                request is resent. If set to ``False`` then schema will not
+                be checked by Tarantool, so no errors will occur
+        :param connect_timeout:
+                Time in seconds how long to wait for connecting to socket
+        :param request_timeout:
+                Request timeout (in seconds) for all requests
+                (by default there is no timeout)
+        :param reconnect_timeout:
+                Time in seconds to wait before automatic reconnect
+                (set to ``0`` or ``None`` to disable auto reconnect)
+        :param ping_timeout:
+                If specified (default is 5 seconds) a background task
+                will be created which will ping Tarantool instance
+                periodically to check if it is alive and update schema
+                if it is changed
+                (set to ``0`` or ``None`` to disable this task)
+        :param encoding:
+                The encoding to use for all strings
+                encoding and decoding (default is ``utf-8``)
+        :param initial_read_buffer_size:
+                Initial and minimum size of read buffer in bytes.
+                Higher value means less reallocations, but higher
+                memory usage (default is 131072).
         """
         super().__init__()
         self._host = host
@@ -122,13 +136,14 @@ class Connection(Api):
         if auto_refetch_schema:  # None hack
             self._auto_refetch_schema = True
             if not self._fetch_schema:
-                logger.warning('Setting fetch_schema to True as '
-                               'auto_refetch_schema is True')
+                logger.warning(
+                    "Setting fetch_schema to True as " "auto_refetch_schema is True"
+                )
                 self._fetch_schema = True
         else:
             self._auto_refetch_schema = False
         self._initial_read_buffer_size = initial_read_buffer_size
-        self._encoding = encoding or 'utf-8'
+        self._encoding = encoding or "utf-8"
 
         self._connect_timeout = connect_timeout
         self._reconnect_timeout = reconnect_timeout or 0
@@ -151,8 +166,7 @@ class Connection(Api):
 
     def _set_state(self, new_state: ConnectionState):
         if self._state != new_state:
-            logger.debug('Changing state %s -> %s',
-                         self._state.name, new_state.name)
+            logger.debug("Changing state %s -> %s", self._state.name, new_state.name)
             self._state_prev = self._state
             self._state = new_state
 
@@ -187,43 +201,43 @@ class Connection(Api):
             await asyncio.sleep(self._ping_timeout)
 
     def _start_reconnect(self, return_exceptions: bool = False):
-        if self._state in [ConnectionState.CONNECTING,
-                           ConnectionState.RECONNECTING]:
-            logger.debug('%s Cannot start reconnect: already reconnecting',
-                         self.fingerprint)
+        if self._state in [ConnectionState.CONNECTING, ConnectionState.RECONNECTING]:
+            logger.debug(
+                "%s Cannot start reconnect: already reconnecting", self.fingerprint
+            )
             return
 
         if self._reconnect_task:  # pragma: nocover
             return
 
-        logger.info('%s Started reconnecting', self.fingerprint)
+        logger.info("%s Started reconnecting", self.fingerprint)
         self._set_state(ConnectionState.RECONNECTING)
 
         self._reconnect_task = self.__create_task(
             self._connect(return_exceptions=return_exceptions)
         )
 
-    def protocol_factory(self,
-                         connected_fut: asyncio.Future,
-                         cls=protocol.Protocol):
-        return cls(host=self._host,
-                   port=self._port,
-                   username=self._username,
-                   password=self._password,
-                   fetch_schema=self._fetch_schema,
-                   auto_refetch_schema=self._auto_refetch_schema,
-                   request_timeout=self._request_timeout,
-                   initial_read_buffer_size=self._initial_read_buffer_size,
-                   encoding=self._encoding,
-                   connected_fut=connected_fut,
-                   on_connection_made=None,
-                   on_connection_lost=self.connection_lost,
-                   loop=self._loop)
+    def protocol_factory(self, connected_fut: asyncio.Future, cls=protocol.Protocol):
+        return cls(
+            host=self._host,
+            port=self._port,
+            username=self._username,
+            password=self._password,
+            fetch_schema=self._fetch_schema,
+            auto_refetch_schema=self._auto_refetch_schema,
+            request_timeout=self._request_timeout,
+            initial_read_buffer_size=self._initial_read_buffer_size,
+            encoding=self._encoding,
+            connected_fut=connected_fut,
+            on_connection_made=None,
+            on_connection_lost=self.connection_lost,
+            loop=self._loop,
+        )
 
     async def _connect(self, return_exceptions: bool = True):
         if self._loop is None:
             self._loop = get_running_loop()
-            if hasattr(self._loop, 'create_task'):
+            if hasattr(self._loop, "create_task"):
                 self.__create_task = self._loop.create_task
             else:  # pragma: nocover
                 self.__create_task = asyncio.ensure_future
@@ -246,27 +260,30 @@ class Connection(Api):
                         while True:
                             connected_fut = _create_future(self._loop)
 
-                            if self._host.startswith('unix/'):
+                            if self._host.startswith("unix/"):
                                 unix_path = self._port
-                                assert isinstance(unix_path, str), \
-                                    'port must be a str instance for ' \
-                                    'unix socket'
-                                assert unix_path, \
-                                    'No unix file path specified'
-                                assert os.path.exists(unix_path), \
-                                    'Unix socket `{}` not found'.format(
-                                        unix_path)
+                                assert isinstance(unix_path, str), (
+                                    "port must be a str instance for " "unix socket"
+                                )
+                                assert unix_path, "No unix file path specified"
+                                assert os.path.exists(
+                                    unix_path
+                                ), "Unix socket `{}` not found".format(unix_path)
 
                                 conn = self._loop.create_unix_connection(
-                                    functools.partial(self.protocol_factory,
-                                                      connected_fut),
-                                    unix_path
+                                    functools.partial(
+                                        self.protocol_factory, connected_fut
+                                    ),
+                                    unix_path,
                                 )
                             else:
                                 conn = self._loop.create_connection(
-                                    functools.partial(self.protocol_factory,
-                                                      connected_fut),
-                                    self._host, self._port)
+                                    functools.partial(
+                                        self.protocol_factory, connected_fut
+                                    ),
+                                    self._host,
+                                    self._port,
+                                )
 
                             tr, pr = await conn
 
@@ -275,8 +292,7 @@ class Connection(Api):
                                 if self._connect_timeout is not None:
                                     timeout = self._connect_timeout / 2
 
-                                await asyncio.wait_for(connected_fut,
-                                                       timeout=timeout)
+                                await asyncio.wait_for(connected_fut, timeout=timeout)
                             except asyncio.TimeoutError:  # pragma: nocover
                                 tr.close()
                                 continue  # try again
@@ -291,7 +307,7 @@ class Connection(Api):
                         timeout=self._connect_timeout,
                     )
 
-                    logger.info('%s Connected successfully', self.fingerprint)
+                    logger.info("%s Connected successfully", self.fingerprint)
                     self._set_state(ConnectionState.CONNECTED)
 
                     self._transport = tr
@@ -301,14 +317,13 @@ class Connection(Api):
                     self._normalize_api()
 
                     if self._ping_timeout:
-                        self._ping_task = \
-                            self.__create_task(self._ping_task_func())
+                        self._ping_task = self.__create_task(self._ping_task_func())
                     return
                 except TarantoolDatabaseError as e:
                     skip_errors = {
                         ErrorCode.ER_LOADING,
                         ErrorCode.ER_NO_SUCH_SPACE,
-                        ErrorCode.ER_NO_SUCH_INDEX_ID
+                        ErrorCode.ER_NO_SUCH_INDEX_ID,
                     }
                     if e.code in skip_errors:
                         # If Tarantool is still loading then reconnect
@@ -344,23 +359,25 @@ class Connection(Api):
 
     async def _wait_reconnect(self, exc=None):
         self._set_state(ConnectionState.RECONNECTING)
-        logger.warning('Connect to %s failed: %s. Retrying in %f seconds',
-                       self.fingerprint,
-                       repr(exc) if exc else '',
-                       self._reconnect_timeout)
+        logger.warning(
+            "Connect to %s failed: %s. Retrying in %f seconds",
+            self.fingerprint,
+            repr(exc) if exc else "",
+            self._reconnect_timeout,
+        )
 
         await asyncio.sleep(self._reconnect_timeout)
 
-    async def connect(self) -> 'Connection':
+    async def connect(self) -> "Connection":
         """
-            Connect coroutine
+        Connect coroutine
         """
         await self._connect(True)
         return self
 
     async def disconnect(self):
         """
-            Disconnect coroutine
+        Disconnect coroutine
         """
 
         async with self._disconnect_lock:
@@ -369,7 +386,7 @@ class Connection(Api):
 
             self._set_state(ConnectionState.DISCONNECTING)
 
-            logger.info('%s Disconnecting...', self.fingerprint)
+            logger.info("%s Disconnecting...", self.fingerprint)
             if self._reconnect_task:
                 self._reconnect_task.cancel()
                 self._reconnect_task = None
@@ -396,15 +413,15 @@ class Connection(Api):
 
     def close(self):
         """
-            Same as disconnect, but not a coroutine, i.e. it does not wait
-            for disconnect to finish.
+        Same as disconnect, but not a coroutine, i.e. it does not wait
+        for disconnect to finish.
         """
 
         if self._state == ConnectionState.DISCONNECTED:
             return
 
         self._set_state(ConnectionState.DISCONNECTING)
-        logger.info('%s Disconnecting...', self.fingerprint)
+        logger.info("%s Disconnecting...", self.fingerprint)
 
         if self._reconnect_task and not self._reconnect_task.done():
             self._reconnect_task.cancel()
@@ -425,105 +442,105 @@ class Connection(Api):
 
     async def reconnect(self):
         """
-            Reconnect coroutine.
-            Just calls disconnect() and connect()
+        Reconnect coroutine.
+        Just calls disconnect() and connect()
         """
         await self.disconnect()
         await self.connect()
 
     async def __aenter__(self):
         """
-            Executed on entering the async with section.
-            Connects to Tarantool instance.
+        Executed on entering the async with section.
+        Connects to Tarantool instance.
         """
         await self.connect()
         return self
 
     async def __aexit__(self, exc_type, exc_val, exc_tb):
         """
-            Executed on leaving the async with section.
-            Disconnects from Tarantool instance.
+        Executed on leaving the async with section.
+        Disconnects from Tarantool instance.
         """
         await self.disconnect()
 
     @property
     def fingerprint(self) -> str:
-        return 'Tarantool[{}:{}]'.format(self._host, self._port)
+        return "Tarantool[{}:{}]".format(self._host, self._port)
 
     @property
     def host(self) -> str:
         """
-            Tarantool host
+        Tarantool host
         """
         return self._host
 
     @property
     def port(self) -> int:
         """
-            Tarantool port
+        Tarantool port
         """
         return self._port
 
     @property
     def username(self) -> Optional[str]:
         """
-            Tarantool username
+        Tarantool username
         """
         return self._username
 
     @property
     def password(self) -> Optional[str]:
         """
-            Tarantool password
+        Tarantool password
         """
         return self._password
 
     @property
     def fetch_schema(self) -> bool:
         """
-            fetch_schema flag
+        fetch_schema flag
         """
         return self._fetch_schema
 
     @property
     def auto_refetch_schema(self) -> bool:
         """
-            auto_refetch_schema flag
+        auto_refetch_schema flag
         """
         return self._auto_refetch_schema
 
     @property
     def encoding(self) -> str:
         """
-            Connection encoding
+        Connection encoding
         """
         return self._encoding
 
     @property
     def reconnect_timeout(self) -> float:
         """
-            Reconnect timeout value
+        Reconnect timeout value
         """
         return self._reconnect_timeout
 
     @property
     def connect_timeout(self) -> float:
         """
-            Connect timeout value
+        Connect timeout value
         """
         return self._connect_timeout
 
     @property
     def request_timeout(self) -> float:
         """
-            Request timeout value
+        Request timeout value
         """
         return self._request_timeout
 
     @property
     def version(self) -> Optional[tuple]:
         """
-            Protocol version tuple. ex.: (1, 6, 7)
+        Protocol version tuple. ex.: (1, 6, 7)
         """
         if self._protocol is None:
             return None
@@ -532,23 +549,23 @@ class Connection(Api):
     @property
     def loop(self):
         """
-            Asyncio event loop
+        Asyncio event loop
         """
         return self._loop
 
     @property
     def state(self) -> ConnectionState:
         """
-            Current connection state
+        Current connection state
 
-            :rtype: ConnectionState
+        :rtype: ConnectionState
         """
         return self._state
 
     @property
     def is_connected(self) -> bool:
         """
-            Check if an underlying connection is active
+        Check if an underlying connection is active
         """
         if self._protocol is None:
             return False
@@ -557,8 +574,8 @@ class Connection(Api):
     @property
     def is_fully_connected(self) -> bool:
         """
-            Check if connection is fully active (performed auth
-            and schema fetching)
+        Check if connection is fully active (performed auth
+        and schema fetching)
         """
         if self._protocol is None:
             return False
@@ -567,7 +584,7 @@ class Connection(Api):
     @property
     def schema_id(self) -> Optional[int]:
         """
-            Tarantool's current schema id
+        Tarantool's current schema id
         """
         if self._protocol is None:
             return None
@@ -576,7 +593,7 @@ class Connection(Api):
     @property
     def schema(self) -> Optional[protocol.Schema]:
         """
-            Current Tarantool schema with all spaces, indexes and fields
+        Current Tarantool schema with all spaces, indexes and fields
         """
         if self._protocol is None:  # pragma: nocover
             return None
@@ -585,13 +602,13 @@ class Connection(Api):
     @property
     def initial_read_buffer_size(self) -> int:
         """
-            initial_read_buffer_size value
+        initial_read_buffer_size value
         """
         return self._initial_read_buffer_size
 
     async def refetch_schema(self):
         """
-            Coroutine to force refetch schema
+        Coroutine to force refetch schema
         """
         await self._protocol.refetch_schema()
 
@@ -601,23 +618,20 @@ class Connection(Api):
             Connection.call = Connection.call16
 
         if self.version < (2, 10):  # pragma: nocover
+
             def stream_stub(_):
-                raise TarantoolError(
-                    "streams are available only in Tarantool 2.10+"
-                )
+                raise TarantoolError("streams are available only in Tarantool 2.10+")
 
             Connection.stream = stream_stub
 
     def __repr__(self):
         return "<asynctnt.Connection host={} port={} state={}>".format(
-            self.host,
-            self.port,
-            repr(self.state)
+            self.host, self.port, repr(self.state)
         )
 
     def stream(self) -> Stream:
         """
-            Create new stream suitable for interactive transactions
+        Create new stream suitable for interactive transactions
         """
         stream = Stream()
         db = self._protocol.create_db(True)
@@ -634,8 +648,8 @@ def _create_future(loop):
 
 async def connect(**kwargs) -> Connection:
     """
-        connect shorthand. See :class:`asynctnt.Connection` for kwargs details
+    connect shorthand. See :class:`asynctnt.Connection` for kwargs details
 
-        :return: :class:`asynctnt.Connection` object
+    :return: :class:`asynctnt.Connection` object
     """
     return await Connection(**kwargs).connect()

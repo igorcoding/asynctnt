@@ -1,8 +1,9 @@
-cimport cython
 cimport cpython
 cimport cpython.bytes
+cimport cython
 
 import hashlib
+
 
 cdef inline bytes _sha1(tuple values):
     cdef object sha = hashlib.sha1()

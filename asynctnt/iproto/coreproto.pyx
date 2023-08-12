@@ -1,16 +1,13 @@
 cimport cpython
-cimport cpython.dict
-cimport cpython.bytes
 cimport cpython.bytearray
-
+cimport cpython.bytes
+cimport cpython.dict
 from cpython.ref cimport PyObject
-
 from libc.stdint cimport uint32_t, uint64_t
 
 import base64
-import socket
-
 import re
+import socket
 
 from asynctnt.exceptions import TarantoolDatabaseError
 from asynctnt.log import logger

@@ -3,10 +3,11 @@
 from asynctnt.exceptions import TarantoolSchemaError
 from asynctnt.log import logger
 
-from libc.stdint cimport int32_t, uint64_t
 cimport cpython.list
 cimport cython
 from cpython.ref cimport PyObject
+from libc.stdint cimport int32_t, uint64_t
+
 
 @cython.final
 cdef class Field:

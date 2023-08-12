@@ -1,6 +1,7 @@
-from libc.stdint cimport uint32_t, uint8_t, int64_t, int32_t, int16_t
-from libc cimport math
 from cpython.datetime cimport datetime
+from libc cimport math
+from libc.stdint cimport int16_t, int32_t, int64_t, uint8_t, uint32_t
+
 
 cdef inline uint32_t bcd_len(uint32_t digits_len):
     return <uint32_t> math.floor(digits_len / 2) + 1

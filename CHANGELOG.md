@@ -6,11 +6,14 @@
 
 **New features:**
 * Added building wheels for Python 3.11 and 3.12
-* Upgraded to Cython 3.0.0
-* Using pyproject.toml for building spec
 
 **Bug fixes:**
 * Fixed an issue with encoding of update operations as tuples on PyPy
+
+**Other changes**
+* Upgraded to Cython 3.0.0
+* Using pyproject.toml for building spec
+* Using black, isort & ruff for linting
 
 ## v2.0.1
 * Fixed an issue with encoding datetimes less than 01-01-1970 (fixes [#29](https://github.com/igorcoding/asynctnt/issues/29))

@@ -6,26 +6,26 @@ from asynctnt.iproto.protocol import IProtoError
 
 class TarantoolError(Exception):
     """
-        Base Tarantool Exception class
+    Base Tarantool Exception class
     """
+
     pass
 
 
 class TarantoolSchemaError(TarantoolError):
     """
-        Exception is raised when any problems with schema occurred
+    Exception is raised when any problems with schema occurred
     """
+
     pass
 
 
 class TarantoolDatabaseError(TarantoolError):
     """
-        Exception is raised when Tarantool responds with code != 0
+    Exception is raised when Tarantool responds with code != 0
     """
-    def __init__(self,
-                 code: int,
-                 message: str,
-                 error: Optional[IProtoError]):
+
+    def __init__(self, code: int, message: str, error: Optional[IProtoError]):
         super(TarantoolDatabaseError, self).__init__(message)
         self.code = code
         self.message = message
@@ -38,15 +38,17 @@ class TarantoolNetworkError(TarantoolError):
 
 class TarantoolNotConnectedError(TarantoolNetworkError):
     """
-        Raised when asynctnt is not connected to Tarantool
+    Raised when asynctnt is not connected to Tarantool
     """
+
     pass
 
 
 class ErrorCode(enum.IntEnum):
     """
-        Tarantool default error codes
+    Tarantool default error codes
     """
+
     ER_UNKNOWN = 0
     ER_ILLEGAL_PARAMS = 1
     ER_MEMORY_ISSUE = 2

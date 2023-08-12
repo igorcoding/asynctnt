@@ -1,6 +1,7 @@
 cimport cython
 from libc.stdint cimport uint32_t
 
+
 cdef inline size_t size_t_max(size_t a, size_t b):
     if a > b:
         return a

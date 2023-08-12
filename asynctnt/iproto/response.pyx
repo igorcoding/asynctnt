@@ -3,14 +3,14 @@ import collections
 from typing import Optional
 
 cimport cpython
-cimport cpython.list
 cimport cpython.dict
+cimport cpython.list
 cimport cython
-
-from libc.stdint cimport uint32_t
 from libc cimport stdio
+from libc.stdint cimport uint32_t
 
 from asynctnt.log import logger
+
 
 @cython.final
 cdef class IProtoErrorStackFrame:

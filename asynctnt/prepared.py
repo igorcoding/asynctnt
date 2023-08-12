@@ -1,4 +1,4 @@
-from typing import List, Optional, Union, Dict, Any, TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Union
 
 from .iproto import protocol
 
@@ -7,12 +7,9 @@ if TYPE_CHECKING:  # pragma: nocover
 
 
 class PreparedStatement:
-    __slots__ = (
-        '_api', '_query', '_stmt_id',
-        '_params', '_params_count'
-    )
+    __slots__ = ("_api", "_query", "_stmt_id", "_params", "_params_count")
 
-    def __init__(self, api: 'Api', query: str):
+    def __init__(self, api: "Api", query: str):
         self._api = api
         self._query = query
         self._stmt_id = None
@@ -22,21 +19,21 @@ class PreparedStatement:
     @property
     def id(self) -> int:
         """
-            Prepared statement id
+        Prepared statement id
         """
         return self._stmt_id
 
     @property
     def params_count(self) -> int:
         """
-            Bound params count
+        Bound params count
         """
         return self._params_count
 
     @property
     def params(self) -> Optional[protocol.Metadata]:
         """
-            Bound params metadata
+        Bound params metadata
         """
         return self._params
 
@@ -53,11 +50,13 @@ class PreparedStatement:
         self._params_count = resp.params_count
         return self._stmt_id
 
-    async def execute(self,
-                      args: Optional[List[Union[Dict[str, Any], Any]]] = None,
-                      *,
-                      parse_metadata: bool = True,
-                      timeout: float = -1.0) -> protocol.Response:
+    async def execute(
+        self,
+        args: Optional[List[Union[Dict[str, Any], Any]]] = None,
+        *,
+        parse_metadata: bool = True,
+        timeout: float = -1.0,
+    ) -> protocol.Response:
         """
             Execute this prepared statement with specified args
         :param args: arguments list
@@ -81,8 +80,8 @@ class PreparedStatement:
 
     async def __aenter__(self):
         """
-            If used as a Context Manager `prepare()` and `unprepare()` methods
-            are called automatically
+        If used as a Context Manager `prepare()` and `unprepare()` methods
+        are called automatically
         """
         if self._stmt_id is None:
             await self.prepare()

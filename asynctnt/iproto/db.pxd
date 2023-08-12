@@ -1,5 +1,6 @@
 cimport cython
-from libc.stdint cimport uint64_t, uint32_t
+from libc.stdint cimport uint32_t, uint64_t
+
 
 @cython.final
 cdef class Db:
