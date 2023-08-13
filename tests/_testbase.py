@@ -12,7 +12,6 @@ from typing import Optional, Tuple
 import asynctnt
 from asynctnt import TarantoolTuple
 from asynctnt.instance import TarantoolSyncDockerInstance, TarantoolSyncInstance
-from asynctnt.utils import get_running_loop
 
 __all__ = (
     "TestCase",
@@ -86,7 +85,7 @@ class TestCase(unittest.TestCase, metaclass=TestCaseMeta):
             uvloop.install()
 
         try:
-            loop = get_running_loop()
+            loop = asyncio.get_running_loop()
             # if there is a running loop - close it
             loop.close()
         except RuntimeError:

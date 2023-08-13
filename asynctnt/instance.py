@@ -26,8 +26,6 @@ __all__ = (
     "TarantoolSyncDockerInstance",
 )
 
-from asynctnt.utils import get_running_loop
-
 VERSION_STRING_REGEX = re.compile(r"\s*([\d.]+).*")
 
 
@@ -614,8 +612,6 @@ class TarantoolSyncInstance(TarantoolInstance):
 class TarantoolAsyncInstance(TarantoolInstance):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self._loop = get_running_loop(kwargs.pop("loop", None))
-
         self._is_stopping = False
         self._transport = None
         self._protocol = None
@@ -675,7 +671,10 @@ class TarantoolAsyncInstance(TarantoolInstance):
             args = [initlua_path]
         else:
             args = self._command_args
-        self._transport, self._protocol = await self._loop.subprocess_exec(
+        (
+            self._transport,
+            self._protocol,
+        ) = await asyncio.get_running_loop().subprocess_exec(
             factory,
             self._command_to_run,
             *args,

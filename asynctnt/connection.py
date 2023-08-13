@@ -2,14 +2,13 @@ import asyncio
 import enum
 import functools
 import os
-from typing import Optional, Union
+from typing import Optional, Type, Union
 
 from .api import Api
 from .exceptions import ErrorCode, TarantoolDatabaseError, TarantoolError
 from .iproto import protocol
 from .log import logger
 from .stream import Stream
-from .utils import get_running_loop
 
 __all__ = ("Connection", "connect", "ConnectionState")
 
@@ -36,7 +35,6 @@ class Connection(Api):
         "_reconnect_timeout",
         "_request_timeout",
         "_ping_timeout",
-        "_loop",
         "_state",
         "_state_prev",
         "_transport",
@@ -46,7 +44,6 @@ class Connection(Api):
         "_connect_lock",
         "_disconnect_lock",
         "_ping_task",
-        "__create_task",
     )
 
     def __init__(
@@ -150,9 +147,6 @@ class Connection(Api):
         self._request_timeout = request_timeout
         self._ping_timeout = ping_timeout or 0
 
-        self._loop = None
-        self.__create_task = None
-
         self._transport = None
         self._protocol: Optional[protocol.Protocol] = None
 
@@ -213,11 +207,16 @@ class Connection(Api):
         logger.info("%s Started reconnecting", self.fingerprint)
         self._set_state(ConnectionState.RECONNECTING)
 
-        self._reconnect_task = self.__create_task(
+        self._reconnect_task = asyncio.create_task(
             self._connect(return_exceptions=return_exceptions)
         )
 
-    def protocol_factory(self, connected_fut: asyncio.Future, cls=protocol.Protocol):
+    def protocol_factory(
+        self,
+        connected_fut: asyncio.Future,
+        loop: asyncio.AbstractEventLoop,
+        cls: Type[protocol.Protocol] = protocol.Protocol,
+    ):
         return cls(
             host=self._host,
             port=self._port,
@@ -231,16 +230,11 @@ class Connection(Api):
             connected_fut=connected_fut,
             on_connection_made=None,
             on_connection_lost=self.connection_lost,
-            loop=self._loop,
+            loop=loop,
         )
 
     async def _connect(self, return_exceptions: bool = True):
-        if self._loop is None:
-            self._loop = get_running_loop()
-            if hasattr(self._loop, "create_task"):
-                self.__create_task = self._loop.create_task
-            else:  # pragma: nocover
-                self.__create_task = asyncio.ensure_future
+        loop = asyncio.get_running_loop()
 
         async with self._connect_lock:
             while True:
@@ -258,7 +252,7 @@ class Connection(Api):
 
                     async def full_connect():
                         while True:
-                            connected_fut = _create_future(self._loop)
+                            connected_fut = loop.create_future()
 
                             if self._host.startswith("unix/"):
                                 unix_path = self._port
@@ -270,16 +264,16 @@ class Connection(Api):
                                     unix_path
                                 ), "Unix socket `{}` not found".format(unix_path)
 
-                                conn = self._loop.create_unix_connection(
+                                conn = loop.create_unix_connection(
                                     functools.partial(
-                                        self.protocol_factory, connected_fut
+                                        self.protocol_factory, connected_fut, loop
                                     ),
                                     unix_path,
                                 )
                             else:
-                                conn = self._loop.create_connection(
+                                conn = loop.create_connection(
                                     functools.partial(
-                                        self.protocol_factory, connected_fut
+                                        self.protocol_factory, connected_fut, loop
                                     ),
                                     self._host,
                                     self._port,
@@ -317,7 +311,7 @@ class Connection(Api):
                     self._normalize_api()
 
                     if self._ping_timeout:
-                        self._ping_task = self.__create_task(self._ping_task_func())
+                        self._ping_task = loop.create_task(self._ping_task_func())
                     return
                 except TarantoolDatabaseError as e:
                     skip_errors = {
@@ -357,7 +351,7 @@ class Connection(Api):
                     logger.exception(e)
                     return  # no reconnect, no return_exceptions
 
-    async def _wait_reconnect(self, exc=None):
+    async def _wait_reconnect(self, exc: Optional[Exception] = None):
         self._set_state(ConnectionState.RECONNECTING)
         logger.warning(
             "Connect to %s failed: %s. Retrying in %f seconds",
@@ -380,6 +374,8 @@ class Connection(Api):
         Disconnect coroutine
         """
 
+        loop = asyncio.get_running_loop()
+
         async with self._disconnect_lock:
             if self._state == ConnectionState.DISCONNECTED:
                 return
@@ -397,7 +393,7 @@ class Connection(Api):
 
             self._clear_db()
             if self._transport:
-                self._disconnect_waiter = _create_future(self._loop)
+                self._disconnect_waiter = loop.create_future()
                 self._transport.close()
                 self._transport = None
                 self._protocol = None
@@ -547,13 +543,6 @@ class Connection(Api):
         return self._protocol.get_version()
 
     @property
-    def loop(self):
-        """
-        Asyncio event loop
-        """
-        return self._loop
-
-    @property
     def state(self) -> ConnectionState:
         """
         Current connection state
@@ -637,13 +626,6 @@ class Connection(Api):
         db = self._protocol.create_db(True)
         stream._set_db(db)
         return stream
-
-
-def _create_future(loop):
-    try:
-        return loop.create_future()
-    except AttributeError:  # pragma: nocover
-        return asyncio.Future(loop=loop)
 
 
 async def connect(**kwargs) -> Connection:

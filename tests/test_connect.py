@@ -26,7 +26,6 @@ class ConnectTestCase(BaseTarantoolTestCase):
         self.assertIsNone(conn.password)
         self.assertEqual(conn.reconnect_timeout, 0)
         self.assertEqual(conn.connect_timeout, 3)
-        self.assertEqual(conn.loop, None)
         self.assertIsNone(conn.initial_read_buffer_size)
         self.assertIsNone(conn.schema_id)
         self.assertIsNone(conn.version)
@@ -39,7 +38,6 @@ class ConnectTestCase(BaseTarantoolTestCase):
         self.assertEqual(conn.state, ConnectionState.DISCONNECTED)
 
         c = await conn.connect()
-        self.assertEqual(conn.loop, self.loop)
         self.assertEqual(c, conn)
         self.assertIsNotNone(conn._transport)
         self.assertIsNotNone(conn._protocol)
@@ -65,7 +63,6 @@ class ConnectTestCase(BaseTarantoolTestCase):
         self.assertIsNone(conn.password)
         self.assertEqual(conn.reconnect_timeout, 0)
         self.assertEqual(conn.connect_timeout, 3)
-        self.assertEqual(conn.loop, self.loop)
         self.assertIsNone(conn.initial_read_buffer_size)
 
         self.assertIsNotNone(conn._transport)
@@ -102,7 +99,6 @@ class ConnectTestCase(BaseTarantoolTestCase):
             self.assertIsNone(conn.password)
             self.assertEqual(conn.reconnect_timeout, 0)
             self.assertEqual(conn.connect_timeout, 3)
-            self.assertEqual(conn.loop, self.loop)
             self.assertIsNone(conn.initial_read_buffer_size)
 
             self.assertIsNotNone(conn._transport)
