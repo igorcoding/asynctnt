@@ -637,8 +637,11 @@ cdef ssize_t response_parse_body(const char *buf, uint32_t buf_len,
         elif key == tarantool.IPROTO_FEATURES:
             logger.debug("IProto features available: %s", _decode_obj(&b, resp.encoding))
 
+        elif key == tarantool.IPROTO_AUTH_TYPE:
+            logger.debug("IProto auth type: %s", _decode_obj(&b, resp.encoding))
+
         else:  # pragma: nocover
-            logger.debug('unknown key in body map: %d', int(key))
+            logger.debug('unknown key in body map: %s', hex(int(key)))
             mp_next(&b)
 
     return <ssize_t> (b - buf)
