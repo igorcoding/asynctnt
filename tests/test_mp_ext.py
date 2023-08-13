@@ -1,6 +1,8 @@
 import datetime
 import sys
+import unittest
 import uuid
+from dataclasses import dataclass
 from decimal import Decimal
 
 import dateutil.parser
@@ -12,58 +14,73 @@ from tests import BaseTarantoolTestCase
 from tests._testbase import ensure_version
 
 
+@dataclass
+class DecimalTestCase:
+    python: Decimal
+    tarantool: str
+
+
 class MpExtTestCase(BaseTarantoolTestCase):
     @ensure_version(min=(2, 2))
     async def test__decimal(self):
         space = "tester_ext_dec"
 
-        dec = Decimal("-12.34")
-        res = await self.conn.replace(space, [1, dec])
-        self.assertEqual(res[0][1], dec)
+        cases = [
+            "-12.34",
+            "-12.345",
+            "-12.4",
+            "0.000",
+            "42",
+            "0.33",
+            "0.000000000000000000000000000000000010",
+            "-0.000000000000000000000000000000000010",
+            "0.1111111111111111",
+            "-0.1111111111111111",
+            "-0.111111",
+            "-18.34",
+            "-108.123456789",
+            "100",
+            "0.1",
+            "-0.1",
+            "2.718281828459045",
+            "-2.718281828459045",
+            "3.141592653589793",
+            "-3.141592653589793",
+            "1",
+            "-1",
+            "0",
+            "-0",
+            "0.01",
+            "-0.01",
+            "0.001",
+            "11111111111111111111111111111111111111",
+            "-11111111111111111111111111111111111111",
+            "0.0000000000000000000000000000000000001",
+            "-0.0000000000000000000000000000000000001",
+            "0.00000000000000000000000000000000000009",
+            "-0.00000000000000000000000000000000000009",
+            "99999999999999999999999999999999999999",
+            "-99999999999999999999999999999999999999",
+            "1234567891234567890.0987654321987654321",
+            "-1234567891234567890.0987654321987654321",
+            "1e33",
+            "1.2345e33",
+            "1.2345e2",
+            "1.2345e4",
+            "-1e33",
+            "1e-33",
+        ]
 
-        dec = Decimal("-12.345")
-        res = await self.conn.replace(space, [1, dec])
-        self.assertEqual(res[0][1], dec)
+        for case in cases:
+            with self.subTest(case):
+                dec = Decimal(case)
+                res = await self.conn.replace(space, [1, dec])
+                self.assertEqual(res[0][1], dec, "self-return works")
 
-        dec = Decimal("-12.4")
-        res = await self.conn.replace(space, [1, dec])
-        self.assertEqual(res[0][1], dec)
-
-        dec = Decimal("0")
-        res = await self.conn.replace(space, [1, dec])
-        self.assertEqual(res[0][1], dec)
-
-        dec = Decimal("0.000")
-        res = await self.conn.replace(space, [1, dec])
-        self.assertEqual(res[0][1], dec)
-
-        dec = Decimal(42)
-        res = await self.conn.replace(space, [1, dec])
-        self.assertEqual(res[0][1], dec)
-
-        dec = Decimal("0.33")
-        res = await self.conn.replace(space, [1, dec])
-        self.assertEqual(res[0][1], dec)
-
-        dec = Decimal("0.000000000000000000000000000000000010")
-        res = await self.conn.replace(space, [1, dec])
-        self.assertEqual(res[0][1], dec)
-
-        dec = Decimal("-0.000000000000000000000000000000000010")
-        res = await self.conn.replace(space, [1, dec])
-        self.assertEqual(res[0][1], dec)
-
-        dec = Decimal("0.1111111111111111")
-        res = await self.conn.replace(space, [1, dec])
-        self.assertEqual(res[0][1], dec)
-
-        dec = Decimal("-0.1111111111111111")
-        res = await self.conn.replace(space, [1, dec])
-        self.assertEqual(res[0][1], dec)
-
-        dec = Decimal("-0.111111")
-        res = await self.conn.replace(space, [1, dec])
-        self.assertEqual(res[0][1], dec)
+                res = await self.conn.eval(
+                    f"local decimal = require('decimal'); return decimal.new('{case}')"
+                )
+                self.assertEqual(res[0], dec, "matches tarantool decimal")
 
     @ensure_version(min=(2, 4, 1))
     async def test__uuid(self):

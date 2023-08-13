@@ -17,7 +17,7 @@ def main():
     parser.add_argument(
         "-n", type=int, default=200000, help="number of executed requests"
     )
-    parser.add_argument("-b", type=int, default=200, help="number of bulks")
+    parser.add_argument("-b", type=int, default=300, help="number of bulks")
     args = parser.parse_args()
 
     print("Running {} requests in {} batches. ".format(args.n, args.b))
@@ -33,7 +33,7 @@ def main():
         ["execute", ["select 1 as a, 2 as b"], {"parse_metadata": False}],
     ]
 
-    for use_uvloop in [False, True]:
+    for use_uvloop in [True]:
         if use_uvloop:
             try:
                 import uvloop
