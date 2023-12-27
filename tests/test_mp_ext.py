@@ -1,6 +1,5 @@
 import datetime
 import sys
-import unittest
 import uuid
 from dataclasses import dataclass
 from decimal import Decimal
