@@ -1,21 +1,23 @@
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="../../">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>asynctnt.exceptions &mdash; asynctnt 2.0.1 documentation</title>
-      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
-      <link rel="stylesheet" href="../../_static/graphviz.css" type="text/css" />
+  <title>asynctnt.exceptions &mdash; asynctnt 2.1.0a1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=eafc0fe6" />
+
+  
   <!--[if lt IE 9]>
     <script src="../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-        <script src="../../_static/jquery.js"></script>
-        <script src="../../_static/underscore.js"></script>
-        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../_static/documentation_options.js?v=693f9624"></script>
+        <script src="../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
@@ -26,14 +28,18 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="../../index.html" class="icon icon-home"> asynctnt
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            asynctnt
           </a>
               <div class="version">
-                2.0.1
+                2.1.0a1
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -66,10 +72,10 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
-          <li><a href="../index.html">Module code</a> &raquo;</li>
-          <li><a href="../asynctnt.html">asynctnt</a> &raquo;</li>
-      <li>asynctnt.exceptions</li>
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+          <li class="breadcrumb-item"><a href="../asynctnt.html">asynctnt</a></li>
+      <li class="breadcrumb-item active">asynctnt.exceptions</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -85,294 +91,1049 @@
 <span class="kn">from</span> <span class="nn">asynctnt.iproto.protocol</span> <span class="kn">import</span> <span class="n">IProtoError</span>
 
 
-<div class="viewcode-block" id="TarantoolError"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.TarantoolError">[docs]</a><span class="k">class</span> <span class="nc">TarantoolError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Base Tarantool Exception class</span>
+<div class="viewcode-block" id="TarantoolError">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.TarantoolError">[docs]</a>
+<span class="k">class</span> <span class="nc">TarantoolError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Base Tarantool Exception class</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="k">pass</span></div>
 
 
-<div class="viewcode-block" id="TarantoolSchemaError"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.TarantoolSchemaError">[docs]</a><span class="k">class</span> <span class="nc">TarantoolSchemaError</span><span class="p">(</span><span class="n">TarantoolError</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Exception is raised when any problems with schema occurred</span>
+
+<div class="viewcode-block" id="TarantoolSchemaError">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.TarantoolSchemaError">[docs]</a>
+<span class="k">class</span> <span class="nc">TarantoolSchemaError</span><span class="p">(</span><span class="n">TarantoolError</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Exception is raised when any problems with schema occurred</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="k">pass</span></div>
 
 
-<div class="viewcode-block" id="TarantoolDatabaseError"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.TarantoolDatabaseError">[docs]</a><span class="k">class</span> <span class="nc">TarantoolDatabaseError</span><span class="p">(</span><span class="n">TarantoolError</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Exception is raised when Tarantool responds with code != 0</span>
+
+<div class="viewcode-block" id="TarantoolDatabaseError">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.TarantoolDatabaseError">[docs]</a>
+<span class="k">class</span> <span class="nc">TarantoolDatabaseError</span><span class="p">(</span><span class="n">TarantoolError</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Exception is raised when Tarantool responds with code != 0</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
-                 <span class="n">code</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
-                 <span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-                 <span class="n">error</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">IProtoError</span><span class="p">]):</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">code</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">error</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">IProtoError</span><span class="p">]):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">TarantoolDatabaseError</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">code</span> <span class="o">=</span> <span class="n">code</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">message</span> <span class="o">=</span> <span class="n">message</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">error</span> <span class="o">=</span> <span class="n">error</span></div>
 
 
-<div class="viewcode-block" id="TarantoolNetworkError"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.TarantoolNetworkError">[docs]</a><span class="k">class</span> <span class="nc">TarantoolNetworkError</span><span class="p">(</span><span class="n">TarantoolError</span><span class="p">):</span>
+
+<div class="viewcode-block" id="TarantoolNetworkError">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.TarantoolNetworkError">[docs]</a>
+<span class="k">class</span> <span class="nc">TarantoolNetworkError</span><span class="p">(</span><span class="n">TarantoolError</span><span class="p">):</span>
     <span class="k">pass</span></div>
 
 
-<div class="viewcode-block" id="TarantoolNotConnectedError"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.TarantoolNotConnectedError">[docs]</a><span class="k">class</span> <span class="nc">TarantoolNotConnectedError</span><span class="p">(</span><span class="n">TarantoolNetworkError</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Raised when asynctnt is not connected to Tarantool</span>
+
+<div class="viewcode-block" id="TarantoolNotConnectedError">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.TarantoolNotConnectedError">[docs]</a>
+<span class="k">class</span> <span class="nc">TarantoolNotConnectedError</span><span class="p">(</span><span class="n">TarantoolNetworkError</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Raised when asynctnt is not connected to Tarantool</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="k">pass</span></div>
 
 
-<div class="viewcode-block" id="ErrorCode"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode">[docs]</a><span class="k">class</span> <span class="nc">ErrorCode</span><span class="p">(</span><span class="n">enum</span><span class="o">.</span><span class="n">IntEnum</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Tarantool default error codes</span>
+
+<div class="viewcode-block" id="ErrorCode">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode">[docs]</a>
+<span class="k">class</span> <span class="nc">ErrorCode</span><span class="p">(</span><span class="n">enum</span><span class="o">.</span><span class="n">IntEnum</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Tarantool default error codes</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-<div class="viewcode-block" id="ErrorCode.ER_UNKNOWN"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_UNKNOWN">[docs]</a>    <span class="n">ER_UNKNOWN</span> <span class="o">=</span> <span class="mi">0</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_ILLEGAL_PARAMS"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_ILLEGAL_PARAMS">[docs]</a>    <span class="n">ER_ILLEGAL_PARAMS</span> <span class="o">=</span> <span class="mi">1</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_MEMORY_ISSUE"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_MEMORY_ISSUE">[docs]</a>    <span class="n">ER_MEMORY_ISSUE</span> <span class="o">=</span> <span class="mi">2</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_TUPLE_FOUND"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_TUPLE_FOUND">[docs]</a>    <span class="n">ER_TUPLE_FOUND</span> <span class="o">=</span> <span class="mi">3</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_TUPLE_NOT_FOUND"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_TUPLE_NOT_FOUND">[docs]</a>    <span class="n">ER_TUPLE_NOT_FOUND</span> <span class="o">=</span> <span class="mi">4</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_UNSUPPORTED"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_UNSUPPORTED">[docs]</a>    <span class="n">ER_UNSUPPORTED</span> <span class="o">=</span> <span class="mi">5</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_NONMASTER"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_NONMASTER">[docs]</a>    <span class="n">ER_NONMASTER</span> <span class="o">=</span> <span class="mi">6</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_READONLY"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_READONLY">[docs]</a>    <span class="n">ER_READONLY</span> <span class="o">=</span> <span class="mi">7</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_INJECTION"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_INJECTION">[docs]</a>    <span class="n">ER_INJECTION</span> <span class="o">=</span> <span class="mi">8</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_CREATE_SPACE"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_CREATE_SPACE">[docs]</a>    <span class="n">ER_CREATE_SPACE</span> <span class="o">=</span> <span class="mi">9</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_SPACE_EXISTS"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_SPACE_EXISTS">[docs]</a>    <span class="n">ER_SPACE_EXISTS</span> <span class="o">=</span> <span class="mi">10</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_DROP_SPACE"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_DROP_SPACE">[docs]</a>    <span class="n">ER_DROP_SPACE</span> <span class="o">=</span> <span class="mi">11</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_ALTER_SPACE"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_ALTER_SPACE">[docs]</a>    <span class="n">ER_ALTER_SPACE</span> <span class="o">=</span> <span class="mi">12</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_INDEX_TYPE"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_INDEX_TYPE">[docs]</a>    <span class="n">ER_INDEX_TYPE</span> <span class="o">=</span> <span class="mi">13</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_MODIFY_INDEX"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_MODIFY_INDEX">[docs]</a>    <span class="n">ER_MODIFY_INDEX</span> <span class="o">=</span> <span class="mi">14</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_LAST_DROP"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_LAST_DROP">[docs]</a>    <span class="n">ER_LAST_DROP</span> <span class="o">=</span> <span class="mi">15</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_TUPLE_FORMAT_LIMIT"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_TUPLE_FORMAT_LIMIT">[docs]</a>    <span class="n">ER_TUPLE_FORMAT_LIMIT</span> <span class="o">=</span> <span class="mi">16</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_DROP_PRIMARY_KEY"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_DROP_PRIMARY_KEY">[docs]</a>    <span class="n">ER_DROP_PRIMARY_KEY</span> <span class="o">=</span> <span class="mi">17</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_KEY_PART_TYPE"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_KEY_PART_TYPE">[docs]</a>    <span class="n">ER_KEY_PART_TYPE</span> <span class="o">=</span> <span class="mi">18</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_EXACT_MATCH"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_EXACT_MATCH">[docs]</a>    <span class="n">ER_EXACT_MATCH</span> <span class="o">=</span> <span class="mi">19</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_INVALID_MSGPACK"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_INVALID_MSGPACK">[docs]</a>    <span class="n">ER_INVALID_MSGPACK</span> <span class="o">=</span> <span class="mi">20</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_PROC_RET"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_PROC_RET">[docs]</a>    <span class="n">ER_PROC_RET</span> <span class="o">=</span> <span class="mi">21</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_TUPLE_NOT_ARRAY"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_TUPLE_NOT_ARRAY">[docs]</a>    <span class="n">ER_TUPLE_NOT_ARRAY</span> <span class="o">=</span> <span class="mi">22</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_FIELD_TYPE"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_FIELD_TYPE">[docs]</a>    <span class="n">ER_FIELD_TYPE</span> <span class="o">=</span> <span class="mi">23</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_INDEX_PART_TYPE_MISMATCH"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_INDEX_PART_TYPE_MISMATCH">[docs]</a>    <span class="n">ER_INDEX_PART_TYPE_MISMATCH</span> <span class="o">=</span> <span class="mi">24</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_UPDATE_SPLICE"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_UPDATE_SPLICE">[docs]</a>    <span class="n">ER_UPDATE_SPLICE</span> <span class="o">=</span> <span class="mi">25</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_UPDATE_ARG_TYPE"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_UPDATE_ARG_TYPE">[docs]</a>    <span class="n">ER_UPDATE_ARG_TYPE</span> <span class="o">=</span> <span class="mi">26</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_FORMAT_MISMATCH_INDEX_PART"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_FORMAT_MISMATCH_INDEX_PART">[docs]</a>    <span class="n">ER_FORMAT_MISMATCH_INDEX_PART</span> <span class="o">=</span> <span class="mi">27</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_UNKNOWN_UPDATE_OP"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_UNKNOWN_UPDATE_OP">[docs]</a>    <span class="n">ER_UNKNOWN_UPDATE_OP</span> <span class="o">=</span> <span class="mi">28</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_UPDATE_FIELD"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_UPDATE_FIELD">[docs]</a>    <span class="n">ER_UPDATE_FIELD</span> <span class="o">=</span> <span class="mi">29</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_FUNCTION_TX_ACTIVE"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_FUNCTION_TX_ACTIVE">[docs]</a>    <span class="n">ER_FUNCTION_TX_ACTIVE</span> <span class="o">=</span> <span class="mi">30</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_KEY_PART_COUNT"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_KEY_PART_COUNT">[docs]</a>    <span class="n">ER_KEY_PART_COUNT</span> <span class="o">=</span> <span class="mi">31</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_PROC_LUA"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_PROC_LUA">[docs]</a>    <span class="n">ER_PROC_LUA</span> <span class="o">=</span> <span class="mi">32</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_NO_SUCH_PROC"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_NO_SUCH_PROC">[docs]</a>    <span class="n">ER_NO_SUCH_PROC</span> <span class="o">=</span> <span class="mi">33</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_NO_SUCH_TRIGGER"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_NO_SUCH_TRIGGER">[docs]</a>    <span class="n">ER_NO_SUCH_TRIGGER</span> <span class="o">=</span> <span class="mi">34</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_NO_SUCH_INDEX_ID"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_NO_SUCH_INDEX_ID">[docs]</a>    <span class="n">ER_NO_SUCH_INDEX_ID</span> <span class="o">=</span> <span class="mi">35</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_NO_SUCH_SPACE"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_NO_SUCH_SPACE">[docs]</a>    <span class="n">ER_NO_SUCH_SPACE</span> <span class="o">=</span> <span class="mi">36</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_NO_SUCH_FIELD_NO"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_NO_SUCH_FIELD_NO">[docs]</a>    <span class="n">ER_NO_SUCH_FIELD_NO</span> <span class="o">=</span> <span class="mi">37</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_EXACT_FIELD_COUNT"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_EXACT_FIELD_COUNT">[docs]</a>    <span class="n">ER_EXACT_FIELD_COUNT</span> <span class="o">=</span> <span class="mi">38</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_FIELD_MISSING"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_FIELD_MISSING">[docs]</a>    <span class="n">ER_FIELD_MISSING</span> <span class="o">=</span> <span class="mi">39</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_WAL_IO"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_WAL_IO">[docs]</a>    <span class="n">ER_WAL_IO</span> <span class="o">=</span> <span class="mi">40</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_MORE_THAN_ONE_TUPLE"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_MORE_THAN_ONE_TUPLE">[docs]</a>    <span class="n">ER_MORE_THAN_ONE_TUPLE</span> <span class="o">=</span> <span class="mi">41</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_ACCESS_DENIED"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_ACCESS_DENIED">[docs]</a>    <span class="n">ER_ACCESS_DENIED</span> <span class="o">=</span> <span class="mi">42</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_CREATE_USER"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_CREATE_USER">[docs]</a>    <span class="n">ER_CREATE_USER</span> <span class="o">=</span> <span class="mi">43</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_DROP_USER"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_DROP_USER">[docs]</a>    <span class="n">ER_DROP_USER</span> <span class="o">=</span> <span class="mi">44</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_NO_SUCH_USER"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_NO_SUCH_USER">[docs]</a>    <span class="n">ER_NO_SUCH_USER</span> <span class="o">=</span> <span class="mi">45</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_USER_EXISTS"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_USER_EXISTS">[docs]</a>    <span class="n">ER_USER_EXISTS</span> <span class="o">=</span> <span class="mi">46</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_PASSWORD_MISMATCH"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_PASSWORD_MISMATCH">[docs]</a>    <span class="n">ER_PASSWORD_MISMATCH</span> <span class="o">=</span> <span class="mi">47</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_UNKNOWN_REQUEST_TYPE"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_UNKNOWN_REQUEST_TYPE">[docs]</a>    <span class="n">ER_UNKNOWN_REQUEST_TYPE</span> <span class="o">=</span> <span class="mi">48</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_UNKNOWN_SCHEMA_OBJECT"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_UNKNOWN_SCHEMA_OBJECT">[docs]</a>    <span class="n">ER_UNKNOWN_SCHEMA_OBJECT</span> <span class="o">=</span> <span class="mi">49</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_CREATE_FUNCTION"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_CREATE_FUNCTION">[docs]</a>    <span class="n">ER_CREATE_FUNCTION</span> <span class="o">=</span> <span class="mi">50</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_NO_SUCH_FUNCTION"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_NO_SUCH_FUNCTION">[docs]</a>    <span class="n">ER_NO_SUCH_FUNCTION</span> <span class="o">=</span> <span class="mi">51</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_FUNCTION_EXISTS"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_FUNCTION_EXISTS">[docs]</a>    <span class="n">ER_FUNCTION_EXISTS</span> <span class="o">=</span> <span class="mi">52</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_BEFORE_REPLACE_RET"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_BEFORE_REPLACE_RET">[docs]</a>    <span class="n">ER_BEFORE_REPLACE_RET</span> <span class="o">=</span> <span class="mi">53</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_MULTISTATEMENT_TRANSACTION"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_MULTISTATEMENT_TRANSACTION">[docs]</a>    <span class="n">ER_MULTISTATEMENT_TRANSACTION</span> <span class="o">=</span> <span class="mi">54</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_TRIGGER_EXISTS"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_TRIGGER_EXISTS">[docs]</a>    <span class="n">ER_TRIGGER_EXISTS</span> <span class="o">=</span> <span class="mi">55</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_USER_MAX"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_USER_MAX">[docs]</a>    <span class="n">ER_USER_MAX</span> <span class="o">=</span> <span class="mi">56</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_NO_SUCH_ENGINE"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_NO_SUCH_ENGINE">[docs]</a>    <span class="n">ER_NO_SUCH_ENGINE</span> <span class="o">=</span> <span class="mi">57</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_RELOAD_CFG"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_RELOAD_CFG">[docs]</a>    <span class="n">ER_RELOAD_CFG</span> <span class="o">=</span> <span class="mi">58</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_CFG"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_CFG">[docs]</a>    <span class="n">ER_CFG</span> <span class="o">=</span> <span class="mi">59</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_SAVEPOINT_EMPTY_TX"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_SAVEPOINT_EMPTY_TX">[docs]</a>    <span class="n">ER_SAVEPOINT_EMPTY_TX</span> <span class="o">=</span> <span class="mi">60</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_NO_SUCH_SAVEPOINT"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_NO_SUCH_SAVEPOINT">[docs]</a>    <span class="n">ER_NO_SUCH_SAVEPOINT</span> <span class="o">=</span> <span class="mi">61</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_UNKNOWN_REPLICA"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_UNKNOWN_REPLICA">[docs]</a>    <span class="n">ER_UNKNOWN_REPLICA</span> <span class="o">=</span> <span class="mi">62</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_REPLICASET_UUID_MISMATCH"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_REPLICASET_UUID_MISMATCH">[docs]</a>    <span class="n">ER_REPLICASET_UUID_MISMATCH</span> <span class="o">=</span> <span class="mi">63</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_INVALID_UUID"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_INVALID_UUID">[docs]</a>    <span class="n">ER_INVALID_UUID</span> <span class="o">=</span> <span class="mi">64</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_REPLICASET_UUID_IS_RO"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_REPLICASET_UUID_IS_RO">[docs]</a>    <span class="n">ER_REPLICASET_UUID_IS_RO</span> <span class="o">=</span> <span class="mi">65</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_INSTANCE_UUID_MISMATCH"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_INSTANCE_UUID_MISMATCH">[docs]</a>    <span class="n">ER_INSTANCE_UUID_MISMATCH</span> <span class="o">=</span> <span class="mi">66</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_REPLICA_ID_IS_RESERVED"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_REPLICA_ID_IS_RESERVED">[docs]</a>    <span class="n">ER_REPLICA_ID_IS_RESERVED</span> <span class="o">=</span> <span class="mi">67</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_INVALID_ORDER"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_INVALID_ORDER">[docs]</a>    <span class="n">ER_INVALID_ORDER</span> <span class="o">=</span> <span class="mi">68</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_MISSING_REQUEST_FIELD"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_MISSING_REQUEST_FIELD">[docs]</a>    <span class="n">ER_MISSING_REQUEST_FIELD</span> <span class="o">=</span> <span class="mi">69</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_IDENTIFIER"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_IDENTIFIER">[docs]</a>    <span class="n">ER_IDENTIFIER</span> <span class="o">=</span> <span class="mi">70</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_DROP_FUNCTION"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_DROP_FUNCTION">[docs]</a>    <span class="n">ER_DROP_FUNCTION</span> <span class="o">=</span> <span class="mi">71</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_ITERATOR_TYPE"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_ITERATOR_TYPE">[docs]</a>    <span class="n">ER_ITERATOR_TYPE</span> <span class="o">=</span> <span class="mi">72</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_REPLICA_MAX"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_REPLICA_MAX">[docs]</a>    <span class="n">ER_REPLICA_MAX</span> <span class="o">=</span> <span class="mi">73</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_INVALID_XLOG"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_INVALID_XLOG">[docs]</a>    <span class="n">ER_INVALID_XLOG</span> <span class="o">=</span> <span class="mi">74</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_INVALID_XLOG_NAME"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_INVALID_XLOG_NAME">[docs]</a>    <span class="n">ER_INVALID_XLOG_NAME</span> <span class="o">=</span> <span class="mi">75</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_INVALID_XLOG_ORDER"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_INVALID_XLOG_ORDER">[docs]</a>    <span class="n">ER_INVALID_XLOG_ORDER</span> <span class="o">=</span> <span class="mi">76</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_NO_CONNECTION"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_NO_CONNECTION">[docs]</a>    <span class="n">ER_NO_CONNECTION</span> <span class="o">=</span> <span class="mi">77</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_TIMEOUT"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_TIMEOUT">[docs]</a>    <span class="n">ER_TIMEOUT</span> <span class="o">=</span> <span class="mi">78</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_ACTIVE_TRANSACTION"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_ACTIVE_TRANSACTION">[docs]</a>    <span class="n">ER_ACTIVE_TRANSACTION</span> <span class="o">=</span> <span class="mi">79</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_CURSOR_NO_TRANSACTION"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_CURSOR_NO_TRANSACTION">[docs]</a>    <span class="n">ER_CURSOR_NO_TRANSACTION</span> <span class="o">=</span> <span class="mi">80</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_CROSS_ENGINE_TRANSACTION"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_CROSS_ENGINE_TRANSACTION">[docs]</a>    <span class="n">ER_CROSS_ENGINE_TRANSACTION</span> <span class="o">=</span> <span class="mi">81</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_NO_SUCH_ROLE"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_NO_SUCH_ROLE">[docs]</a>    <span class="n">ER_NO_SUCH_ROLE</span> <span class="o">=</span> <span class="mi">82</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_ROLE_EXISTS"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_ROLE_EXISTS">[docs]</a>    <span class="n">ER_ROLE_EXISTS</span> <span class="o">=</span> <span class="mi">83</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_CREATE_ROLE"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_CREATE_ROLE">[docs]</a>    <span class="n">ER_CREATE_ROLE</span> <span class="o">=</span> <span class="mi">84</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_INDEX_EXISTS"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_INDEX_EXISTS">[docs]</a>    <span class="n">ER_INDEX_EXISTS</span> <span class="o">=</span> <span class="mi">85</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_SESSION_CLOSED"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_SESSION_CLOSED">[docs]</a>    <span class="n">ER_SESSION_CLOSED</span> <span class="o">=</span> <span class="mi">86</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_ROLE_LOOP"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_ROLE_LOOP">[docs]</a>    <span class="n">ER_ROLE_LOOP</span> <span class="o">=</span> <span class="mi">87</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_GRANT"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_GRANT">[docs]</a>    <span class="n">ER_GRANT</span> <span class="o">=</span> <span class="mi">88</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_PRIV_GRANTED"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_PRIV_GRANTED">[docs]</a>    <span class="n">ER_PRIV_GRANTED</span> <span class="o">=</span> <span class="mi">89</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_ROLE_GRANTED"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_ROLE_GRANTED">[docs]</a>    <span class="n">ER_ROLE_GRANTED</span> <span class="o">=</span> <span class="mi">90</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_PRIV_NOT_GRANTED"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_PRIV_NOT_GRANTED">[docs]</a>    <span class="n">ER_PRIV_NOT_GRANTED</span> <span class="o">=</span> <span class="mi">91</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_ROLE_NOT_GRANTED"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_ROLE_NOT_GRANTED">[docs]</a>    <span class="n">ER_ROLE_NOT_GRANTED</span> <span class="o">=</span> <span class="mi">92</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_MISSING_SNAPSHOT"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_MISSING_SNAPSHOT">[docs]</a>    <span class="n">ER_MISSING_SNAPSHOT</span> <span class="o">=</span> <span class="mi">93</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_CANT_UPDATE_PRIMARY_KEY"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_CANT_UPDATE_PRIMARY_KEY">[docs]</a>    <span class="n">ER_CANT_UPDATE_PRIMARY_KEY</span> <span class="o">=</span> <span class="mi">94</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_UPDATE_INTEGER_OVERFLOW"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_UPDATE_INTEGER_OVERFLOW">[docs]</a>    <span class="n">ER_UPDATE_INTEGER_OVERFLOW</span> <span class="o">=</span> <span class="mi">95</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_GUEST_USER_PASSWORD"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_GUEST_USER_PASSWORD">[docs]</a>    <span class="n">ER_GUEST_USER_PASSWORD</span> <span class="o">=</span> <span class="mi">96</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_TRANSACTION_CONFLICT"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_TRANSACTION_CONFLICT">[docs]</a>    <span class="n">ER_TRANSACTION_CONFLICT</span> <span class="o">=</span> <span class="mi">97</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_UNSUPPORTED_PRIV"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_UNSUPPORTED_PRIV">[docs]</a>    <span class="n">ER_UNSUPPORTED_PRIV</span> <span class="o">=</span> <span class="mi">98</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_LOAD_FUNCTION"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_LOAD_FUNCTION">[docs]</a>    <span class="n">ER_LOAD_FUNCTION</span> <span class="o">=</span> <span class="mi">99</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_FUNCTION_LANGUAGE"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_FUNCTION_LANGUAGE">[docs]</a>    <span class="n">ER_FUNCTION_LANGUAGE</span> <span class="o">=</span> <span class="mi">100</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_RTREE_RECT"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_RTREE_RECT">[docs]</a>    <span class="n">ER_RTREE_RECT</span> <span class="o">=</span> <span class="mi">101</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_PROC_C"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_PROC_C">[docs]</a>    <span class="n">ER_PROC_C</span> <span class="o">=</span> <span class="mi">102</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_UNKNOWN_RTREE_INDEX_DISTANCE_TYPE"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_UNKNOWN_RTREE_INDEX_DISTANCE_TYPE">[docs]</a>    <span class="n">ER_UNKNOWN_RTREE_INDEX_DISTANCE_TYPE</span> <span class="o">=</span> <span class="mi">103</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_PROTOCOL"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_PROTOCOL">[docs]</a>    <span class="n">ER_PROTOCOL</span> <span class="o">=</span> <span class="mi">104</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_UPSERT_UNIQUE_SECONDARY_KEY"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_UPSERT_UNIQUE_SECONDARY_KEY">[docs]</a>    <span class="n">ER_UPSERT_UNIQUE_SECONDARY_KEY</span> <span class="o">=</span> <span class="mi">105</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_WRONG_INDEX_RECORD"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_WRONG_INDEX_RECORD">[docs]</a>    <span class="n">ER_WRONG_INDEX_RECORD</span> <span class="o">=</span> <span class="mi">106</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_WRONG_INDEX_PARTS"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_WRONG_INDEX_PARTS">[docs]</a>    <span class="n">ER_WRONG_INDEX_PARTS</span> <span class="o">=</span> <span class="mi">107</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_WRONG_INDEX_OPTIONS"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_WRONG_INDEX_OPTIONS">[docs]</a>    <span class="n">ER_WRONG_INDEX_OPTIONS</span> <span class="o">=</span> <span class="mi">108</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_WRONG_SCHEMA_VERSION"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_WRONG_SCHEMA_VERSION">[docs]</a>    <span class="n">ER_WRONG_SCHEMA_VERSION</span> <span class="o">=</span> <span class="mi">109</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_MEMTX_MAX_TUPLE_SIZE"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_MEMTX_MAX_TUPLE_SIZE">[docs]</a>    <span class="n">ER_MEMTX_MAX_TUPLE_SIZE</span> <span class="o">=</span> <span class="mi">110</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_WRONG_SPACE_OPTIONS"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_WRONG_SPACE_OPTIONS">[docs]</a>    <span class="n">ER_WRONG_SPACE_OPTIONS</span> <span class="o">=</span> <span class="mi">111</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_UNSUPPORTED_INDEX_FEATURE"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_UNSUPPORTED_INDEX_FEATURE">[docs]</a>    <span class="n">ER_UNSUPPORTED_INDEX_FEATURE</span> <span class="o">=</span> <span class="mi">112</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_VIEW_IS_RO"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_VIEW_IS_RO">[docs]</a>    <span class="n">ER_VIEW_IS_RO</span> <span class="o">=</span> <span class="mi">113</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_NO_TRANSACTION"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_NO_TRANSACTION">[docs]</a>    <span class="n">ER_NO_TRANSACTION</span> <span class="o">=</span> <span class="mi">114</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_SYSTEM"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_SYSTEM">[docs]</a>    <span class="n">ER_SYSTEM</span> <span class="o">=</span> <span class="mi">115</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_LOADING"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_LOADING">[docs]</a>    <span class="n">ER_LOADING</span> <span class="o">=</span> <span class="mi">116</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_CONNECTION_TO_SELF"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_CONNECTION_TO_SELF">[docs]</a>    <span class="n">ER_CONNECTION_TO_SELF</span> <span class="o">=</span> <span class="mi">117</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_KEY_PART_IS_TOO_LONG"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_KEY_PART_IS_TOO_LONG">[docs]</a>    <span class="n">ER_KEY_PART_IS_TOO_LONG</span> <span class="o">=</span> <span class="mi">118</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_COMPRESSION"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_COMPRESSION">[docs]</a>    <span class="n">ER_COMPRESSION</span> <span class="o">=</span> <span class="mi">119</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_CHECKPOINT_IN_PROGRESS"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_CHECKPOINT_IN_PROGRESS">[docs]</a>    <span class="n">ER_CHECKPOINT_IN_PROGRESS</span> <span class="o">=</span> <span class="mi">120</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_SUB_STMT_MAX"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_SUB_STMT_MAX">[docs]</a>    <span class="n">ER_SUB_STMT_MAX</span> <span class="o">=</span> <span class="mi">121</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_COMMIT_IN_SUB_STMT"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_COMMIT_IN_SUB_STMT">[docs]</a>    <span class="n">ER_COMMIT_IN_SUB_STMT</span> <span class="o">=</span> <span class="mi">122</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_ROLLBACK_IN_SUB_STMT"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_ROLLBACK_IN_SUB_STMT">[docs]</a>    <span class="n">ER_ROLLBACK_IN_SUB_STMT</span> <span class="o">=</span> <span class="mi">123</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_DECOMPRESSION"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_DECOMPRESSION">[docs]</a>    <span class="n">ER_DECOMPRESSION</span> <span class="o">=</span> <span class="mi">124</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_INVALID_XLOG_TYPE"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_INVALID_XLOG_TYPE">[docs]</a>    <span class="n">ER_INVALID_XLOG_TYPE</span> <span class="o">=</span> <span class="mi">125</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_ALREADY_RUNNING"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_ALREADY_RUNNING">[docs]</a>    <span class="n">ER_ALREADY_RUNNING</span> <span class="o">=</span> <span class="mi">126</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_INDEX_FIELD_COUNT_LIMIT"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_INDEX_FIELD_COUNT_LIMIT">[docs]</a>    <span class="n">ER_INDEX_FIELD_COUNT_LIMIT</span> <span class="o">=</span> <span class="mi">127</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_LOCAL_INSTANCE_ID_IS_READ_ONLY"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_LOCAL_INSTANCE_ID_IS_READ_ONLY">[docs]</a>    <span class="n">ER_LOCAL_INSTANCE_ID_IS_READ_ONLY</span> <span class="o">=</span> <span class="mi">128</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_BACKUP_IN_PROGRESS"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_BACKUP_IN_PROGRESS">[docs]</a>    <span class="n">ER_BACKUP_IN_PROGRESS</span> <span class="o">=</span> <span class="mi">129</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_READ_VIEW_ABORTED"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_READ_VIEW_ABORTED">[docs]</a>    <span class="n">ER_READ_VIEW_ABORTED</span> <span class="o">=</span> <span class="mi">130</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_INVALID_INDEX_FILE"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_INVALID_INDEX_FILE">[docs]</a>    <span class="n">ER_INVALID_INDEX_FILE</span> <span class="o">=</span> <span class="mi">131</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_INVALID_RUN_FILE"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_INVALID_RUN_FILE">[docs]</a>    <span class="n">ER_INVALID_RUN_FILE</span> <span class="o">=</span> <span class="mi">132</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_INVALID_VYLOG_FILE"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_INVALID_VYLOG_FILE">[docs]</a>    <span class="n">ER_INVALID_VYLOG_FILE</span> <span class="o">=</span> <span class="mi">133</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_CASCADE_ROLLBACK"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_CASCADE_ROLLBACK">[docs]</a>    <span class="n">ER_CASCADE_ROLLBACK</span> <span class="o">=</span> <span class="mi">134</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_VY_QUOTA_TIMEOUT"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_VY_QUOTA_TIMEOUT">[docs]</a>    <span class="n">ER_VY_QUOTA_TIMEOUT</span> <span class="o">=</span> <span class="mi">135</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_PARTIAL_KEY"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_PARTIAL_KEY">[docs]</a>    <span class="n">ER_PARTIAL_KEY</span> <span class="o">=</span> <span class="mi">136</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_TRUNCATE_SYSTEM_SPACE"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_TRUNCATE_SYSTEM_SPACE">[docs]</a>    <span class="n">ER_TRUNCATE_SYSTEM_SPACE</span> <span class="o">=</span> <span class="mi">137</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_LOAD_MODULE"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_LOAD_MODULE">[docs]</a>    <span class="n">ER_LOAD_MODULE</span> <span class="o">=</span> <span class="mi">138</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_VINYL_MAX_TUPLE_SIZE"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_VINYL_MAX_TUPLE_SIZE">[docs]</a>    <span class="n">ER_VINYL_MAX_TUPLE_SIZE</span> <span class="o">=</span> <span class="mi">139</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_WRONG_DD_VERSION"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_WRONG_DD_VERSION">[docs]</a>    <span class="n">ER_WRONG_DD_VERSION</span> <span class="o">=</span> <span class="mi">140</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_WRONG_SPACE_FORMAT"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_WRONG_SPACE_FORMAT">[docs]</a>    <span class="n">ER_WRONG_SPACE_FORMAT</span> <span class="o">=</span> <span class="mi">141</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_CREATE_SEQUENCE"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_CREATE_SEQUENCE">[docs]</a>    <span class="n">ER_CREATE_SEQUENCE</span> <span class="o">=</span> <span class="mi">142</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_ALTER_SEQUENCE"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_ALTER_SEQUENCE">[docs]</a>    <span class="n">ER_ALTER_SEQUENCE</span> <span class="o">=</span> <span class="mi">143</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_DROP_SEQUENCE"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_DROP_SEQUENCE">[docs]</a>    <span class="n">ER_DROP_SEQUENCE</span> <span class="o">=</span> <span class="mi">144</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_NO_SUCH_SEQUENCE"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_NO_SUCH_SEQUENCE">[docs]</a>    <span class="n">ER_NO_SUCH_SEQUENCE</span> <span class="o">=</span> <span class="mi">145</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_SEQUENCE_EXISTS"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_SEQUENCE_EXISTS">[docs]</a>    <span class="n">ER_SEQUENCE_EXISTS</span> <span class="o">=</span> <span class="mi">146</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_SEQUENCE_OVERFLOW"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_SEQUENCE_OVERFLOW">[docs]</a>    <span class="n">ER_SEQUENCE_OVERFLOW</span> <span class="o">=</span> <span class="mi">147</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_NO_SUCH_INDEX_NAME"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_NO_SUCH_INDEX_NAME">[docs]</a>    <span class="n">ER_NO_SUCH_INDEX_NAME</span> <span class="o">=</span> <span class="mi">148</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_SPACE_FIELD_IS_DUPLICATE"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_SPACE_FIELD_IS_DUPLICATE">[docs]</a>    <span class="n">ER_SPACE_FIELD_IS_DUPLICATE</span> <span class="o">=</span> <span class="mi">149</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_CANT_CREATE_COLLATION"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_CANT_CREATE_COLLATION">[docs]</a>    <span class="n">ER_CANT_CREATE_COLLATION</span> <span class="o">=</span> <span class="mi">150</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_WRONG_COLLATION_OPTIONS"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_WRONG_COLLATION_OPTIONS">[docs]</a>    <span class="n">ER_WRONG_COLLATION_OPTIONS</span> <span class="o">=</span> <span class="mi">151</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_NULLABLE_PRIMARY"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_NULLABLE_PRIMARY">[docs]</a>    <span class="n">ER_NULLABLE_PRIMARY</span> <span class="o">=</span> <span class="mi">152</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_NO_SUCH_FIELD_NAME_IN_SPACE"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_NO_SUCH_FIELD_NAME_IN_SPACE">[docs]</a>    <span class="n">ER_NO_SUCH_FIELD_NAME_IN_SPACE</span> <span class="o">=</span> <span class="mi">153</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_TRANSACTION_YIELD"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_TRANSACTION_YIELD">[docs]</a>    <span class="n">ER_TRANSACTION_YIELD</span> <span class="o">=</span> <span class="mi">154</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_NO_SUCH_GROUP"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_NO_SUCH_GROUP">[docs]</a>    <span class="n">ER_NO_SUCH_GROUP</span> <span class="o">=</span> <span class="mi">155</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_SQL_BIND_VALUE"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_SQL_BIND_VALUE">[docs]</a>    <span class="n">ER_SQL_BIND_VALUE</span> <span class="o">=</span> <span class="mi">156</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_SQL_BIND_TYPE"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_SQL_BIND_TYPE">[docs]</a>    <span class="n">ER_SQL_BIND_TYPE</span> <span class="o">=</span> <span class="mi">157</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_SQL_BIND_PARAMETER_MAX"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_SQL_BIND_PARAMETER_MAX">[docs]</a>    <span class="n">ER_SQL_BIND_PARAMETER_MAX</span> <span class="o">=</span> <span class="mi">158</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_SQL_EXECUTE"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_SQL_EXECUTE">[docs]</a>    <span class="n">ER_SQL_EXECUTE</span> <span class="o">=</span> <span class="mi">159</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_UPDATE_DECIMAL_OVERFLOW"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_UPDATE_DECIMAL_OVERFLOW">[docs]</a>    <span class="n">ER_UPDATE_DECIMAL_OVERFLOW</span> <span class="o">=</span> <span class="mi">160</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_SQL_BIND_NOT_FOUND"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_SQL_BIND_NOT_FOUND">[docs]</a>    <span class="n">ER_SQL_BIND_NOT_FOUND</span> <span class="o">=</span> <span class="mi">161</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_ACTION_MISMATCH"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_ACTION_MISMATCH">[docs]</a>    <span class="n">ER_ACTION_MISMATCH</span> <span class="o">=</span> <span class="mi">162</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_VIEW_MISSING_SQL"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_VIEW_MISSING_SQL">[docs]</a>    <span class="n">ER_VIEW_MISSING_SQL</span> <span class="o">=</span> <span class="mi">163</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_FOREIGN_KEY_CONSTRAINT"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_FOREIGN_KEY_CONSTRAINT">[docs]</a>    <span class="n">ER_FOREIGN_KEY_CONSTRAINT</span> <span class="o">=</span> <span class="mi">164</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_NO_SUCH_MODULE"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_NO_SUCH_MODULE">[docs]</a>    <span class="n">ER_NO_SUCH_MODULE</span> <span class="o">=</span> <span class="mi">165</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_NO_SUCH_COLLATION"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_NO_SUCH_COLLATION">[docs]</a>    <span class="n">ER_NO_SUCH_COLLATION</span> <span class="o">=</span> <span class="mi">166</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_CREATE_FK_CONSTRAINT"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_CREATE_FK_CONSTRAINT">[docs]</a>    <span class="n">ER_CREATE_FK_CONSTRAINT</span> <span class="o">=</span> <span class="mi">167</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_DROP_FK_CONSTRAINT"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_DROP_FK_CONSTRAINT">[docs]</a>    <span class="n">ER_DROP_FK_CONSTRAINT</span> <span class="o">=</span> <span class="mi">168</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_NO_SUCH_CONSTRAINT"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_NO_SUCH_CONSTRAINT">[docs]</a>    <span class="n">ER_NO_SUCH_CONSTRAINT</span> <span class="o">=</span> <span class="mi">169</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_CONSTRAINT_EXISTS"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_CONSTRAINT_EXISTS">[docs]</a>    <span class="n">ER_CONSTRAINT_EXISTS</span> <span class="o">=</span> <span class="mi">170</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_SQL_TYPE_MISMATCH"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_SQL_TYPE_MISMATCH">[docs]</a>    <span class="n">ER_SQL_TYPE_MISMATCH</span> <span class="o">=</span> <span class="mi">171</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_ROWID_OVERFLOW"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_ROWID_OVERFLOW">[docs]</a>    <span class="n">ER_ROWID_OVERFLOW</span> <span class="o">=</span> <span class="mi">172</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_DROP_COLLATION"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_DROP_COLLATION">[docs]</a>    <span class="n">ER_DROP_COLLATION</span> <span class="o">=</span> <span class="mi">173</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_ILLEGAL_COLLATION_MIX"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_ILLEGAL_COLLATION_MIX">[docs]</a>    <span class="n">ER_ILLEGAL_COLLATION_MIX</span> <span class="o">=</span> <span class="mi">174</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_SQL_NO_SUCH_PRAGMA"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_SQL_NO_SUCH_PRAGMA">[docs]</a>    <span class="n">ER_SQL_NO_SUCH_PRAGMA</span> <span class="o">=</span> <span class="mi">175</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_SQL_CANT_RESOLVE_FIELD"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_SQL_CANT_RESOLVE_FIELD">[docs]</a>    <span class="n">ER_SQL_CANT_RESOLVE_FIELD</span> <span class="o">=</span> <span class="mi">176</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_INDEX_EXISTS_IN_SPACE"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_INDEX_EXISTS_IN_SPACE">[docs]</a>    <span class="n">ER_INDEX_EXISTS_IN_SPACE</span> <span class="o">=</span> <span class="mi">177</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_INCONSISTENT_TYPES"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_INCONSISTENT_TYPES">[docs]</a>    <span class="n">ER_INCONSISTENT_TYPES</span> <span class="o">=</span> <span class="mi">178</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_SQL_SYNTAX_WITH_POS"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_SQL_SYNTAX_WITH_POS">[docs]</a>    <span class="n">ER_SQL_SYNTAX_WITH_POS</span> <span class="o">=</span> <span class="mi">179</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_SQL_STACK_OVERFLOW"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_SQL_STACK_OVERFLOW">[docs]</a>    <span class="n">ER_SQL_STACK_OVERFLOW</span> <span class="o">=</span> <span class="mi">180</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_SQL_SELECT_WILDCARD"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_SQL_SELECT_WILDCARD">[docs]</a>    <span class="n">ER_SQL_SELECT_WILDCARD</span> <span class="o">=</span> <span class="mi">181</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_SQL_STATEMENT_EMPTY"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_SQL_STATEMENT_EMPTY">[docs]</a>    <span class="n">ER_SQL_STATEMENT_EMPTY</span> <span class="o">=</span> <span class="mi">182</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_SQL_KEYWORD_IS_RESERVED"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_SQL_KEYWORD_IS_RESERVED">[docs]</a>    <span class="n">ER_SQL_KEYWORD_IS_RESERVED</span> <span class="o">=</span> <span class="mi">183</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_SQL_SYNTAX_NEAR_TOKEN"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_SQL_SYNTAX_NEAR_TOKEN">[docs]</a>    <span class="n">ER_SQL_SYNTAX_NEAR_TOKEN</span> <span class="o">=</span> <span class="mi">184</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_SQL_UNKNOWN_TOKEN"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_SQL_UNKNOWN_TOKEN">[docs]</a>    <span class="n">ER_SQL_UNKNOWN_TOKEN</span> <span class="o">=</span> <span class="mi">185</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_SQL_PARSER_GENERIC"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_SQL_PARSER_GENERIC">[docs]</a>    <span class="n">ER_SQL_PARSER_GENERIC</span> <span class="o">=</span> <span class="mi">186</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_SQL_ANALYZE_ARGUMENT"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_SQL_ANALYZE_ARGUMENT">[docs]</a>    <span class="n">ER_SQL_ANALYZE_ARGUMENT</span> <span class="o">=</span> <span class="mi">187</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_SQL_COLUMN_COUNT_MAX"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_SQL_COLUMN_COUNT_MAX">[docs]</a>    <span class="n">ER_SQL_COLUMN_COUNT_MAX</span> <span class="o">=</span> <span class="mi">188</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_HEX_LITERAL_MAX"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_HEX_LITERAL_MAX">[docs]</a>    <span class="n">ER_HEX_LITERAL_MAX</span> <span class="o">=</span> <span class="mi">189</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_INT_LITERAL_MAX"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_INT_LITERAL_MAX">[docs]</a>    <span class="n">ER_INT_LITERAL_MAX</span> <span class="o">=</span> <span class="mi">190</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_SQL_PARSER_LIMIT"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_SQL_PARSER_LIMIT">[docs]</a>    <span class="n">ER_SQL_PARSER_LIMIT</span> <span class="o">=</span> <span class="mi">191</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_INDEX_DEF_UNSUPPORTED"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_INDEX_DEF_UNSUPPORTED">[docs]</a>    <span class="n">ER_INDEX_DEF_UNSUPPORTED</span> <span class="o">=</span> <span class="mi">192</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_CK_DEF_UNSUPPORTED"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_CK_DEF_UNSUPPORTED">[docs]</a>    <span class="n">ER_CK_DEF_UNSUPPORTED</span> <span class="o">=</span> <span class="mi">193</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_MULTIKEY_INDEX_MISMATCH"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_MULTIKEY_INDEX_MISMATCH">[docs]</a>    <span class="n">ER_MULTIKEY_INDEX_MISMATCH</span> <span class="o">=</span> <span class="mi">194</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_CREATE_CK_CONSTRAINT"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_CREATE_CK_CONSTRAINT">[docs]</a>    <span class="n">ER_CREATE_CK_CONSTRAINT</span> <span class="o">=</span> <span class="mi">195</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_CK_CONSTRAINT_FAILED"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_CK_CONSTRAINT_FAILED">[docs]</a>    <span class="n">ER_CK_CONSTRAINT_FAILED</span> <span class="o">=</span> <span class="mi">196</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_SQL_COLUMN_COUNT"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_SQL_COLUMN_COUNT">[docs]</a>    <span class="n">ER_SQL_COLUMN_COUNT</span> <span class="o">=</span> <span class="mi">197</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_FUNC_INDEX_FUNC"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_FUNC_INDEX_FUNC">[docs]</a>    <span class="n">ER_FUNC_INDEX_FUNC</span> <span class="o">=</span> <span class="mi">198</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_FUNC_INDEX_FORMAT"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_FUNC_INDEX_FORMAT">[docs]</a>    <span class="n">ER_FUNC_INDEX_FORMAT</span> <span class="o">=</span> <span class="mi">199</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_FUNC_INDEX_PARTS"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_FUNC_INDEX_PARTS">[docs]</a>    <span class="n">ER_FUNC_INDEX_PARTS</span> <span class="o">=</span> <span class="mi">200</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_NO_SUCH_FIELD_NAME"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_NO_SUCH_FIELD_NAME">[docs]</a>    <span class="n">ER_NO_SUCH_FIELD_NAME</span> <span class="o">=</span> <span class="mi">201</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_FUNC_WRONG_ARG_COUNT"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_FUNC_WRONG_ARG_COUNT">[docs]</a>    <span class="n">ER_FUNC_WRONG_ARG_COUNT</span> <span class="o">=</span> <span class="mi">202</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_BOOTSTRAP_READONLY"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_BOOTSTRAP_READONLY">[docs]</a>    <span class="n">ER_BOOTSTRAP_READONLY</span> <span class="o">=</span> <span class="mi">203</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_SQL_FUNC_WRONG_RET_COUNT"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_SQL_FUNC_WRONG_RET_COUNT">[docs]</a>    <span class="n">ER_SQL_FUNC_WRONG_RET_COUNT</span> <span class="o">=</span> <span class="mi">204</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_FUNC_INVALID_RETURN_TYPE"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_FUNC_INVALID_RETURN_TYPE">[docs]</a>    <span class="n">ER_FUNC_INVALID_RETURN_TYPE</span> <span class="o">=</span> <span class="mi">205</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_SQL_PARSER_GENERIC_WITH_POS"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_SQL_PARSER_GENERIC_WITH_POS">[docs]</a>    <span class="n">ER_SQL_PARSER_GENERIC_WITH_POS</span> <span class="o">=</span> <span class="mi">206</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_REPLICA_NOT_ANON"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_REPLICA_NOT_ANON">[docs]</a>    <span class="n">ER_REPLICA_NOT_ANON</span> <span class="o">=</span> <span class="mi">207</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_CANNOT_REGISTER"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_CANNOT_REGISTER">[docs]</a>    <span class="n">ER_CANNOT_REGISTER</span> <span class="o">=</span> <span class="mi">208</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_SESSION_SETTING_INVALID_VALUE"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_SESSION_SETTING_INVALID_VALUE">[docs]</a>    <span class="n">ER_SESSION_SETTING_INVALID_VALUE</span> <span class="o">=</span> <span class="mi">209</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_SQL_PREPARE"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_SQL_PREPARE">[docs]</a>    <span class="n">ER_SQL_PREPARE</span> <span class="o">=</span> <span class="mi">210</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_WRONG_QUERY_ID"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_WRONG_QUERY_ID">[docs]</a>    <span class="n">ER_WRONG_QUERY_ID</span> <span class="o">=</span> <span class="mi">211</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_SEQUENCE_NOT_STARTED"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_SEQUENCE_NOT_STARTED">[docs]</a>    <span class="n">ER_SEQUENCE_NOT_STARTED</span> <span class="o">=</span> <span class="mi">212</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_NO_SUCH_SESSION_SETTING"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_NO_SUCH_SESSION_SETTING">[docs]</a>    <span class="n">ER_NO_SUCH_SESSION_SETTING</span> <span class="o">=</span> <span class="mi">213</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_UNCOMMITTED_FOREIGN_SYNC_TXNS"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_UNCOMMITTED_FOREIGN_SYNC_TXNS">[docs]</a>    <span class="n">ER_UNCOMMITTED_FOREIGN_SYNC_TXNS</span> <span class="o">=</span> <span class="mi">214</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_SYNC_MASTER_MISMATCH"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_SYNC_MASTER_MISMATCH">[docs]</a>    <span class="n">ER_SYNC_MASTER_MISMATCH</span> <span class="o">=</span> <span class="mi">215</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_SYNC_QUORUM_TIMEOUT"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_SYNC_QUORUM_TIMEOUT">[docs]</a>    <span class="n">ER_SYNC_QUORUM_TIMEOUT</span> <span class="o">=</span> <span class="mi">216</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_SYNC_ROLLBACK"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_SYNC_ROLLBACK">[docs]</a>    <span class="n">ER_SYNC_ROLLBACK</span> <span class="o">=</span> <span class="mi">217</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_TUPLE_METADATA_IS_TOO_BIG"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_TUPLE_METADATA_IS_TOO_BIG">[docs]</a>    <span class="n">ER_TUPLE_METADATA_IS_TOO_BIG</span> <span class="o">=</span> <span class="mi">218</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_XLOG_GAP"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_XLOG_GAP">[docs]</a>    <span class="n">ER_XLOG_GAP</span> <span class="o">=</span> <span class="mi">219</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_TOO_EARLY_SUBSCRIBE"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_TOO_EARLY_SUBSCRIBE">[docs]</a>    <span class="n">ER_TOO_EARLY_SUBSCRIBE</span> <span class="o">=</span> <span class="mi">220</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_SQL_CANT_ADD_AUTOINC"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_SQL_CANT_ADD_AUTOINC">[docs]</a>    <span class="n">ER_SQL_CANT_ADD_AUTOINC</span> <span class="o">=</span> <span class="mi">221</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_QUORUM_WAIT"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_QUORUM_WAIT">[docs]</a>    <span class="n">ER_QUORUM_WAIT</span> <span class="o">=</span> <span class="mi">222</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_INTERFERING_PROMOTE"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_INTERFERING_PROMOTE">[docs]</a>    <span class="n">ER_INTERFERING_PROMOTE</span> <span class="o">=</span> <span class="mi">223</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_ELECTION_DISABLED"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_ELECTION_DISABLED">[docs]</a>    <span class="n">ER_ELECTION_DISABLED</span> <span class="o">=</span> <span class="mi">224</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_TXN_ROLLBACK"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_TXN_ROLLBACK">[docs]</a>    <span class="n">ER_TXN_ROLLBACK</span> <span class="o">=</span> <span class="mi">225</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_NOT_LEADER"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_NOT_LEADER">[docs]</a>    <span class="n">ER_NOT_LEADER</span> <span class="o">=</span> <span class="mi">226</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_SYNC_QUEUE_UNCLAIMED"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_SYNC_QUEUE_UNCLAIMED">[docs]</a>    <span class="n">ER_SYNC_QUEUE_UNCLAIMED</span> <span class="o">=</span> <span class="mi">227</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_SYNC_QUEUE_FOREIGN"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_SYNC_QUEUE_FOREIGN">[docs]</a>    <span class="n">ER_SYNC_QUEUE_FOREIGN</span> <span class="o">=</span> <span class="mi">228</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_UNABLE_TO_PROCESS_IN_STREAM"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_UNABLE_TO_PROCESS_IN_STREAM">[docs]</a>    <span class="n">ER_UNABLE_TO_PROCESS_IN_STREAM</span> <span class="o">=</span> <span class="mi">229</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_UNABLE_TO_PROCESS_OUT_OF_STREAM"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_UNABLE_TO_PROCESS_OUT_OF_STREAM">[docs]</a>    <span class="n">ER_UNABLE_TO_PROCESS_OUT_OF_STREAM</span> <span class="o">=</span> <span class="mi">230</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_TRANSACTION_TIMEOUT"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_TRANSACTION_TIMEOUT">[docs]</a>    <span class="n">ER_TRANSACTION_TIMEOUT</span> <span class="o">=</span> <span class="mi">231</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_ACTIVE_TIMER"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_ACTIVE_TIMER">[docs]</a>    <span class="n">ER_ACTIVE_TIMER</span> <span class="o">=</span> <span class="mi">232</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_TUPLE_FIELD_COUNT_LIMIT"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_TUPLE_FIELD_COUNT_LIMIT">[docs]</a>    <span class="n">ER_TUPLE_FIELD_COUNT_LIMIT</span> <span class="o">=</span> <span class="mi">233</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_CREATE_CONSTRAINT"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_CREATE_CONSTRAINT">[docs]</a>    <span class="n">ER_CREATE_CONSTRAINT</span> <span class="o">=</span> <span class="mi">234</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_FIELD_CONSTRAINT_FAILED"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_FIELD_CONSTRAINT_FAILED">[docs]</a>    <span class="n">ER_FIELD_CONSTRAINT_FAILED</span> <span class="o">=</span> <span class="mi">235</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_TUPLE_CONSTRAINT_FAILED"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_TUPLE_CONSTRAINT_FAILED">[docs]</a>    <span class="n">ER_TUPLE_CONSTRAINT_FAILED</span> <span class="o">=</span> <span class="mi">236</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_CREATE_FOREIGN_KEY"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_CREATE_FOREIGN_KEY">[docs]</a>    <span class="n">ER_CREATE_FOREIGN_KEY</span> <span class="o">=</span> <span class="mi">237</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_FOREIGN_KEY_INTEGRITY"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_FOREIGN_KEY_INTEGRITY">[docs]</a>    <span class="n">ER_FOREIGN_KEY_INTEGRITY</span> <span class="o">=</span> <span class="mi">238</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_FIELD_FOREIGN_KEY_FAILED"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_FIELD_FOREIGN_KEY_FAILED">[docs]</a>    <span class="n">ER_FIELD_FOREIGN_KEY_FAILED</span> <span class="o">=</span> <span class="mi">239</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_COMPLEX_FOREIGN_KEY_FAILED"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_COMPLEX_FOREIGN_KEY_FAILED">[docs]</a>    <span class="n">ER_COMPLEX_FOREIGN_KEY_FAILED</span> <span class="o">=</span> <span class="mi">240</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_WRONG_SPACE_UPGRADE_OPTIONS"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_WRONG_SPACE_UPGRADE_OPTIONS">[docs]</a>    <span class="n">ER_WRONG_SPACE_UPGRADE_OPTIONS</span> <span class="o">=</span> <span class="mi">241</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_NO_ELECTION_QUORUM"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_NO_ELECTION_QUORUM">[docs]</a>    <span class="n">ER_NO_ELECTION_QUORUM</span> <span class="o">=</span> <span class="mi">242</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_SSL"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_SSL">[docs]</a>    <span class="n">ER_SSL</span> <span class="o">=</span> <span class="mi">243</span></div>
-<div class="viewcode-block" id="ErrorCode.ER_SPLIT_BRAIN"><a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_SPLIT_BRAIN">[docs]</a>    <span class="n">ER_SPLIT_BRAIN</span> <span class="o">=</span> <span class="mi">244</span></div></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_UNKNOWN">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_UNKNOWN">[docs]</a>
+    <span class="n">ER_UNKNOWN</span> <span class="o">=</span> <span class="mi">0</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_ILLEGAL_PARAMS">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_ILLEGAL_PARAMS">[docs]</a>
+    <span class="n">ER_ILLEGAL_PARAMS</span> <span class="o">=</span> <span class="mi">1</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_MEMORY_ISSUE">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_MEMORY_ISSUE">[docs]</a>
+    <span class="n">ER_MEMORY_ISSUE</span> <span class="o">=</span> <span class="mi">2</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_TUPLE_FOUND">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_TUPLE_FOUND">[docs]</a>
+    <span class="n">ER_TUPLE_FOUND</span> <span class="o">=</span> <span class="mi">3</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_TUPLE_NOT_FOUND">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_TUPLE_NOT_FOUND">[docs]</a>
+    <span class="n">ER_TUPLE_NOT_FOUND</span> <span class="o">=</span> <span class="mi">4</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_UNSUPPORTED">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_UNSUPPORTED">[docs]</a>
+    <span class="n">ER_UNSUPPORTED</span> <span class="o">=</span> <span class="mi">5</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_NONMASTER">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_NONMASTER">[docs]</a>
+    <span class="n">ER_NONMASTER</span> <span class="o">=</span> <span class="mi">6</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_READONLY">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_READONLY">[docs]</a>
+    <span class="n">ER_READONLY</span> <span class="o">=</span> <span class="mi">7</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_INJECTION">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_INJECTION">[docs]</a>
+    <span class="n">ER_INJECTION</span> <span class="o">=</span> <span class="mi">8</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_CREATE_SPACE">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_CREATE_SPACE">[docs]</a>
+    <span class="n">ER_CREATE_SPACE</span> <span class="o">=</span> <span class="mi">9</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_SPACE_EXISTS">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_SPACE_EXISTS">[docs]</a>
+    <span class="n">ER_SPACE_EXISTS</span> <span class="o">=</span> <span class="mi">10</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_DROP_SPACE">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_DROP_SPACE">[docs]</a>
+    <span class="n">ER_DROP_SPACE</span> <span class="o">=</span> <span class="mi">11</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_ALTER_SPACE">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_ALTER_SPACE">[docs]</a>
+    <span class="n">ER_ALTER_SPACE</span> <span class="o">=</span> <span class="mi">12</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_INDEX_TYPE">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_INDEX_TYPE">[docs]</a>
+    <span class="n">ER_INDEX_TYPE</span> <span class="o">=</span> <span class="mi">13</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_MODIFY_INDEX">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_MODIFY_INDEX">[docs]</a>
+    <span class="n">ER_MODIFY_INDEX</span> <span class="o">=</span> <span class="mi">14</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_LAST_DROP">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_LAST_DROP">[docs]</a>
+    <span class="n">ER_LAST_DROP</span> <span class="o">=</span> <span class="mi">15</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_TUPLE_FORMAT_LIMIT">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_TUPLE_FORMAT_LIMIT">[docs]</a>
+    <span class="n">ER_TUPLE_FORMAT_LIMIT</span> <span class="o">=</span> <span class="mi">16</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_DROP_PRIMARY_KEY">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_DROP_PRIMARY_KEY">[docs]</a>
+    <span class="n">ER_DROP_PRIMARY_KEY</span> <span class="o">=</span> <span class="mi">17</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_KEY_PART_TYPE">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_KEY_PART_TYPE">[docs]</a>
+    <span class="n">ER_KEY_PART_TYPE</span> <span class="o">=</span> <span class="mi">18</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_EXACT_MATCH">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_EXACT_MATCH">[docs]</a>
+    <span class="n">ER_EXACT_MATCH</span> <span class="o">=</span> <span class="mi">19</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_INVALID_MSGPACK">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_INVALID_MSGPACK">[docs]</a>
+    <span class="n">ER_INVALID_MSGPACK</span> <span class="o">=</span> <span class="mi">20</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_PROC_RET">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_PROC_RET">[docs]</a>
+    <span class="n">ER_PROC_RET</span> <span class="o">=</span> <span class="mi">21</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_TUPLE_NOT_ARRAY">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_TUPLE_NOT_ARRAY">[docs]</a>
+    <span class="n">ER_TUPLE_NOT_ARRAY</span> <span class="o">=</span> <span class="mi">22</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_FIELD_TYPE">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_FIELD_TYPE">[docs]</a>
+    <span class="n">ER_FIELD_TYPE</span> <span class="o">=</span> <span class="mi">23</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_INDEX_PART_TYPE_MISMATCH">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_INDEX_PART_TYPE_MISMATCH">[docs]</a>
+    <span class="n">ER_INDEX_PART_TYPE_MISMATCH</span> <span class="o">=</span> <span class="mi">24</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_UPDATE_SPLICE">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_UPDATE_SPLICE">[docs]</a>
+    <span class="n">ER_UPDATE_SPLICE</span> <span class="o">=</span> <span class="mi">25</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_UPDATE_ARG_TYPE">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_UPDATE_ARG_TYPE">[docs]</a>
+    <span class="n">ER_UPDATE_ARG_TYPE</span> <span class="o">=</span> <span class="mi">26</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_FORMAT_MISMATCH_INDEX_PART">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_FORMAT_MISMATCH_INDEX_PART">[docs]</a>
+    <span class="n">ER_FORMAT_MISMATCH_INDEX_PART</span> <span class="o">=</span> <span class="mi">27</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_UNKNOWN_UPDATE_OP">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_UNKNOWN_UPDATE_OP">[docs]</a>
+    <span class="n">ER_UNKNOWN_UPDATE_OP</span> <span class="o">=</span> <span class="mi">28</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_UPDATE_FIELD">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_UPDATE_FIELD">[docs]</a>
+    <span class="n">ER_UPDATE_FIELD</span> <span class="o">=</span> <span class="mi">29</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_FUNCTION_TX_ACTIVE">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_FUNCTION_TX_ACTIVE">[docs]</a>
+    <span class="n">ER_FUNCTION_TX_ACTIVE</span> <span class="o">=</span> <span class="mi">30</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_KEY_PART_COUNT">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_KEY_PART_COUNT">[docs]</a>
+    <span class="n">ER_KEY_PART_COUNT</span> <span class="o">=</span> <span class="mi">31</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_PROC_LUA">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_PROC_LUA">[docs]</a>
+    <span class="n">ER_PROC_LUA</span> <span class="o">=</span> <span class="mi">32</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_NO_SUCH_PROC">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_NO_SUCH_PROC">[docs]</a>
+    <span class="n">ER_NO_SUCH_PROC</span> <span class="o">=</span> <span class="mi">33</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_NO_SUCH_TRIGGER">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_NO_SUCH_TRIGGER">[docs]</a>
+    <span class="n">ER_NO_SUCH_TRIGGER</span> <span class="o">=</span> <span class="mi">34</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_NO_SUCH_INDEX_ID">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_NO_SUCH_INDEX_ID">[docs]</a>
+    <span class="n">ER_NO_SUCH_INDEX_ID</span> <span class="o">=</span> <span class="mi">35</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_NO_SUCH_SPACE">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_NO_SUCH_SPACE">[docs]</a>
+    <span class="n">ER_NO_SUCH_SPACE</span> <span class="o">=</span> <span class="mi">36</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_NO_SUCH_FIELD_NO">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_NO_SUCH_FIELD_NO">[docs]</a>
+    <span class="n">ER_NO_SUCH_FIELD_NO</span> <span class="o">=</span> <span class="mi">37</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_EXACT_FIELD_COUNT">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_EXACT_FIELD_COUNT">[docs]</a>
+    <span class="n">ER_EXACT_FIELD_COUNT</span> <span class="o">=</span> <span class="mi">38</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_FIELD_MISSING">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_FIELD_MISSING">[docs]</a>
+    <span class="n">ER_FIELD_MISSING</span> <span class="o">=</span> <span class="mi">39</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_WAL_IO">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_WAL_IO">[docs]</a>
+    <span class="n">ER_WAL_IO</span> <span class="o">=</span> <span class="mi">40</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_MORE_THAN_ONE_TUPLE">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_MORE_THAN_ONE_TUPLE">[docs]</a>
+    <span class="n">ER_MORE_THAN_ONE_TUPLE</span> <span class="o">=</span> <span class="mi">41</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_ACCESS_DENIED">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_ACCESS_DENIED">[docs]</a>
+    <span class="n">ER_ACCESS_DENIED</span> <span class="o">=</span> <span class="mi">42</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_CREATE_USER">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_CREATE_USER">[docs]</a>
+    <span class="n">ER_CREATE_USER</span> <span class="o">=</span> <span class="mi">43</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_DROP_USER">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_DROP_USER">[docs]</a>
+    <span class="n">ER_DROP_USER</span> <span class="o">=</span> <span class="mi">44</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_NO_SUCH_USER">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_NO_SUCH_USER">[docs]</a>
+    <span class="n">ER_NO_SUCH_USER</span> <span class="o">=</span> <span class="mi">45</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_USER_EXISTS">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_USER_EXISTS">[docs]</a>
+    <span class="n">ER_USER_EXISTS</span> <span class="o">=</span> <span class="mi">46</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_PASSWORD_MISMATCH">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_PASSWORD_MISMATCH">[docs]</a>
+    <span class="n">ER_PASSWORD_MISMATCH</span> <span class="o">=</span> <span class="mi">47</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_UNKNOWN_REQUEST_TYPE">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_UNKNOWN_REQUEST_TYPE">[docs]</a>
+    <span class="n">ER_UNKNOWN_REQUEST_TYPE</span> <span class="o">=</span> <span class="mi">48</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_UNKNOWN_SCHEMA_OBJECT">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_UNKNOWN_SCHEMA_OBJECT">[docs]</a>
+    <span class="n">ER_UNKNOWN_SCHEMA_OBJECT</span> <span class="o">=</span> <span class="mi">49</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_CREATE_FUNCTION">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_CREATE_FUNCTION">[docs]</a>
+    <span class="n">ER_CREATE_FUNCTION</span> <span class="o">=</span> <span class="mi">50</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_NO_SUCH_FUNCTION">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_NO_SUCH_FUNCTION">[docs]</a>
+    <span class="n">ER_NO_SUCH_FUNCTION</span> <span class="o">=</span> <span class="mi">51</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_FUNCTION_EXISTS">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_FUNCTION_EXISTS">[docs]</a>
+    <span class="n">ER_FUNCTION_EXISTS</span> <span class="o">=</span> <span class="mi">52</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_BEFORE_REPLACE_RET">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_BEFORE_REPLACE_RET">[docs]</a>
+    <span class="n">ER_BEFORE_REPLACE_RET</span> <span class="o">=</span> <span class="mi">53</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_MULTISTATEMENT_TRANSACTION">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_MULTISTATEMENT_TRANSACTION">[docs]</a>
+    <span class="n">ER_MULTISTATEMENT_TRANSACTION</span> <span class="o">=</span> <span class="mi">54</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_TRIGGER_EXISTS">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_TRIGGER_EXISTS">[docs]</a>
+    <span class="n">ER_TRIGGER_EXISTS</span> <span class="o">=</span> <span class="mi">55</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_USER_MAX">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_USER_MAX">[docs]</a>
+    <span class="n">ER_USER_MAX</span> <span class="o">=</span> <span class="mi">56</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_NO_SUCH_ENGINE">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_NO_SUCH_ENGINE">[docs]</a>
+    <span class="n">ER_NO_SUCH_ENGINE</span> <span class="o">=</span> <span class="mi">57</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_RELOAD_CFG">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_RELOAD_CFG">[docs]</a>
+    <span class="n">ER_RELOAD_CFG</span> <span class="o">=</span> <span class="mi">58</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_CFG">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_CFG">[docs]</a>
+    <span class="n">ER_CFG</span> <span class="o">=</span> <span class="mi">59</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_SAVEPOINT_EMPTY_TX">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_SAVEPOINT_EMPTY_TX">[docs]</a>
+    <span class="n">ER_SAVEPOINT_EMPTY_TX</span> <span class="o">=</span> <span class="mi">60</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_NO_SUCH_SAVEPOINT">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_NO_SUCH_SAVEPOINT">[docs]</a>
+    <span class="n">ER_NO_SUCH_SAVEPOINT</span> <span class="o">=</span> <span class="mi">61</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_UNKNOWN_REPLICA">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_UNKNOWN_REPLICA">[docs]</a>
+    <span class="n">ER_UNKNOWN_REPLICA</span> <span class="o">=</span> <span class="mi">62</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_REPLICASET_UUID_MISMATCH">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_REPLICASET_UUID_MISMATCH">[docs]</a>
+    <span class="n">ER_REPLICASET_UUID_MISMATCH</span> <span class="o">=</span> <span class="mi">63</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_INVALID_UUID">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_INVALID_UUID">[docs]</a>
+    <span class="n">ER_INVALID_UUID</span> <span class="o">=</span> <span class="mi">64</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_REPLICASET_UUID_IS_RO">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_REPLICASET_UUID_IS_RO">[docs]</a>
+    <span class="n">ER_REPLICASET_UUID_IS_RO</span> <span class="o">=</span> <span class="mi">65</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_INSTANCE_UUID_MISMATCH">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_INSTANCE_UUID_MISMATCH">[docs]</a>
+    <span class="n">ER_INSTANCE_UUID_MISMATCH</span> <span class="o">=</span> <span class="mi">66</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_REPLICA_ID_IS_RESERVED">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_REPLICA_ID_IS_RESERVED">[docs]</a>
+    <span class="n">ER_REPLICA_ID_IS_RESERVED</span> <span class="o">=</span> <span class="mi">67</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_INVALID_ORDER">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_INVALID_ORDER">[docs]</a>
+    <span class="n">ER_INVALID_ORDER</span> <span class="o">=</span> <span class="mi">68</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_MISSING_REQUEST_FIELD">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_MISSING_REQUEST_FIELD">[docs]</a>
+    <span class="n">ER_MISSING_REQUEST_FIELD</span> <span class="o">=</span> <span class="mi">69</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_IDENTIFIER">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_IDENTIFIER">[docs]</a>
+    <span class="n">ER_IDENTIFIER</span> <span class="o">=</span> <span class="mi">70</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_DROP_FUNCTION">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_DROP_FUNCTION">[docs]</a>
+    <span class="n">ER_DROP_FUNCTION</span> <span class="o">=</span> <span class="mi">71</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_ITERATOR_TYPE">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_ITERATOR_TYPE">[docs]</a>
+    <span class="n">ER_ITERATOR_TYPE</span> <span class="o">=</span> <span class="mi">72</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_REPLICA_MAX">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_REPLICA_MAX">[docs]</a>
+    <span class="n">ER_REPLICA_MAX</span> <span class="o">=</span> <span class="mi">73</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_INVALID_XLOG">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_INVALID_XLOG">[docs]</a>
+    <span class="n">ER_INVALID_XLOG</span> <span class="o">=</span> <span class="mi">74</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_INVALID_XLOG_NAME">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_INVALID_XLOG_NAME">[docs]</a>
+    <span class="n">ER_INVALID_XLOG_NAME</span> <span class="o">=</span> <span class="mi">75</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_INVALID_XLOG_ORDER">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_INVALID_XLOG_ORDER">[docs]</a>
+    <span class="n">ER_INVALID_XLOG_ORDER</span> <span class="o">=</span> <span class="mi">76</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_NO_CONNECTION">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_NO_CONNECTION">[docs]</a>
+    <span class="n">ER_NO_CONNECTION</span> <span class="o">=</span> <span class="mi">77</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_TIMEOUT">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_TIMEOUT">[docs]</a>
+    <span class="n">ER_TIMEOUT</span> <span class="o">=</span> <span class="mi">78</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_ACTIVE_TRANSACTION">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_ACTIVE_TRANSACTION">[docs]</a>
+    <span class="n">ER_ACTIVE_TRANSACTION</span> <span class="o">=</span> <span class="mi">79</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_CURSOR_NO_TRANSACTION">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_CURSOR_NO_TRANSACTION">[docs]</a>
+    <span class="n">ER_CURSOR_NO_TRANSACTION</span> <span class="o">=</span> <span class="mi">80</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_CROSS_ENGINE_TRANSACTION">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_CROSS_ENGINE_TRANSACTION">[docs]</a>
+    <span class="n">ER_CROSS_ENGINE_TRANSACTION</span> <span class="o">=</span> <span class="mi">81</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_NO_SUCH_ROLE">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_NO_SUCH_ROLE">[docs]</a>
+    <span class="n">ER_NO_SUCH_ROLE</span> <span class="o">=</span> <span class="mi">82</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_ROLE_EXISTS">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_ROLE_EXISTS">[docs]</a>
+    <span class="n">ER_ROLE_EXISTS</span> <span class="o">=</span> <span class="mi">83</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_CREATE_ROLE">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_CREATE_ROLE">[docs]</a>
+    <span class="n">ER_CREATE_ROLE</span> <span class="o">=</span> <span class="mi">84</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_INDEX_EXISTS">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_INDEX_EXISTS">[docs]</a>
+    <span class="n">ER_INDEX_EXISTS</span> <span class="o">=</span> <span class="mi">85</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_SESSION_CLOSED">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_SESSION_CLOSED">[docs]</a>
+    <span class="n">ER_SESSION_CLOSED</span> <span class="o">=</span> <span class="mi">86</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_ROLE_LOOP">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_ROLE_LOOP">[docs]</a>
+    <span class="n">ER_ROLE_LOOP</span> <span class="o">=</span> <span class="mi">87</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_GRANT">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_GRANT">[docs]</a>
+    <span class="n">ER_GRANT</span> <span class="o">=</span> <span class="mi">88</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_PRIV_GRANTED">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_PRIV_GRANTED">[docs]</a>
+    <span class="n">ER_PRIV_GRANTED</span> <span class="o">=</span> <span class="mi">89</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_ROLE_GRANTED">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_ROLE_GRANTED">[docs]</a>
+    <span class="n">ER_ROLE_GRANTED</span> <span class="o">=</span> <span class="mi">90</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_PRIV_NOT_GRANTED">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_PRIV_NOT_GRANTED">[docs]</a>
+    <span class="n">ER_PRIV_NOT_GRANTED</span> <span class="o">=</span> <span class="mi">91</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_ROLE_NOT_GRANTED">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_ROLE_NOT_GRANTED">[docs]</a>
+    <span class="n">ER_ROLE_NOT_GRANTED</span> <span class="o">=</span> <span class="mi">92</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_MISSING_SNAPSHOT">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_MISSING_SNAPSHOT">[docs]</a>
+    <span class="n">ER_MISSING_SNAPSHOT</span> <span class="o">=</span> <span class="mi">93</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_CANT_UPDATE_PRIMARY_KEY">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_CANT_UPDATE_PRIMARY_KEY">[docs]</a>
+    <span class="n">ER_CANT_UPDATE_PRIMARY_KEY</span> <span class="o">=</span> <span class="mi">94</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_UPDATE_INTEGER_OVERFLOW">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_UPDATE_INTEGER_OVERFLOW">[docs]</a>
+    <span class="n">ER_UPDATE_INTEGER_OVERFLOW</span> <span class="o">=</span> <span class="mi">95</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_GUEST_USER_PASSWORD">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_GUEST_USER_PASSWORD">[docs]</a>
+    <span class="n">ER_GUEST_USER_PASSWORD</span> <span class="o">=</span> <span class="mi">96</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_TRANSACTION_CONFLICT">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_TRANSACTION_CONFLICT">[docs]</a>
+    <span class="n">ER_TRANSACTION_CONFLICT</span> <span class="o">=</span> <span class="mi">97</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_UNSUPPORTED_PRIV">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_UNSUPPORTED_PRIV">[docs]</a>
+    <span class="n">ER_UNSUPPORTED_PRIV</span> <span class="o">=</span> <span class="mi">98</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_LOAD_FUNCTION">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_LOAD_FUNCTION">[docs]</a>
+    <span class="n">ER_LOAD_FUNCTION</span> <span class="o">=</span> <span class="mi">99</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_FUNCTION_LANGUAGE">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_FUNCTION_LANGUAGE">[docs]</a>
+    <span class="n">ER_FUNCTION_LANGUAGE</span> <span class="o">=</span> <span class="mi">100</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_RTREE_RECT">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_RTREE_RECT">[docs]</a>
+    <span class="n">ER_RTREE_RECT</span> <span class="o">=</span> <span class="mi">101</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_PROC_C">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_PROC_C">[docs]</a>
+    <span class="n">ER_PROC_C</span> <span class="o">=</span> <span class="mi">102</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_UNKNOWN_RTREE_INDEX_DISTANCE_TYPE">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_UNKNOWN_RTREE_INDEX_DISTANCE_TYPE">[docs]</a>
+    <span class="n">ER_UNKNOWN_RTREE_INDEX_DISTANCE_TYPE</span> <span class="o">=</span> <span class="mi">103</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_PROTOCOL">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_PROTOCOL">[docs]</a>
+    <span class="n">ER_PROTOCOL</span> <span class="o">=</span> <span class="mi">104</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_UPSERT_UNIQUE_SECONDARY_KEY">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_UPSERT_UNIQUE_SECONDARY_KEY">[docs]</a>
+    <span class="n">ER_UPSERT_UNIQUE_SECONDARY_KEY</span> <span class="o">=</span> <span class="mi">105</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_WRONG_INDEX_RECORD">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_WRONG_INDEX_RECORD">[docs]</a>
+    <span class="n">ER_WRONG_INDEX_RECORD</span> <span class="o">=</span> <span class="mi">106</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_WRONG_INDEX_PARTS">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_WRONG_INDEX_PARTS">[docs]</a>
+    <span class="n">ER_WRONG_INDEX_PARTS</span> <span class="o">=</span> <span class="mi">107</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_WRONG_INDEX_OPTIONS">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_WRONG_INDEX_OPTIONS">[docs]</a>
+    <span class="n">ER_WRONG_INDEX_OPTIONS</span> <span class="o">=</span> <span class="mi">108</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_WRONG_SCHEMA_VERSION">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_WRONG_SCHEMA_VERSION">[docs]</a>
+    <span class="n">ER_WRONG_SCHEMA_VERSION</span> <span class="o">=</span> <span class="mi">109</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_MEMTX_MAX_TUPLE_SIZE">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_MEMTX_MAX_TUPLE_SIZE">[docs]</a>
+    <span class="n">ER_MEMTX_MAX_TUPLE_SIZE</span> <span class="o">=</span> <span class="mi">110</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_WRONG_SPACE_OPTIONS">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_WRONG_SPACE_OPTIONS">[docs]</a>
+    <span class="n">ER_WRONG_SPACE_OPTIONS</span> <span class="o">=</span> <span class="mi">111</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_UNSUPPORTED_INDEX_FEATURE">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_UNSUPPORTED_INDEX_FEATURE">[docs]</a>
+    <span class="n">ER_UNSUPPORTED_INDEX_FEATURE</span> <span class="o">=</span> <span class="mi">112</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_VIEW_IS_RO">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_VIEW_IS_RO">[docs]</a>
+    <span class="n">ER_VIEW_IS_RO</span> <span class="o">=</span> <span class="mi">113</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_NO_TRANSACTION">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_NO_TRANSACTION">[docs]</a>
+    <span class="n">ER_NO_TRANSACTION</span> <span class="o">=</span> <span class="mi">114</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_SYSTEM">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_SYSTEM">[docs]</a>
+    <span class="n">ER_SYSTEM</span> <span class="o">=</span> <span class="mi">115</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_LOADING">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_LOADING">[docs]</a>
+    <span class="n">ER_LOADING</span> <span class="o">=</span> <span class="mi">116</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_CONNECTION_TO_SELF">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_CONNECTION_TO_SELF">[docs]</a>
+    <span class="n">ER_CONNECTION_TO_SELF</span> <span class="o">=</span> <span class="mi">117</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_KEY_PART_IS_TOO_LONG">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_KEY_PART_IS_TOO_LONG">[docs]</a>
+    <span class="n">ER_KEY_PART_IS_TOO_LONG</span> <span class="o">=</span> <span class="mi">118</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_COMPRESSION">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_COMPRESSION">[docs]</a>
+    <span class="n">ER_COMPRESSION</span> <span class="o">=</span> <span class="mi">119</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_CHECKPOINT_IN_PROGRESS">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_CHECKPOINT_IN_PROGRESS">[docs]</a>
+    <span class="n">ER_CHECKPOINT_IN_PROGRESS</span> <span class="o">=</span> <span class="mi">120</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_SUB_STMT_MAX">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_SUB_STMT_MAX">[docs]</a>
+    <span class="n">ER_SUB_STMT_MAX</span> <span class="o">=</span> <span class="mi">121</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_COMMIT_IN_SUB_STMT">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_COMMIT_IN_SUB_STMT">[docs]</a>
+    <span class="n">ER_COMMIT_IN_SUB_STMT</span> <span class="o">=</span> <span class="mi">122</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_ROLLBACK_IN_SUB_STMT">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_ROLLBACK_IN_SUB_STMT">[docs]</a>
+    <span class="n">ER_ROLLBACK_IN_SUB_STMT</span> <span class="o">=</span> <span class="mi">123</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_DECOMPRESSION">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_DECOMPRESSION">[docs]</a>
+    <span class="n">ER_DECOMPRESSION</span> <span class="o">=</span> <span class="mi">124</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_INVALID_XLOG_TYPE">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_INVALID_XLOG_TYPE">[docs]</a>
+    <span class="n">ER_INVALID_XLOG_TYPE</span> <span class="o">=</span> <span class="mi">125</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_ALREADY_RUNNING">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_ALREADY_RUNNING">[docs]</a>
+    <span class="n">ER_ALREADY_RUNNING</span> <span class="o">=</span> <span class="mi">126</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_INDEX_FIELD_COUNT_LIMIT">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_INDEX_FIELD_COUNT_LIMIT">[docs]</a>
+    <span class="n">ER_INDEX_FIELD_COUNT_LIMIT</span> <span class="o">=</span> <span class="mi">127</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_LOCAL_INSTANCE_ID_IS_READ_ONLY">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_LOCAL_INSTANCE_ID_IS_READ_ONLY">[docs]</a>
+    <span class="n">ER_LOCAL_INSTANCE_ID_IS_READ_ONLY</span> <span class="o">=</span> <span class="mi">128</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_BACKUP_IN_PROGRESS">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_BACKUP_IN_PROGRESS">[docs]</a>
+    <span class="n">ER_BACKUP_IN_PROGRESS</span> <span class="o">=</span> <span class="mi">129</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_READ_VIEW_ABORTED">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_READ_VIEW_ABORTED">[docs]</a>
+    <span class="n">ER_READ_VIEW_ABORTED</span> <span class="o">=</span> <span class="mi">130</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_INVALID_INDEX_FILE">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_INVALID_INDEX_FILE">[docs]</a>
+    <span class="n">ER_INVALID_INDEX_FILE</span> <span class="o">=</span> <span class="mi">131</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_INVALID_RUN_FILE">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_INVALID_RUN_FILE">[docs]</a>
+    <span class="n">ER_INVALID_RUN_FILE</span> <span class="o">=</span> <span class="mi">132</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_INVALID_VYLOG_FILE">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_INVALID_VYLOG_FILE">[docs]</a>
+    <span class="n">ER_INVALID_VYLOG_FILE</span> <span class="o">=</span> <span class="mi">133</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_CASCADE_ROLLBACK">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_CASCADE_ROLLBACK">[docs]</a>
+    <span class="n">ER_CASCADE_ROLLBACK</span> <span class="o">=</span> <span class="mi">134</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_VY_QUOTA_TIMEOUT">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_VY_QUOTA_TIMEOUT">[docs]</a>
+    <span class="n">ER_VY_QUOTA_TIMEOUT</span> <span class="o">=</span> <span class="mi">135</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_PARTIAL_KEY">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_PARTIAL_KEY">[docs]</a>
+    <span class="n">ER_PARTIAL_KEY</span> <span class="o">=</span> <span class="mi">136</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_TRUNCATE_SYSTEM_SPACE">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_TRUNCATE_SYSTEM_SPACE">[docs]</a>
+    <span class="n">ER_TRUNCATE_SYSTEM_SPACE</span> <span class="o">=</span> <span class="mi">137</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_LOAD_MODULE">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_LOAD_MODULE">[docs]</a>
+    <span class="n">ER_LOAD_MODULE</span> <span class="o">=</span> <span class="mi">138</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_VINYL_MAX_TUPLE_SIZE">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_VINYL_MAX_TUPLE_SIZE">[docs]</a>
+    <span class="n">ER_VINYL_MAX_TUPLE_SIZE</span> <span class="o">=</span> <span class="mi">139</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_WRONG_DD_VERSION">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_WRONG_DD_VERSION">[docs]</a>
+    <span class="n">ER_WRONG_DD_VERSION</span> <span class="o">=</span> <span class="mi">140</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_WRONG_SPACE_FORMAT">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_WRONG_SPACE_FORMAT">[docs]</a>
+    <span class="n">ER_WRONG_SPACE_FORMAT</span> <span class="o">=</span> <span class="mi">141</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_CREATE_SEQUENCE">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_CREATE_SEQUENCE">[docs]</a>
+    <span class="n">ER_CREATE_SEQUENCE</span> <span class="o">=</span> <span class="mi">142</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_ALTER_SEQUENCE">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_ALTER_SEQUENCE">[docs]</a>
+    <span class="n">ER_ALTER_SEQUENCE</span> <span class="o">=</span> <span class="mi">143</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_DROP_SEQUENCE">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_DROP_SEQUENCE">[docs]</a>
+    <span class="n">ER_DROP_SEQUENCE</span> <span class="o">=</span> <span class="mi">144</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_NO_SUCH_SEQUENCE">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_NO_SUCH_SEQUENCE">[docs]</a>
+    <span class="n">ER_NO_SUCH_SEQUENCE</span> <span class="o">=</span> <span class="mi">145</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_SEQUENCE_EXISTS">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_SEQUENCE_EXISTS">[docs]</a>
+    <span class="n">ER_SEQUENCE_EXISTS</span> <span class="o">=</span> <span class="mi">146</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_SEQUENCE_OVERFLOW">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_SEQUENCE_OVERFLOW">[docs]</a>
+    <span class="n">ER_SEQUENCE_OVERFLOW</span> <span class="o">=</span> <span class="mi">147</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_NO_SUCH_INDEX_NAME">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_NO_SUCH_INDEX_NAME">[docs]</a>
+    <span class="n">ER_NO_SUCH_INDEX_NAME</span> <span class="o">=</span> <span class="mi">148</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_SPACE_FIELD_IS_DUPLICATE">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_SPACE_FIELD_IS_DUPLICATE">[docs]</a>
+    <span class="n">ER_SPACE_FIELD_IS_DUPLICATE</span> <span class="o">=</span> <span class="mi">149</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_CANT_CREATE_COLLATION">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_CANT_CREATE_COLLATION">[docs]</a>
+    <span class="n">ER_CANT_CREATE_COLLATION</span> <span class="o">=</span> <span class="mi">150</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_WRONG_COLLATION_OPTIONS">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_WRONG_COLLATION_OPTIONS">[docs]</a>
+    <span class="n">ER_WRONG_COLLATION_OPTIONS</span> <span class="o">=</span> <span class="mi">151</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_NULLABLE_PRIMARY">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_NULLABLE_PRIMARY">[docs]</a>
+    <span class="n">ER_NULLABLE_PRIMARY</span> <span class="o">=</span> <span class="mi">152</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_NO_SUCH_FIELD_NAME_IN_SPACE">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_NO_SUCH_FIELD_NAME_IN_SPACE">[docs]</a>
+    <span class="n">ER_NO_SUCH_FIELD_NAME_IN_SPACE</span> <span class="o">=</span> <span class="mi">153</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_TRANSACTION_YIELD">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_TRANSACTION_YIELD">[docs]</a>
+    <span class="n">ER_TRANSACTION_YIELD</span> <span class="o">=</span> <span class="mi">154</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_NO_SUCH_GROUP">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_NO_SUCH_GROUP">[docs]</a>
+    <span class="n">ER_NO_SUCH_GROUP</span> <span class="o">=</span> <span class="mi">155</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_SQL_BIND_VALUE">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_SQL_BIND_VALUE">[docs]</a>
+    <span class="n">ER_SQL_BIND_VALUE</span> <span class="o">=</span> <span class="mi">156</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_SQL_BIND_TYPE">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_SQL_BIND_TYPE">[docs]</a>
+    <span class="n">ER_SQL_BIND_TYPE</span> <span class="o">=</span> <span class="mi">157</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_SQL_BIND_PARAMETER_MAX">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_SQL_BIND_PARAMETER_MAX">[docs]</a>
+    <span class="n">ER_SQL_BIND_PARAMETER_MAX</span> <span class="o">=</span> <span class="mi">158</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_SQL_EXECUTE">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_SQL_EXECUTE">[docs]</a>
+    <span class="n">ER_SQL_EXECUTE</span> <span class="o">=</span> <span class="mi">159</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_UPDATE_DECIMAL_OVERFLOW">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_UPDATE_DECIMAL_OVERFLOW">[docs]</a>
+    <span class="n">ER_UPDATE_DECIMAL_OVERFLOW</span> <span class="o">=</span> <span class="mi">160</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_SQL_BIND_NOT_FOUND">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_SQL_BIND_NOT_FOUND">[docs]</a>
+    <span class="n">ER_SQL_BIND_NOT_FOUND</span> <span class="o">=</span> <span class="mi">161</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_ACTION_MISMATCH">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_ACTION_MISMATCH">[docs]</a>
+    <span class="n">ER_ACTION_MISMATCH</span> <span class="o">=</span> <span class="mi">162</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_VIEW_MISSING_SQL">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_VIEW_MISSING_SQL">[docs]</a>
+    <span class="n">ER_VIEW_MISSING_SQL</span> <span class="o">=</span> <span class="mi">163</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_FOREIGN_KEY_CONSTRAINT">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_FOREIGN_KEY_CONSTRAINT">[docs]</a>
+    <span class="n">ER_FOREIGN_KEY_CONSTRAINT</span> <span class="o">=</span> <span class="mi">164</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_NO_SUCH_MODULE">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_NO_SUCH_MODULE">[docs]</a>
+    <span class="n">ER_NO_SUCH_MODULE</span> <span class="o">=</span> <span class="mi">165</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_NO_SUCH_COLLATION">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_NO_SUCH_COLLATION">[docs]</a>
+    <span class="n">ER_NO_SUCH_COLLATION</span> <span class="o">=</span> <span class="mi">166</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_CREATE_FK_CONSTRAINT">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_CREATE_FK_CONSTRAINT">[docs]</a>
+    <span class="n">ER_CREATE_FK_CONSTRAINT</span> <span class="o">=</span> <span class="mi">167</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_DROP_FK_CONSTRAINT">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_DROP_FK_CONSTRAINT">[docs]</a>
+    <span class="n">ER_DROP_FK_CONSTRAINT</span> <span class="o">=</span> <span class="mi">168</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_NO_SUCH_CONSTRAINT">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_NO_SUCH_CONSTRAINT">[docs]</a>
+    <span class="n">ER_NO_SUCH_CONSTRAINT</span> <span class="o">=</span> <span class="mi">169</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_CONSTRAINT_EXISTS">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_CONSTRAINT_EXISTS">[docs]</a>
+    <span class="n">ER_CONSTRAINT_EXISTS</span> <span class="o">=</span> <span class="mi">170</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_SQL_TYPE_MISMATCH">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_SQL_TYPE_MISMATCH">[docs]</a>
+    <span class="n">ER_SQL_TYPE_MISMATCH</span> <span class="o">=</span> <span class="mi">171</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_ROWID_OVERFLOW">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_ROWID_OVERFLOW">[docs]</a>
+    <span class="n">ER_ROWID_OVERFLOW</span> <span class="o">=</span> <span class="mi">172</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_DROP_COLLATION">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_DROP_COLLATION">[docs]</a>
+    <span class="n">ER_DROP_COLLATION</span> <span class="o">=</span> <span class="mi">173</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_ILLEGAL_COLLATION_MIX">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_ILLEGAL_COLLATION_MIX">[docs]</a>
+    <span class="n">ER_ILLEGAL_COLLATION_MIX</span> <span class="o">=</span> <span class="mi">174</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_SQL_NO_SUCH_PRAGMA">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_SQL_NO_SUCH_PRAGMA">[docs]</a>
+    <span class="n">ER_SQL_NO_SUCH_PRAGMA</span> <span class="o">=</span> <span class="mi">175</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_SQL_CANT_RESOLVE_FIELD">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_SQL_CANT_RESOLVE_FIELD">[docs]</a>
+    <span class="n">ER_SQL_CANT_RESOLVE_FIELD</span> <span class="o">=</span> <span class="mi">176</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_INDEX_EXISTS_IN_SPACE">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_INDEX_EXISTS_IN_SPACE">[docs]</a>
+    <span class="n">ER_INDEX_EXISTS_IN_SPACE</span> <span class="o">=</span> <span class="mi">177</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_INCONSISTENT_TYPES">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_INCONSISTENT_TYPES">[docs]</a>
+    <span class="n">ER_INCONSISTENT_TYPES</span> <span class="o">=</span> <span class="mi">178</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_SQL_SYNTAX_WITH_POS">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_SQL_SYNTAX_WITH_POS">[docs]</a>
+    <span class="n">ER_SQL_SYNTAX_WITH_POS</span> <span class="o">=</span> <span class="mi">179</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_SQL_STACK_OVERFLOW">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_SQL_STACK_OVERFLOW">[docs]</a>
+    <span class="n">ER_SQL_STACK_OVERFLOW</span> <span class="o">=</span> <span class="mi">180</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_SQL_SELECT_WILDCARD">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_SQL_SELECT_WILDCARD">[docs]</a>
+    <span class="n">ER_SQL_SELECT_WILDCARD</span> <span class="o">=</span> <span class="mi">181</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_SQL_STATEMENT_EMPTY">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_SQL_STATEMENT_EMPTY">[docs]</a>
+    <span class="n">ER_SQL_STATEMENT_EMPTY</span> <span class="o">=</span> <span class="mi">182</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_SQL_KEYWORD_IS_RESERVED">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_SQL_KEYWORD_IS_RESERVED">[docs]</a>
+    <span class="n">ER_SQL_KEYWORD_IS_RESERVED</span> <span class="o">=</span> <span class="mi">183</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_SQL_SYNTAX_NEAR_TOKEN">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_SQL_SYNTAX_NEAR_TOKEN">[docs]</a>
+    <span class="n">ER_SQL_SYNTAX_NEAR_TOKEN</span> <span class="o">=</span> <span class="mi">184</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_SQL_UNKNOWN_TOKEN">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_SQL_UNKNOWN_TOKEN">[docs]</a>
+    <span class="n">ER_SQL_UNKNOWN_TOKEN</span> <span class="o">=</span> <span class="mi">185</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_SQL_PARSER_GENERIC">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_SQL_PARSER_GENERIC">[docs]</a>
+    <span class="n">ER_SQL_PARSER_GENERIC</span> <span class="o">=</span> <span class="mi">186</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_SQL_ANALYZE_ARGUMENT">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_SQL_ANALYZE_ARGUMENT">[docs]</a>
+    <span class="n">ER_SQL_ANALYZE_ARGUMENT</span> <span class="o">=</span> <span class="mi">187</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_SQL_COLUMN_COUNT_MAX">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_SQL_COLUMN_COUNT_MAX">[docs]</a>
+    <span class="n">ER_SQL_COLUMN_COUNT_MAX</span> <span class="o">=</span> <span class="mi">188</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_HEX_LITERAL_MAX">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_HEX_LITERAL_MAX">[docs]</a>
+    <span class="n">ER_HEX_LITERAL_MAX</span> <span class="o">=</span> <span class="mi">189</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_INT_LITERAL_MAX">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_INT_LITERAL_MAX">[docs]</a>
+    <span class="n">ER_INT_LITERAL_MAX</span> <span class="o">=</span> <span class="mi">190</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_SQL_PARSER_LIMIT">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_SQL_PARSER_LIMIT">[docs]</a>
+    <span class="n">ER_SQL_PARSER_LIMIT</span> <span class="o">=</span> <span class="mi">191</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_INDEX_DEF_UNSUPPORTED">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_INDEX_DEF_UNSUPPORTED">[docs]</a>
+    <span class="n">ER_INDEX_DEF_UNSUPPORTED</span> <span class="o">=</span> <span class="mi">192</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_CK_DEF_UNSUPPORTED">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_CK_DEF_UNSUPPORTED">[docs]</a>
+    <span class="n">ER_CK_DEF_UNSUPPORTED</span> <span class="o">=</span> <span class="mi">193</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_MULTIKEY_INDEX_MISMATCH">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_MULTIKEY_INDEX_MISMATCH">[docs]</a>
+    <span class="n">ER_MULTIKEY_INDEX_MISMATCH</span> <span class="o">=</span> <span class="mi">194</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_CREATE_CK_CONSTRAINT">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_CREATE_CK_CONSTRAINT">[docs]</a>
+    <span class="n">ER_CREATE_CK_CONSTRAINT</span> <span class="o">=</span> <span class="mi">195</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_CK_CONSTRAINT_FAILED">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_CK_CONSTRAINT_FAILED">[docs]</a>
+    <span class="n">ER_CK_CONSTRAINT_FAILED</span> <span class="o">=</span> <span class="mi">196</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_SQL_COLUMN_COUNT">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_SQL_COLUMN_COUNT">[docs]</a>
+    <span class="n">ER_SQL_COLUMN_COUNT</span> <span class="o">=</span> <span class="mi">197</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_FUNC_INDEX_FUNC">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_FUNC_INDEX_FUNC">[docs]</a>
+    <span class="n">ER_FUNC_INDEX_FUNC</span> <span class="o">=</span> <span class="mi">198</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_FUNC_INDEX_FORMAT">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_FUNC_INDEX_FORMAT">[docs]</a>
+    <span class="n">ER_FUNC_INDEX_FORMAT</span> <span class="o">=</span> <span class="mi">199</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_FUNC_INDEX_PARTS">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_FUNC_INDEX_PARTS">[docs]</a>
+    <span class="n">ER_FUNC_INDEX_PARTS</span> <span class="o">=</span> <span class="mi">200</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_NO_SUCH_FIELD_NAME">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_NO_SUCH_FIELD_NAME">[docs]</a>
+    <span class="n">ER_NO_SUCH_FIELD_NAME</span> <span class="o">=</span> <span class="mi">201</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_FUNC_WRONG_ARG_COUNT">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_FUNC_WRONG_ARG_COUNT">[docs]</a>
+    <span class="n">ER_FUNC_WRONG_ARG_COUNT</span> <span class="o">=</span> <span class="mi">202</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_BOOTSTRAP_READONLY">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_BOOTSTRAP_READONLY">[docs]</a>
+    <span class="n">ER_BOOTSTRAP_READONLY</span> <span class="o">=</span> <span class="mi">203</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_SQL_FUNC_WRONG_RET_COUNT">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_SQL_FUNC_WRONG_RET_COUNT">[docs]</a>
+    <span class="n">ER_SQL_FUNC_WRONG_RET_COUNT</span> <span class="o">=</span> <span class="mi">204</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_FUNC_INVALID_RETURN_TYPE">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_FUNC_INVALID_RETURN_TYPE">[docs]</a>
+    <span class="n">ER_FUNC_INVALID_RETURN_TYPE</span> <span class="o">=</span> <span class="mi">205</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_SQL_PARSER_GENERIC_WITH_POS">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_SQL_PARSER_GENERIC_WITH_POS">[docs]</a>
+    <span class="n">ER_SQL_PARSER_GENERIC_WITH_POS</span> <span class="o">=</span> <span class="mi">206</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_REPLICA_NOT_ANON">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_REPLICA_NOT_ANON">[docs]</a>
+    <span class="n">ER_REPLICA_NOT_ANON</span> <span class="o">=</span> <span class="mi">207</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_CANNOT_REGISTER">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_CANNOT_REGISTER">[docs]</a>
+    <span class="n">ER_CANNOT_REGISTER</span> <span class="o">=</span> <span class="mi">208</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_SESSION_SETTING_INVALID_VALUE">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_SESSION_SETTING_INVALID_VALUE">[docs]</a>
+    <span class="n">ER_SESSION_SETTING_INVALID_VALUE</span> <span class="o">=</span> <span class="mi">209</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_SQL_PREPARE">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_SQL_PREPARE">[docs]</a>
+    <span class="n">ER_SQL_PREPARE</span> <span class="o">=</span> <span class="mi">210</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_WRONG_QUERY_ID">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_WRONG_QUERY_ID">[docs]</a>
+    <span class="n">ER_WRONG_QUERY_ID</span> <span class="o">=</span> <span class="mi">211</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_SEQUENCE_NOT_STARTED">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_SEQUENCE_NOT_STARTED">[docs]</a>
+    <span class="n">ER_SEQUENCE_NOT_STARTED</span> <span class="o">=</span> <span class="mi">212</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_NO_SUCH_SESSION_SETTING">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_NO_SUCH_SESSION_SETTING">[docs]</a>
+    <span class="n">ER_NO_SUCH_SESSION_SETTING</span> <span class="o">=</span> <span class="mi">213</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_UNCOMMITTED_FOREIGN_SYNC_TXNS">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_UNCOMMITTED_FOREIGN_SYNC_TXNS">[docs]</a>
+    <span class="n">ER_UNCOMMITTED_FOREIGN_SYNC_TXNS</span> <span class="o">=</span> <span class="mi">214</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_SYNC_MASTER_MISMATCH">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_SYNC_MASTER_MISMATCH">[docs]</a>
+    <span class="n">ER_SYNC_MASTER_MISMATCH</span> <span class="o">=</span> <span class="mi">215</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_SYNC_QUORUM_TIMEOUT">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_SYNC_QUORUM_TIMEOUT">[docs]</a>
+    <span class="n">ER_SYNC_QUORUM_TIMEOUT</span> <span class="o">=</span> <span class="mi">216</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_SYNC_ROLLBACK">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_SYNC_ROLLBACK">[docs]</a>
+    <span class="n">ER_SYNC_ROLLBACK</span> <span class="o">=</span> <span class="mi">217</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_TUPLE_METADATA_IS_TOO_BIG">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_TUPLE_METADATA_IS_TOO_BIG">[docs]</a>
+    <span class="n">ER_TUPLE_METADATA_IS_TOO_BIG</span> <span class="o">=</span> <span class="mi">218</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_XLOG_GAP">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_XLOG_GAP">[docs]</a>
+    <span class="n">ER_XLOG_GAP</span> <span class="o">=</span> <span class="mi">219</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_TOO_EARLY_SUBSCRIBE">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_TOO_EARLY_SUBSCRIBE">[docs]</a>
+    <span class="n">ER_TOO_EARLY_SUBSCRIBE</span> <span class="o">=</span> <span class="mi">220</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_SQL_CANT_ADD_AUTOINC">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_SQL_CANT_ADD_AUTOINC">[docs]</a>
+    <span class="n">ER_SQL_CANT_ADD_AUTOINC</span> <span class="o">=</span> <span class="mi">221</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_QUORUM_WAIT">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_QUORUM_WAIT">[docs]</a>
+    <span class="n">ER_QUORUM_WAIT</span> <span class="o">=</span> <span class="mi">222</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_INTERFERING_PROMOTE">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_INTERFERING_PROMOTE">[docs]</a>
+    <span class="n">ER_INTERFERING_PROMOTE</span> <span class="o">=</span> <span class="mi">223</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_ELECTION_DISABLED">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_ELECTION_DISABLED">[docs]</a>
+    <span class="n">ER_ELECTION_DISABLED</span> <span class="o">=</span> <span class="mi">224</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_TXN_ROLLBACK">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_TXN_ROLLBACK">[docs]</a>
+    <span class="n">ER_TXN_ROLLBACK</span> <span class="o">=</span> <span class="mi">225</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_NOT_LEADER">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_NOT_LEADER">[docs]</a>
+    <span class="n">ER_NOT_LEADER</span> <span class="o">=</span> <span class="mi">226</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_SYNC_QUEUE_UNCLAIMED">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_SYNC_QUEUE_UNCLAIMED">[docs]</a>
+    <span class="n">ER_SYNC_QUEUE_UNCLAIMED</span> <span class="o">=</span> <span class="mi">227</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_SYNC_QUEUE_FOREIGN">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_SYNC_QUEUE_FOREIGN">[docs]</a>
+    <span class="n">ER_SYNC_QUEUE_FOREIGN</span> <span class="o">=</span> <span class="mi">228</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_UNABLE_TO_PROCESS_IN_STREAM">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_UNABLE_TO_PROCESS_IN_STREAM">[docs]</a>
+    <span class="n">ER_UNABLE_TO_PROCESS_IN_STREAM</span> <span class="o">=</span> <span class="mi">229</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_UNABLE_TO_PROCESS_OUT_OF_STREAM">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_UNABLE_TO_PROCESS_OUT_OF_STREAM">[docs]</a>
+    <span class="n">ER_UNABLE_TO_PROCESS_OUT_OF_STREAM</span> <span class="o">=</span> <span class="mi">230</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_TRANSACTION_TIMEOUT">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_TRANSACTION_TIMEOUT">[docs]</a>
+    <span class="n">ER_TRANSACTION_TIMEOUT</span> <span class="o">=</span> <span class="mi">231</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_ACTIVE_TIMER">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_ACTIVE_TIMER">[docs]</a>
+    <span class="n">ER_ACTIVE_TIMER</span> <span class="o">=</span> <span class="mi">232</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_TUPLE_FIELD_COUNT_LIMIT">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_TUPLE_FIELD_COUNT_LIMIT">[docs]</a>
+    <span class="n">ER_TUPLE_FIELD_COUNT_LIMIT</span> <span class="o">=</span> <span class="mi">233</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_CREATE_CONSTRAINT">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_CREATE_CONSTRAINT">[docs]</a>
+    <span class="n">ER_CREATE_CONSTRAINT</span> <span class="o">=</span> <span class="mi">234</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_FIELD_CONSTRAINT_FAILED">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_FIELD_CONSTRAINT_FAILED">[docs]</a>
+    <span class="n">ER_FIELD_CONSTRAINT_FAILED</span> <span class="o">=</span> <span class="mi">235</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_TUPLE_CONSTRAINT_FAILED">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_TUPLE_CONSTRAINT_FAILED">[docs]</a>
+    <span class="n">ER_TUPLE_CONSTRAINT_FAILED</span> <span class="o">=</span> <span class="mi">236</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_CREATE_FOREIGN_KEY">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_CREATE_FOREIGN_KEY">[docs]</a>
+    <span class="n">ER_CREATE_FOREIGN_KEY</span> <span class="o">=</span> <span class="mi">237</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_FOREIGN_KEY_INTEGRITY">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_FOREIGN_KEY_INTEGRITY">[docs]</a>
+    <span class="n">ER_FOREIGN_KEY_INTEGRITY</span> <span class="o">=</span> <span class="mi">238</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_FIELD_FOREIGN_KEY_FAILED">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_FIELD_FOREIGN_KEY_FAILED">[docs]</a>
+    <span class="n">ER_FIELD_FOREIGN_KEY_FAILED</span> <span class="o">=</span> <span class="mi">239</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_COMPLEX_FOREIGN_KEY_FAILED">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_COMPLEX_FOREIGN_KEY_FAILED">[docs]</a>
+    <span class="n">ER_COMPLEX_FOREIGN_KEY_FAILED</span> <span class="o">=</span> <span class="mi">240</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_WRONG_SPACE_UPGRADE_OPTIONS">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_WRONG_SPACE_UPGRADE_OPTIONS">[docs]</a>
+    <span class="n">ER_WRONG_SPACE_UPGRADE_OPTIONS</span> <span class="o">=</span> <span class="mi">241</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_NO_ELECTION_QUORUM">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_NO_ELECTION_QUORUM">[docs]</a>
+    <span class="n">ER_NO_ELECTION_QUORUM</span> <span class="o">=</span> <span class="mi">242</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_SSL">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_SSL">[docs]</a>
+    <span class="n">ER_SSL</span> <span class="o">=</span> <span class="mi">243</span></div>
+
+<div class="viewcode-block" id="ErrorCode.ER_SPLIT_BRAIN">
+<a class="viewcode-back" href="../../autoapi/asynctnt/exceptions/index.html#asynctnt.exceptions.ErrorCode.ER_SPLIT_BRAIN">[docs]</a>
+    <span class="n">ER_SPLIT_BRAIN</span> <span class="o">=</span> <span class="mi">244</span></div>
+</div>
+
 </pre></div>
 
            </div>

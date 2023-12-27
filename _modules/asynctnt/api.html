@@ -1,21 +1,23 @@
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="../../">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>asynctnt.api &mdash; asynctnt 2.0.1 documentation</title>
-      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
-      <link rel="stylesheet" href="../../_static/graphviz.css" type="text/css" />
+  <title>asynctnt.api &mdash; asynctnt 2.1.0a1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=eafc0fe6" />
+
+  
   <!--[if lt IE 9]>
     <script src="../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-        <script src="../../_static/jquery.js"></script>
-        <script src="../../_static/underscore.js"></script>
-        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../_static/documentation_options.js?v=693f9624"></script>
+        <script src="../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
@@ -26,14 +28,18 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="../../index.html" class="icon icon-home"> asynctnt
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            asynctnt
           </a>
               <div class="version">
-                2.0.1
+                2.1.0a1
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -66,10 +72,10 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
-          <li><a href="../index.html">Module code</a> &raquo;</li>
-          <li><a href="../asynctnt.html">asynctnt</a> &raquo;</li>
-      <li>asynctnt.api</li>
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+          <li class="breadcrumb-item"><a href="../asynctnt.html">asynctnt</a></li>
+      <li class="breadcrumb-item active">asynctnt.api</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -80,419 +86,520 @@
              
   <h1>Source code for asynctnt.api</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">enum</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Dict</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">from</span> <span class="nn">asynctnt.iproto</span> <span class="kn">import</span> <span class="n">protocol</span>
 
 <span class="kn">from</span> <span class="nn">.exceptions</span> <span class="kn">import</span> <span class="n">TarantoolNotConnectedError</span>
 <span class="kn">from</span> <span class="nn">.prepared</span> <span class="kn">import</span> <span class="n">PreparedStatement</span>
-<span class="kn">from</span> <span class="nn">.types</span> <span class="kn">import</span> <span class="n">MethodRet</span><span class="p">,</span> <span class="n">SpaceType</span><span class="p">,</span> <span class="n">KeyType</span><span class="p">,</span> <span class="n">TupleType</span>
+<span class="kn">from</span> <span class="nn">.types</span> <span class="kn">import</span> <span class="n">KeyType</span><span class="p">,</span> <span class="n">MethodRet</span><span class="p">,</span> <span class="n">SpaceType</span><span class="p">,</span> <span class="n">TupleType</span>
 
 
-<div class="viewcode-block" id="_DbMock"><a class="viewcode-back" href="../../autoapi/asynctnt/api/index.html#asynctnt.api._DbMock">[docs]</a><span class="k">class</span> <span class="nc">_DbMock</span><span class="p">:</span>
-<div class="viewcode-block" id="_DbMock.__getattr__"><a class="viewcode-back" href="../../autoapi/asynctnt/api/index.html#asynctnt.api._DbMock.__getattr__">[docs]</a>    <span class="k">def</span> <span class="fm">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="n">TarantoolNotConnectedError</span><span class="p">(</span><span class="s1">&#39;Tarantool is not connected&#39;</span><span class="p">)</span></div></div>
+<div class="viewcode-block" id="_DbMock">
+<a class="viewcode-back" href="../../autoapi/asynctnt/api/index.html#asynctnt.api._DbMock">[docs]</a>
+<span class="k">class</span> <span class="nc">_DbMock</span><span class="p">:</span>
+<div class="viewcode-block" id="_DbMock.__getattr__">
+<a class="viewcode-back" href="../../autoapi/asynctnt/api/index.html#asynctnt.api._DbMock.__getattr__">[docs]</a>
+    <span class="k">def</span> <span class="fm">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="n">TarantoolNotConnectedError</span><span class="p">(</span><span class="s2">&quot;Tarantool is not connected&quot;</span><span class="p">)</span></div>
+</div>
 
 
-<div class="viewcode-block" id="Isolation"><a class="viewcode-back" href="../../autoapi/asynctnt/api/index.html#asynctnt.api.Isolation">[docs]</a><span class="k">class</span> <span class="nc">Isolation</span><span class="p">(</span><span class="n">enum</span><span class="o">.</span><span class="n">IntEnum</span><span class="p">):</span>
-<div class="viewcode-block" id="Isolation.DEFAULT"><a class="viewcode-back" href="../../autoapi/asynctnt/api/index.html#asynctnt.api.Isolation.DEFAULT">[docs]</a>    <span class="n">DEFAULT</span> <span class="o">=</span> <span class="mi">0</span></div>
-<div class="viewcode-block" id="Isolation.READ_COMMITTED"><a class="viewcode-back" href="../../autoapi/asynctnt/api/index.html#asynctnt.api.Isolation.READ_COMMITTED">[docs]</a>    <span class="n">READ_COMMITTED</span> <span class="o">=</span> <span class="mi">1</span></div>
-<div class="viewcode-block" id="Isolation.READ_CONFIRMED"><a class="viewcode-back" href="../../autoapi/asynctnt/api/index.html#asynctnt.api.Isolation.READ_CONFIRMED">[docs]</a>    <span class="n">READ_CONFIRMED</span> <span class="o">=</span> <span class="mi">2</span></div>
-<div class="viewcode-block" id="Isolation.BEST_EFFORT"><a class="viewcode-back" href="../../autoapi/asynctnt/api/index.html#asynctnt.api.Isolation.BEST_EFFORT">[docs]</a>    <span class="n">BEST_EFFORT</span> <span class="o">=</span> <span class="mi">3</span></div></div>
+
+<div class="viewcode-block" id="Isolation">
+<a class="viewcode-back" href="../../autoapi/asynctnt/api/index.html#asynctnt.api.Isolation">[docs]</a>
+<span class="k">class</span> <span class="nc">Isolation</span><span class="p">(</span><span class="n">enum</span><span class="o">.</span><span class="n">IntEnum</span><span class="p">):</span>
+<div class="viewcode-block" id="Isolation.DEFAULT">
+<a class="viewcode-back" href="../../autoapi/asynctnt/api/index.html#asynctnt.api.Isolation.DEFAULT">[docs]</a>
+    <span class="n">DEFAULT</span> <span class="o">=</span> <span class="mi">0</span></div>
+
+<div class="viewcode-block" id="Isolation.READ_COMMITTED">
+<a class="viewcode-back" href="../../autoapi/asynctnt/api/index.html#asynctnt.api.Isolation.READ_COMMITTED">[docs]</a>
+    <span class="n">READ_COMMITTED</span> <span class="o">=</span> <span class="mi">1</span></div>
+
+<div class="viewcode-block" id="Isolation.READ_CONFIRMED">
+<a class="viewcode-back" href="../../autoapi/asynctnt/api/index.html#asynctnt.api.Isolation.READ_CONFIRMED">[docs]</a>
+    <span class="n">READ_CONFIRMED</span> <span class="o">=</span> <span class="mi">2</span></div>
+
+<div class="viewcode-block" id="Isolation.BEST_EFFORT">
+<a class="viewcode-back" href="../../autoapi/asynctnt/api/index.html#asynctnt.api.Isolation.BEST_EFFORT">[docs]</a>
+    <span class="n">BEST_EFFORT</span> <span class="o">=</span> <span class="mi">3</span></div>
+</div>
 
 
-<div class="viewcode-block" id="Api"><a class="viewcode-back" href="../../autoapi/asynctnt/api/index.html#asynctnt.api.Api">[docs]</a><span class="k">class</span> <span class="nc">Api</span><span class="p">:</span>
-<div class="viewcode-block" id="Api.__slots__"><a class="viewcode-back" href="../../autoapi/asynctnt/api/index.html#asynctnt.api.Api.__slots__">[docs]</a>    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="s1">&#39;_db&#39;</span><span class="p">,</span>
-    <span class="p">)</span></div>
+
+<div class="viewcode-block" id="Api">
+<a class="viewcode-back" href="../../autoapi/asynctnt/api/index.html#asynctnt.api.Api">[docs]</a>
+<span class="k">class</span> <span class="nc">Api</span><span class="p">:</span>
+<div class="viewcode-block" id="Api.__slots__">
+<a class="viewcode-back" href="../../autoapi/asynctnt/api/index.html#asynctnt.api.Api.__slots__">[docs]</a>
+    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;_db&quot;</span><span class="p">,)</span></div>
+
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_db</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">_DbMock</span><span class="p">,</span> <span class="n">protocol</span><span class="o">.</span><span class="n">Db</span><span class="p">]</span> <span class="o">=</span> <span class="n">_DbMock</span><span class="p">()</span>
 
-<div class="viewcode-block" id="Api._set_db"><a class="viewcode-back" href="../../autoapi/asynctnt/api/index.html#asynctnt.api.Api._set_db">[docs]</a>    <span class="k">def</span> <span class="nf">_set_db</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">db</span><span class="p">:</span> <span class="n">protocol</span><span class="o">.</span><span class="n">Db</span><span class="p">):</span>
+<div class="viewcode-block" id="Api._set_db">
+<a class="viewcode-back" href="../../autoapi/asynctnt/api/index.html#asynctnt.api.Api._set_db">[docs]</a>
+    <span class="k">def</span> <span class="nf">_set_db</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">db</span><span class="p">:</span> <span class="n">protocol</span><span class="o">.</span><span class="n">Db</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_db</span> <span class="o">=</span> <span class="n">db</span></div>
 
-<div class="viewcode-block" id="Api._clear_db"><a class="viewcode-back" href="../../autoapi/asynctnt/api/index.html#asynctnt.api.Api._clear_db">[docs]</a>    <span class="k">def</span> <span class="nf">_clear_db</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Api._clear_db">
+<a class="viewcode-back" href="../../autoapi/asynctnt/api/index.html#asynctnt.api.Api._clear_db">[docs]</a>
+    <span class="k">def</span> <span class="nf">_clear_db</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_db</span> <span class="o">=</span> <span class="n">_DbMock</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="Api.ping"><a class="viewcode-back" href="../../autoapi/asynctnt/api/index.html#asynctnt.api.Api.ping">[docs]</a>    <span class="k">def</span> <span class="nf">ping</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MethodRet</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">            Ping request coroutine</span>
 
-<span class="sd">            :param timeout: Request timeout</span>
+<div class="viewcode-block" id="Api.ping">
+<a class="viewcode-back" href="../../autoapi/asynctnt/api/index.html#asynctnt.api.Api.ping">[docs]</a>
+    <span class="k">def</span> <span class="nf">ping</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MethodRet</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Ping request coroutine</span>
 
-<span class="sd">            :returns: :class:`asynctnt.Response` instance</span>
+<span class="sd">        :param timeout: Request timeout</span>
+
+<span class="sd">        :returns: :class:`asynctnt.Response` instance</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_db</span><span class="o">.</span><span class="n">ping</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Api.call16"><a class="viewcode-back" href="../../autoapi/asynctnt/api/index.html#asynctnt.api.Api.call16">[docs]</a>    <span class="k">def</span> <span class="nf">call16</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
-               <span class="n">func_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-               <span class="n">args</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-               <span class="o">*</span><span class="p">,</span>
-               <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">,</span>
-               <span class="n">push_subscribe</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MethodRet</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">            Call16 request coroutine. It is a call with an old behaviour</span>
-<span class="sd">            (return result of a Tarantool procedure is wrapped into a tuple,</span>
-<span class="sd">            if needed)</span>
 
-<span class="sd">            :param func_name: function name to call</span>
-<span class="sd">            :param args: arguments to pass to the function (list object)</span>
-<span class="sd">            :param timeout: Request timeout</span>
-<span class="sd">            :param push_subscribe: Subscribe to push notifications</span>
+<div class="viewcode-block" id="Api.call16">
+<a class="viewcode-back" href="../../autoapi/asynctnt/api/index.html#asynctnt.api.Api.call16">[docs]</a>
+    <span class="k">def</span> <span class="nf">call16</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">func_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">args</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">,</span>
+        <span class="n">push_subscribe</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MethodRet</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Call16 request coroutine. It is a call with an old behaviour</span>
+<span class="sd">        (return result of a Tarantool procedure is wrapped into a tuple,</span>
+<span class="sd">        if needed)</span>
 
-<span class="sd">            :returns: :class:`asynctnt.Response` instance</span>
+<span class="sd">        :param func_name: function name to call</span>
+<span class="sd">        :param args: arguments to pass to the function (list object)</span>
+<span class="sd">        :param timeout: Request timeout</span>
+<span class="sd">        :param push_subscribe: Subscribe to push notifications</span>
+
+<span class="sd">        :returns: :class:`asynctnt.Response` instance</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_db</span><span class="o">.</span><span class="n">call16</span><span class="p">(</span><span class="n">func_name</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span>
-                               <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">,</span>
-                               <span class="n">push_subscribe</span><span class="o">=</span><span class="n">push_subscribe</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_db</span><span class="o">.</span><span class="n">call16</span><span class="p">(</span>
+            <span class="n">func_name</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">,</span> <span class="n">push_subscribe</span><span class="o">=</span><span class="n">push_subscribe</span>
+        <span class="p">)</span></div>
 
-<div class="viewcode-block" id="Api.call"><a class="viewcode-back" href="../../autoapi/asynctnt/api/index.html#asynctnt.api.Api.call">[docs]</a>    <span class="k">def</span> <span class="nf">call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
-             <span class="n">func_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-             <span class="n">args</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-             <span class="o">*</span><span class="p">,</span>
-             <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">,</span>
-             <span class="n">push_subscribe</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MethodRet</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">            Call request coroutine. It is a call with a new behaviour</span>
-<span class="sd">            (return result of a Tarantool procedure is not wrapped into</span>
-<span class="sd">            an extra tuple). If you&#39;re connecting to Tarantool with</span>
-<span class="sd">            version &lt; 1.7, then this call method acts like a call16 method</span>
 
-<span class="sd">            Examples:</span>
+<div class="viewcode-block" id="Api.call">
+<a class="viewcode-back" href="../../autoapi/asynctnt/api/index.html#asynctnt.api.Api.call">[docs]</a>
+    <span class="k">def</span> <span class="nf">call</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">func_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">args</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">,</span>
+        <span class="n">push_subscribe</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MethodRet</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Call request coroutine. It is a call with a new behaviour</span>
+<span class="sd">        (return result of a Tarantool procedure is not wrapped into</span>
+<span class="sd">        an extra tuple). If you&#39;re connecting to Tarantool with</span>
+<span class="sd">        version &lt; 1.7, then this call method acts like a call16 method</span>
 
-<span class="sd">            .. code-block:: pycon</span>
+<span class="sd">        Examples:</span>
 
-<span class="sd">                # tarantool function:</span>
-<span class="sd">                # function f(...)</span>
-<span class="sd">                #     return ...</span>
-<span class="sd">                # end</span>
+<span class="sd">        .. code-block:: pycon</span>
 
-<span class="sd">                &gt;&gt;&gt; await conn.call(&#39;f&#39;)</span>
-<span class="sd">                &lt;Response sync=3 rowcount=0 data=[]&gt;</span>
+<span class="sd">            # tarantool function:</span>
+<span class="sd">            # function f(...)</span>
+<span class="sd">            #     return ...</span>
+<span class="sd">            # end</span>
 
-<span class="sd">                &gt;&gt;&gt; await conn.call(&#39;f&#39;, [20, 42])</span>
-<span class="sd">                &lt;Response sync=3 rowcount=2 data=[20, 42]&gt;</span>
+<span class="sd">            &gt;&gt;&gt; await conn.call(&#39;f&#39;)</span>
+<span class="sd">            &lt;Response sync=3 rowcount=0 data=[]&gt;</span>
 
-<span class="sd">            :param func_name: function name to call</span>
-<span class="sd">            :param args: arguments to pass to the function (list object)</span>
-<span class="sd">            :param timeout: Request timeout</span>
-<span class="sd">            :param push_subscribe: Subscribe to push notifications</span>
+<span class="sd">            &gt;&gt;&gt; await conn.call(&#39;f&#39;, [20, 42])</span>
+<span class="sd">            &lt;Response sync=3 rowcount=2 data=[20, 42]&gt;</span>
 
-<span class="sd">            :returns: :class:`asynctnt.Response` instance</span>
+<span class="sd">        :param func_name: function name to call</span>
+<span class="sd">        :param args: arguments to pass to the function (list object)</span>
+<span class="sd">        :param timeout: Request timeout</span>
+<span class="sd">        :param push_subscribe: Subscribe to push notifications</span>
+
+<span class="sd">        :returns: :class:`asynctnt.Response` instance</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_db</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">func_name</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span>
-                             <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">,</span> <span class="n">push_subscribe</span><span class="o">=</span><span class="n">push_subscribe</span><span class="p">)</span></div>
-
-<div class="viewcode-block" id="Api.eval"><a class="viewcode-back" href="../../autoapi/asynctnt/api/index.html#asynctnt.api.Api.eval">[docs]</a>    <span class="k">def</span> <span class="nf">eval</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
-             <span class="n">expression</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-             <span class="n">args</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-             <span class="o">*</span><span class="p">,</span>
-             <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">,</span>
-             <span class="n">push_subscribe</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MethodRet</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">            Eval request coroutine.</span>
-
-<span class="sd">            Examples:</span>
-
-<span class="sd">            .. code-block:: pycon</span>
-
-<span class="sd">                &gt;&gt;&gt; await conn.eval(&#39;return 42&#39;)</span>
-<span class="sd">                &lt;Response sync=3 rowcount=1 data=[42]&gt;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_db</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
+            <span class="n">func_name</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">,</span> <span class="n">push_subscribe</span><span class="o">=</span><span class="n">push_subscribe</span>
+        <span class="p">)</span></div>
 
 
-<span class="sd">                &gt;&gt;&gt; await conn.eval(&#39;return box.info.version&#39;)</span>
-<span class="sd">                &lt;Response sync=3 rowcount=1 data=[&#39;2.1.1-7-gd381a45b6&#39;]&gt;</span>
+<div class="viewcode-block" id="Api.eval">
+<a class="viewcode-back" href="../../autoapi/asynctnt/api/index.html#asynctnt.api.Api.eval">[docs]</a>
+    <span class="k">def</span> <span class="nf">eval</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">expression</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">args</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">,</span>
+        <span class="n">push_subscribe</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MethodRet</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Eval request coroutine.</span>
 
-<span class="sd">            :param expression: expression to execute</span>
-<span class="sd">            :param args: arguments to pass to the function, that will</span>
-<span class="sd">                         execute your expression (list object)</span>
-<span class="sd">            :param timeout: Request timeout</span>
-<span class="sd">            :param push_subscribe: Subscribe to push messages</span>
+<span class="sd">        Examples:</span>
 
-<span class="sd">            :returns: :class:`asynctnt.Response` instance</span>
+<span class="sd">        .. code-block:: pycon</span>
+
+<span class="sd">            &gt;&gt;&gt; await conn.eval(&#39;return 42&#39;)</span>
+<span class="sd">            &lt;Response sync=3 rowcount=1 data=[42]&gt;</span>
+
+
+<span class="sd">            &gt;&gt;&gt; await conn.eval(&#39;return box.info.version&#39;)</span>
+<span class="sd">            &lt;Response sync=3 rowcount=1 data=[&#39;2.1.1-7-gd381a45b6&#39;]&gt;</span>
+
+<span class="sd">        :param expression: expression to execute</span>
+<span class="sd">        :param args: arguments to pass to the function, that will</span>
+<span class="sd">                     execute your expression (list object)</span>
+<span class="sd">        :param timeout: Request timeout</span>
+<span class="sd">        :param push_subscribe: Subscribe to push messages</span>
+
+<span class="sd">        :returns: :class:`asynctnt.Response` instance</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_db</span><span class="o">.</span><span class="n">eval</span><span class="p">(</span><span class="n">expression</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span>
-                             <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">,</span> <span class="n">push_subscribe</span><span class="o">=</span><span class="n">push_subscribe</span><span class="p">)</span></div>
-
-<div class="viewcode-block" id="Api.select"><a class="viewcode-back" href="../../autoapi/asynctnt/api/index.html#asynctnt.api.Api.select">[docs]</a>    <span class="k">def</span> <span class="nf">select</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
-               <span class="n">space</span><span class="p">:</span> <span class="n">SpaceType</span><span class="p">,</span>
-               <span class="n">key</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">KeyType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-               <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MethodRet</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">            Select request coroutine.</span>
-
-<span class="sd">            Examples:</span>
-
-<span class="sd">            .. code-block:: pycon</span>
-
-<span class="sd">                &gt;&gt;&gt; await conn.select(&#39;tester&#39;)</span>
-<span class="sd">                &lt;Response sync=3 rowcount=2 data=[</span>
-<span class="sd">                    &lt;TarantoolTuple id=1 name=&#39;one&#39;&gt;,</span>
-<span class="sd">                    &lt;TarantoolTuple id=2 name=&#39;two&#39;&gt;</span>
-<span class="sd">                ]&gt;</span>
-
-<span class="sd">                &gt;&gt;&gt; res = await conn.select(&#39;_space&#39;, [&#39;tester&#39;], index=&#39;name&#39;)</span>
-<span class="sd">                &gt;&gt;&gt; res.data</span>
-<span class="sd">                [&lt;TarantoolTuple id=512</span>
-<span class="sd">                                 owner=1</span>
-<span class="sd">                                 name=&#39;tester&#39;</span>
-<span class="sd">                                 engine=&#39;memtx&#39;</span>
-<span class="sd">                                 field_count=0</span>
-<span class="sd">                                 flags={}</span>
-<span class="sd">                                 format=[</span>
-<span class="sd">                                    {&#39;name&#39;: &#39;id&#39;, &#39;type&#39;: &#39;unsigned&#39;},</span>
-<span class="sd">                                    {&#39;name&#39;: &#39;name&#39;, &#39;type&#39;: &#39;string&#39;}</span>
-<span class="sd">                                 ]&gt;]</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_db</span><span class="o">.</span><span class="n">eval</span><span class="p">(</span>
+            <span class="n">expression</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">,</span> <span class="n">push_subscribe</span><span class="o">=</span><span class="n">push_subscribe</span>
+        <span class="p">)</span></div>
 
 
-<span class="sd">            :param space: space id or space name.</span>
-<span class="sd">            :param key: key to select</span>
-<span class="sd">            :param offset: offset to use</span>
-<span class="sd">            :param limit: limit to use</span>
-<span class="sd">            :param index: index id or name</span>
-<span class="sd">            :param iterator: one of the following</span>
+<div class="viewcode-block" id="Api.select">
+<a class="viewcode-back" href="../../autoapi/asynctnt/api/index.html#asynctnt.api.Api.select">[docs]</a>
+    <span class="k">def</span> <span class="nf">select</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">space</span><span class="p">:</span> <span class="n">SpaceType</span><span class="p">,</span>
+        <span class="n">key</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">KeyType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MethodRet</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Select request coroutine.</span>
 
-<span class="sd">                        * iterator id (int number),</span>
-<span class="sd">                        * :class:`asynctnt.Iterator` object</span>
-<span class="sd">                        * string with an iterator name</span>
+<span class="sd">        Examples:</span>
 
-<span class="sd">            :param timeout: Request timeout</span>
+<span class="sd">        .. code-block:: pycon</span>
 
-<span class="sd">            :returns: :class:`asynctnt.Response` instance</span>
+<span class="sd">            &gt;&gt;&gt; await conn.select(&#39;tester&#39;)</span>
+<span class="sd">            &lt;Response sync=3 rowcount=2 data=[</span>
+<span class="sd">                &lt;TarantoolTuple id=1 name=&#39;one&#39;&gt;,</span>
+<span class="sd">                &lt;TarantoolTuple id=2 name=&#39;two&#39;&gt;</span>
+<span class="sd">            ]&gt;</span>
+
+<span class="sd">            &gt;&gt;&gt; res = await conn.select(&#39;_space&#39;, [&#39;tester&#39;], index=&#39;name&#39;)</span>
+<span class="sd">            &gt;&gt;&gt; res.data</span>
+<span class="sd">            [&lt;TarantoolTuple id=512</span>
+<span class="sd">                             owner=1</span>
+<span class="sd">                             name=&#39;tester&#39;</span>
+<span class="sd">                             engine=&#39;memtx&#39;</span>
+<span class="sd">                             field_count=0</span>
+<span class="sd">                             flags={}</span>
+<span class="sd">                             format=[</span>
+<span class="sd">                                {&#39;name&#39;: &#39;id&#39;, &#39;type&#39;: &#39;unsigned&#39;},</span>
+<span class="sd">                                {&#39;name&#39;: &#39;name&#39;, &#39;type&#39;: &#39;string&#39;}</span>
+<span class="sd">                             ]&gt;]</span>
+
+
+<span class="sd">        :param space: space id or space name.</span>
+<span class="sd">        :param key: key to select</span>
+<span class="sd">        :param offset: offset to use</span>
+<span class="sd">        :param limit: limit to use</span>
+<span class="sd">        :param index: index id or name</span>
+<span class="sd">        :param iterator: one of the following</span>
+
+<span class="sd">                    * iterator id (int number),</span>
+<span class="sd">                    * :class:`asynctnt.Iterator` object</span>
+<span class="sd">                    * string with an iterator name</span>
+
+<span class="sd">        :param timeout: Request timeout</span>
+
+<span class="sd">        :returns: :class:`asynctnt.Response` instance</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_db</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">space</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Api.insert"><a class="viewcode-back" href="../../autoapi/asynctnt/api/index.html#asynctnt.api.Api.insert">[docs]</a>    <span class="k">def</span> <span class="nf">insert</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
-               <span class="n">space</span><span class="p">:</span> <span class="n">SpaceType</span><span class="p">,</span>
-               <span class="n">t</span><span class="p">:</span> <span class="n">TupleType</span><span class="p">,</span>
-               <span class="o">*</span><span class="p">,</span>
-               <span class="n">replace</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-               <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MethodRet</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">            Insert request coroutine.</span>
 
-<span class="sd">            Examples:</span>
+<div class="viewcode-block" id="Api.insert">
+<a class="viewcode-back" href="../../autoapi/asynctnt/api/index.html#asynctnt.api.Api.insert">[docs]</a>
+    <span class="k">def</span> <span class="nf">insert</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">space</span><span class="p">:</span> <span class="n">SpaceType</span><span class="p">,</span>
+        <span class="n">t</span><span class="p">:</span> <span class="n">TupleType</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">replace</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MethodRet</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Insert request coroutine.</span>
 
-<span class="sd">            .. code-block:: pycon</span>
+<span class="sd">        Examples:</span>
 
-<span class="sd">                # Basic usage</span>
-<span class="sd">                &gt;&gt;&gt; await conn.insert(&#39;tester&#39;, [0, &#39;hello&#39;])</span>
-<span class="sd">                &lt;Response sync=3 rowcount=1 data=[</span>
-<span class="sd">                    &lt;TarantoolTuple id=0 name=&#39;hello&#39;&gt;</span>
-<span class="sd">                ]&gt;</span>
+<span class="sd">        .. code-block:: pycon</span>
 
-<span class="sd">                # Using dict as an argument tuple</span>
-<span class="sd">                &gt;&gt;&gt; await conn.insert(&#39;tester&#39;, {</span>
-<span class="sd">                ...                     &#39;id&#39;: 0</span>
-<span class="sd">                ...                     &#39;text&#39;: &#39;hell0&#39;</span>
-<span class="sd">                ...                   })</span>
-<span class="sd">                &lt;Response sync=3 rowcount=1 data=[</span>
-<span class="sd">                    &lt;TarantoolTuple id=0 name=&#39;hello&#39;&gt;</span>
-<span class="sd">                ]&gt;</span>
+<span class="sd">            # Basic usage</span>
+<span class="sd">            &gt;&gt;&gt; await conn.insert(&#39;tester&#39;, [0, &#39;hello&#39;])</span>
+<span class="sd">            &lt;Response sync=3 rowcount=1 data=[</span>
+<span class="sd">                &lt;TarantoolTuple id=0 name=&#39;hello&#39;&gt;</span>
+<span class="sd">            ]&gt;</span>
 
-<span class="sd">            :param space: space id or space name.</span>
-<span class="sd">            :param t: tuple to insert (list object)</span>
-<span class="sd">            :param replace: performs replace request instead of insert</span>
-<span class="sd">            :param timeout: Request timeout</span>
+<span class="sd">            # Using dict as an argument tuple</span>
+<span class="sd">            &gt;&gt;&gt; await conn.insert(&#39;tester&#39;, {</span>
+<span class="sd">            ...                     &#39;id&#39;: 0</span>
+<span class="sd">            ...                     &#39;text&#39;: &#39;hell0&#39;</span>
+<span class="sd">            ...                   })</span>
+<span class="sd">            &lt;Response sync=3 rowcount=1 data=[</span>
+<span class="sd">                &lt;TarantoolTuple id=0 name=&#39;hello&#39;&gt;</span>
+<span class="sd">            ]&gt;</span>
 
-<span class="sd">            :returns: :class:`asynctnt.Response` instance</span>
+<span class="sd">        :param space: space id or space name.</span>
+<span class="sd">        :param t: tuple to insert (list object)</span>
+<span class="sd">        :param replace: performs replace request instead of insert</span>
+<span class="sd">        :param timeout: Request timeout</span>
+
+<span class="sd">        :returns: :class:`asynctnt.Response` instance</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_db</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">space</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span>
-                               <span class="n">replace</span><span class="o">=</span><span class="n">replace</span><span class="p">,</span>
-                               <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_db</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">space</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">replace</span><span class="o">=</span><span class="n">replace</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Api.replace"><a class="viewcode-back" href="../../autoapi/asynctnt/api/index.html#asynctnt.api.Api.replace">[docs]</a>    <span class="k">def</span> <span class="nf">replace</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
-                <span class="n">space</span><span class="p">:</span> <span class="n">SpaceType</span><span class="p">,</span>
-                <span class="n">t</span><span class="p">:</span> <span class="n">TupleType</span><span class="p">,</span>
-                <span class="o">*</span><span class="p">,</span>
-                <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MethodRet</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">            Replace request coroutine. Same as insert, but replace.</span>
 
-<span class="sd">            :param space: space id or space name.</span>
-<span class="sd">            :param t: tuple to insert (list object)</span>
-<span class="sd">            :param timeout: Request timeout</span>
+<div class="viewcode-block" id="Api.replace">
+<a class="viewcode-back" href="../../autoapi/asynctnt/api/index.html#asynctnt.api.Api.replace">[docs]</a>
+    <span class="k">def</span> <span class="nf">replace</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">space</span><span class="p">:</span> <span class="n">SpaceType</span><span class="p">,</span>
+        <span class="n">t</span><span class="p">:</span> <span class="n">TupleType</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MethodRet</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Replace request coroutine. Same as insert, but replace.</span>
 
-<span class="sd">            :returns: :class:`asynctnt.Response` instance</span>
+<span class="sd">        :param space: space id or space name.</span>
+<span class="sd">        :param t: tuple to insert (list object)</span>
+<span class="sd">        :param timeout: Request timeout</span>
+
+<span class="sd">        :returns: :class:`asynctnt.Response` instance</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_db</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">space</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Api.delete"><a class="viewcode-back" href="../../autoapi/asynctnt/api/index.html#asynctnt.api.Api.delete">[docs]</a>    <span class="k">def</span> <span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
-               <span class="n">space</span><span class="p">:</span> <span class="n">SpaceType</span><span class="p">,</span>
-               <span class="n">key</span><span class="p">:</span> <span class="n">KeyType</span><span class="p">,</span>
-               <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MethodRet</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">            Delete request coroutine.</span>
 
-<span class="sd">            Examples:</span>
+<div class="viewcode-block" id="Api.delete">
+<a class="viewcode-back" href="../../autoapi/asynctnt/api/index.html#asynctnt.api.Api.delete">[docs]</a>
+    <span class="k">def</span> <span class="nf">delete</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">space</span><span class="p">:</span> <span class="n">SpaceType</span><span class="p">,</span>
+        <span class="n">key</span><span class="p">:</span> <span class="n">KeyType</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MethodRet</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Delete request coroutine.</span>
 
-<span class="sd">            .. code-block:: pycon</span>
+<span class="sd">        Examples:</span>
 
-<span class="sd">                # Assuming tuple [0, &#39;hello&#39;] is in space tester</span>
+<span class="sd">        .. code-block:: pycon</span>
 
-<span class="sd">                &gt;&gt;&gt; await conn.delete(&#39;tester&#39;, [0])</span>
-<span class="sd">                &lt;Response sync=3 rowcount=1 data=[</span>
-<span class="sd">                    &lt;TarantoolTuple id=0 name=&#39;hello&#39;&gt;</span>
-<span class="sd">                ]&gt;</span>
+<span class="sd">            # Assuming tuple [0, &#39;hello&#39;] is in space tester</span>
 
-<span class="sd">            :param space: space id or space name.</span>
-<span class="sd">            :param key: key to delete</span>
-<span class="sd">            :param index: index id or name</span>
-<span class="sd">            :param timeout: Request timeout</span>
+<span class="sd">            &gt;&gt;&gt; await conn.delete(&#39;tester&#39;, [0])</span>
+<span class="sd">            &lt;Response sync=3 rowcount=1 data=[</span>
+<span class="sd">                &lt;TarantoolTuple id=0 name=&#39;hello&#39;&gt;</span>
+<span class="sd">            ]&gt;</span>
 
-<span class="sd">            :returns: :class:`asynctnt.Response` instance</span>
+<span class="sd">        :param space: space id or space name.</span>
+<span class="sd">        :param key: key to delete</span>
+<span class="sd">        :param index: index id or name</span>
+<span class="sd">        :param timeout: Request timeout</span>
+
+<span class="sd">        :returns: :class:`asynctnt.Response` instance</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_db</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">space</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Api.update"><a class="viewcode-back" href="../../autoapi/asynctnt/api/index.html#asynctnt.api.Api.update">[docs]</a>    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
-               <span class="n">space</span><span class="p">:</span> <span class="n">SpaceType</span><span class="p">,</span>
-               <span class="n">key</span><span class="p">:</span> <span class="n">KeyType</span><span class="p">,</span>
-               <span class="n">operations</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Any</span><span class="p">],</span>
-               <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MethodRet</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">            Update request coroutine.</span>
 
-<span class="sd">            Examples:</span>
+<div class="viewcode-block" id="Api.update">
+<a class="viewcode-back" href="../../autoapi/asynctnt/api/index.html#asynctnt.api.Api.update">[docs]</a>
+    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">space</span><span class="p">:</span> <span class="n">SpaceType</span><span class="p">,</span>
+        <span class="n">key</span><span class="p">:</span> <span class="n">KeyType</span><span class="p">,</span>
+        <span class="n">operations</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Any</span><span class="p">],</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MethodRet</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Update request coroutine.</span>
 
-<span class="sd">            .. code-block:: pycon</span>
+<span class="sd">        Examples:</span>
 
-<span class="sd">                # Assuming tuple [0, &#39;hello&#39;] is in space tester</span>
+<span class="sd">        .. code-block:: pycon</span>
 
-<span class="sd">                &gt;&gt;&gt; await conn.update(&#39;tester&#39;, [0], [ [&#39;=&#39;, 1, &#39;hi!&#39;] ])</span>
-<span class="sd">                &lt;Response sync=3 rowcount=1 data=[</span>
-<span class="sd">                    &lt;TarantoolTuple id=0 name=&#39;hi!&#39;&gt;</span>
-<span class="sd">                ]&gt;</span>
+<span class="sd">            # Assuming tuple [0, &#39;hello&#39;] is in space tester</span>
 
-<span class="sd">                # you can use fields names as well</span>
-<span class="sd">                &gt;&gt;&gt; res = await conn.update(&#39;tester&#39;, [0],</span>
-<span class="sd">                ...                         [ [&#39;=&#39;, &#39;text&#39;, &#39;hola&#39;] ])</span>
-<span class="sd">                &lt;Response sync=3 rowcount=1 data=[</span>
-<span class="sd">                    &lt;TarantoolTuple id=0 name=&#39;hola&#39;&gt;</span>
-<span class="sd">                ]&gt;</span>
+<span class="sd">            &gt;&gt;&gt; await conn.update(&#39;tester&#39;, [0], [ [&#39;=&#39;, 1, &#39;hi!&#39;] ])</span>
+<span class="sd">            &lt;Response sync=3 rowcount=1 data=[</span>
+<span class="sd">                &lt;TarantoolTuple id=0 name=&#39;hi!&#39;&gt;</span>
+<span class="sd">            ]&gt;</span>
 
-<span class="sd">            :param space: space id or space name.</span>
-<span class="sd">            :param key: key to update</span>
-<span class="sd">            :param operations:</span>
-<span class="sd">                    Operations list of the following format:</span>
-<span class="sd">                    [ [op_type, field_no, ...], ... ]. Please refer to</span>
-<span class="sd">                    https://tarantool.org/doc/book/box/box_space.html?highlight=update#lua-function.space_object.update</span>
-<span class="sd">                    You can use field numbers as well as their names in space</span>
-<span class="sd">                    format as a field_no (if only fetch_schema is True).</span>
-<span class="sd">                    If field is unknown then TarantoolSchemaError is raised.</span>
-<span class="sd">            :param index: index id or name</span>
-<span class="sd">            :param timeout: Request timeout</span>
+<span class="sd">            # you can use fields names as well</span>
+<span class="sd">            &gt;&gt;&gt; res = await conn.update(&#39;tester&#39;, [0],</span>
+<span class="sd">            ...                         [ [&#39;=&#39;, &#39;text&#39;, &#39;hola&#39;] ])</span>
+<span class="sd">            &lt;Response sync=3 rowcount=1 data=[</span>
+<span class="sd">                &lt;TarantoolTuple id=0 name=&#39;hola&#39;&gt;</span>
+<span class="sd">            ]&gt;</span>
 
-<span class="sd">            :returns: :class:`asynctnt.Response` instance</span>
+<span class="sd">        :param space: space id or space name.</span>
+<span class="sd">        :param key: key to update</span>
+<span class="sd">        :param operations:</span>
+<span class="sd">                Operations list of the following format:</span>
+<span class="sd">                [ [op_type, field_no, ...], ... ]. Please refer to</span>
+<span class="sd">                https://tarantool.org/doc/book/box/box_space.html?highlight=update#lua-function.space_object.update</span>
+<span class="sd">                You can use field numbers as well as their names in space</span>
+<span class="sd">                format as a field_no (if only fetch_schema is True).</span>
+<span class="sd">                If field is unknown then TarantoolSchemaError is raised.</span>
+<span class="sd">        :param index: index id or name</span>
+<span class="sd">        :param timeout: Request timeout</span>
+
+<span class="sd">        :returns: :class:`asynctnt.Response` instance</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_db</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">space</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">operations</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Api.upsert"><a class="viewcode-back" href="../../autoapi/asynctnt/api/index.html#asynctnt.api.Api.upsert">[docs]</a>    <span class="k">def</span> <span class="nf">upsert</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
-               <span class="n">space</span><span class="p">:</span> <span class="n">SpaceType</span><span class="p">,</span>
-               <span class="n">t</span><span class="p">:</span> <span class="n">TupleType</span><span class="p">,</span>
-               <span class="n">operations</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Any</span><span class="p">],</span>
-               <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MethodRet</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">            Update request coroutine. Performs either insert or update</span>
-<span class="sd">            (depending of either tuple exists or not)</span>
 
-<span class="sd">            Examples:</span>
+<div class="viewcode-block" id="Api.upsert">
+<a class="viewcode-back" href="../../autoapi/asynctnt/api/index.html#asynctnt.api.Api.upsert">[docs]</a>
+    <span class="k">def</span> <span class="nf">upsert</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">space</span><span class="p">:</span> <span class="n">SpaceType</span><span class="p">,</span>
+        <span class="n">t</span><span class="p">:</span> <span class="n">TupleType</span><span class="p">,</span>
+        <span class="n">operations</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Any</span><span class="p">],</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MethodRet</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Update request coroutine. Performs either insert or update</span>
+<span class="sd">        (depending of either tuple exists or not)</span>
 
-<span class="sd">            .. code-block:: pycon</span>
+<span class="sd">        Examples:</span>
 
-<span class="sd">                # upsert does not return anything</span>
-<span class="sd">                &gt;&gt;&gt; await conn.upsert(&#39;tester&#39;, [0, &#39;hello&#39;],</span>
-<span class="sd">                ...                   [ [&#39;=&#39;, 1, &#39;hi!&#39;] ])</span>
-<span class="sd">                &lt;Response sync=3 rowcount=0 data=[]&gt;</span>
+<span class="sd">        .. code-block:: pycon</span>
 
-<span class="sd">            :param space: space id or space name.</span>
-<span class="sd">            :param t: tuple to insert if it&#39;s not in space</span>
-<span class="sd">            :param operations:</span>
-<span class="sd">                    Operations list to use for update if tuple is already in</span>
-<span class="sd">                    space. It has the same format as in update requets:</span>
-<span class="sd">                    [ [op_type, field_no, ...], ... ]. Please refer to</span>
-<span class="sd">                    https://tarantool.org/doc/book/box/box_space.html?highlight=update#lua-function.space_object.update</span>
-<span class="sd">                    You can use field numbers as well as their names in space</span>
-<span class="sd">                    format as a field_no (if only fetch_schema is True).</span>
-<span class="sd">                    If field is unknown then TarantoolSchemaError is raised.</span>
-<span class="sd">            :param timeout: Request timeout</span>
+<span class="sd">            # upsert does not return anything</span>
+<span class="sd">            &gt;&gt;&gt; await conn.upsert(&#39;tester&#39;, [0, &#39;hello&#39;],</span>
+<span class="sd">            ...                   [ [&#39;=&#39;, 1, &#39;hi!&#39;] ])</span>
+<span class="sd">            &lt;Response sync=3 rowcount=0 data=[]&gt;</span>
 
-<span class="sd">            :returns: :class:`asynctnt.Response` instance</span>
+<span class="sd">        :param space: space id or space name.</span>
+<span class="sd">        :param t: tuple to insert if it&#39;s not in space</span>
+<span class="sd">        :param operations:</span>
+<span class="sd">                Operations list to use for update if tuple is already in</span>
+<span class="sd">                space. It has the same format as in update requets:</span>
+<span class="sd">                [ [op_type, field_no, ...], ... ]. Please refer to</span>
+<span class="sd">                https://tarantool.org/doc/book/box/box_space.html?highlight=update#lua-function.space_object.update</span>
+<span class="sd">                You can use field numbers as well as their names in space</span>
+<span class="sd">                format as a field_no (if only fetch_schema is True).</span>
+<span class="sd">                If field is unknown then TarantoolSchemaError is raised.</span>
+<span class="sd">        :param timeout: Request timeout</span>
+
+<span class="sd">        :returns: :class:`asynctnt.Response` instance</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_db</span><span class="o">.</span><span class="n">upsert</span><span class="p">(</span><span class="n">space</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">operations</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Api.execute"><a class="viewcode-back" href="../../autoapi/asynctnt/api/index.html#asynctnt.api.Api.execute">[docs]</a>    <span class="k">def</span> <span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
-                <span class="n">query</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
-                <span class="n">args</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">Any</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span>
-                <span class="n">parse_metadata</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-                <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MethodRet</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">            Executes an SQL statement (only for Tarantool &gt; 2)</span>
 
-<span class="sd">            Examples:</span>
+<div class="viewcode-block" id="Api.execute">
+<a class="viewcode-back" href="../../autoapi/asynctnt/api/index.html#asynctnt.api.Api.execute">[docs]</a>
+    <span class="k">def</span> <span class="nf">execute</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">query</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
+        <span class="n">args</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">Any</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">parse_metadata</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MethodRet</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Executes an SQL statement (only for Tarantool &gt; 2)</span>
 
-<span class="sd">            .. code-block:: pycon</span>
+<span class="sd">        Examples:</span>
 
-<span class="sd">                &gt;&gt;&gt; await conn.execute(&quot;select 1 as a, 2 as b&quot;)</span>
-<span class="sd">                &lt;Response sync=3 rowcount=1 data=[&lt;TarantoolTuple A=1 B=2&gt;]&gt;</span>
+<span class="sd">        .. code-block:: pycon</span>
 
-<span class="sd">                &gt;&gt;&gt; await conn.execute(&quot;select * from sql_space&quot;)</span>
-<span class="sd">                &lt;Response sync=3 rowcount=2 data=[</span>
-<span class="sd">                    &lt;TarantoolTuple ID=1 NAME=&#39;James Bond&#39;&gt;,</span>
-<span class="sd">                    &lt;TarantoolTuple ID=2 NAME=&#39;Ethan Hunt&#39;&gt;</span>
-<span class="sd">                ]&gt;</span>
+<span class="sd">            &gt;&gt;&gt; await conn.execute(&quot;select 1 as a, 2 as b&quot;)</span>
+<span class="sd">            &lt;Response sync=3 rowcount=1 data=[&lt;TarantoolTuple A=1 B=2&gt;]&gt;</span>
 
-<span class="sd">                &gt;&gt;&gt; await conn.execute(&quot;select * from sql_space&quot;,</span>
-<span class="sd">                ...                    parse_metadata=False)</span>
-<span class="sd">                &lt;Response sync=3 rowcount=2 data=[</span>
-<span class="sd">                    &lt;TarantoolTuple 0=1 1=&#39;James Bond&#39;&gt;,</span>
-<span class="sd">                    &lt;TarantoolTuple 0=2 1=&#39;Ethan Hunt&#39;&gt;</span>
-<span class="sd">                ]&gt;</span>
+<span class="sd">            &gt;&gt;&gt; await conn.execute(&quot;select * from sql_space&quot;)</span>
+<span class="sd">            &lt;Response sync=3 rowcount=2 data=[</span>
+<span class="sd">                &lt;TarantoolTuple ID=1 NAME=&#39;James Bond&#39;&gt;,</span>
+<span class="sd">                &lt;TarantoolTuple ID=2 NAME=&#39;Ethan Hunt&#39;&gt;</span>
+<span class="sd">            ]&gt;</span>
 
-<span class="sd">            :param query: SQL query or statement_id</span>
-<span class="sd">            :param args: Query arguments</span>
-<span class="sd">            :param parse_metadata: Set to False to disable response&#39;s metadata</span>
-<span class="sd">                                   parsing for better performance</span>
-<span class="sd">            :param timeout: Request timeout</span>
+<span class="sd">            &gt;&gt;&gt; await conn.execute(&quot;select * from sql_space&quot;,</span>
+<span class="sd">            ...                    parse_metadata=False)</span>
+<span class="sd">            &lt;Response sync=3 rowcount=2 data=[</span>
+<span class="sd">                &lt;TarantoolTuple 0=1 1=&#39;James Bond&#39;&gt;,</span>
+<span class="sd">                &lt;TarantoolTuple 0=2 1=&#39;Ethan Hunt&#39;&gt;</span>
+<span class="sd">            ]&gt;</span>
 
-<span class="sd">            :returns: :class:`asynctnt.Response` instance</span>
+<span class="sd">        :param query: SQL query or statement_id</span>
+<span class="sd">        :param args: Query arguments</span>
+<span class="sd">        :param parse_metadata: Set to False to disable response&#39;s metadata</span>
+<span class="sd">                               parsing for better performance</span>
+<span class="sd">        :param timeout: Request timeout</span>
+
+<span class="sd">        :returns: :class:`asynctnt.Response` instance</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_db</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span>
-                                <span class="n">parse_metadata</span><span class="o">=</span><span class="n">parse_metadata</span><span class="p">,</span>
-                                <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_db</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
+            <span class="n">query</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">parse_metadata</span><span class="o">=</span><span class="n">parse_metadata</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span>
+        <span class="p">)</span></div>
 
-<div class="viewcode-block" id="Api.prepare"><a class="viewcode-back" href="../../autoapi/asynctnt/api/index.html#asynctnt.api.Api.prepare">[docs]</a>    <span class="k">def</span> <span class="nf">prepare</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PreparedStatement</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">            Create a :class:`asynctnt.prepared.PreparedStatement` instance</span>
-<span class="sd">            :param query: query to be prepared</span>
+
+<div class="viewcode-block" id="Api.prepare">
+<a class="viewcode-back" href="../../autoapi/asynctnt/api/index.html#asynctnt.api.Api.prepare">[docs]</a>
+    <span class="k">def</span> <span class="nf">prepare</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PreparedStatement</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create a :class:`asynctnt.prepared.PreparedStatement` instance</span>
+<span class="sd">        :param query: query to be prepared</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">PreparedStatement</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Api.prepare_iproto"><a class="viewcode-back" href="../../autoapi/asynctnt/api/index.html#asynctnt.api.Api.prepare_iproto">[docs]</a>    <span class="k">def</span> <span class="nf">prepare_iproto</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
-                       <span class="n">query</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-                       <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MethodRet</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">            Low-level prepare() call</span>
-<span class="sd">            :param query: query to be prepared</span>
-<span class="sd">            :param timeout: request timeout</span>
+
+<div class="viewcode-block" id="Api.prepare_iproto">
+<a class="viewcode-back" href="../../autoapi/asynctnt/api/index.html#asynctnt.api.Api.prepare_iproto">[docs]</a>
+    <span class="k">def</span> <span class="nf">prepare_iproto</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">query</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MethodRet</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Low-level prepare() call</span>
+<span class="sd">        :param query: query to be prepared</span>
+<span class="sd">        :param timeout: request timeout</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_db</span><span class="o">.</span><span class="n">prepare</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Api.unprepare_iproto"><a class="viewcode-back" href="../../autoapi/asynctnt/api/index.html#asynctnt.api.Api.unprepare_iproto">[docs]</a>    <span class="k">def</span> <span class="nf">unprepare_iproto</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
-                         <span class="n">stmt_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
-                         <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MethodRet</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">            Low-level unprepare() call</span>
-<span class="sd">            :param stmt_id: query to be unprepared</span>
-<span class="sd">            :param timeout: request timeout</span>
+
+<div class="viewcode-block" id="Api.unprepare_iproto">
+<a class="viewcode-back" href="../../autoapi/asynctnt/api/index.html#asynctnt.api.Api.unprepare_iproto">[docs]</a>
+    <span class="k">def</span> <span class="nf">unprepare_iproto</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">stmt_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MethodRet</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Low-level unprepare() call</span>
+<span class="sd">        :param stmt_id: query to be unprepared</span>
+<span class="sd">        :param timeout: request timeout</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_db</span><span class="o">.</span><span class="n">prepare</span><span class="p">(</span><span class="n">stmt_id</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Api.begin"><a class="viewcode-back" href="../../autoapi/asynctnt/api/index.html#asynctnt.api.Api.begin">[docs]</a>    <span class="k">def</span> <span class="nf">begin</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
-              <span class="n">isolation</span><span class="p">:</span> <span class="n">Isolation</span> <span class="o">=</span> <span class="n">Isolation</span><span class="o">.</span><span class="n">DEFAULT</span><span class="p">,</span>
-              <span class="n">tx_timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
-              <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MethodRet</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Api.begin">
+<a class="viewcode-back" href="../../autoapi/asynctnt/api/index.html#asynctnt.api.Api.begin">[docs]</a>
+    <span class="k">def</span> <span class="nf">begin</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">isolation</span><span class="p">:</span> <span class="n">Isolation</span> <span class="o">=</span> <span class="n">Isolation</span><span class="o">.</span><span class="n">DEFAULT</span><span class="p">,</span>
+        <span class="n">tx_timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MethodRet</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Begin an interactive transaction within a stream</span>
 <span class="sd">        :param isolation: isolation level</span>
 <span class="sd">        :param tx_timeout: transaction timeout</span>
@@ -501,19 +608,27 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_db</span><span class="o">.</span><span class="n">begin</span><span class="p">(</span><span class="n">isolation</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">tx_timeout</span><span class="p">,</span> <span class="n">timeout</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Api.commit"><a class="viewcode-back" href="../../autoapi/asynctnt/api/index.html#asynctnt.api.Api.commit">[docs]</a>    <span class="k">def</span> <span class="nf">commit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MethodRet</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Api.commit">
+<a class="viewcode-back" href="../../autoapi/asynctnt/api/index.html#asynctnt.api.Api.commit">[docs]</a>
+    <span class="k">def</span> <span class="nf">commit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MethodRet</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Commit a running transaction</span>
 <span class="sd">        :param timeout: request timeout</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_db</span><span class="o">.</span><span class="n">commit</span><span class="p">(</span><span class="n">timeout</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Api.rollback"><a class="viewcode-back" href="../../autoapi/asynctnt/api/index.html#asynctnt.api.Api.rollback">[docs]</a>    <span class="k">def</span> <span class="nf">rollback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MethodRet</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Api.rollback">
+<a class="viewcode-back" href="../../autoapi/asynctnt/api/index.html#asynctnt.api.Api.rollback">[docs]</a>
+    <span class="k">def</span> <span class="nf">rollback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MethodRet</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Rollback a running transaction</span>
 <span class="sd">        :param timeout: request timeout</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_db</span><span class="o">.</span><span class="n">rollback</span><span class="p">(</span><span class="n">timeout</span><span class="p">)</span></div></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_db</span><span class="o">.</span><span class="n">rollback</span><span class="p">(</span><span class="n">timeout</span><span class="p">)</span></div>
+</div>
+
 </pre></div>
 
            </div>

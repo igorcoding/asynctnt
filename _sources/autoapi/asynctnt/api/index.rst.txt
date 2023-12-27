@@ -21,41 +21,44 @@ Classes
 
 .. py:class:: _DbMock
 
+
    .. py:method:: __getattr__(item)
 
 
 
 .. py:class:: Isolation
 
+
    Bases: :py:obj:`enum.IntEnum`
 
    Enum where members are also (and must be) ints
 
    .. py:attribute:: DEFAULT
-      :annotation: = 0
+      :value: 0
 
       
 
    .. py:attribute:: READ_COMMITTED
-      :annotation: = 1
+      :value: 1
 
       
 
    .. py:attribute:: READ_CONFIRMED
-      :annotation: = 2
+      :value: 2
 
       
 
    .. py:attribute:: BEST_EFFORT
-      :annotation: = 3
+      :value: 3
 
       
 
 
 .. py:class:: Api
 
+
    .. py:attribute:: __slots__
-      :annotation: = ['_db']
+      :value: ('_db',)
 
       
 

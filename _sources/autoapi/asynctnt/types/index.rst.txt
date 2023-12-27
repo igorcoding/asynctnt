@@ -8,27 +8,22 @@ Module Contents
 ---------------
 
 .. py:data:: MethodRet
-   
 
    
 
 .. py:data:: SpaceType
-   
 
    
 
 .. py:data:: IndexType
-   
 
    
 
 .. py:data:: KeyType
-   
 
    
 
 .. py:data:: TupleType
-   
 
    
 

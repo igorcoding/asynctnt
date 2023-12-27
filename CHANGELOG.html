@@ -1,25 +1,28 @@
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="./">
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Changelog &mdash; asynctnt 2.0.1 documentation</title>
-      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-      <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
+  <title>Changelog &mdash; asynctnt 2.1.0a1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=eafc0fe6" />
+
+  
   <!--[if lt IE 9]>
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-        <script src="_static/jquery.js"></script>
-        <script src="_static/underscore.js"></script>
-        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script src="_static/doctools.js"></script>
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=693f9624"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="API Reference" href="autoapi/index.html" />
     <link rel="prev" title="Type Extensions" href="mpext.html" /> 
 </head>
 
@@ -28,14 +31,18 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="index.html" class="icon icon-home"> asynctnt
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            asynctnt
           </a>
               <div class="version">
-                2.0.1
+                2.1.0a1
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -52,6 +59,7 @@
 <li class="toctree-l1"><a class="reference internal" href="streams.html">Streams and Transactions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mpext.html">Type Extensions</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Changelog</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#v2-1-0">v2.1.0</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#v2-0-1">v2.0.1</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#v2-0-0">v2.0.0</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#v1-2-3">v1.2.3</a></li>
@@ -81,8 +89,8 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>Changelog</li>
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Changelog</li>
       <li class="wy-breadcrumbs-aside">
               <a href="https://github.com/igorcoding/asynctnt/blob/master/docs/CHANGELOG.md" class="fa fa-github"> Edit on GitHub</a>
       </li>
@@ -93,16 +101,40 @@
            <div itemprop="articleBody">
              
   <section id="changelog">
-<h1>Changelog<a class="headerlink" href="#changelog" title="Permalink to this heading"></a></h1>
+<h1>Changelog<a class="headerlink" href="#changelog" title="Link to this heading"></a></h1>
+<section id="v2-1-0">
+<h2>v2.1.0<a class="headerlink" href="#v2-1-0" title="Link to this heading"></a></h2>
+<p><strong>Breaking changes:</strong></p>
+<ul class="simple">
+<li><p>Dropped support for Python 3.6</p></li>
+</ul>
+<p><strong>New features:</strong></p>
+<ul class="simple">
+<li><p>Added building wheels for Python 3.11 and support for 3.12</p></li>
+<li><p>Added support for PyPy 3.10. It’s compiling and working, but there is an obvious performance downgrade compared to CPython.</p></li>
+<li><p>Now repr() of TarantoolTuple objects is being truncated to 50 fields</p></li>
+</ul>
+<p><strong>Bug fixes:</strong></p>
+<ul class="simple">
+<li><p>Fixed an issue with encoding of update operations as tuples on PyPy</p></li>
+</ul>
+<p><strong>Other changes</strong></p>
+<ul class="simple">
+<li><p>Upgraded to Cython 3.0.7</p></li>
+<li><p>Using pyproject.toml for building spec</p></li>
+<li><p>Using black, isort &amp; ruff for linting</p></li>
+<li><p>_testbase.py was moved to tests/_testbase.py</p></li>
+</ul>
+</section>
 <section id="v2-0-1">
-<h2>v2.0.1<a class="headerlink" href="#v2-0-1" title="Permalink to this heading"></a></h2>
+<h2>v2.0.1<a class="headerlink" href="#v2-0-1" title="Link to this heading"></a></h2>
 <ul class="simple">
 <li><p>Fixed an issue with encoding datetimes less than 01-01-1970 (fixes <a class="reference external" href="https://github.com/igorcoding/asynctnt/issues/29">#29</a>)</p></li>
 <li><p>Fixed “Edit on Github” links in docs (fixes <a class="reference external" href="https://github.com/igorcoding/asynctnt/issues/26">#26</a>)</p></li>
 </ul>
 </section>
 <section id="v2-0-0">
-<h2>v2.0.0<a class="headerlink" href="#v2-0-0" title="Permalink to this heading"></a></h2>
+<h2>v2.0.0<a class="headerlink" href="#v2-0-0" title="Link to this heading"></a></h2>
 <p><strong>Breaking changes:</strong></p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">Connection.sql()</span></code> method is renamed to <code class="docutils literal notranslate"><span class="pre">Connection.execute()</span></code></p></li>
@@ -130,20 +162,20 @@
 </ul>
 </section>
 <section id="v1-2-3">
-<h2>v1.2.3<a class="headerlink" href="#v1-2-3" title="Permalink to this heading"></a></h2>
+<h2>v1.2.3<a class="headerlink" href="#v1-2-3" title="Link to this heading"></a></h2>
 <ul class="simple">
 <li><p>Support Python 3.10</p></li>
 </ul>
 </section>
 <section id="v1-2-2">
-<h2>v1.2.2<a class="headerlink" href="#v1-2-2" title="Permalink to this heading"></a></h2>
+<h2>v1.2.2<a class="headerlink" href="#v1-2-2" title="Link to this heading"></a></h2>
 <p><strong>Bugs fixed:</strong></p>
 <ul class="simple">
 <li><p>Show a diag message rather than Lost connection to Tarantool when disconnected (closes <a class="reference external" href="https://github.com/igorcoding/asynctnt/issues/19">#19</a>)</p></li>
 </ul>
 </section>
 <section id="v1-2-1">
-<h2>v1.2.1<a class="headerlink" href="#v1-2-1" title="Permalink to this heading"></a></h2>
+<h2>v1.2.1<a class="headerlink" href="#v1-2-1" title="Link to this heading"></a></h2>
 <p><strong>Other changes:</strong></p>
 <ul class="simple">
 <li><p>Updated Cython to 0.29.21</p></li>
@@ -151,14 +183,14 @@
 </ul>
 </section>
 <section id="v1-2">
-<h2>v1.2<a class="headerlink" href="#v1-2" title="Permalink to this heading"></a></h2>
+<h2>v1.2<a class="headerlink" href="#v1-2" title="Link to this heading"></a></h2>
 <p><strong>Bugs fixed:</strong></p>
 <ul class="simple">
 <li><p>Fixed hanging PushIterator when connection to Tarantool is lost (<a class="reference external" href="https://github.com/igorcoding/asynctnt/issues/17">#17</a>).</p></li>
 </ul>
 </section>
 <section id="v1-1">
-<h2>v1.1<a class="headerlink" href="#v1-1" title="Permalink to this heading"></a></h2>
+<h2>v1.1<a class="headerlink" href="#v1-1" title="Link to this heading"></a></h2>
 <p><strong>New features:</strong></p>
 <ul class="simple">
 <li><p>Parse autoincrement ids in sql response (<a class="reference external" href="https://github.com/igorcoding/asynctnt/issues/14">#14</a>). Thanks to &#64;oleynikandrey</p></li>
@@ -173,7 +205,7 @@ and asyncio classes.</p></li>
 </ul>
 </section>
 <section id="v1-0">
-<h2>v1.0<a class="headerlink" href="#v1-0" title="Permalink to this heading"></a></h2>
+<h2>v1.0<a class="headerlink" href="#v1-0" title="Link to this heading"></a></h2>
 <p><strong>Breaking changes:</strong></p>
 <ul class="simple">
 <li><p>Removed method <code class="docutils literal notranslate"><span class="pre">body2yaml</span></code> from Response.</p></li>
@@ -229,7 +261,7 @@ currently running refetch process.</p></li>
 </ul>
 </section>
 <section id="v0-2-0">
-<h2>v0.2.0<a class="headerlink" href="#v0-2-0" title="Permalink to this heading"></a></h2>
+<h2>v0.2.0<a class="headerlink" href="#v0-2-0" title="Link to this heading"></a></h2>
 <p><strong>Changes:</strong></p>
 <ul class="simple">
 <li><p>Improved and simplified connect/reconnect process</p></li>
@@ -243,7 +275,7 @@ currently running refetch process.</p></li>
 </ul>
 </section>
 <section id="v0-1-13">
-<h2>v0.1.13<a class="headerlink" href="#v0-1-13" title="Permalink to this heading"></a></h2>
+<h2>v0.1.13<a class="headerlink" href="#v0-1-13" title="Link to this heading"></a></h2>
 <p><strong>Changes:</strong></p>
 <ul class="simple">
 <li><p>Now <code class="docutils literal notranslate"><span class="pre">connect()</span></code> method call of <code class="docutils literal notranslate"><span class="pre">Connection</span></code> class blocks until connected
@@ -260,7 +292,7 @@ exception NO_SUCH_SPACE (<a class="reference external" href="https://github.com/
 </ul>
 </section>
 <section id="v0-1-12">
-<h2>v0.1.12<a class="headerlink" href="#v0-1-12" title="Permalink to this heading"></a></h2>
+<h2>v0.1.12<a class="headerlink" href="#v0-1-12" title="Link to this heading"></a></h2>
 <p><strong>Bugs fixed:</strong></p>
 <ul class="simple">
 <li><p>Fixed compatibility issues with Python 3.7</p></li>
@@ -273,6 +305,7 @@ exception NO_SUCH_SPACE (<a class="reference external" href="https://github.com/
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="mpext.html" class="btn btn-neutral float-left" title="Type Extensions" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="autoapi/index.html" class="btn btn-neutral float-right" title="API Reference" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

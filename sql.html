@@ -1,22 +1,24 @@
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="./">
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>SQL Support &mdash; asynctnt 2.0.1 documentation</title>
-      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-      <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
+  <title>SQL Support &mdash; asynctnt 2.1.0a1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=eafc0fe6" />
+
+  
   <!--[if lt IE 9]>
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-        <script src="_static/jquery.js"></script>
-        <script src="_static/underscore.js"></script>
-        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script src="_static/doctools.js"></script>
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=693f9624"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -29,14 +31,18 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="index.html" class="icon icon-home"> asynctnt
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            asynctnt
           </a>
               <div class="version">
-                2.0.1
+                2.1.0a1
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -74,8 +80,8 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>SQL Support</li>
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">SQL Support</li>
       <li class="wy-breadcrumbs-aside">
               <a href="https://github.com/igorcoding/asynctnt/blob/master/docs/sql.md" class="fa fa-github"> Edit on GitHub</a>
       </li>
@@ -86,10 +92,10 @@
            <div itemprop="articleBody">
              
   <section id="sql-support">
-<h1>SQL Support<a class="headerlink" href="#sql-support" title="Permalink to this heading"></a></h1>
+<h1>SQL Support<a class="headerlink" href="#sql-support" title="Link to this heading"></a></h1>
 <p>Tarantool 2.x supports SQL interface to the database. <code class="docutils literal notranslate"><span class="pre">asynctnt</span></code> fully supports it including prepared statements and metadata parsing.</p>
 <section id="basic-usage">
-<h2>Basic usage<a class="headerlink" href="#basic-usage" title="Permalink to this heading"></a></h2>
+<h2>Basic usage<a class="headerlink" href="#basic-usage" title="Link to this heading"></a></h2>
 <p>Tarantool config:</p>
 <div class="highlight-lua notranslate"><div class="highlight"><pre><span></span><span class="n">box</span><span class="p">.</span><span class="n">cfg</span> <span class="p">{</span>
     <span class="n">listen</span> <span class="o">=</span> <span class="s1">&#39;127.0.0.1:3301&#39;</span>
@@ -140,7 +146,7 @@
 </div>
 </section>
 <section id="metadata">
-<h2>Metadata<a class="headerlink" href="#metadata" title="Permalink to this heading"></a></h2>
+<h2>Metadata<a class="headerlink" href="#metadata" title="Link to this heading"></a></h2>
 <p>You can access all the metadata associated with the SQL response, like so:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">res</span> <span class="o">=</span> <span class="k">await</span> <span class="n">conn</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;select * from users&quot;</span><span class="p">)</span>
 <span class="k">assert</span> <span class="n">res</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">fields</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;ID&#39;</span>
@@ -152,7 +158,7 @@
 </div>
 </section>
 <section id="prepared-statement">
-<h2>Prepared statement<a class="headerlink" href="#prepared-statement" title="Permalink to this heading"></a></h2>
+<h2>Prepared statement<a class="headerlink" href="#prepared-statement" title="Link to this heading"></a></h2>
 <p>You can make use of <a class="reference external" href="https://www.tarantool.io/en/doc/latest/reference/reference_lua/box_sql/prepare/">prepared statements</a>
 in order to execute the same requests more optimally. Simple example:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">stmt</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">prepare</span><span class="p">(</span><span class="s1">&#39;select id, name from users where id = ?&#39;</span><span class="p">)</span>

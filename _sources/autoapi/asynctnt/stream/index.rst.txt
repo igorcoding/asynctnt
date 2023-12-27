@@ -19,10 +19,11 @@ Classes
 
 .. py:class:: Stream
 
+
    Bases: :py:obj:`asynctnt.api.Api`
 
-   .. py:method:: stream_id() -> int
-      :property:
+   .. py:property:: stream_id
+      :type: int
 
       Current stream is
 

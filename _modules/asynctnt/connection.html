@@ -1,21 +1,23 @@
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="../../">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>asynctnt.connection &mdash; asynctnt 2.0.1 documentation</title>
-      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
-      <link rel="stylesheet" href="../../_static/graphviz.css" type="text/css" />
+  <title>asynctnt.connection &mdash; asynctnt 2.1.0a1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=eafc0fe6" />
+
+  
   <!--[if lt IE 9]>
     <script src="../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-        <script src="../../_static/jquery.js"></script>
-        <script src="../../_static/underscore.js"></script>
-        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../_static/documentation_options.js?v=693f9624"></script>
+        <script src="../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
@@ -26,14 +28,18 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="../../index.html" class="icon icon-home"> asynctnt
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            asynctnt
           </a>
               <div class="version">
-                2.0.1
+                2.1.0a1
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -66,10 +72,10 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
-          <li><a href="../index.html">Module code</a> &raquo;</li>
-          <li><a href="../asynctnt.html">asynctnt</a> &raquo;</li>
-      <li>asynctnt.connection</li>
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+          <li class="breadcrumb-item"><a href="../asynctnt.html">asynctnt</a></li>
+      <li class="breadcrumb-item active">asynctnt.connection</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -83,116 +89,150 @@
 <span class="kn">import</span> <span class="nn">enum</span>
 <span class="kn">import</span> <span class="nn">functools</span>
 <span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Type</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">from</span> <span class="nn">.api</span> <span class="kn">import</span> <span class="n">Api</span>
-<span class="kn">from</span> <span class="nn">.exceptions</span> <span class="kn">import</span> <span class="n">TarantoolDatabaseError</span><span class="p">,</span> \
-    <span class="n">ErrorCode</span><span class="p">,</span> <span class="n">TarantoolError</span>
+<span class="kn">from</span> <span class="nn">.exceptions</span> <span class="kn">import</span> <span class="n">ErrorCode</span><span class="p">,</span> <span class="n">TarantoolDatabaseError</span><span class="p">,</span> <span class="n">TarantoolError</span>
 <span class="kn">from</span> <span class="nn">.iproto</span> <span class="kn">import</span> <span class="n">protocol</span>
 <span class="kn">from</span> <span class="nn">.log</span> <span class="kn">import</span> <span class="n">logger</span>
 <span class="kn">from</span> <span class="nn">.stream</span> <span class="kn">import</span> <span class="n">Stream</span>
-<span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="n">get_running_loop</span>
 
-<span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span>
-    <span class="s1">&#39;Connection&#39;</span><span class="p">,</span> <span class="s1">&#39;connect&#39;</span><span class="p">,</span> <span class="s1">&#39;ConnectionState&#39;</span>
-<span class="p">)</span>
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;Connection&quot;</span><span class="p">,</span> <span class="s2">&quot;connect&quot;</span><span class="p">,</span> <span class="s2">&quot;ConnectionState&quot;</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="ConnectionState"><a class="viewcode-back" href="../../autoapi/asynctnt/connection/index.html#asynctnt.connection.ConnectionState">[docs]</a><span class="k">class</span> <span class="nc">ConnectionState</span><span class="p">(</span><span class="n">enum</span><span class="o">.</span><span class="n">IntEnum</span><span class="p">):</span>
-<div class="viewcode-block" id="ConnectionState.CONNECTING"><a class="viewcode-back" href="../../autoapi/asynctnt/connection/index.html#asynctnt.connection.ConnectionState.CONNECTING">[docs]</a>    <span class="n">CONNECTING</span> <span class="o">=</span> <span class="mi">1</span></div>
-<div class="viewcode-block" id="ConnectionState.CONNECTED"><a class="viewcode-back" href="../../autoapi/asynctnt/connection/index.html#asynctnt.connection.ConnectionState.CONNECTED">[docs]</a>    <span class="n">CONNECTED</span> <span class="o">=</span> <span class="mi">2</span></div>
-<div class="viewcode-block" id="ConnectionState.RECONNECTING"><a class="viewcode-back" href="../../autoapi/asynctnt/connection/index.html#asynctnt.connection.ConnectionState.RECONNECTING">[docs]</a>    <span class="n">RECONNECTING</span> <span class="o">=</span> <span class="mi">3</span></div>
-<div class="viewcode-block" id="ConnectionState.DISCONNECTING"><a class="viewcode-back" href="../../autoapi/asynctnt/connection/index.html#asynctnt.connection.ConnectionState.DISCONNECTING">[docs]</a>    <span class="n">DISCONNECTING</span> <span class="o">=</span> <span class="mi">4</span></div>
-<div class="viewcode-block" id="ConnectionState.DISCONNECTED"><a class="viewcode-back" href="../../autoapi/asynctnt/connection/index.html#asynctnt.connection.ConnectionState.DISCONNECTED">[docs]</a>    <span class="n">DISCONNECTED</span> <span class="o">=</span> <span class="mi">5</span></div></div>
+<div class="viewcode-block" id="ConnectionState">
+<a class="viewcode-back" href="../../autoapi/asynctnt/connection/index.html#asynctnt.connection.ConnectionState">[docs]</a>
+<span class="k">class</span> <span class="nc">ConnectionState</span><span class="p">(</span><span class="n">enum</span><span class="o">.</span><span class="n">IntEnum</span><span class="p">):</span>
+<div class="viewcode-block" id="ConnectionState.CONNECTING">
+<a class="viewcode-back" href="../../autoapi/asynctnt/connection/index.html#asynctnt.connection.ConnectionState.CONNECTING">[docs]</a>
+    <span class="n">CONNECTING</span> <span class="o">=</span> <span class="mi">1</span></div>
+
+<div class="viewcode-block" id="ConnectionState.CONNECTED">
+<a class="viewcode-back" href="../../autoapi/asynctnt/connection/index.html#asynctnt.connection.ConnectionState.CONNECTED">[docs]</a>
+    <span class="n">CONNECTED</span> <span class="o">=</span> <span class="mi">2</span></div>
+
+<div class="viewcode-block" id="ConnectionState.RECONNECTING">
+<a class="viewcode-back" href="../../autoapi/asynctnt/connection/index.html#asynctnt.connection.ConnectionState.RECONNECTING">[docs]</a>
+    <span class="n">RECONNECTING</span> <span class="o">=</span> <span class="mi">3</span></div>
+
+<div class="viewcode-block" id="ConnectionState.DISCONNECTING">
+<a class="viewcode-back" href="../../autoapi/asynctnt/connection/index.html#asynctnt.connection.ConnectionState.DISCONNECTING">[docs]</a>
+    <span class="n">DISCONNECTING</span> <span class="o">=</span> <span class="mi">4</span></div>
+
+<div class="viewcode-block" id="ConnectionState.DISCONNECTED">
+<a class="viewcode-back" href="../../autoapi/asynctnt/connection/index.html#asynctnt.connection.ConnectionState.DISCONNECTED">[docs]</a>
+    <span class="n">DISCONNECTED</span> <span class="o">=</span> <span class="mi">5</span></div>
+</div>
 
 
-<div class="viewcode-block" id="Connection"><a class="viewcode-back" href="../../autoapi/asynctnt/index.html#asynctnt.connection.Connection">[docs]</a><span class="k">class</span> <span class="nc">Connection</span><span class="p">(</span><span class="n">Api</span><span class="p">):</span>
-<div class="viewcode-block" id="Connection.__slots__"><a class="viewcode-back" href="../../autoapi/asynctnt/connection/index.html#asynctnt.connection.Connection.__slots__">[docs]</a>    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="s1">&#39;_host&#39;</span><span class="p">,</span> <span class="s1">&#39;_port&#39;</span><span class="p">,</span> <span class="s1">&#39;_username&#39;</span><span class="p">,</span> <span class="s1">&#39;_password&#39;</span><span class="p">,</span>
-        <span class="s1">&#39;_fetch_schema&#39;</span><span class="p">,</span> <span class="s1">&#39;_auto_refetch_schema&#39;</span><span class="p">,</span> <span class="s1">&#39;_initial_read_buffer_size&#39;</span><span class="p">,</span>
-        <span class="s1">&#39;_encoding&#39;</span><span class="p">,</span> <span class="s1">&#39;_connect_timeout&#39;</span><span class="p">,</span> <span class="s1">&#39;_reconnect_timeout&#39;</span><span class="p">,</span>
-        <span class="s1">&#39;_request_timeout&#39;</span><span class="p">,</span> <span class="s1">&#39;_ping_timeout&#39;</span><span class="p">,</span> <span class="s1">&#39;_loop&#39;</span><span class="p">,</span> <span class="s1">&#39;_state&#39;</span><span class="p">,</span> <span class="s1">&#39;_state_prev&#39;</span><span class="p">,</span>
-        <span class="s1">&#39;_transport&#39;</span><span class="p">,</span> <span class="s1">&#39;_protocol&#39;</span><span class="p">,</span>
-        <span class="s1">&#39;_disconnect_waiter&#39;</span><span class="p">,</span> <span class="s1">&#39;_reconnect_task&#39;</span><span class="p">,</span>
-        <span class="s1">&#39;_connect_lock&#39;</span><span class="p">,</span> <span class="s1">&#39;_disconnect_lock&#39;</span><span class="p">,</span>
-        <span class="s1">&#39;_ping_task&#39;</span><span class="p">,</span> <span class="s1">&#39;__create_task&#39;</span>
+
+<div class="viewcode-block" id="Connection">
+<a class="viewcode-back" href="../../autoapi/asynctnt/index.html#asynctnt.connection.Connection">[docs]</a>
+<span class="k">class</span> <span class="nc">Connection</span><span class="p">(</span><span class="n">Api</span><span class="p">):</span>
+<div class="viewcode-block" id="Connection.__slots__">
+<a class="viewcode-back" href="../../autoapi/asynctnt/connection/index.html#asynctnt.connection.Connection.__slots__">[docs]</a>
+    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s2">&quot;_host&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;_port&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;_username&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;_password&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;_fetch_schema&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;_auto_refetch_schema&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;_initial_read_buffer_size&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;_encoding&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;_connect_timeout&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;_reconnect_timeout&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;_request_timeout&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;_ping_timeout&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;_state&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;_state_prev&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;_transport&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;_protocol&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;_disconnect_waiter&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;_reconnect_task&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;_connect_lock&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;_disconnect_lock&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;_ping_task&quot;</span><span class="p">,</span>
     <span class="p">)</span></div>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span>
-                 <span class="n">host</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;127.0.0.1&#39;</span><span class="p">,</span>
-                 <span class="n">port</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="mi">3301</span><span class="p">,</span>
-                 <span class="n">username</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                 <span class="n">password</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                 <span class="n">fetch_schema</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-                 <span class="n">auto_refetch_schema</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-                 <span class="n">connect_timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">3.</span><span class="p">,</span>
-                 <span class="n">request_timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1.</span><span class="p">,</span>
-                 <span class="n">reconnect_timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.</span> <span class="o">/</span> <span class="mf">3.</span><span class="p">,</span>
-                 <span class="n">ping_timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">5.</span><span class="p">,</span>
-                 <span class="n">encoding</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                 <span class="n">initial_read_buffer_size</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
 
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">            Connection constructor.</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">host</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;127.0.0.1&quot;</span><span class="p">,</span>
+        <span class="n">port</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="mi">3301</span><span class="p">,</span>
+        <span class="n">username</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">password</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">fetch_schema</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">auto_refetch_schema</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">connect_timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">3.0</span><span class="p">,</span>
+        <span class="n">request_timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">,</span>
+        <span class="n">reconnect_timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="mf">3.0</span><span class="p">,</span>
+        <span class="n">ping_timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">5.0</span><span class="p">,</span>
+        <span class="n">encoding</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">initial_read_buffer_size</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Connection constructor.</span>
 
-<span class="sd">            To manipulate a Connection instance there are several functions:</span>
+<span class="sd">        To manipulate a Connection instance there are several functions:</span>
 
-<span class="sd">                * await connect() - performs connecting, authorization and</span>
-<span class="sd">                                    schema fetching.</span>
+<span class="sd">            * await connect() - performs connecting, authorization and</span>
+<span class="sd">                                schema fetching.</span>
 
-<span class="sd">                * await disconnect() - performs disconnection.</span>
+<span class="sd">            * await disconnect() - performs disconnection.</span>
 
-<span class="sd">                * close() - closes connection (not a coroutine)</span>
+<span class="sd">            * close() - closes connection (not a coroutine)</span>
 
-<span class="sd">            Connection also supports context manager protocol, which connects</span>
-<span class="sd">            on entering and disconnecting on leaving a block.</span>
+<span class="sd">        Connection also supports context manager protocol, which connects</span>
+<span class="sd">        on entering and disconnecting on leaving a block.</span>
 
-<span class="sd">            So one can simply use it as follows:</span>
+<span class="sd">        So one can simply use it as follows:</span>
 
-<span class="sd">            .. code-block:: python</span>
+<span class="sd">        .. code-block:: python</span>
 
-<span class="sd">                async with asynctnt.Connection() as conn:</span>
-<span class="sd">                    await conn.call(&#39;box.info&#39;)</span>
+<span class="sd">            async with asynctnt.Connection() as conn:</span>
+<span class="sd">                await conn.call(&#39;box.info&#39;)</span>
 
-<span class="sd">            :param host:</span>
-<span class="sd">                    Tarantool host (pass ``unix/`` to connect to unix socket)</span>
-<span class="sd">            :param port:</span>
-<span class="sd">                    Tarantool port</span>
-<span class="sd">                    (pass ``/path/to/sockfile`` to connect ot unix socket)</span>
-<span class="sd">            :param username:</span>
-<span class="sd">                    Username to use for auth</span>
-<span class="sd">                    (if ``None`` you are connected as a guest)</span>
-<span class="sd">            :param password:</span>
-<span class="sd">                    Password to use for auth</span>
-<span class="sd">            :param fetch_schema:</span>
-<span class="sd">                    Pass ``True`` to be able to use spaces and indexes names in</span>
-<span class="sd">                    data manipulation routines (default is ``True``)</span>
-<span class="sd">            :param auto_refetch_schema:</span>
-<span class="sd">                    If set to ``True`` then when ER_WRONG_SCHEMA_VERSION error</span>
-<span class="sd">                    occurs on a request, schema is refetched and the initial</span>
-<span class="sd">                    request is resent. If set to ``False`` then schema will not</span>
-<span class="sd">                    be checked by Tarantool, so no errors will occur</span>
-<span class="sd">            :param connect_timeout:</span>
-<span class="sd">                    Time in seconds how long to wait for connecting to socket</span>
-<span class="sd">            :param request_timeout:</span>
-<span class="sd">                    Request timeout (in seconds) for all requests</span>
-<span class="sd">                    (by default there is no timeout)</span>
-<span class="sd">            :param reconnect_timeout:</span>
-<span class="sd">                    Time in seconds to wait before automatic reconnect</span>
-<span class="sd">                    (set to ``0`` or ``None`` to disable auto reconnect)</span>
-<span class="sd">            :param ping_timeout:</span>
-<span class="sd">                    If specified (default is 5 seconds) a background task</span>
-<span class="sd">                    will be created which will ping Tarantool instance</span>
-<span class="sd">                    periodically to check if it is alive and update schema</span>
-<span class="sd">                    if it is changed</span>
-<span class="sd">                    (set to ``0`` or ``None`` to disable this task)</span>
-<span class="sd">            :param encoding:</span>
-<span class="sd">                    The encoding to use for all strings</span>
-<span class="sd">                    encoding and decoding (default is ``utf-8``)</span>
-<span class="sd">            :param initial_read_buffer_size:</span>
-<span class="sd">                    Initial and minimum size of read buffer in bytes.</span>
-<span class="sd">                    Higher value means less reallocations, but higher</span>
-<span class="sd">                    memory usage (default is 131072).</span>
+<span class="sd">        :param host:</span>
+<span class="sd">                Tarantool host (pass ``unix/`` to connect to unix socket)</span>
+<span class="sd">        :param port:</span>
+<span class="sd">                Tarantool port</span>
+<span class="sd">                (pass ``/path/to/sockfile`` to connect ot unix socket)</span>
+<span class="sd">        :param username:</span>
+<span class="sd">                Username to use for auth</span>
+<span class="sd">                (if ``None`` you are connected as a guest)</span>
+<span class="sd">        :param password:</span>
+<span class="sd">                Password to use for auth</span>
+<span class="sd">        :param fetch_schema:</span>
+<span class="sd">                Pass ``True`` to be able to use spaces and indexes names in</span>
+<span class="sd">                data manipulation routines (default is ``True``)</span>
+<span class="sd">        :param auto_refetch_schema:</span>
+<span class="sd">                If set to ``True`` then when ER_WRONG_SCHEMA_VERSION error</span>
+<span class="sd">                occurs on a request, schema is refetched and the initial</span>
+<span class="sd">                request is resent. If set to ``False`` then schema will not</span>
+<span class="sd">                be checked by Tarantool, so no errors will occur</span>
+<span class="sd">        :param connect_timeout:</span>
+<span class="sd">                Time in seconds how long to wait for connecting to socket</span>
+<span class="sd">        :param request_timeout:</span>
+<span class="sd">                Request timeout (in seconds) for all requests</span>
+<span class="sd">                (by default there is no timeout)</span>
+<span class="sd">        :param reconnect_timeout:</span>
+<span class="sd">                Time in seconds to wait before automatic reconnect</span>
+<span class="sd">                (set to ``0`` or ``None`` to disable auto reconnect)</span>
+<span class="sd">        :param ping_timeout:</span>
+<span class="sd">                If specified (default is 5 seconds) a background task</span>
+<span class="sd">                will be created which will ping Tarantool instance</span>
+<span class="sd">                periodically to check if it is alive and update schema</span>
+<span class="sd">                if it is changed</span>
+<span class="sd">                (set to ``0`` or ``None`` to disable this task)</span>
+<span class="sd">        :param encoding:</span>
+<span class="sd">                The encoding to use for all strings</span>
+<span class="sd">                encoding and decoding (default is ``utf-8``)</span>
+<span class="sd">        :param initial_read_buffer_size:</span>
+<span class="sd">                Initial and minimum size of read buffer in bytes.</span>
+<span class="sd">                Higher value means less reallocations, but higher</span>
+<span class="sd">                memory usage (default is 131072).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_host</span> <span class="o">=</span> <span class="n">host</span>
@@ -203,21 +243,19 @@
         <span class="k">if</span> <span class="n">auto_refetch_schema</span><span class="p">:</span>  <span class="c1"># None hack</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_auto_refetch_schema</span> <span class="o">=</span> <span class="kc">True</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fetch_schema</span><span class="p">:</span>
-                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;Setting fetch_schema to True as &#39;</span>
-                               <span class="s1">&#39;auto_refetch_schema is True&#39;</span><span class="p">)</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                    <span class="s2">&quot;Setting fetch_schema to True as &quot;</span> <span class="s2">&quot;auto_refetch_schema is True&quot;</span>
+                <span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_fetch_schema</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_auto_refetch_schema</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_initial_read_buffer_size</span> <span class="o">=</span> <span class="n">initial_read_buffer_size</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_encoding</span> <span class="o">=</span> <span class="n">encoding</span> <span class="ow">or</span> <span class="s1">&#39;utf-8&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_encoding</span> <span class="o">=</span> <span class="n">encoding</span> <span class="ow">or</span> <span class="s2">&quot;utf-8&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_connect_timeout</span> <span class="o">=</span> <span class="n">connect_timeout</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_reconnect_timeout</span> <span class="o">=</span> <span class="n">reconnect_timeout</span> <span class="ow">or</span> <span class="mi">0</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_request_timeout</span> <span class="o">=</span> <span class="n">request_timeout</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_ping_timeout</span> <span class="o">=</span> <span class="n">ping_timeout</span> <span class="ow">or</span> <span class="mi">0</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">_loop</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">__create_task</span> <span class="o">=</span> <span class="kc">None</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_transport</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_protocol</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">protocol</span><span class="o">.</span><span class="n">Protocol</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
@@ -230,14 +268,18 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_disconnect_lock</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Lock</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_ping_task</span> <span class="o">=</span> <span class="kc">None</span>
 
-<div class="viewcode-block" id="Connection._set_state"><a class="viewcode-back" href="../../autoapi/asynctnt/connection/index.html#asynctnt.connection.Connection._set_state">[docs]</a>    <span class="k">def</span> <span class="nf">_set_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_state</span><span class="p">:</span> <span class="n">ConnectionState</span><span class="p">):</span>
+<div class="viewcode-block" id="Connection._set_state">
+<a class="viewcode-back" href="../../autoapi/asynctnt/index.html#asynctnt.connection.Connection._set_state">[docs]</a>
+    <span class="k">def</span> <span class="nf">_set_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_state</span><span class="p">:</span> <span class="n">ConnectionState</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_state</span> <span class="o">!=</span> <span class="n">new_state</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Changing state </span><span class="si">%s</span><span class="s1"> -&gt; </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span>
-                         <span class="bp">self</span><span class="o">.</span><span class="n">_state</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">new_state</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Changing state </span><span class="si">%s</span><span class="s2"> -&gt; </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_state</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">new_state</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_state_prev</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_state</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_state</span> <span class="o">=</span> <span class="n">new_state</span></div>
 
-<div class="viewcode-block" id="Connection.connection_lost"><a class="viewcode-back" href="../../autoapi/asynctnt/connection/index.html#asynctnt.connection.Connection.connection_lost">[docs]</a>    <span class="k">def</span> <span class="nf">connection_lost</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exc</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Connection.connection_lost">
+<a class="viewcode-back" href="../../autoapi/asynctnt/index.html#asynctnt.connection.Connection.connection_lost">[docs]</a>
+    <span class="k">def</span> <span class="nf">connection_lost</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exc</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_transport</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_transport</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_transport</span> <span class="o">=</span> <span class="kc">None</span>
@@ -256,7 +298,10 @@
             <span class="c1"># should not reconnect, close everything</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="Connection._ping_task_func"><a class="viewcode-back" href="../../autoapi/asynctnt/connection/index.html#asynctnt.connection.Connection._ping_task_func">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">_ping_task_func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Connection._ping_task_func">
+<a class="viewcode-back" href="../../autoapi/asynctnt/index.html#asynctnt.connection.Connection._ping_task_func">[docs]</a>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">_ping_task_func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">_state</span> <span class="o">==</span> <span class="n">ConnectionState</span><span class="o">.</span><span class="n">CONNECTED</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">ping</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="mf">2.0</span><span class="p">)</span>
@@ -267,47 +312,56 @@
 
             <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ping_timeout</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Connection._start_reconnect"><a class="viewcode-back" href="../../autoapi/asynctnt/connection/index.html#asynctnt.connection.Connection._start_reconnect">[docs]</a>    <span class="k">def</span> <span class="nf">_start_reconnect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">return_exceptions</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_state</span> <span class="ow">in</span> <span class="p">[</span><span class="n">ConnectionState</span><span class="o">.</span><span class="n">CONNECTING</span><span class="p">,</span>
-                           <span class="n">ConnectionState</span><span class="o">.</span><span class="n">RECONNECTING</span><span class="p">]:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> Cannot start reconnect: already reconnecting&#39;</span><span class="p">,</span>
-                         <span class="bp">self</span><span class="o">.</span><span class="n">fingerprint</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Connection._start_reconnect">
+<a class="viewcode-back" href="../../autoapi/asynctnt/index.html#asynctnt.connection.Connection._start_reconnect">[docs]</a>
+    <span class="k">def</span> <span class="nf">_start_reconnect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">return_exceptions</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_state</span> <span class="ow">in</span> <span class="p">[</span><span class="n">ConnectionState</span><span class="o">.</span><span class="n">CONNECTING</span><span class="p">,</span> <span class="n">ConnectionState</span><span class="o">.</span><span class="n">RECONNECTING</span><span class="p">]:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> Cannot start reconnect: already reconnecting&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">fingerprint</span>
+            <span class="p">)</span>
             <span class="k">return</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_reconnect_task</span><span class="p">:</span>  <span class="c1"># pragma: nocover</span>
             <span class="k">return</span>
 
-        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> Started reconnecting&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">fingerprint</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> Started reconnecting&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">fingerprint</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_set_state</span><span class="p">(</span><span class="n">ConnectionState</span><span class="o">.</span><span class="n">RECONNECTING</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_reconnect_task</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__create_task</span><span class="p">(</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_reconnect_task</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">create_task</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_connect</span><span class="p">(</span><span class="n">return_exceptions</span><span class="o">=</span><span class="n">return_exceptions</span><span class="p">)</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="Connection.protocol_factory"><a class="viewcode-back" href="../../autoapi/asynctnt/connection/index.html#asynctnt.connection.Connection.protocol_factory">[docs]</a>    <span class="k">def</span> <span class="nf">protocol_factory</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
-                         <span class="n">connected_fut</span><span class="p">:</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Future</span><span class="p">,</span>
-                         <span class="bp">cls</span><span class="o">=</span><span class="n">protocol</span><span class="o">.</span><span class="n">Protocol</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_host</span><span class="p">,</span>
-                   <span class="n">port</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_port</span><span class="p">,</span>
-                   <span class="n">username</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_username</span><span class="p">,</span>
-                   <span class="n">password</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_password</span><span class="p">,</span>
-                   <span class="n">fetch_schema</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_fetch_schema</span><span class="p">,</span>
-                   <span class="n">auto_refetch_schema</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_auto_refetch_schema</span><span class="p">,</span>
-                   <span class="n">request_timeout</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_request_timeout</span><span class="p">,</span>
-                   <span class="n">initial_read_buffer_size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_initial_read_buffer_size</span><span class="p">,</span>
-                   <span class="n">encoding</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_encoding</span><span class="p">,</span>
-                   <span class="n">connected_fut</span><span class="o">=</span><span class="n">connected_fut</span><span class="p">,</span>
-                   <span class="n">on_connection_made</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                   <span class="n">on_connection_lost</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">connection_lost</span><span class="p">,</span>
-                   <span class="n">loop</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_loop</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Connection._connect"><a class="viewcode-back" href="../../autoapi/asynctnt/connection/index.html#asynctnt.connection.Connection._connect">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">_connect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">return_exceptions</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_loop</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_loop</span> <span class="o">=</span> <span class="n">get_running_loop</span><span class="p">()</span>
-            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_loop</span><span class="p">,</span> <span class="s1">&#39;create_task&#39;</span><span class="p">):</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">__create_task</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_loop</span><span class="o">.</span><span class="n">create_task</span>
-            <span class="k">else</span><span class="p">:</span>  <span class="c1"># pragma: nocover</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">__create_task</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">ensure_future</span>
+<div class="viewcode-block" id="Connection.protocol_factory">
+<a class="viewcode-back" href="../../autoapi/asynctnt/index.html#asynctnt.connection.Connection.protocol_factory">[docs]</a>
+    <span class="k">def</span> <span class="nf">protocol_factory</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">connected_fut</span><span class="p">:</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Future</span><span class="p">,</span>
+        <span class="n">loop</span><span class="p">:</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">AbstractEventLoop</span><span class="p">,</span>
+        <span class="bp">cls</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">protocol</span><span class="o">.</span><span class="n">Protocol</span><span class="p">]</span> <span class="o">=</span> <span class="n">protocol</span><span class="o">.</span><span class="n">Protocol</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span>
+            <span class="n">host</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_host</span><span class="p">,</span>
+            <span class="n">port</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_port</span><span class="p">,</span>
+            <span class="n">username</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_username</span><span class="p">,</span>
+            <span class="n">password</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_password</span><span class="p">,</span>
+            <span class="n">fetch_schema</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_fetch_schema</span><span class="p">,</span>
+            <span class="n">auto_refetch_schema</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_auto_refetch_schema</span><span class="p">,</span>
+            <span class="n">request_timeout</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_request_timeout</span><span class="p">,</span>
+            <span class="n">initial_read_buffer_size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_initial_read_buffer_size</span><span class="p">,</span>
+            <span class="n">encoding</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_encoding</span><span class="p">,</span>
+            <span class="n">connected_fut</span><span class="o">=</span><span class="n">connected_fut</span><span class="p">,</span>
+            <span class="n">on_connection_made</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">on_connection_lost</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">connection_lost</span><span class="p">,</span>
+            <span class="n">loop</span><span class="o">=</span><span class="n">loop</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Connection._connect">
+<a class="viewcode-back" href="../../autoapi/asynctnt/index.html#asynctnt.connection.Connection._connect">[docs]</a>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">_connect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">return_exceptions</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+        <span class="n">loop</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">get_running_loop</span><span class="p">()</span>
 
         <span class="k">async</span> <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connect_lock</span><span class="p">:</span>
             <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
@@ -325,29 +379,32 @@
 
                     <span class="k">async</span> <span class="k">def</span> <span class="nf">full_connect</span><span class="p">():</span>
                         <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
-                            <span class="n">connected_fut</span> <span class="o">=</span> <span class="n">_create_future</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_loop</span><span class="p">)</span>
+                            <span class="n">connected_fut</span> <span class="o">=</span> <span class="n">loop</span><span class="o">.</span><span class="n">create_future</span><span class="p">()</span>
 
-                            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_host</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;unix/&#39;</span><span class="p">):</span>
+                            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_host</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;unix/&quot;</span><span class="p">):</span>
                                 <span class="n">unix_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_port</span>
-                                <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">unix_path</span><span class="p">,</span> <span class="nb">str</span><span class="p">),</span> \
-                                    <span class="s1">&#39;port must be a str instance for &#39;</span> \
-                                    <span class="s1">&#39;unix socket&#39;</span>
-                                <span class="k">assert</span> <span class="n">unix_path</span><span class="p">,</span> \
-                                    <span class="s1">&#39;No unix file path specified&#39;</span>
-                                <span class="k">assert</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">unix_path</span><span class="p">),</span> \
-                                    <span class="s1">&#39;Unix socket `</span><span class="si">{}</span><span class="s1">` not found&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                                        <span class="n">unix_path</span><span class="p">)</span>
-
-                                <span class="n">conn</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_loop</span><span class="o">.</span><span class="n">create_unix_connection</span><span class="p">(</span>
-                                    <span class="n">functools</span><span class="o">.</span><span class="n">partial</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">protocol_factory</span><span class="p">,</span>
-                                                      <span class="n">connected_fut</span><span class="p">),</span>
+                                <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">unix_path</span><span class="p">,</span> <span class="nb">str</span><span class="p">),</span> <span class="p">(</span>
+                                    <span class="s2">&quot;port must be a str instance for &quot;</span> <span class="s2">&quot;unix socket&quot;</span>
+                                <span class="p">)</span>
+                                <span class="k">assert</span> <span class="n">unix_path</span><span class="p">,</span> <span class="s2">&quot;No unix file path specified&quot;</span>
+                                <span class="k">assert</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span>
                                     <span class="n">unix_path</span>
+                                <span class="p">),</span> <span class="s2">&quot;Unix socket `</span><span class="si">{}</span><span class="s2">` not found&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">unix_path</span><span class="p">)</span>
+
+                                <span class="n">conn</span> <span class="o">=</span> <span class="n">loop</span><span class="o">.</span><span class="n">create_unix_connection</span><span class="p">(</span>
+                                    <span class="n">functools</span><span class="o">.</span><span class="n">partial</span><span class="p">(</span>
+                                        <span class="bp">self</span><span class="o">.</span><span class="n">protocol_factory</span><span class="p">,</span> <span class="n">connected_fut</span><span class="p">,</span> <span class="n">loop</span>
+                                    <span class="p">),</span>
+                                    <span class="n">unix_path</span><span class="p">,</span>
                                 <span class="p">)</span>
                             <span class="k">else</span><span class="p">:</span>
-                                <span class="n">conn</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_loop</span><span class="o">.</span><span class="n">create_connection</span><span class="p">(</span>
-                                    <span class="n">functools</span><span class="o">.</span><span class="n">partial</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">protocol_factory</span><span class="p">,</span>
-                                                      <span class="n">connected_fut</span><span class="p">),</span>
-                                    <span class="bp">self</span><span class="o">.</span><span class="n">_host</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_port</span><span class="p">)</span>
+                                <span class="n">conn</span> <span class="o">=</span> <span class="n">loop</span><span class="o">.</span><span class="n">create_connection</span><span class="p">(</span>
+                                    <span class="n">functools</span><span class="o">.</span><span class="n">partial</span><span class="p">(</span>
+                                        <span class="bp">self</span><span class="o">.</span><span class="n">protocol_factory</span><span class="p">,</span> <span class="n">connected_fut</span><span class="p">,</span> <span class="n">loop</span>
+                                    <span class="p">),</span>
+                                    <span class="bp">self</span><span class="o">.</span><span class="n">_host</span><span class="p">,</span>
+                                    <span class="bp">self</span><span class="o">.</span><span class="n">_port</span><span class="p">,</span>
+                                <span class="p">)</span>
 
                             <span class="n">tr</span><span class="p">,</span> <span class="n">pr</span> <span class="o">=</span> <span class="k">await</span> <span class="n">conn</span>
 
@@ -356,8 +413,7 @@
                                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connect_timeout</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                                     <span class="n">timeout</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connect_timeout</span> <span class="o">/</span> <span class="mi">2</span>
 
-                                <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">wait_for</span><span class="p">(</span><span class="n">connected_fut</span><span class="p">,</span>
-                                                       <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">)</span>
+                                <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">wait_for</span><span class="p">(</span><span class="n">connected_fut</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">)</span>
                             <span class="k">except</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">TimeoutError</span><span class="p">:</span>  <span class="c1"># pragma: nocover</span>
                                 <span class="n">tr</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
                                 <span class="k">continue</span>  <span class="c1"># try again</span>
@@ -372,7 +428,7 @@
                         <span class="n">timeout</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_connect_timeout</span><span class="p">,</span>
                     <span class="p">)</span>
 
-                    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> Connected successfully&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">fingerprint</span><span class="p">)</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> Connected successfully&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">fingerprint</span><span class="p">)</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_set_state</span><span class="p">(</span><span class="n">ConnectionState</span><span class="o">.</span><span class="n">CONNECTED</span><span class="p">)</span>
 
                     <span class="bp">self</span><span class="o">.</span><span class="n">_transport</span> <span class="o">=</span> <span class="n">tr</span>
@@ -382,14 +438,13 @@
                     <span class="bp">self</span><span class="o">.</span><span class="n">_normalize_api</span><span class="p">()</span>
 
                     <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ping_timeout</span><span class="p">:</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">_ping_task</span> <span class="o">=</span> \
-                            <span class="bp">self</span><span class="o">.</span><span class="n">__create_task</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ping_task_func</span><span class="p">())</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_ping_task</span> <span class="o">=</span> <span class="n">loop</span><span class="o">.</span><span class="n">create_task</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ping_task_func</span><span class="p">())</span>
                     <span class="k">return</span>
                 <span class="k">except</span> <span class="n">TarantoolDatabaseError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
                     <span class="n">skip_errors</span> <span class="o">=</span> <span class="p">{</span>
                         <span class="n">ErrorCode</span><span class="o">.</span><span class="n">ER_LOADING</span><span class="p">,</span>
                         <span class="n">ErrorCode</span><span class="o">.</span><span class="n">ER_NO_SUCH_SPACE</span><span class="p">,</span>
-                        <span class="n">ErrorCode</span><span class="o">.</span><span class="n">ER_NO_SUCH_INDEX_ID</span>
+                        <span class="n">ErrorCode</span><span class="o">.</span><span class="n">ER_NO_SUCH_INDEX_ID</span><span class="p">,</span>
                     <span class="p">}</span>
                     <span class="k">if</span> <span class="n">e</span><span class="o">.</span><span class="n">code</span> <span class="ow">in</span> <span class="n">skip_errors</span><span class="p">:</span>
                         <span class="c1"># If Tarantool is still loading then reconnect</span>
@@ -423,26 +478,39 @@
                     <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
                     <span class="k">return</span>  <span class="c1"># no reconnect, no return_exceptions</span></div>
 
-<div class="viewcode-block" id="Connection._wait_reconnect"><a class="viewcode-back" href="../../autoapi/asynctnt/connection/index.html#asynctnt.connection.Connection._wait_reconnect">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">_wait_reconnect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exc</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Connection._wait_reconnect">
+<a class="viewcode-back" href="../../autoapi/asynctnt/index.html#asynctnt.connection.Connection._wait_reconnect">[docs]</a>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">_wait_reconnect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exc</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="ne">Exception</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_set_state</span><span class="p">(</span><span class="n">ConnectionState</span><span class="o">.</span><span class="n">RECONNECTING</span><span class="p">)</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;Connect to </span><span class="si">%s</span><span class="s1"> failed: </span><span class="si">%s</span><span class="s1">. Retrying in </span><span class="si">%f</span><span class="s1"> seconds&#39;</span><span class="p">,</span>
-                       <span class="bp">self</span><span class="o">.</span><span class="n">fingerprint</span><span class="p">,</span>
-                       <span class="nb">repr</span><span class="p">(</span><span class="n">exc</span><span class="p">)</span> <span class="k">if</span> <span class="n">exc</span> <span class="k">else</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
-                       <span class="bp">self</span><span class="o">.</span><span class="n">_reconnect_timeout</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+            <span class="s2">&quot;Connect to </span><span class="si">%s</span><span class="s2"> failed: </span><span class="si">%s</span><span class="s2">. Retrying in </span><span class="si">%f</span><span class="s2"> seconds&quot;</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fingerprint</span><span class="p">,</span>
+            <span class="nb">repr</span><span class="p">(</span><span class="n">exc</span><span class="p">)</span> <span class="k">if</span> <span class="n">exc</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_reconnect_timeout</span><span class="p">,</span>
+        <span class="p">)</span>
 
         <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_reconnect_timeout</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Connection.connect"><a class="viewcode-back" href="../../autoapi/asynctnt/connection/index.html#asynctnt.connection.Connection.connect">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">connect</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Connection&#39;</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">            Connect coroutine</span>
+
+<div class="viewcode-block" id="Connection.connect">
+<a class="viewcode-back" href="../../autoapi/asynctnt/index.html#asynctnt.connection.Connection.connect">[docs]</a>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">connect</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Connection&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Connect coroutine</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connect</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span></div>
 
-<div class="viewcode-block" id="Connection.disconnect"><a class="viewcode-back" href="../../autoapi/asynctnt/connection/index.html#asynctnt.connection.Connection.disconnect">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">disconnect</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">            Disconnect coroutine</span>
+
+<div class="viewcode-block" id="Connection.disconnect">
+<a class="viewcode-back" href="../../autoapi/asynctnt/index.html#asynctnt.connection.Connection.disconnect">[docs]</a>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">disconnect</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Disconnect coroutine</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">loop</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">get_running_loop</span><span class="p">()</span>
 
         <span class="k">async</span> <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_disconnect_lock</span><span class="p">:</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_state</span> <span class="o">==</span> <span class="n">ConnectionState</span><span class="o">.</span><span class="n">DISCONNECTED</span><span class="p">:</span>
@@ -450,7 +518,7 @@
 
             <span class="bp">self</span><span class="o">.</span><span class="n">_set_state</span><span class="p">(</span><span class="n">ConnectionState</span><span class="o">.</span><span class="n">DISCONNECTING</span><span class="p">)</span>
 
-            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> Disconnecting...&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">fingerprint</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> Disconnecting...&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">fingerprint</span><span class="p">)</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_reconnect_task</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_reconnect_task</span><span class="o">.</span><span class="n">cancel</span><span class="p">()</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_reconnect_task</span> <span class="o">=</span> <span class="kc">None</span>
@@ -461,7 +529,7 @@
 
             <span class="bp">self</span><span class="o">.</span><span class="n">_clear_db</span><span class="p">()</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_transport</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_disconnect_waiter</span> <span class="o">=</span> <span class="n">_create_future</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_loop</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_disconnect_waiter</span> <span class="o">=</span> <span class="n">loop</span><span class="o">.</span><span class="n">create_future</span><span class="p">()</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_transport</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_transport</span> <span class="o">=</span> <span class="kc">None</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_protocol</span> <span class="o">=</span> <span class="kc">None</span>
@@ -475,17 +543,20 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">_disconnect_waiter</span> <span class="o">=</span> <span class="kc">None</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_set_state</span><span class="p">(</span><span class="n">ConnectionState</span><span class="o">.</span><span class="n">DISCONNECTED</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Connection.close"><a class="viewcode-back" href="../../autoapi/asynctnt/connection/index.html#asynctnt.connection.Connection.close">[docs]</a>    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">            Same as disconnect, but not a coroutine, i.e. it does not wait</span>
-<span class="sd">            for disconnect to finish.</span>
+
+<div class="viewcode-block" id="Connection.close">
+<a class="viewcode-back" href="../../autoapi/asynctnt/index.html#asynctnt.connection.Connection.close">[docs]</a>
+    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Same as disconnect, but not a coroutine, i.e. it does not wait</span>
+<span class="sd">        for disconnect to finish.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_state</span> <span class="o">==</span> <span class="n">ConnectionState</span><span class="o">.</span><span class="n">DISCONNECTED</span><span class="p">:</span>
             <span class="k">return</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_set_state</span><span class="p">(</span><span class="n">ConnectionState</span><span class="o">.</span><span class="n">DISCONNECTING</span><span class="p">)</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> Disconnecting...&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">fingerprint</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> Disconnecting...&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">fingerprint</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_reconnect_task</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_reconnect_task</span><span class="o">.</span><span class="n">done</span><span class="p">():</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_reconnect_task</span><span class="o">.</span><span class="n">cancel</span><span class="p">()</span>
@@ -504,222 +575,285 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_clear_db</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_set_state</span><span class="p">(</span><span class="n">ConnectionState</span><span class="o">.</span><span class="n">DISCONNECTED</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Connection.reconnect"><a class="viewcode-back" href="../../autoapi/asynctnt/connection/index.html#asynctnt.connection.Connection.reconnect">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">reconnect</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">            Reconnect coroutine.</span>
-<span class="sd">            Just calls disconnect() and connect()</span>
+
+<div class="viewcode-block" id="Connection.reconnect">
+<a class="viewcode-back" href="../../autoapi/asynctnt/index.html#asynctnt.connection.Connection.reconnect">[docs]</a>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">reconnect</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Reconnect coroutine.</span>
+<span class="sd">        Just calls disconnect() and connect()</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">disconnect</span><span class="p">()</span>
         <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="Connection.__aenter__"><a class="viewcode-back" href="../../autoapi/asynctnt/connection/index.html#asynctnt.connection.Connection.__aenter__">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="fm">__aenter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">            Executed on entering the async with section.</span>
-<span class="sd">            Connects to Tarantool instance.</span>
+
+<div class="viewcode-block" id="Connection.__aenter__">
+<a class="viewcode-back" href="../../autoapi/asynctnt/index.html#asynctnt.connection.Connection.__aenter__">[docs]</a>
+    <span class="k">async</span> <span class="k">def</span> <span class="fm">__aenter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Executed on entering the async with section.</span>
+<span class="sd">        Connects to Tarantool instance.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span>
         <span class="k">return</span> <span class="bp">self</span></div>
 
-<div class="viewcode-block" id="Connection.__aexit__"><a class="viewcode-back" href="../../autoapi/asynctnt/connection/index.html#asynctnt.connection.Connection.__aexit__">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="fm">__aexit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exc_type</span><span class="p">,</span> <span class="n">exc_val</span><span class="p">,</span> <span class="n">exc_tb</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">            Executed on leaving the async with section.</span>
-<span class="sd">            Disconnects from Tarantool instance.</span>
+
+<div class="viewcode-block" id="Connection.__aexit__">
+<a class="viewcode-back" href="../../autoapi/asynctnt/index.html#asynctnt.connection.Connection.__aexit__">[docs]</a>
+    <span class="k">async</span> <span class="k">def</span> <span class="fm">__aexit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exc_type</span><span class="p">,</span> <span class="n">exc_val</span><span class="p">,</span> <span class="n">exc_tb</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Executed on leaving the async with section.</span>
+<span class="sd">        Disconnects from Tarantool instance.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">disconnect</span><span class="p">()</span></div>
 
-    <span class="nd">@property</span>
-<div class="viewcode-block" id="Connection.fingerprint"><a class="viewcode-back" href="../../autoapi/asynctnt/connection/index.html#asynctnt.connection.Connection.fingerprint">[docs]</a>    <span class="k">def</span> <span class="nf">fingerprint</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="k">return</span> <span class="s1">&#39;Tarantool[</span><span class="si">{}</span><span class="s1">:</span><span class="si">{}</span><span class="s1">]&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_host</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_port</span><span class="p">)</span></div>
 
     <span class="nd">@property</span>
-<div class="viewcode-block" id="Connection.host"><a class="viewcode-back" href="../../autoapi/asynctnt/connection/index.html#asynctnt.connection.Connection.host">[docs]</a>    <span class="k">def</span> <span class="nf">host</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">            Tarantool host</span>
+<div class="viewcode-block" id="Connection.fingerprint">
+<a class="viewcode-back" href="../../autoapi/asynctnt/connection/index.html#asynctnt.connection.Connection.fingerprint">[docs]</a>
+    <span class="k">def</span> <span class="nf">fingerprint</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">&quot;Tarantool[</span><span class="si">{}</span><span class="s2">:</span><span class="si">{}</span><span class="s2">]&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_host</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_port</span><span class="p">)</span></div>
+
+
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="Connection.host">
+<a class="viewcode-back" href="../../autoapi/asynctnt/connection/index.html#asynctnt.connection.Connection.host">[docs]</a>
+    <span class="k">def</span> <span class="nf">host</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Tarantool host</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_host</span></div>
 
+
     <span class="nd">@property</span>
-<div class="viewcode-block" id="Connection.port"><a class="viewcode-back" href="../../autoapi/asynctnt/connection/index.html#asynctnt.connection.Connection.port">[docs]</a>    <span class="k">def</span> <span class="nf">port</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">            Tarantool port</span>
+<div class="viewcode-block" id="Connection.port">
+<a class="viewcode-back" href="../../autoapi/asynctnt/connection/index.html#asynctnt.connection.Connection.port">[docs]</a>
+    <span class="k">def</span> <span class="nf">port</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Tarantool port</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_port</span></div>
 
+
     <span class="nd">@property</span>
-<div class="viewcode-block" id="Connection.username"><a class="viewcode-back" href="../../autoapi/asynctnt/connection/index.html#asynctnt.connection.Connection.username">[docs]</a>    <span class="k">def</span> <span class="nf">username</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">            Tarantool username</span>
+<div class="viewcode-block" id="Connection.username">
+<a class="viewcode-back" href="../../autoapi/asynctnt/connection/index.html#asynctnt.connection.Connection.username">[docs]</a>
+    <span class="k">def</span> <span class="nf">username</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Tarantool username</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_username</span></div>
 
+
     <span class="nd">@property</span>
-<div class="viewcode-block" id="Connection.password"><a class="viewcode-back" href="../../autoapi/asynctnt/connection/index.html#asynctnt.connection.Connection.password">[docs]</a>    <span class="k">def</span> <span class="nf">password</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">            Tarantool password</span>
+<div class="viewcode-block" id="Connection.password">
+<a class="viewcode-back" href="../../autoapi/asynctnt/connection/index.html#asynctnt.connection.Connection.password">[docs]</a>
+    <span class="k">def</span> <span class="nf">password</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Tarantool password</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_password</span></div>
 
+
     <span class="nd">@property</span>
-<div class="viewcode-block" id="Connection.fetch_schema"><a class="viewcode-back" href="../../autoapi/asynctnt/connection/index.html#asynctnt.connection.Connection.fetch_schema">[docs]</a>    <span class="k">def</span> <span class="nf">fetch_schema</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">            fetch_schema flag</span>
+<div class="viewcode-block" id="Connection.fetch_schema">
+<a class="viewcode-back" href="../../autoapi/asynctnt/connection/index.html#asynctnt.connection.Connection.fetch_schema">[docs]</a>
+    <span class="k">def</span> <span class="nf">fetch_schema</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        fetch_schema flag</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fetch_schema</span></div>
 
+
     <span class="nd">@property</span>
-<div class="viewcode-block" id="Connection.auto_refetch_schema"><a class="viewcode-back" href="../../autoapi/asynctnt/connection/index.html#asynctnt.connection.Connection.auto_refetch_schema">[docs]</a>    <span class="k">def</span> <span class="nf">auto_refetch_schema</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">            auto_refetch_schema flag</span>
+<div class="viewcode-block" id="Connection.auto_refetch_schema">
+<a class="viewcode-back" href="../../autoapi/asynctnt/connection/index.html#asynctnt.connection.Connection.auto_refetch_schema">[docs]</a>
+    <span class="k">def</span> <span class="nf">auto_refetch_schema</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        auto_refetch_schema flag</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_auto_refetch_schema</span></div>
 
+
     <span class="nd">@property</span>
-<div class="viewcode-block" id="Connection.encoding"><a class="viewcode-back" href="../../autoapi/asynctnt/connection/index.html#asynctnt.connection.Connection.encoding">[docs]</a>    <span class="k">def</span> <span class="nf">encoding</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">            Connection encoding</span>
+<div class="viewcode-block" id="Connection.encoding">
+<a class="viewcode-back" href="../../autoapi/asynctnt/connection/index.html#asynctnt.connection.Connection.encoding">[docs]</a>
+    <span class="k">def</span> <span class="nf">encoding</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Connection encoding</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_encoding</span></div>
 
+
     <span class="nd">@property</span>
-<div class="viewcode-block" id="Connection.reconnect_timeout"><a class="viewcode-back" href="../../autoapi/asynctnt/connection/index.html#asynctnt.connection.Connection.reconnect_timeout">[docs]</a>    <span class="k">def</span> <span class="nf">reconnect_timeout</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">            Reconnect timeout value</span>
+<div class="viewcode-block" id="Connection.reconnect_timeout">
+<a class="viewcode-back" href="../../autoapi/asynctnt/connection/index.html#asynctnt.connection.Connection.reconnect_timeout">[docs]</a>
+    <span class="k">def</span> <span class="nf">reconnect_timeout</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Reconnect timeout value</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_reconnect_timeout</span></div>
 
+
     <span class="nd">@property</span>
-<div class="viewcode-block" id="Connection.connect_timeout"><a class="viewcode-back" href="../../autoapi/asynctnt/connection/index.html#asynctnt.connection.Connection.connect_timeout">[docs]</a>    <span class="k">def</span> <span class="nf">connect_timeout</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">            Connect timeout value</span>
+<div class="viewcode-block" id="Connection.connect_timeout">
+<a class="viewcode-back" href="../../autoapi/asynctnt/connection/index.html#asynctnt.connection.Connection.connect_timeout">[docs]</a>
+    <span class="k">def</span> <span class="nf">connect_timeout</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Connect timeout value</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connect_timeout</span></div>
 
+
     <span class="nd">@property</span>
-<div class="viewcode-block" id="Connection.request_timeout"><a class="viewcode-back" href="../../autoapi/asynctnt/connection/index.html#asynctnt.connection.Connection.request_timeout">[docs]</a>    <span class="k">def</span> <span class="nf">request_timeout</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">            Request timeout value</span>
+<div class="viewcode-block" id="Connection.request_timeout">
+<a class="viewcode-back" href="../../autoapi/asynctnt/connection/index.html#asynctnt.connection.Connection.request_timeout">[docs]</a>
+    <span class="k">def</span> <span class="nf">request_timeout</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Request timeout value</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_request_timeout</span></div>
 
+
     <span class="nd">@property</span>
-<div class="viewcode-block" id="Connection.version"><a class="viewcode-back" href="../../autoapi/asynctnt/connection/index.html#asynctnt.connection.Connection.version">[docs]</a>    <span class="k">def</span> <span class="nf">version</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">tuple</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">            Protocol version tuple. ex.: (1, 6, 7)</span>
+<div class="viewcode-block" id="Connection.version">
+<a class="viewcode-back" href="../../autoapi/asynctnt/connection/index.html#asynctnt.connection.Connection.version">[docs]</a>
+    <span class="k">def</span> <span class="nf">version</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">tuple</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Protocol version tuple. ex.: (1, 6, 7)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_protocol</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_protocol</span><span class="o">.</span><span class="n">get_version</span><span class="p">()</span></div>
 
-    <span class="nd">@property</span>
-<div class="viewcode-block" id="Connection.loop"><a class="viewcode-back" href="../../autoapi/asynctnt/connection/index.html#asynctnt.connection.Connection.loop">[docs]</a>    <span class="k">def</span> <span class="nf">loop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">            Asyncio event loop</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_loop</span></div>
 
     <span class="nd">@property</span>
-<div class="viewcode-block" id="Connection.state"><a class="viewcode-back" href="../../autoapi/asynctnt/connection/index.html#asynctnt.connection.Connection.state">[docs]</a>    <span class="k">def</span> <span class="nf">state</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ConnectionState</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">            Current connection state</span>
+<div class="viewcode-block" id="Connection.state">
+<a class="viewcode-back" href="../../autoapi/asynctnt/connection/index.html#asynctnt.connection.Connection.state">[docs]</a>
+    <span class="k">def</span> <span class="nf">state</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ConnectionState</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Current connection state</span>
 
-<span class="sd">            :rtype: ConnectionState</span>
+<span class="sd">        :rtype: ConnectionState</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_state</span></div>
 
+
     <span class="nd">@property</span>
-<div class="viewcode-block" id="Connection.is_connected"><a class="viewcode-back" href="../../autoapi/asynctnt/connection/index.html#asynctnt.connection.Connection.is_connected">[docs]</a>    <span class="k">def</span> <span class="nf">is_connected</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">            Check if an underlying connection is active</span>
+<div class="viewcode-block" id="Connection.is_connected">
+<a class="viewcode-back" href="../../autoapi/asynctnt/connection/index.html#asynctnt.connection.Connection.is_connected">[docs]</a>
+    <span class="k">def</span> <span class="nf">is_connected</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check if an underlying connection is active</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_protocol</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">False</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_protocol</span><span class="o">.</span><span class="n">is_connected</span><span class="p">()</span></div>
 
+
     <span class="nd">@property</span>
-<div class="viewcode-block" id="Connection.is_fully_connected"><a class="viewcode-back" href="../../autoapi/asynctnt/connection/index.html#asynctnt.connection.Connection.is_fully_connected">[docs]</a>    <span class="k">def</span> <span class="nf">is_fully_connected</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">            Check if connection is fully active (performed auth</span>
-<span class="sd">            and schema fetching)</span>
+<div class="viewcode-block" id="Connection.is_fully_connected">
+<a class="viewcode-back" href="../../autoapi/asynctnt/connection/index.html#asynctnt.connection.Connection.is_fully_connected">[docs]</a>
+    <span class="k">def</span> <span class="nf">is_fully_connected</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check if connection is fully active (performed auth</span>
+<span class="sd">        and schema fetching)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_protocol</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">False</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_protocol</span><span class="o">.</span><span class="n">is_fully_connected</span><span class="p">()</span></div>
 
+
     <span class="nd">@property</span>
-<div class="viewcode-block" id="Connection.schema_id"><a class="viewcode-back" href="../../autoapi/asynctnt/connection/index.html#asynctnt.connection.Connection.schema_id">[docs]</a>    <span class="k">def</span> <span class="nf">schema_id</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">            Tarantool&#39;s current schema id</span>
+<div class="viewcode-block" id="Connection.schema_id">
+<a class="viewcode-back" href="../../autoapi/asynctnt/connection/index.html#asynctnt.connection.Connection.schema_id">[docs]</a>
+    <span class="k">def</span> <span class="nf">schema_id</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Tarantool&#39;s current schema id</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_protocol</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_protocol</span><span class="o">.</span><span class="n">schema_id</span></div>
 
+
     <span class="nd">@property</span>
-<div class="viewcode-block" id="Connection.schema"><a class="viewcode-back" href="../../autoapi/asynctnt/connection/index.html#asynctnt.connection.Connection.schema">[docs]</a>    <span class="k">def</span> <span class="nf">schema</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">protocol</span><span class="o">.</span><span class="n">Schema</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">            Current Tarantool schema with all spaces, indexes and fields</span>
+<div class="viewcode-block" id="Connection.schema">
+<a class="viewcode-back" href="../../autoapi/asynctnt/connection/index.html#asynctnt.connection.Connection.schema">[docs]</a>
+    <span class="k">def</span> <span class="nf">schema</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">protocol</span><span class="o">.</span><span class="n">Schema</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Current Tarantool schema with all spaces, indexes and fields</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_protocol</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># pragma: nocover</span>
             <span class="k">return</span> <span class="kc">None</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_protocol</span><span class="o">.</span><span class="n">schema</span></div>
 
+
     <span class="nd">@property</span>
-<div class="viewcode-block" id="Connection.initial_read_buffer_size"><a class="viewcode-back" href="../../autoapi/asynctnt/connection/index.html#asynctnt.connection.Connection.initial_read_buffer_size">[docs]</a>    <span class="k">def</span> <span class="nf">initial_read_buffer_size</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">            initial_read_buffer_size value</span>
+<div class="viewcode-block" id="Connection.initial_read_buffer_size">
+<a class="viewcode-back" href="../../autoapi/asynctnt/connection/index.html#asynctnt.connection.Connection.initial_read_buffer_size">[docs]</a>
+    <span class="k">def</span> <span class="nf">initial_read_buffer_size</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        initial_read_buffer_size value</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_initial_read_buffer_size</span></div>
 
-<div class="viewcode-block" id="Connection.refetch_schema"><a class="viewcode-back" href="../../autoapi/asynctnt/connection/index.html#asynctnt.connection.Connection.refetch_schema">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">refetch_schema</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">            Coroutine to force refetch schema</span>
+
+<div class="viewcode-block" id="Connection.refetch_schema">
+<a class="viewcode-back" href="../../autoapi/asynctnt/index.html#asynctnt.connection.Connection.refetch_schema">[docs]</a>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">refetch_schema</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Coroutine to force refetch schema</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_protocol</span><span class="o">.</span><span class="n">refetch_schema</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="Connection._normalize_api"><a class="viewcode-back" href="../../autoapi/asynctnt/connection/index.html#asynctnt.connection.Connection._normalize_api">[docs]</a>    <span class="k">def</span> <span class="nf">_normalize_api</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Connection._normalize_api">
+<a class="viewcode-back" href="../../autoapi/asynctnt/index.html#asynctnt.connection.Connection._normalize_api">[docs]</a>
+    <span class="k">def</span> <span class="nf">_normalize_api</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">version</span> <span class="o">&lt;</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">7</span><span class="p">):</span>  <span class="c1"># pragma: nocover</span>
             <span class="n">Api</span><span class="o">.</span><span class="n">call</span> <span class="o">=</span> <span class="n">Api</span><span class="o">.</span><span class="n">call16</span>
             <span class="n">Connection</span><span class="o">.</span><span class="n">call</span> <span class="o">=</span> <span class="n">Connection</span><span class="o">.</span><span class="n">call16</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">version</span> <span class="o">&lt;</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">10</span><span class="p">):</span>  <span class="c1"># pragma: nocover</span>
+
             <span class="k">def</span> <span class="nf">stream_stub</span><span class="p">(</span><span class="n">_</span><span class="p">):</span>
-                <span class="k">raise</span> <span class="n">TarantoolError</span><span class="p">(</span>
-                    <span class="s2">&quot;streams are available only in Tarantool 2.10+&quot;</span>
-                <span class="p">)</span>
+                <span class="k">raise</span> <span class="n">TarantoolError</span><span class="p">(</span><span class="s2">&quot;streams are available only in Tarantool 2.10+&quot;</span><span class="p">)</span>
 
             <span class="n">Connection</span><span class="o">.</span><span class="n">stream</span> <span class="o">=</span> <span class="n">stream_stub</span></div>
 
-<div class="viewcode-block" id="Connection.__repr__"><a class="viewcode-back" href="../../autoapi/asynctnt/connection/index.html#asynctnt.connection.Connection.__repr__">[docs]</a>    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Connection.__repr__">
+<a class="viewcode-back" href="../../autoapi/asynctnt/index.html#asynctnt.connection.Connection.__repr__">[docs]</a>
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="s2">&quot;&lt;asynctnt.Connection host=</span><span class="si">{}</span><span class="s2"> port=</span><span class="si">{}</span><span class="s2"> state=</span><span class="si">{}</span><span class="s2">&gt;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">host</span><span class="p">,</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="p">,</span>
-            <span class="nb">repr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">host</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="p">,</span> <span class="nb">repr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="p">)</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="Connection.stream"><a class="viewcode-back" href="../../autoapi/asynctnt/connection/index.html#asynctnt.connection.Connection.stream">[docs]</a>    <span class="k">def</span> <span class="nf">stream</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Stream</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">            Create new stream suitable for interactive transactions</span>
+
+<div class="viewcode-block" id="Connection.stream">
+<a class="viewcode-back" href="../../autoapi/asynctnt/index.html#asynctnt.connection.Connection.stream">[docs]</a>
+    <span class="k">def</span> <span class="nf">stream</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Stream</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create new stream suitable for interactive transactions</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">stream</span> <span class="o">=</span> <span class="n">Stream</span><span class="p">()</span>
         <span class="n">db</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_protocol</span><span class="o">.</span><span class="n">create_db</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
         <span class="n">stream</span><span class="o">.</span><span class="n">_set_db</span><span class="p">(</span><span class="n">db</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">stream</span></div></div>
+        <span class="k">return</span> <span class="n">stream</span></div>
+</div>
 
 
-<span class="k">def</span> <span class="nf">_create_future</span><span class="p">(</span><span class="n">loop</span><span class="p">):</span>
-    <span class="k">try</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">loop</span><span class="o">.</span><span class="n">create_future</span><span class="p">()</span>
-    <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>  <span class="c1"># pragma: nocover</span>
-        <span class="k">return</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Future</span><span class="p">(</span><span class="n">loop</span><span class="o">=</span><span class="n">loop</span><span class="p">)</span>
 
+<div class="viewcode-block" id="connect">
+<a class="viewcode-back" href="../../autoapi/asynctnt/index.html#asynctnt.connection.connect">[docs]</a>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">connect</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Connection</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    connect shorthand. See :class:`asynctnt.Connection` for kwargs details</span>
 
-<div class="viewcode-block" id="connect"><a class="viewcode-back" href="../../autoapi/asynctnt/index.html#asynctnt.connection.connect">[docs]</a><span class="k">async</span> <span class="k">def</span> <span class="nf">connect</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Connection</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        connect shorthand. See :class:`asynctnt.Connection` for kwargs details</span>
-
-<span class="sd">        :return: :class:`asynctnt.Connection` object</span>
+<span class="sd">    :return: :class:`asynctnt.Connection` object</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="k">await</span> <span class="n">Connection</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span></div>
+
 </pre></div>
 
            </div>

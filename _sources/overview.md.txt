@@ -11,8 +11,8 @@ asynctnt is a high-performance [Tarantool](https://tarantool.org/) database
 connector library for Python/asyncio. It was highly inspired by
 [asyncpg](https://github.com/MagicStack/asyncpg) module.
 
-asynctnt requires Python 3.6 or later and is supported for Tarantool
-versions 1.6+.
+asynctnt requires Python 3.7 or later and is supported for Tarantool
+versions 1.10+.
 
 
 ## Installation

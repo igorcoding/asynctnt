@@ -19,28 +19,29 @@ Classes
 
 .. py:class:: PreparedStatement(api: asynctnt.api.Api, query: str)
 
-   .. py:attribute:: __slots__
-      :annotation: = ['_api', '_query', '_stmt_id', '_params', '_params_count']
 
-      
-
-   .. py:method:: id() -> int
-      :property:
+   .. py:property:: id
+      :type: int
 
       Prepared statement id
 
 
-   .. py:method:: params_count() -> int
-      :property:
+   .. py:property:: params_count
+      :type: int
 
       Bound params count
 
 
-   .. py:method:: params() -> Optional[asynctnt.iproto.protocol.Metadata]
-      :property:
+   .. py:property:: params
+      :type: Optional[asynctnt.iproto.protocol.Metadata]
 
       Bound params metadata
 
+
+   .. py:attribute:: __slots__
+      :value: ('_api', '_query', '_stmt_id', '_params', '_params_count')
+
+      
 
    .. py:method:: prepare(timeout: float = -1.0) -> int
       :async:

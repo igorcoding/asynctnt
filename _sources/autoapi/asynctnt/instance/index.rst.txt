@@ -23,16 +23,18 @@ Classes
 
 .. py:class:: TarantoolInstanceProtocol(tnt, on_exit)
 
+
    Bases: :py:obj:`asyncio.SubprocessProtocol`
 
    Interface for protocol for subprocess calls.
 
-   .. py:method:: logger()
-      :property:
+   .. py:property:: logger
 
 
-   .. py:method:: pid()
-      :property:
+   .. py:property:: pid
+
+
+   .. py:property:: returncode
 
 
    .. py:method:: connection_made(transport)
@@ -57,10 +59,6 @@ Classes
       Called when subprocess has exited.
 
 
-   .. py:method:: returncode()
-      :property:
-
-
    .. py:method:: wait()
       :async:
 
@@ -81,8 +79,30 @@ Classes
 
 .. py:class:: TarantoolInstance(*, host='127.0.0.1', port=3301, console_host=None, console_port=3302, replication_source=None, title=None, logger=None, log_level=5, slab_alloc_arena=0.1, wal_mode='none', root=None, specify_work_dir=True, cleanup=True, initlua_template=None, applua='-- app.lua --', extra_box_cfg='', timeout=5.0, command_to_run='tarantool', command_args=None)
 
-   .. py:method:: replication_source()
-      :property:
+
+   .. py:property:: replication_source
+
+
+   .. py:property:: logger
+
+
+   .. py:property:: fingerprint
+
+
+   .. py:property:: host
+
+
+   .. py:property:: port
+
+
+   .. py:property:: console_port
+
+
+   .. py:property:: is_running
+
+
+   .. py:property:: pid
+      :abstractmethod:
 
 
    .. py:method:: _random_string(length, *, source=string.ascii_uppercase + string.ascii_lowercase + string.digits)
@@ -107,35 +127,7 @@ Classes
    .. py:method:: _save_initlua(initlua)
 
 
-   .. py:method:: logger()
-      :property:
-
-
-   .. py:method:: fingerprint()
-      :property:
-
-
    .. py:method:: prepare(recreate)
-
-
-   .. py:method:: host()
-      :property:
-
-
-   .. py:method:: port()
-      :property:
-
-
-   .. py:method:: console_port()
-      :property:
-
-
-   .. py:method:: is_running()
-      :property:
-
-
-   .. py:method:: pid()
-      :property:
 
 
    .. py:method:: command(cmd, print_greeting=True)
@@ -164,10 +156,18 @@ Classes
 
 .. py:class:: TarantoolSyncInstance(**kwargs)
 
+
    Bases: :py:obj:`TarantoolInstance`
 
+   .. py:property:: pid
+
+
+   .. py:property:: bin_version
+      :type: Optional[tuple]
+
+
    .. py:attribute:: WAIT_TIMEOUT
-      :annotation: = 5
+      :value: 5
 
       
 
@@ -175,10 +175,6 @@ Classes
 
 
    .. py:method:: __exit__(exc_type, exc_val, exc_tb)
-
-
-   .. py:method:: pid()
-      :property:
 
 
    .. py:method:: start(*, wait=True, recreate=True)
@@ -209,20 +205,16 @@ Classes
    .. py:method:: version() -> Optional[tuple]
 
 
-   .. py:method:: bin_version() -> Optional[tuple]
-      :property:
-
-
    .. py:method:: command(cmd, print_greeting=True)
 
 
 
 .. py:class:: TarantoolAsyncInstance(**kwargs)
 
+
    Bases: :py:obj:`TarantoolInstance`
 
-   .. py:method:: pid()
-      :property:
+   .. py:property:: pid
 
 
    .. py:method:: prepare(recreate)
@@ -263,10 +255,11 @@ Classes
 
 .. py:class:: TarantoolSyncDockerInstance(*, docker_image=None, docker_tag=None, host='0.0.0.0', port=3301, console_host=None, console_port=3302, replication_source=None, title=None, logger=None, log_level=5, slab_alloc_arena=0.1, wal_mode='none', initlua_template=None, applua='-- app.lua --', timeout=10.0)
 
+
    Bases: :py:obj:`TarantoolSyncInstance`
 
-   .. py:method:: bin_version() -> Optional[tuple]
-      :property:
+   .. py:property:: bin_version
+      :type: Optional[tuple]
 
 
 

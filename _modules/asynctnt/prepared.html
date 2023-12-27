@@ -1,21 +1,23 @@
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="../../">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>asynctnt.prepared &mdash; asynctnt 2.0.1 documentation</title>
-      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
-      <link rel="stylesheet" href="../../_static/graphviz.css" type="text/css" />
+  <title>asynctnt.prepared &mdash; asynctnt 2.1.0a1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=eafc0fe6" />
+
+  
   <!--[if lt IE 9]>
     <script src="../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-        <script src="../../_static/jquery.js"></script>
-        <script src="../../_static/underscore.js"></script>
-        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../_static/documentation_options.js?v=693f9624"></script>
+        <script src="../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
@@ -26,14 +28,18 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="../../index.html" class="icon icon-home"> asynctnt
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            asynctnt
           </a>
               <div class="version">
-                2.0.1
+                2.1.0a1
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -66,10 +72,10 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
-          <li><a href="../index.html">Module code</a> &raquo;</li>
-          <li><a href="../asynctnt.html">asynctnt</a> &raquo;</li>
-      <li>asynctnt.prepared</li>
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+          <li class="breadcrumb-item"><a href="../asynctnt.html">asynctnt</a></li>
+      <li class="breadcrumb-item active">asynctnt.prepared</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -79,7 +85,7 @@
            <div itemprop="articleBody">
              
   <h1>Source code for asynctnt.prepared</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">TYPE_CHECKING</span>
+<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">from</span> <span class="nn">.iproto</span> <span class="kn">import</span> <span class="n">protocol</span>
 
@@ -87,13 +93,15 @@
     <span class="kn">from</span> <span class="nn">.api</span> <span class="kn">import</span> <span class="n">Api</span>
 
 
-<div class="viewcode-block" id="PreparedStatement"><a class="viewcode-back" href="../../autoapi/asynctnt/prepared/index.html#asynctnt.prepared.PreparedStatement">[docs]</a><span class="k">class</span> <span class="nc">PreparedStatement</span><span class="p">:</span>
-<div class="viewcode-block" id="PreparedStatement.__slots__"><a class="viewcode-back" href="../../autoapi/asynctnt/prepared/index.html#asynctnt.prepared.PreparedStatement.__slots__">[docs]</a>    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="s1">&#39;_api&#39;</span><span class="p">,</span> <span class="s1">&#39;_query&#39;</span><span class="p">,</span> <span class="s1">&#39;_stmt_id&#39;</span><span class="p">,</span>
-        <span class="s1">&#39;_params&#39;</span><span class="p">,</span> <span class="s1">&#39;_params_count&#39;</span>
-    <span class="p">)</span></div>
+<div class="viewcode-block" id="PreparedStatement">
+<a class="viewcode-back" href="../../autoapi/asynctnt/prepared/index.html#asynctnt.prepared.PreparedStatement">[docs]</a>
+<span class="k">class</span> <span class="nc">PreparedStatement</span><span class="p">:</span>
+<div class="viewcode-block" id="PreparedStatement.__slots__">
+<a class="viewcode-back" href="../../autoapi/asynctnt/prepared/index.html#asynctnt.prepared.PreparedStatement.__slots__">[docs]</a>
+    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;_api&quot;</span><span class="p">,</span> <span class="s2">&quot;_query&quot;</span><span class="p">,</span> <span class="s2">&quot;_stmt_id&quot;</span><span class="p">,</span> <span class="s2">&quot;_params&quot;</span><span class="p">,</span> <span class="s2">&quot;_params_count&quot;</span><span class="p">)</span></div>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">api</span><span class="p">:</span> <span class="s1">&#39;Api&#39;</span><span class="p">,</span> <span class="n">query</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">api</span><span class="p">:</span> <span class="s2">&quot;Api&quot;</span><span class="p">,</span> <span class="n">query</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_api</span> <span class="o">=</span> <span class="n">api</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_query</span> <span class="o">=</span> <span class="n">query</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_stmt_id</span> <span class="o">=</span> <span class="kc">None</span>
@@ -101,28 +109,39 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_params_count</span> <span class="o">=</span> <span class="mi">0</span>
 
     <span class="nd">@property</span>
-<div class="viewcode-block" id="PreparedStatement.id"><a class="viewcode-back" href="../../autoapi/asynctnt/prepared/index.html#asynctnt.prepared.PreparedStatement.id">[docs]</a>    <span class="k">def</span> <span class="nf">id</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">            Prepared statement id</span>
+<div class="viewcode-block" id="PreparedStatement.id">
+<a class="viewcode-back" href="../../autoapi/asynctnt/prepared/index.html#asynctnt.prepared.PreparedStatement.id">[docs]</a>
+    <span class="k">def</span> <span class="nf">id</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Prepared statement id</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stmt_id</span></div>
 
+
     <span class="nd">@property</span>
-<div class="viewcode-block" id="PreparedStatement.params_count"><a class="viewcode-back" href="../../autoapi/asynctnt/prepared/index.html#asynctnt.prepared.PreparedStatement.params_count">[docs]</a>    <span class="k">def</span> <span class="nf">params_count</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">            Bound params count</span>
+<div class="viewcode-block" id="PreparedStatement.params_count">
+<a class="viewcode-back" href="../../autoapi/asynctnt/prepared/index.html#asynctnt.prepared.PreparedStatement.params_count">[docs]</a>
+    <span class="k">def</span> <span class="nf">params_count</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Bound params count</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_params_count</span></div>
 
+
     <span class="nd">@property</span>
-<div class="viewcode-block" id="PreparedStatement.params"><a class="viewcode-back" href="../../autoapi/asynctnt/prepared/index.html#asynctnt.prepared.PreparedStatement.params">[docs]</a>    <span class="k">def</span> <span class="nf">params</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">protocol</span><span class="o">.</span><span class="n">Metadata</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">            Bound params metadata</span>
+<div class="viewcode-block" id="PreparedStatement.params">
+<a class="viewcode-back" href="../../autoapi/asynctnt/prepared/index.html#asynctnt.prepared.PreparedStatement.params">[docs]</a>
+    <span class="k">def</span> <span class="nf">params</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">protocol</span><span class="o">.</span><span class="n">Metadata</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Bound params metadata</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_params</span></div>
 
-<div class="viewcode-block" id="PreparedStatement.prepare"><a class="viewcode-back" href="../../autoapi/asynctnt/prepared/index.html#asynctnt.prepared.PreparedStatement.prepare">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">prepare</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="PreparedStatement.prepare">
+<a class="viewcode-back" href="../../autoapi/asynctnt/prepared/index.html#asynctnt.prepared.PreparedStatement.prepare">[docs]</a>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">prepare</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Prepare statement</span>
 
 <span class="sd">        :param timeout: request timeout</span>
@@ -134,12 +153,17 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_params_count</span> <span class="o">=</span> <span class="n">resp</span><span class="o">.</span><span class="n">params_count</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stmt_id</span></div>
 
-<div class="viewcode-block" id="PreparedStatement.execute"><a class="viewcode-back" href="../../autoapi/asynctnt/prepared/index.html#asynctnt.prepared.PreparedStatement.execute">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
-                      <span class="n">args</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">Any</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                      <span class="o">*</span><span class="p">,</span>
-                      <span class="n">parse_metadata</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-                      <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">protocol</span><span class="o">.</span><span class="n">Response</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="PreparedStatement.execute">
+<a class="viewcode-back" href="../../autoapi/asynctnt/prepared/index.html#asynctnt.prepared.PreparedStatement.execute">[docs]</a>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">execute</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">args</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">Any</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">parse_metadata</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">protocol</span><span class="o">.</span><span class="n">Response</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Execute this prepared statement with specified args</span>
 <span class="sd">        :param args: arguments list</span>
 <span class="sd">        :param parse_metadata: whether to parse response metadata or not</span>
@@ -152,26 +176,37 @@
             <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">,</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="PreparedStatement.unprepare"><a class="viewcode-back" href="../../autoapi/asynctnt/prepared/index.html#asynctnt.prepared.PreparedStatement.unprepare">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">unprepare</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="PreparedStatement.unprepare">
+<a class="viewcode-back" href="../../autoapi/asynctnt/prepared/index.html#asynctnt.prepared.PreparedStatement.unprepare">[docs]</a>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">unprepare</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Unprepare current prepared statement</span>
 <span class="sd">        :param timeout: request timeout</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_api</span><span class="o">.</span><span class="n">unprepare_iproto</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_stmt_id</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_stmt_id</span> <span class="o">=</span> <span class="kc">None</span></div>
 
-<div class="viewcode-block" id="PreparedStatement.__aenter__"><a class="viewcode-back" href="../../autoapi/asynctnt/prepared/index.html#asynctnt.prepared.PreparedStatement.__aenter__">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="fm">__aenter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">            If used as a Context Manager `prepare()` and `unprepare()` methods</span>
-<span class="sd">            are called automatically</span>
+
+<div class="viewcode-block" id="PreparedStatement.__aenter__">
+<a class="viewcode-back" href="../../autoapi/asynctnt/prepared/index.html#asynctnt.prepared.PreparedStatement.__aenter__">[docs]</a>
+    <span class="k">async</span> <span class="k">def</span> <span class="fm">__aenter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        If used as a Context Manager `prepare()` and `unprepare()` methods</span>
+<span class="sd">        are called automatically</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stmt_id</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">prepare</span><span class="p">()</span>
         <span class="k">return</span> <span class="bp">self</span></div>
 
-<div class="viewcode-block" id="PreparedStatement.__aexit__"><a class="viewcode-back" href="../../autoapi/asynctnt/prepared/index.html#asynctnt.prepared.PreparedStatement.__aexit__">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="fm">__aexit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exc_type</span><span class="p">,</span> <span class="n">exc_val</span><span class="p">,</span> <span class="n">exc_tb</span><span class="p">):</span>
+
+<div class="viewcode-block" id="PreparedStatement.__aexit__">
+<a class="viewcode-back" href="../../autoapi/asynctnt/prepared/index.html#asynctnt.prepared.PreparedStatement.__aexit__">[docs]</a>
+    <span class="k">async</span> <span class="k">def</span> <span class="fm">__aexit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exc_type</span><span class="p">,</span> <span class="n">exc_val</span><span class="p">,</span> <span class="n">exc_tb</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stmt_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">unprepare</span><span class="p">()</span></div></div>
+            <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">unprepare</span><span class="p">()</span></div>
+</div>
+
 </pre></div>
 
            </div>
