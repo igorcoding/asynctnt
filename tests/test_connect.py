@@ -753,7 +753,7 @@ class ConnectTestCase(BaseTarantoolTestCase):
             await conn.connect()
 
         err_code = ErrorCode.ER_PASSWORD_MISMATCH
-        if version < (2, 11):
+        if version < (2, 10):
             err_code = ErrorCode.ER_NO_SUCH_USER
         self.assertEqual(e.exception.code, err_code)
 
