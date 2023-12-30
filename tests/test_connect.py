@@ -802,3 +802,52 @@ class ConnectTestCase(BaseTarantoolTestCase):
                 await conn.call("box.info")
         finally:
             await conn.disconnect()
+
+    async def test__features(self):
+        async with asynctnt.Connection(host=self.tnt.host, port=self.tnt.port) as conn:
+            if not check_version(
+                self,
+                conn.version,
+                min=(2, 10),
+                max=(3, 0),
+                min_included=True,
+                max_included=False,
+            ):
+                return
+
+            self.assertIsNotNone(conn.features)
+            self.assertTrue(conn.features.streams)
+            self.assertTrue(conn.features.watchers)
+            self.assertTrue(conn.features.error_extension)
+            self.assertTrue(conn.features.transactions)
+            self.assertTrue(conn.features.pagination)
+
+            self.assertFalse(conn.features.space_and_index_names)
+            self.assertFalse(conn.features.watch_once)
+            self.assertFalse(conn.features.dml_tuple_extension)
+            self.assertFalse(conn.features.call_ret_tuple_extension)
+            self.assertFalse(conn.features.call_arg_tuple_extension)
+
+    async def test__features_3_0(self):
+        async with asynctnt.Connection(host=self.tnt.host, port=self.tnt.port) as conn:
+            if not check_version(
+                self,
+                conn.version,
+                min=(3, 0),
+                min_included=True,
+                max_included=False,
+            ):
+                return
+
+            self.assertIsNotNone(conn.features)
+            self.assertTrue(conn.features.streams)
+            self.assertTrue(conn.features.watchers)
+            self.assertTrue(conn.features.error_extension)
+            self.assertTrue(conn.features.transactions)
+            self.assertTrue(conn.features.pagination)
+
+            self.assertTrue(conn.features.space_and_index_names)
+            self.assertTrue(conn.features.watch_once)
+            self.assertTrue(conn.features.dml_tuple_extension)
+            self.assertTrue(conn.features.call_ret_tuple_extension)
+            self.assertTrue(conn.features.call_arg_tuple_extension)

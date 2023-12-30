@@ -11,6 +11,24 @@ from asynctnt.log import logger
 
 
 @cython.final
+cdef class IProtoFeatures:
+    def __repr__(self):
+        return (f"<IProtoFeatures"
+                f" streams={self.streams}"
+                f" transactions={self.transactions}"
+                f" error_extension={self.error_extension}"
+                f" watchers={self.watchers}"
+                f" pagination={self.pagination}"
+                f" space_and_index_names={self.space_and_index_names}"
+                f" watch_once={self.watch_once}"
+                f" dml_tuple_extension={self.dml_tuple_extension}"
+                f" call_ret_tuple_extension={self.call_ret_tuple_extension}"
+                f" call_arg_tuple_extension={self.call_arg_tuple_extension}"
+                f">"
+                )
+
+
+@cython.final
 @cython.freelist(REQUEST_FREELIST)
 cdef class Response:
     """
@@ -26,6 +44,7 @@ cdef class Response:
         self.errmsg = None
         self.error = None
         self._rowcount = 0
+        self.result_ = None
         self.body = None
         self.encoding = None
         self.metadata = None
@@ -451,6 +470,7 @@ cdef ssize_t response_parse_body(const char *buf, uint32_t buf_len,
         const char *s
         list data
         Field field
+        IProtoFeatures features
 
     b = <const char *> buf
     # mp_fprint(stdio.stdout, b)
@@ -540,7 +560,33 @@ cdef ssize_t response_parse_body(const char *buf, uint32_t buf_len,
             logger.debug("IProto version: %s", _decode_obj(&b, resp.encoding))
 
         elif key == tarantool.IPROTO_FEATURES:
-            logger.debug("IProto features available: %s", _decode_obj(&b, resp.encoding))
+            features = <IProtoFeatures> IProtoFeatures.__new__(IProtoFeatures)
+
+            for item in _decode_obj(&b, resp.encoding):
+                if item == 0:
+                    features.streams = 1
+                elif item == 1:
+                    features.transactions = 1
+                elif item == 2:
+                    features.error_extension = 1
+                elif item == 3:
+                    features.watchers = 1
+                elif item == 4:
+                    features.pagination = 1
+                elif item == 5:
+                    features.space_and_index_names = 1
+                elif item == 6:
+                    features.watch_once = 1
+                elif item == 7:
+                    features.dml_tuple_extension = 1
+                elif item == 8:
+                    features.call_ret_tuple_extension = 1
+                elif item == 9:
+                    features.call_arg_tuple_extension = 1
+                else:
+                    logger.debug("unknown iproto feature available: %d", item)
+
+            resp.result_ = features
 
         elif key == tarantool.IPROTO_AUTH_TYPE:
             logger.debug("IProto auth type: %s", _decode_obj(&b, resp.encoding))

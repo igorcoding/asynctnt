@@ -444,7 +444,7 @@ class Connection(Api):
         await self.disconnect()
         await self.connect()
 
-    async def __aenter__(self):
+    async def __aenter__(self) -> "Connection":
         """
         Executed on entering the async with section.
         Connects to Tarantool instance.
@@ -606,7 +606,7 @@ class Connection(Api):
             Api.call = Api.call16
             Connection.call = Connection.call16
 
-        if self.version < (2, 10):  # pragma: nocover
+        if not self.features.streams:  # pragma: nocover
 
             def stream_stub(_):
                 raise TarantoolError("streams are available only in Tarantool 2.10+")
@@ -626,6 +626,14 @@ class Connection(Api):
         db = self._protocol.create_db(True)
         stream._set_db(db)
         return stream
+
+    @property
+    def features(self) -> protocol.IProtoFeatures:
+        """
+        Lookup available Tarantool features - https://www.tarantool.io/en/doc/latest/reference/reference_lua/box_iproto/feature/
+        :return:
+        """
+        return self._protocol.features
 
 
 async def connect(**kwargs) -> Connection:

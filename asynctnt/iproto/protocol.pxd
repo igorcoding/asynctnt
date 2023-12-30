@@ -73,6 +73,7 @@ cdef class BaseProtocol(CoreProtocol):
         bint _schema_fetch_in_progress
         object _refetch_schema_future
         Db _db
+        IProtoFeatures _features
         req_execute_func execute
 
         object create_future

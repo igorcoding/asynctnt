@@ -27,6 +27,7 @@ cdef class Response:
         bint _push_subscribe
         BaseRequest request_
         object _exception
+        object result_
 
         readonly object _q
         readonly object _push_event
@@ -51,3 +52,16 @@ cdef ssize_t response_parse_header(const char *buf, uint32_t buf_len,
 cdef ssize_t response_parse_body(const char *buf, uint32_t buf_len,
                                  Response resp, BaseRequest req,
                                  bint is_chunk) except -1
+
+cdef class IProtoFeatures:
+    cdef:
+        readonly bint streams
+        readonly bint transactions
+        readonly bint error_extension
+        readonly bint watchers
+        readonly bint pagination
+        readonly bint space_and_index_names
+        readonly bint watch_once
+        readonly bint dml_tuple_extension
+        readonly bint call_ret_tuple_extension
+        readonly bint call_arg_tuple_extension

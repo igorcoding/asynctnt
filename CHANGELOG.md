@@ -3,6 +3,7 @@
 ## v2.3.0
 **New features:**
 * Added support for [interval types](https://www.tarantool.io/en/doc/latest/reference/reference_lua/datetime/interval_object/) [#30](https://github.com/igorcoding/asynctnt/issues/30)
+* Added ability to retrieve IProto features [available](https://www.tarantool.io/en/doc/latest/reference/reference_lua/box_iproto/feature/) in Tarantool using `conn.features` property
 
 
 ## v2.2.0
