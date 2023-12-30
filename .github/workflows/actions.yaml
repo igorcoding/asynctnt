@@ -57,7 +57,7 @@ jobs:
       - name: Install tarantool ${{ matrix.tarantool }} on MacOS
         if: matrix.os == 'macos-latest'
         run: |
-          brew install icu4c libyaml 'openssl@3' readline zstd
+          brew install icu4c libyaml openssl@3 readline zstd
           sudo tt install tarantool ${{ matrix.tarantool }}
 
       - name: Install dependencies
@@ -69,7 +69,7 @@ jobs:
           make build && make lint && make quicktest
 
       - name: Run deep test
-        if: ${{ matrix.os == 'ubuntu-latest' && matrix.python-version == "3.12" && matrix.tarantool == "2.11.2" }}
+        if: ${{ matrix.os == 'ubuntu-latest' && matrix.python-version == '3.12' && matrix.tarantool == '2.11.2' }}
         run: |
           make build && make test
           make clean && make debug && make coverage
