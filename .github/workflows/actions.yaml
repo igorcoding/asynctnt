@@ -53,7 +53,7 @@ jobs:
       - name: Install tarantool ${{ matrix.tarantool }}
         if: matrix.os == 'macos-latest'
         run: |
-          tt install ${{ matrix.tarantool }}
+          tt install tarantool ${{ matrix.tarantool }}
 
       - name: Install dependencies
         run: |
