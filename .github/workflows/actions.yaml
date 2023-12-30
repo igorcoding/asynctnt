@@ -57,7 +57,7 @@ jobs:
       - name: Install tarantool ${{ matrix.tarantool }} on MacOS
         if: matrix.os == 'macos-latest'
         run: |
-          brew install icu4c libyaml openssl@3 readline zstd
+          brew install icu4c libyaml 'openssl@3' readline zstd
           sudo tt install tarantool ${{ matrix.tarantool }}
 
       - name: Install dependencies
