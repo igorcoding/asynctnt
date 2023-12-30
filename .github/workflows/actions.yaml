@@ -8,7 +8,11 @@ jobs:
       matrix:
         os: [ ubuntu-latest, macos-latest ]
         python-version: ['3.7', '3.8', '3.9', '3.10', '3.11', '3.12', 'pypy3.10']
-        tarantool: ['1.10', '2']
+        tarantool:
+          - '1.10'
+          - '2.8'
+          - '2.10'
+          - '2.11'
         exclude:
           - os: macos-latest
             tarantool: '1.10'
@@ -25,20 +29,28 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
-      - name: Install Tarantool ${{ matrix.tarantool }}
+      - name: Setup tt
         run: |
-          if [ "$RUNNER_OS" == "Linux" ]; then
-            curl -L https://tarantool.io/nTmSHOX/release/${{ matrix.tarantool }}/installer.sh | bash
-            sudo apt-get -y install tarantool
-          elif [ "$RUNNER_OS" == "macOS" ]; then
-            brew install tarantool
-          else
-            echo "$RUNNER_OS not supported"
-            exit 1
-          fi
+          curl -L https://tarantool.io/release/2/installer.sh | sudo bash
+          sudo apt install -y tt
+          tt version
+          tt init
+
+      - name: Install tarantool ${{ matrix.tarantool }}
+        if: ${{ matrix.tarantool != 'master' && matrix.os == 'ubuntu-latest' }}
+        uses: tarantool/setup-tarantool@v2
+        with:
+          tarantool-version: ${{ matrix.tarantool }}
+
+      - name: Install tarantool ${{ matrix.tarantool }}
+        if: matrix.os == 'macos-latest'
+        run: |
+          tt install ${{ matrix.tarantool }}
+
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip setuptools wheel coveralls
+
       - name: Run tests
         run: |
           if [[ "$RUNNER_OS" == "Linux" && ${{ matrix.python-version }} == "3.12" && ${{ matrix.tarantool }} == "2" ]]; then
