@@ -8,12 +8,16 @@ jobs:
       matrix:
         os: [ ubuntu-latest, macos-latest ]
         python-version: ['3.7', '3.8', '3.9', '3.10', '3.11', '3.12', 'pypy3.10']
-        tarantool: ['1.10', '2']
+        tarantool: ['1.10', '2', '3']
         exclude:
           - os: macos-latest
             tarantool: '1.10'
+          - os: macos-latest
+            tarantool: '3'
           - python-version: 'pypy3.10'
             tarantool: '1.10'
+          - python-version: 'pypy3.10'
+            tarantool: '3'
 
     runs-on: ${{ matrix.os }}
 
@@ -28,7 +32,7 @@ jobs:
       - name: Install Tarantool ${{ matrix.tarantool }}
         run: |
           if [ "$RUNNER_OS" == "Linux" ]; then
-            curl -L https://tarantool.io/nTmSHOX/release/${{ matrix.tarantool }}/installer.sh | bash
+            curl -L https://tarantool.io/release/${{ matrix.tarantool }}/installer.sh | bash
             sudo apt-get -y install tarantool
           elif [ "$RUNNER_OS" == "macOS" ]; then
             brew install tarantool

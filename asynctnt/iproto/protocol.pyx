@@ -98,6 +98,7 @@ cdef class BaseProtocol(CoreProtocol):
         self._schema_fetch_in_progress = False
         self._refetch_schema_future = None
         self._db = self._create_db(<bint> False)
+        self._features = IProtoFeatures.__new__(IProtoFeatures)
         self.execute = self._execute_bad
 
         try:
@@ -253,9 +254,7 @@ cdef class BaseProtocol(CoreProtocol):
                 return
             e = f.exception()
             if not e:
-                logger.debug('Tarantool[%s:%s] identified successfully',
-                             self.host, self.port)
-
+                self._features = (<Response> f.result()).result_
                 self.post_con_state = POST_CONNECTION_AUTH
                 self._post_con_state_machine()
             else:
@@ -514,6 +513,10 @@ cdef class BaseProtocol(CoreProtocol):
 
     def refetch_schema(self):
         return self._refetch_schema()
+
+    @property
+    def features(self) -> IProtoFeatures:
+        return self._features
 
 
 class Protocol(BaseProtocol, asyncio.Protocol):

@@ -42,7 +42,7 @@ class build_ext(setuptools_build_ext.build_ext):
             self.debug = True
             self.gdb_debug = True
         else:
-            self.cython_always = False
+            self.cython_always = True
             self.cython_annotate = None
             self.cython_directives = None
             self.gdb_debug = False
