@@ -35,7 +35,7 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
-      - name: Setup tt
+      - name: Setup tt on Linux
         if: matrix.os == 'ubuntu-latest'
         run: |
           curl -L https://tarantool.io/release/2/installer.sh | sudo bash
@@ -43,35 +43,37 @@ jobs:
           tt version
           tt init
 
-      - name: Setup tt
+      - name: Setup tt on MacOS
         if: matrix.os == 'macos-latest'
         run: |
           brew install tt
 
-      - name: Install tarantool ${{ matrix.tarantool }}
+      - name: Install tarantool ${{ matrix.tarantool }} on Linux
         if: ${{ matrix.tarantool != 'master' && matrix.os == 'ubuntu-latest' }}
         uses: tarantool/setup-tarantool@v2
         with:
           tarantool-version: ${{ matrix.tarantool }}
 
-      - name: Install tarantool ${{ matrix.tarantool }}
+      - name: Install tarantool ${{ matrix.tarantool }} on MacOS
         if: matrix.os == 'macos-latest'
         run: |
+          brew install icu4c libyaml openssl@3 readline zstd
           sudo tt install tarantool ${{ matrix.tarantool }}
 
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip setuptools wheel coveralls
 
-      - name: Run tests
+      - name: Run quicktest
         run: |
-          if [[ "$RUNNER_OS" == "Linux" && ${{ matrix.python-version }} == "3.12" && ${{ matrix.tarantool }} == "2.11.2" ]]; then
-              make build && make test
-              make clean && make debug && make coverage
-              # coveralls
-          else
-              make build && make lint && make quicktest
-          fi
+          make build && make lint && make quicktest
+
+      - name: Run deep test
+        if: ${{ matrix.os == 'ubuntu-latest' && matrix.python-version == "3.12" && matrix.tarantool == "2.11.2" }}
+        run: |
+          make build && make test
+          make clean && make debug && make coverage
+          # coveralls
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}"
 
