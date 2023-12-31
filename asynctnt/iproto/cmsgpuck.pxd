@@ -26,6 +26,9 @@ cdef extern from "../../third_party/msgpuck/msgpuck.h":
     cdef char *mp_store_u32(char *data, uint32_t val)
     cdef char *mp_store_u64(char *data, uint64_t val)
 
+    cdef ptrdiff_t mp_check_uint(const char *cur, const char *end)
+    cdef ptrdiff_t mp_check_int(const char *cur, const char *end)
+
     cdef mp_type mp_typeof(const char c)
 
     cdef uint32_t mp_sizeof_array(uint32_t size)
@@ -43,6 +46,7 @@ cdef extern from "../../third_party/msgpuck/msgpuck.h":
     cdef uint32_t mp_sizeof_int(int64_t num)
     cdef char *mp_encode_int(char *data, int64_t num)
     cdef int64_t mp_decode_int(const char **data)
+    cdef int mp_read_int64(const char **data, int64_t *ret)
 
     cdef uint32_t mp_sizeof_float(float num)
     cdef char *mp_encode_float(char *data, float num)

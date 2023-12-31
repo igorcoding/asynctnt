@@ -14,7 +14,11 @@ include "const.pxi"
 
 include "unicodeutil.pyx"
 include "schema.pyx"
-include "ext.pyx"
+include "ext/decimal.pyx"
+include "ext/uuid.pyx"
+include "ext/error.pyx"
+include "ext/datetime.pyx"
+include "ext/interval.pyx"
 include "buffer.pyx"
 include "rbuffer.pyx"
 

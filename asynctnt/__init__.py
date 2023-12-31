@@ -2,12 +2,14 @@
 
 from .connection import Connection, connect
 from .iproto.protocol import (
+    Adjust,
     Db,
     Field,
     IProtoError,
     IProtoErrorStackFrame,
     Iterator,
     Metadata,
+    MPInterval,
     PushIterator,
     Response,
     Schema,

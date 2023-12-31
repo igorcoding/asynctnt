@@ -1,6 +1,8 @@
 import asyncio
 from typing import Any, Dict, Iterator, List, Optional, Tuple, Union
 
+from asynctnt.iproto.protocol import Adjust
+
 class Field:
     name: Optional[str]
     """ Field name """
@@ -176,3 +178,28 @@ class Protocol:
     def is_connected(self) -> bool: ...
     def is_fully_connected(self) -> bool: ...
     def get_version(self) -> tuple: ...
+
+class MPInterval:
+    year: int
+    month: int
+    week: int
+    day: int
+    hour: int
+    min: int
+    sec: int
+    nsec: int
+    adjust: Adjust
+
+    def __init__(
+        self,
+        year: int = 0,
+        month: int = 0,
+        week: int = 0,
+        day: int = 0,
+        hour: int = 0,
+        min: int = 0,
+        sec: int = 0,
+        nsec: int = 0,
+        adjust: Adjust = Adjust.NONE,
+    ): ...
+    def __eq__(self, other) -> bool: ...
