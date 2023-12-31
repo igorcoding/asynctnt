@@ -10,7 +10,11 @@ include "bit.pxd"
 
 include "unicodeutil.pxd"
 include "schema.pxd"
-include "ext.pxd"
+include "ext/decimal.pxd"
+include "ext/uuid.pxd"
+include "ext/error.pxd"
+include "ext/datetime.pxd"
+include "ext/interval.pxd"
 include "buffer.pxd"
 include "rbuffer.pxd"
 

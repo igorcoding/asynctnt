@@ -2,12 +2,14 @@
 
 from .connection import Connection, connect
 from .iproto.protocol import (
+    Adjust,
     Db,
     Field,
     IProtoError,
     IProtoErrorStackFrame,
     Iterator,
     Metadata,
+    MPInterval,
     PushIterator,
     Response,
     Schema,
@@ -16,4 +18,4 @@ from .iproto.protocol import (
     TarantoolTuple,
 )
 
-__version__ = "2.2.0"
+__version__ = "2.3.0"

@@ -7,6 +7,7 @@ from decimal import Decimal
 import dateutil.parser
 import pytz
 
+import asynctnt
 from asynctnt import IProtoError
 from asynctnt.exceptions import ErrorCode, TarantoolDatabaseError
 from tests import BaseTarantoolTestCase
@@ -19,7 +20,7 @@ class DecimalTestCase:
     tarantool: str
 
 
-class MpExtTestCase(BaseTarantoolTestCase):
+class MpExtDecimalTestCase(BaseTarantoolTestCase):
     @ensure_version(min=(2, 2))
     async def test__decimal(self):
         space = "tester_ext_dec"
@@ -81,6 +82,8 @@ class MpExtTestCase(BaseTarantoolTestCase):
                 )
                 self.assertEqual(res[0], dec, "matches tarantool decimal")
 
+
+class MpExtUUIDTestCase(BaseTarantoolTestCase):
     @ensure_version(min=(2, 4, 1))
     async def test__uuid(self):
         space = "tester_ext_uuid"
@@ -109,6 +112,8 @@ class MpExtTestCase(BaseTarantoolTestCase):
         res = await self.conn.replace(space, [1, val])
         self.assertEqual(res[0][1], val)
 
+
+class MpExtErrorTestCase(BaseTarantoolTestCase):
     @ensure_version(min=(2, 4, 1))
     async def test__ext_error(self):
         try:
@@ -195,6 +200,8 @@ class MpExtTestCase(BaseTarantoolTestCase):
             """
             )
 
+
+class MpExtDatetimeTestCase(BaseTarantoolTestCase):
     @ensure_version(min=(2, 10))
     async def test__ext_datetime_read(self):
         resp = await self.conn.eval(
@@ -292,6 +299,271 @@ class MpExtTestCase(BaseTarantoolTestCase):
         resp = await self.conn.insert(sp, [1, dt])
         res = resp[0]
         self.assertEqual(dt, res["dt"])
+
+
+class MpExtIntervalTestCase(BaseTarantoolTestCase):
+    @ensure_version(min=(2, 10))
+    async def test__ext_interval_read(self):
+        resp = await self.conn.eval(
+            """
+            local datetime = require('datetime')
+            return  datetime.interval.new({
+                year=1,
+                month=2,
+                week=3,
+                day=4,
+                hour=5,
+                min=6,
+                sec=7,
+                nsec=8,
+            })
+        """
+        )
+        self.assertEqual(
+            asynctnt.MPInterval(
+                year=1,
+                month=2,
+                week=3,
+                day=4,
+                hour=5,
+                min=6,
+                sec=7,
+                nsec=8,
+            ),
+            resp[0],
+        )
+
+    @ensure_version(min=(2, 10))
+    async def test__ext_interval_read_adjust_last(self):
+        resp = await self.conn.eval(
+            """
+            local datetime = require('datetime')
+            return  datetime.interval.new({
+                year=1,
+                month=2,
+                week=3,
+                day=4,
+                hour=5,
+                min=6,
+                sec=7,
+                nsec=8,
+                adjust='last'
+            })
+        """
+        )
+        self.assertEqual(
+            asynctnt.MPInterval(
+                year=1,
+                month=2,
+                week=3,
+                day=4,
+                hour=5,
+                min=6,
+                sec=7,
+                nsec=8,
+                adjust=asynctnt.Adjust.LAST,
+            ),
+            resp[0],
+        )
+
+    @ensure_version(min=(2, 10))
+    async def test__ext_interval_read_adjust_excess(self):
+        resp = await self.conn.eval(
+            """
+            local datetime = require('datetime')
+            return  datetime.interval.new({
+                year=1,
+                month=2,
+                week=3,
+                day=4,
+                hour=5,
+                min=6,
+                sec=7,
+                nsec=8,
+                adjust='excess'
+            })
+        """
+        )
+        self.assertEqual(
+            asynctnt.MPInterval(
+                year=1,
+                month=2,
+                week=3,
+                day=4,
+                hour=5,
+                min=6,
+                sec=7,
+                nsec=8,
+                adjust=asynctnt.Adjust.EXCESS,
+            ),
+            resp[0],
+        )
+
+    @ensure_version(min=(2, 10))
+    async def test__ext_interval_read_all_negative(self):
+        resp = await self.conn.eval(
+            """
+            local datetime = require('datetime')
+            return  datetime.interval.new({
+                year=-1,
+                month=-2,
+                week=-3,
+                day=-4,
+                hour=-5,
+                min=-6,
+                sec=-7,
+                nsec=-8,
+                adjust='excess'
+            })
+        """
+        )
+        self.assertEqual(
+            asynctnt.MPInterval(
+                year=-1,
+                month=-2,
+                week=-3,
+                day=-4,
+                hour=-5,
+                min=-6,
+                sec=-7,
+                nsec=-8,
+                adjust=asynctnt.Adjust.EXCESS,
+            ),
+            resp[0],
+        )
+
+    @ensure_version(min=(2, 10))
+    async def test__ext_interval_read_all_mixed(self):
+        resp = await self.conn.eval(
+            """
+            local datetime = require('datetime')
+            return  datetime.interval.new({
+                year=1,
+                month=-2,
+                week=3,
+                day=-4,
+                hour=5,
+                min=-6,
+                sec=7,
+                nsec=-8,
+                adjust='excess'
+            })
+        """
+        )
+        self.assertEqual(
+            asynctnt.MPInterval(
+                year=1,
+                month=-2,
+                week=3,
+                day=-4,
+                hour=5,
+                min=-6,
+                sec=7,
+                nsec=-8,
+                adjust=asynctnt.Adjust.EXCESS,
+            ),
+            resp[0],
+        )
+
+    @ensure_version(min=(2, 10))
+    async def test__ext_interval_read_zeros(self):
+        resp = await self.conn.eval(
+            """
+            local datetime = require('datetime')
+            return  datetime.interval.new({})
+        """
+        )
+        self.assertEqual(
+            asynctnt.MPInterval(),
+            resp[0],
+        )
+
+    @ensure_version(min=(2, 10))
+    async def test__ext_interval_send(self):
+        resp = await self.conn.eval(
+            """
+            local args = {...}
+            local val = args[1]
+            local datetime = require('datetime')
+            return val == datetime.interval.new({
+                year=1,
+                month=-2,
+                week=3,
+                day=-4,
+                hour=5,
+                min=-6,
+                sec=7,
+                nsec=-8,
+            })
+        """,
+            [
+                asynctnt.MPInterval(
+                    year=1,
+                    month=-2,
+                    week=3,
+                    day=-4,
+                    hour=5,
+                    min=-6,
+                    sec=7,
+                    nsec=-8,
+                )
+            ],
+        )
+        self.assertTrue(resp[0])
+
+    @ensure_version(min=(2, 10))
+    async def test__ext_interval_send_excess(self):
+        resp = await self.conn.eval(
+            """
+            local args = {...}
+            local val = args[1]
+            local datetime = require('datetime')
+            return val == datetime.interval.new({
+                year=1,
+                month=-2,
+                week=3,
+                day=-4,
+                hour=5,
+                min=-6,
+                sec=7,
+                nsec=-8,
+                adjust='excess'
+            })
+        """,
+            [
+                asynctnt.MPInterval(
+                    year=1,
+                    month=-2,
+                    week=3,
+                    day=-4,
+                    hour=5,
+                    min=-6,
+                    sec=7,
+                    nsec=-8,
+                    adjust=asynctnt.Adjust.EXCESS,
+                )
+            ],
+        )
+        self.assertTrue(resp[0])
+
+    @ensure_version(min=(2, 10))
+    async def test__ext_interval_send_with_zeros(self):
+        resp = await self.conn.eval(
+            """
+            local args = {...}
+            local val = args[1]
+            local datetime = require('datetime')
+            return val == datetime.interval.new({
+                year=100,
+            })
+        """,
+            [
+                asynctnt.MPInterval(
+                    year=100,
+                )
+            ],
+        )
+        self.assertTrue(resp[0])
 
 
 def datetime_fromisoformat(s):

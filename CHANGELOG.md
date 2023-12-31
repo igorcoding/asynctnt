@@ -1,5 +1,10 @@
 # Changelog
 
+## v2.3.0
+**New features:**
+* Added support for [interval types](https://www.tarantool.io/en/doc/latest/reference/reference_lua/datetime/interval_object/) [#30](https://github.com/igorcoding/asynctnt/issues/30)
+
+
 ## v2.2.0
 **New features:**
 * Implemented ability to send update/upsert requests with field names when schema is disabled (`fetch_schema=False`) and when fields are not found in the schema (good example of this case is using json path like `data.inner1.inner2.key1` as a key)
