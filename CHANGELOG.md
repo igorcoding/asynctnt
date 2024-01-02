@@ -1,5 +1,9 @@
 # Changelog
 
+## v2.2.0
+**New features:**
+* Added support for [interval types](https://www.tarantool.io/en/doc/latest/reference/reference_lua/datetime/interval_object/) [#30](https://github.com/igorcoding/asynctnt/issues/30)
+
 ## v2.1.0
 **Breaking changes:**
 * Dropped support for Python 3.6

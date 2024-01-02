@@ -104,6 +104,7 @@ cdef enum mp_extension_type:
     MP_UUID = 2
     MP_ERROR = 3
     MP_DATETIME = 4
+    MP_INTERVAL = 6
 
 cdef enum iproto_features:
     IPROTO_FEATURE_STREAMS = 0

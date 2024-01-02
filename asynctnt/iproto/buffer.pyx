@@ -279,6 +279,20 @@ cdef class WriteBuffer:
         self._length += (p - begin)
         return p
 
+    cdef char *mp_encode_interval(self, char *p, MPInterval value) except NULL:
+        cdef:
+            char *begin
+            char *data_p
+            uint32_t length
+
+        length = interval_len(value)
+        p = begin = self._ensure_allocated(p, mp_sizeof_ext(length))
+        p = mp_encode_extl(p, tarantool.MP_INTERVAL, length)
+        p = interval_encode(p, value)
+
+        self._length += (p - begin)
+        return p
+
     cdef char *mp_encode_array(self, char *p, uint32_t len) except NULL:
         cdef char *begin
         p = begin = self._ensure_allocated(p, mp_sizeof_array(len))
@@ -405,6 +419,9 @@ cdef class WriteBuffer:
 
         elif isinstance(o, datetime):
             return self.mp_encode_datetime(p, o)
+
+        elif isinstance(o, MPInterval):
+            return self.mp_encode_interval(p, <MPInterval> o)
 
         elif isinstance(o, Decimal):
             return self.mp_encode_decimal(p, o)
