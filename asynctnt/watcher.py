@@ -7,12 +7,11 @@ if TYPE_CHECKING:
 nothing = object()
 
 
-class Watcher:
+class QueueWatcher:
     def __init__(self, api: "Api", key: str):
         self._api = api
         self._key = key
-        self._event = asyncio.Event()
-        self._data = nothing
+        self._queue = asyncio.Queue()
         self._on_unwatch_callback = None
         self._alive = True
 
@@ -30,7 +29,6 @@ class Watcher:
         await self._api.unwatch_iproto(self._key)
         self._alive = False
         self._data = nothing
-        self._event.clear()
         if self._on_unwatch_callback is not None:
             self._on_unwatch_callback(self)
 
@@ -39,15 +37,11 @@ class Watcher:
             raise StopAsyncIteration
 
         await self.watch()
-        await self._event.wait()
-        data = self._data
-        self._data = nothing
-        self._event.clear()
-        return data
+        return await self._queue.get()
 
     def _cb(self, key: str, data: Any):
-        self._data = data
-        self._event.set()
+        self._queue.put_nowait(data)
+        print("got event", key, data)
 
     async def __aenter__(self):
         self._alive = True

@@ -139,7 +139,8 @@ cdef class WriteBuffer:
             uint32_t map_size
         self.ensure_allocated(HEADER_CONST_LEN)
 
-        map_size = 2 \
+        map_size = 1 \
+                    + (<uint32_t> (sync > 0)) \
                     + (<uint32_t> (schema_id > 0)) \
                     + (<uint32_t> (stream_id > 0))
 
@@ -147,8 +148,10 @@ cdef class WriteBuffer:
         p = mp_encode_map(&p[5], map_size)
         p = mp_encode_uint(p, tarantool.IPROTO_REQUEST_TYPE)
         p = mp_encode_uint(p, <uint32_t> op)
-        p = mp_encode_uint(p, tarantool.IPROTO_SYNC)
-        p = mp_encode_uint(p, sync)
+
+        if sync > 0:
+            p = mp_encode_uint(p, tarantool.IPROTO_SYNC)
+            p = mp_encode_uint(p, sync)
 
         if schema_id > 0:  # pragma: nocover  # asynctnt does not send schema_id
             p = mp_encode_uint(p, tarantool.IPROTO_SCHEMA_VERSION)

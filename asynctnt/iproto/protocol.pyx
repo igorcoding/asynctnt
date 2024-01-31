@@ -10,6 +10,7 @@ import asyncio
 import enum
 
 from asynctnt.exceptions import TarantoolNotConnectedError
+from collections import defaultdict
 
 include "const.pxi"
 
@@ -37,6 +38,7 @@ include "requests/watchers.pyx"
 
 include "ttuple.pyx"
 include "response.pyx"
+include "watcher.pyx"
 include "db.pyx"
 include "push.pyx"
 
@@ -93,7 +95,7 @@ cdef class BaseProtocol(CoreProtocol):
         self._on_request_timeout_cb = self._on_request_timeout
 
         self._reqs = {}
-        self._watchers = {}
+        self._watchers = defaultdict(list)
         self._sync = 0
         self._last_stream_id = 0
         self._schema_id = -1
@@ -270,6 +272,7 @@ cdef class BaseProtocol(CoreProtocol):
 
             str key
             object data
+            Watcher c_watcher
 
         ev.key = NULL
         ev.data = NULL
@@ -289,14 +292,26 @@ cdef class BaseProtocol(CoreProtocol):
             data = <object> ev.data
             cpython.Py_XDECREF(ev.data)
 
-        cb_p = cpython.dict.PyDict_GetItem(self._watchers, key)
-        if cb_p is NULL:
-            logger.warning('watcher %s not found', key)
+        watchers = self._watchers[key]
+        if len(watchers) == 0:
+            logger.warning('no watchers for key %s found', key)
             return
 
-        cb = <object> cb_p
-        cpython.dict.PyDict_DelItem(self._watchers, key)
-        cb(key, data)
+        for watcher in watchers:
+            c_watcher = <Watcher> watcher
+            c_watcher.c_cb(data)
+
+        # Acknowledge the event by sending watch again
+        self._db._watch_raw(key)
+
+        # cb_p = cpython.dict.PyDict_GetItem(self._watchers, key)
+        # if cb_p is NULL:
+        #     logger.warning('watcher %s not found', key)
+        #     return
+
+        # cb = <object> cb_p
+        # cpython.dict.PyDict_DelItem(self._watchers, key)
+        # cb(key, data)
 
     cdef void _do_id(self):
         fut = self._db._id(0.0)
@@ -530,6 +545,12 @@ cdef class BaseProtocol(CoreProtocol):
     def get_common_db(self):
         return self._db
 
+    cdef void write_request(self, BaseRequest req) except *:
+        cdef WriteBuffer data
+        data = req.encode(self.encoding)
+        print('before write')
+        self._write(data)
+
     cdef object _execute_bad(self, BaseRequest req, float timeout):
         raise TarantoolNotConnectedError('Tarantool is not connected')
 
@@ -541,18 +562,25 @@ cdef class BaseProtocol(CoreProtocol):
         if req.push_subscribe:
             response.init_push()
         cpython.dict.PyDict_SetItem(self._reqs, req.sync, response)
-        self._write(req.encode(self.encoding))
+
+        self.write_request(req)
 
         return self._new_waiter_for_request(response, req, timeout)
 
-    cdef void execute_watch(self, BaseRequest req, str key, object cb):
-        cpython.dict.PyDict_SetItem(self._watchers, key, cb)
-        self._write(req.encode(self.encoding))
+    cdef void track_watcher(self, Watcher watcher):
+        watcher.c_set_on_unwatch(on_watcher_unwatch, self)
+        self._watchers[watcher.key_].append(watcher)
 
-    cdef void execute_unwatch(self, BaseRequest req, str key):
-        self._write(req.encode(self.encoding))
-        if cpython.dict.PyDict_Contains(self._watchers, key):
-            cpython.dict.PyDict_DelItem(self._watchers, key)
+    cdef void untrack_watcher(self, Watcher watcher):
+        watchers = self._watchers[watcher.key_]
+        watchers.remove(watcher)
+        if len(watchers) ==  0:
+            del self._watchers[watcher.key_]
+
+    # cdef void execute_unwatch(self, BaseRequest req, str key):
+    #     self.write_request(req)
+    #     if cpython.dict.PyDict_Contains(self._watchers, key):
+    #         cpython.dict.PyDict_DelItem(self._watchers, key)
 
     cdef uint32_t transform_iterator(self, iterator) except *:
         if isinstance(iterator, int):
@@ -577,6 +605,10 @@ cdef class BaseProtocol(CoreProtocol):
 
     def refetch_schema(self):
         return self._refetch_schema()
+
+
+cdef inline void on_watcher_unwatch(Watcher watcher, object protocol):
+    (<BaseProtocol> protocol).untrack_watcher(watcher)
 
 
 class Protocol(BaseProtocol, asyncio.Protocol):

@@ -1,7 +1,6 @@
 cimport cython
 from libc.stdint cimport uint32_t, uint64_t
 
-
 @cython.final
 cdef class Db:
     cdef:
@@ -92,6 +91,8 @@ cdef class Db:
 
     cdef object _rollback(self, float timeout)
 
-    cdef object _watch(self, str key, object cb)
+    cdef void _watch_raw(self, str key) except *
 
-    cdef object _unwatch(self, str key)
+    cdef void _unwatch_raw(self, str key) except *
+
+    cdef object _watch(self, str key, object cb)

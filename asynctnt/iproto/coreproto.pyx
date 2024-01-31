@@ -56,7 +56,7 @@ cdef class CoreProtocol:
     def get_version(self):
         return self.version
 
-    cdef void _write(self, buf) except *:
+    cdef inline void _write(self, buf) except *:
         self.transport.write(memoryview(buf))
 
     cdef void _on_data_received(self, data):

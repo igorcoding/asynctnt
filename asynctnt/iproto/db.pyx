@@ -6,14 +6,12 @@ cdef class Db:
     def __cinit__(self):
         self._stream_id = 0
         self._protocol = None
-        self._encoding = None
 
     @staticmethod
     cdef inline Db create(BaseProtocol protocol, uint64_t stream_id):
         cdef Db db = Db.__new__(Db)
         db._stream_id = stream_id
         db._protocol = protocol
-        db._encoding = protocol.encoding
         return db
 
     cdef inline uint64_t next_sync(self):
@@ -318,23 +316,34 @@ cdef class Db:
         req.check_schema_change = True
         return self._protocol.execute(self._protocol, req, timeout)
 
-    cdef object _watch(self, str key, object cb):
+    cdef void _watch_raw(self, str key) except *:
         cdef WatchRequest req = WatchRequest.__new__(WatchRequest)
         req.op = tarantool.IPROTO_WATCH
-        req.sync = self.next_sync()
+        req.sync = 0
         req.stream_id = 0
         req.check_schema_change = False
         req.key = key
-        return self._protocol.execute_watch(req, key, cb)
+        print('just before protocol.write_request()')
+        print('req', req)
+        self._protocol.write_request(req)
 
-    cdef object _unwatch(self, str key):
+    cdef void _unwatch_raw(self, str key) except *:
         cdef WatchRequest req = WatchRequest.__new__(WatchRequest)
         req.op = tarantool.IPROTO_UNWATCH
-        req.sync = self.next_sync()
+        req.sync = 0
         req.stream_id = 0
         req.check_schema_change = False
         req.key = key
-        return self._protocol.execute_unwatch(req, key)
+        self._protocol.write_request(req)
+
+    cdef object _watch(self, str key, object cb):
+        cdef Watcher watcher = Watcher.__new__(Watcher)
+        print('db._watch', key)
+        self._protocol.track_watcher(watcher)
+        print('db._watch->c_watch', key)
+        watcher.c_watch()
+        return watcher
+
 
     # public methods
 
@@ -454,6 +463,3 @@ cdef class Db:
 
     def watch(self, str key, object cb):
         return self._watch(key, cb)
-
-    def unwatch(self, str key):
-        return self._unwatch(key)

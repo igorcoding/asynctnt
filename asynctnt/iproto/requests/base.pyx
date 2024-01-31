@@ -13,9 +13,14 @@ cdef class BaseRequest:
     #     self.push_subscribe = False
 
     cdef inline WriteBuffer encode(self, bytes encoding):
-        cdef WriteBuffer buffer = WriteBuffer.create(encoding)
+        cdef WriteBuffer buffer
+        print('before writebuffer.create')
+        buffer = WriteBuffer.create(encoding)
+        print('before write_header')
         buffer.write_header(self.sync, self.op, self.schema_id, self.stream_id)
+        print('before encode_body')
         self.encode_body(buffer)
+        print('before write_length')
         buffer.write_length()
         return buffer
 

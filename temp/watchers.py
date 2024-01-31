@@ -1,20 +1,32 @@
 import asyncio
 import logging
+from typing import Any
 
 import asynctnt
 
 logging.basicConfig(level=logging.DEBUG)
 
 
+def cb(key: str, data: Any):
+    print("event", key, data)
+
+
 async def main():
     conn = await asynctnt.connect()
 
-    async def w():
-        async with conn.watch("demokey") as watcher:
-            async for event in watcher:
-                print(event)
+    watcher1 = await conn.watch("demokey", cb)
 
-    await asyncio.gather(w(), w())
+    # await watcher1.watch()
+    #
+    await asyncio.sleep(600)
+    # conn.watch_iproto()
+
+    # async def w():
+    #
+    #         async for event in watcher:
+    #             print(event)
+    #
+    # await asyncio.gather(w(), w())
 
 
 asyncio.run(main())

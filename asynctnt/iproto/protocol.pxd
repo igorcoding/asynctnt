@@ -31,6 +31,7 @@ include "requests/streams.pxd"
 include "requests/watchers.pxd"
 
 include "response.pxd"
+include "watcher.pxd"
 include "db.pxd"
 include "push.pxd"
 
@@ -64,7 +65,7 @@ cdef class BaseProtocol(CoreProtocol):
         object _on_request_timeout_cb
 
         dict _reqs
-        dict _watchers
+        object _watchers
         uint64_t _sync
         Schema _schema
         int64_t _schema_id
@@ -99,7 +100,13 @@ cdef class BaseProtocol(CoreProtocol):
 
     cdef object _new_waiter_for_request(self, Response response, BaseRequest req, float timeout)
     cdef Db _create_db(self, bint gen_stream_id)
+    cdef void write_request(self, BaseRequest req) except *
     cdef object _execute_bad(self, BaseRequest req, float timeout)
     cdef object _execute_normal(self, BaseRequest req, float timeout)
-    cdef void execute_watch(self, BaseRequest req, str key, object cb)
-    cdef void execute_unwatch(self, BaseRequest req, str key)
+    # cdef void execute_watch(self, BaseRequest req, str key, object cb)
+    # cdef void execute_unwatch(self, BaseRequest req, str key)
+
+    cdef void track_watcher(self, Watcher watcher)
+    cdef void untrack_watcher(self, Watcher watcher)
+
+cdef void on_watcher_unwatch(Watcher watcher, object protocol)
