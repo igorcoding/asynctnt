@@ -126,7 +126,7 @@ jobs:
       - name: Publish dist
         run: |
           python -m build . -s
-          tree wheels
+          tree wheels-ubuntu/*.whl wheels-macos/*.whl wheels-windows/*.whl
           tree dist
           twine upload dist/* wheels-ubuntu/*.whl wheels-macos/*.whl wheels-windows/*.whl
         env:
