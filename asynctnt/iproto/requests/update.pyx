@@ -23,10 +23,16 @@ cdef char *encode_update_ops(WriteBuffer buffer,
 
         uint32_t extra_length
 
+        bint field_encode_as_str
         uint64_t field_no
+        char *field_str_c
+        ssize_t field_str_len
         object field_no_obj
 
         uint32_t splice_position, splice_offset
+
+    field_encode_as_str = 0
+    field_str_c = NULL
 
     begin = NULL
 
@@ -60,22 +66,27 @@ cdef char *encode_update_ops(WriteBuffer buffer,
             raise TypeError(
                 'Operation type must of a str or bytes type')
 
+        cpython.bytes.PyBytes_AsStringAndSize(str_temp, &op_str_c,
+                                              &op_str_len)
+
         field_no_obj = operation[1]
         if isinstance(field_no_obj, int):
             field_no = <int> field_no_obj
         elif isinstance(field_no_obj, str):
             if space.metadata is not None:
-                field_no = <int> space.metadata.id_by_name(field_no_obj)
+                field_no = <int> space.metadata.id_by_name_safe(field_no_obj)
+                if field_no == -1:
+                    field_encode_as_str = 1
             else:
-                raise TypeError(
-                    'Operation field_no must be int as there is '
-                    'no format declaration in space {}'.format(space.sid))
+                field_encode_as_str = 1
+
+            if field_encode_as_str:
+                str_temp = encode_unicode_string(field_no_obj, buffer._encoding)
+                cpython.bytes.PyBytes_AsStringAndSize(str_temp, &field_str_c, &field_str_len)
         else:
             raise TypeError(
                 'Operation field_no must be of either int or str type')
 
-        cpython.bytes.PyBytes_AsStringAndSize(str_temp, &op_str_c,
-                                              &op_str_len)
         op = <char> 0
         if op_str_len == 1:
             op = op_str_c[0]
@@ -85,28 +96,9 @@ cdef char *encode_update_ops(WriteBuffer buffer,
                 or op == tarantool.IPROTO_OP_AND \
                 or op == tarantool.IPROTO_OP_XOR \
                 or op == tarantool.IPROTO_OP_OR \
-                or op == tarantool.IPROTO_OP_DELETE:
-            op_argument = operation[2]
-            if not isinstance(op_argument, int):
-                raise TypeError(
-                    'int argument required for '
-                    'Arithmetic and Delete operations'
-                )
-            # mp_sizeof_array(3)
-            # + mp_sizeof_str(1)
-            # + mp_sizeof_uint(field_no)
-            extra_length = 1 + 2 + mp_sizeof_uint(field_no)
-            p = begin = buffer._ensure_allocated(p, extra_length)
-
-            p = mp_encode_array(p, 3)
-            p = mp_encode_str(p, op_str_c, 1)
-            p = mp_encode_uint(p, field_no)
-            buffer._length += (p - begin)
-            p = buffer.mp_encode_obj(p, op_argument)
-        elif op == tarantool.IPROTO_OP_INSERT \
+                or op == tarantool.IPROTO_OP_DELETE \
+                or op == tarantool.IPROTO_OP_INSERT \
                 or op == tarantool.IPROTO_OP_ASSIGN:
-            op_argument = operation[2]
-
             # mp_sizeof_array(3)
             # + mp_sizeof_str(1)
             # + mp_sizeof_uint(field_no)
@@ -115,13 +107,19 @@ cdef char *encode_update_ops(WriteBuffer buffer,
 
             p = mp_encode_array(p, 3)
             p = mp_encode_str(p, op_str_c, 1)
-            p = mp_encode_uint(p, field_no)
+            if field_str_c == NULL:
+                p = mp_encode_uint(p, field_no)
+            else:
+                p = mp_encode_str(p, field_str_c, field_str_len)
+
             buffer._length += (p - begin)
+
+            op_argument = operation[2]
             p = buffer.mp_encode_obj(p, op_argument)
 
         elif op == tarantool.IPROTO_OP_SPLICE:
             if op_len < 5:
-                raise IndexError(
+                raise ValueError(
                     'Splice operation must have length of 5, '
                     'but got: {}'.format(op_len)
                 )
@@ -146,7 +144,10 @@ cdef char *encode_update_ops(WriteBuffer buffer,
 
             p = mp_encode_array(p, 5)
             p = mp_encode_str(p, op_str_c, 1)
-            p = mp_encode_uint(p, field_no)
+            if field_str_c == NULL:
+                p = mp_encode_uint(p, field_no)
+            else:
+                p = mp_encode_str(p, field_str_c, field_str_len)
             p = mp_encode_uint(p, splice_position)
             p = mp_encode_uint(p, splice_offset)
             buffer._length += (p - begin)

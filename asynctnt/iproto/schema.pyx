@@ -51,6 +51,15 @@ cdef class Metadata:
             raise KeyError('Field \'{}\' not found'.format(name))
         return <int> <object> fld
 
+    cdef inline int id_by_name_safe(self, str name) except *:
+        cdef:
+            PyObject *fld
+
+        fld = cpython.dict.PyDict_GetItem(self.name_id_map, name)
+        if fld == NULL:
+            return -1
+        return <int> <object> fld
+
     cdef inline int len(self):
         return <int> cpython.list.PyList_GET_SIZE(self.fields)
 

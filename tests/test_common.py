@@ -123,7 +123,9 @@ class CommonTestCase(BaseTarantoolTestCase):
     async def test__read_buffer_reallocate_ok(self):
         await self.tnt_reconnect(initial_read_buffer_size=1)
 
-        p, cmp = get_complex_param(encoding=self.conn.encoding)
+        p, cmp = get_complex_param(
+            encoding=self.conn.encoding, replace_bin=self.conn.version < (3, 0)
+        )
         try:
             res = await self.conn.call("func_param", [p])
         except Exception as e:

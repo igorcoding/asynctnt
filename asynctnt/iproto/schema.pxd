@@ -21,6 +21,7 @@ cdef public class Metadata [object C_Metadata, type C_Metadata_Type]:
     cdef inline void add(self, int id, Field field)
     cdef inline str name_by_id(self, int i)
     cdef inline int id_by_name(self, str name) except *
+    cdef inline int id_by_name_safe(self, str name) except*
 
 
 cdef class SchemaIndex:

@@ -79,12 +79,16 @@ class CallTestCase(BaseTarantoolTestCase):
             self.fail(e)
 
     async def test__call_complex_param(self):
-        p, cmp = get_complex_param(encoding=self.conn.encoding)
+        p, cmp = get_complex_param(
+            encoding=self.conn.encoding, replace_bin=self.conn.version < (3, 0)
+        )
         res = await self.conn.call("func_param", [p])
         self.assertDictEqual(res[0][0], cmp, "Body ok")
 
     async def test__call_complex_param_bare(self):
-        p, cmp = get_complex_param(encoding=self.conn.encoding)
+        p, cmp = get_complex_param(
+            encoding=self.conn.encoding, replace_bin=self.conn.version < (3, 0)
+        )
         cmp = [cmp]
         res = await self.conn.call("func_param_bare", [p])
         if not self.has_new_call():
@@ -177,12 +181,16 @@ class Call16TestCase(BaseTarantoolTestCase):
             self.fail(e)
 
     async def test__call16_complex_param(self):
-        p, cmp = get_complex_param(encoding=self.conn.encoding)
+        p, cmp = get_complex_param(
+            encoding=self.conn.encoding, replace_bin=self.conn.version < (3, 0)
+        )
         res = await self.conn.call("func_param", [p])
         self.assertDictEqual(res[0][0], cmp, "Body ok")
 
     async def test__call16_complex_param_bare(self):
-        p, cmp = get_complex_param(encoding=self.conn.encoding)
+        p, cmp = get_complex_param(
+            encoding=self.conn.encoding, replace_bin=self.conn.version < (3, 0)
+        )
         res = await self.conn.call16("func_param_bare", [p])
         self.assertDictEqual(res[0][0], cmp, "Body ok")
 

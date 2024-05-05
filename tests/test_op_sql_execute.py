@@ -1,9 +1,15 @@
+import asynctnt
 from asynctnt import Response
 from tests import BaseTarantoolTestCase
 from tests._testbase import ensure_version
 
 
 class SQLExecuteTestCase(BaseTarantoolTestCase):
+    def _compat_field_name(self, field_name: str) -> str:
+        if self.conn.version >= (3, 0):
+            return field_name
+        return field_name.upper()
+
     @ensure_version(min=(2, 0))
     async def test__sql_basic(self):
         res = await self.conn.execute("select 1, 2")
@@ -23,7 +29,16 @@ class SQLExecuteTestCase(BaseTarantoolTestCase):
     async def test__sql_with_param_cols(self):
         res = await self.conn.execute("select 1 as a, 2 as b where 1 = ?", [1])
 
-        self.assertResponseEqualKV(res, [{"A": 1, "B": 2}], "Body ok")
+        self.assertResponseEqualKV(
+            res,
+            [
+                {
+                    self._compat_field_name("a"): 1,
+                    self._compat_field_name("b"): 2,
+                }
+            ],
+            "Body ok",
+        )
 
     @ensure_version(min=(2, 0))
     async def test__sql_with_param_cols2(self):
@@ -31,7 +46,16 @@ class SQLExecuteTestCase(BaseTarantoolTestCase):
             "select 1 as a, 2 as b where 1 = ? and 2 = ?", [1, 2]
         )
 
-        self.assertResponseEqualKV(res, [{"A": 1, "B": 2}], "Body ok")
+        self.assertResponseEqualKV(
+            res,
+            [
+                {
+                    self._compat_field_name("a"): 1,
+                    self._compat_field_name("b"): 2,
+                }
+            ],
+            "Body ok",
+        )
 
     @ensure_version(min=(2, 0))
     async def test__sql_with_param_cols_maps(self):
@@ -43,16 +67,34 @@ class SQLExecuteTestCase(BaseTarantoolTestCase):
             ],
         )
 
-        self.assertResponseEqualKV(res, [{"A": 1, "B": 2}], "Body ok")
+        self.assertResponseEqualKV(
+            res,
+            [
+                {
+                    self._compat_field_name("a"): 1,
+                    self._compat_field_name("b"): 2,
+                }
+            ],
+            "Body ok",
+        )
 
     @ensure_version(min=(2, 0))
     async def test__sql_with_param_cols_maps_and_positional(self):
         res = await self.conn.execute(
-            "select 1 as a, 2 as b " "where 1 = :p1 and 2 = :p2 and 3 = ? and 4 = ?",
+            "select 1 as a, 2 as b where 1 = :p1 and 2 = :p2 and 3 = ? and 4 = ?",
             [{":p1": 1}, {":p2": 2}, 3, 4],
         )
 
-        self.assertResponseEqualKV(res, [{"A": 1, "B": 2}], "Body ok")
+        self.assertResponseEqualKV(
+            res,
+            [
+                {
+                    self._compat_field_name("a"): 1,
+                    self._compat_field_name("b"): 2,
+                }
+            ],
+            "Body ok",
+        )
 
     @ensure_version(min=(2, 0))
     async def test__sql_insert(self):
@@ -111,24 +153,30 @@ class SQLExecuteTestCase(BaseTarantoolTestCase):
 
     @ensure_version(min=(2, 0))
     async def test__sql_delete(self):
+        await self._compat(self.conn)
+
         await self.conn.execute("insert into sql_space values (1, 'one')")
         res = await self.conn.execute("delete from sql_space where name = 'one'")
         self.assertEqual(1, res.rowcount, "rowcount ok")
 
     @ensure_version(min=(2, 0))
     async def test__sql_select(self):
+        await self._compat(self.conn)
+
         await self.conn.execute("insert into sql_space values (1, 'one')")
         await self.conn.execute("insert into sql_space values (2, 'two')")
 
         res = await self.conn.execute("select * from sql_space")
         self.assertEqual(2, res.rowcount, "rowcount is surely ok")
-        self.assertEqual(1, res.body[0]["ID"])
-        self.assertEqual("one", res.body[0]["NAME"])
-        self.assertEqual(2, res.body[1]["ID"])
-        self.assertEqual("two", res.body[1]["NAME"])
+        self.assertEqual(1, res.body[0][self._compat_field_name("id")])
+        self.assertEqual("one", res.body[0][self._compat_field_name("name")])
+        self.assertEqual(2, res.body[1][self._compat_field_name("id")])
+        self.assertEqual("two", res.body[1][self._compat_field_name("name")])
 
     @ensure_version(min=(2, 0))
     async def test__sql_delete_multiple(self):
+        await self._compat(self.conn)
+
         await self.conn.execute("insert into sql_space values (1, 'one')")
         await self.conn.execute("insert into sql_space values (2, 'two')")
 
@@ -152,31 +200,35 @@ class SQLExecuteTestCase(BaseTarantoolTestCase):
 
     @ensure_version(min=(2, 0))
     async def test__metadata_names(self):
+        await self._compat(self.conn)
+
         res = await self.conn.execute("select 1 as a, 2 as b")
         self.assertIsNotNone(res.metadata)
         self.assertIsNotNone(res.metadata.fields)
         self.assertEqual(2, len(res.metadata.fields))
 
-        self.assertEqual("A", res.metadata.fields[0].name)
+        self.assertEqual(self._compat_field_name("a"), res.metadata.fields[0].name)
         self.assertEqual("integer", res.metadata.fields[0].type)
-        self.assertEqual("B", res.metadata.fields[1].name)
+        self.assertEqual(self._compat_field_name("b"), res.metadata.fields[1].name)
         self.assertEqual("integer", res.metadata.fields[1].type)
 
     @ensure_version(min=(2, 0))
     async def test__metadata_actual_space(self):
+        await self._compat(self.conn)
+
         await self.conn.execute("insert into sql_space values (1, 'one')")
         await self.conn.execute("insert into sql_space values (2, 'two')")
 
         res = await self.conn.execute("select * from sql_space")
         self.assertEqual(2, res.rowcount, "rowcount is ok")
         self.assertEqual(2, len(res.metadata.fields))
-        self.assertEqual("ID", res.metadata.fields[0].name)
+        self.assertEqual(self._compat_field_name("id"), res.metadata.fields[0].name)
         self.assertEqual("integer", res.metadata.fields[0].type)
         self.assertIsNone(res.metadata.fields[0].is_nullable)
         self.assertIsNone(res.metadata.fields[0].is_autoincrement)
         self.assertIsNone(res.metadata.fields[0].collation)
 
-        self.assertEqual("NAME", res.metadata.fields[1].name)
+        self.assertEqual(self._compat_field_name("name"), res.metadata.fields[1].name)
         self.assertEqual("string", res.metadata.fields[1].type)
         self.assertIsNone(res.metadata.fields[1].is_nullable)
         self.assertIsNone(res.metadata.fields[1].is_autoincrement)
@@ -184,6 +236,8 @@ class SQLExecuteTestCase(BaseTarantoolTestCase):
 
     @ensure_version(min=(2, 0))
     async def test__sql_select_full_metadata(self):
+        await self._compat(self.conn)
+
         await self.conn.execute("insert into sql_space values (1, 'one')")
         await self.conn.execute("insert into sql_space values (2, 'two')")
 
@@ -194,13 +248,15 @@ class SQLExecuteTestCase(BaseTarantoolTestCase):
         try:
             res = await self.conn.execute("select * from sql_space")
             self.assertEqual(2, len(res.metadata.fields))
-            self.assertEqual("ID", res.metadata.fields[0].name)
+            self.assertEqual(self._compat_field_name("id"), res.metadata.fields[0].name)
             self.assertEqual("integer", res.metadata.fields[0].type)
             self.assertEqual(False, res.metadata.fields[0].is_nullable)
             self.assertEqual(None, res.metadata.fields[1].is_autoincrement)
             self.assertIsNone(res.metadata.fields[0].collation)
 
-            self.assertEqual("NAME", res.metadata.fields[1].name)
+            self.assertEqual(
+                self._compat_field_name("name"), res.metadata.fields[1].name
+            )
             self.assertEqual("string", res.metadata.fields[1].type)
             self.assertEqual(True, res.metadata.fields[1].is_nullable)
             self.assertEqual(None, res.metadata.fields[1].is_autoincrement)
@@ -209,3 +265,7 @@ class SQLExecuteTestCase(BaseTarantoolTestCase):
             await self.conn.update(
                 "_session_settings", ["sql_full_metadata"], [("=", "value", False)]
             )
+
+    async def _compat(self, conn: asynctnt.Connection):
+        if conn.version >= (2, 11):
+            await conn.execute('SET SESSION "sql_seq_scan" = true;')

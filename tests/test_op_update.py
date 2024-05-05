@@ -1,6 +1,9 @@
+from decimal import Decimal
+
 from asynctnt import Response
 from asynctnt.exceptions import ErrorCode, TarantoolDatabaseError, TarantoolSchemaError
 from tests import BaseTarantoolTestCase
+from tests._testbase import ensure_version
 
 
 class UpdateTestCase(BaseTarantoolTestCase):
@@ -9,6 +12,20 @@ class UpdateTestCase(BaseTarantoolTestCase):
             [0, "a", 1, 5, "data1"],
             [1, "b", 8, 6, "data2"],
             [2, "c", 10, 12, "data3", "extra_field"],
+            [3, "d", 14, 16, "data4", Decimal("12.3"), 12.5],
+            [
+                4,
+                "e",
+                18,
+                20,
+                {
+                    "tree1": {
+                        "tree11": {
+                            "key1": "value1",
+                        }
+                    }
+                },
+            ],
         ]
         for t in data:
             await self.conn.insert(self.TESTER_SPACE_ID, t)
@@ -25,6 +42,26 @@ class UpdateTestCase(BaseTarantoolTestCase):
 
         data[1][2] = 2
         self.assertResponseEqual(res, [data[1]], "Body ok")
+
+    @ensure_version(min=(2, 3))
+    async def test__update_one_assign_by_field_name_with_no_schema(self):
+        data = await self._fill_data()
+
+        await self.tnt_reconnect(fetch_schema=False)
+
+        res = await self.conn.update(self.TESTER_SPACE_ID, [4], [["=", "f4", 100]])
+        data[4][3] = 100
+        self.assertResponseEqual(res, [data[4]], "Body ok")
+
+    @ensure_version(min=(2, 3))
+    async def test__update_one_assign_by_json(self):
+        data = await self._fill_data()
+
+        res = await self.conn.update(
+            self.TESTER_SPACE_ID, [4], [["=", "f5.tree1.tree11.key1", "value2"]]
+        )
+        data[4][4]["tree1"]["tree11"]["key1"] = "value2"
+        self.assertResponseEqual(res, [data[4]], "Body ok")
 
     async def test__update_one_insert(self):
         data = await self._fill_data()
@@ -47,6 +84,24 @@ class UpdateTestCase(BaseTarantoolTestCase):
         data[1][2] += 3
         self.assertResponseEqual(res, [data[1]], "Body ok")
 
+    @ensure_version(min=(2, 3))
+    async def test__update_one_plus_decimal(self):
+        data = await self._fill_data()
+
+        add = Decimal("1.1")
+        res = await self.conn.update(self.TESTER_SPACE_ID, [3], [["+", 5, add]])
+        data[3][5] += add
+        self.assertResponseEqual(res, [data[3]], "Body ok")
+
+    @ensure_version(min=(2, 3))
+    async def test__update_one_plus_float(self):
+        data = await self._fill_data()
+
+        add = 1.5
+        res = await self.conn.update(self.TESTER_SPACE_ID, [3], [["+", 6, add]])
+        data[3][6] += add
+        self.assertResponseEqual(res, [data[3]], "Body ok")
+
     async def test__update_one_plus_str_field(self):
         data = await self._fill_data()
 
@@ -54,10 +109,13 @@ class UpdateTestCase(BaseTarantoolTestCase):
         data[1][2] += 3
         self.assertResponseEqual(res, [data[1]], "Body ok")
 
+    @ensure_version(min=(2, 3))
     async def test__update_one_plus_str_field_unknown(self):
         await self._fill_data()
 
-        with self.assertRaisesRegex(KeyError, "Field 'f10' not found"):
+        with self.assertRaisesRegex(
+            TarantoolDatabaseError, "Field 'f10' was not found in the tuple"
+        ):
             await self.conn.update(self.TESTER_SPACE_ID, [1], [["+", "f10", 3]])
 
     async def test__update_one_plus_negative(self):
@@ -138,18 +196,16 @@ class UpdateTestCase(BaseTarantoolTestCase):
         data[1][2] ^= 0
         self.assertResponseEqual(res, [data[1]], "Body ok")
 
+    @ensure_version(min=(2, 3))
     async def test__update_operations_not_int_without_schema(self):
         await self.tnt_reconnect(fetch_schema=False)
 
         data = [1, "hello2", 1, 4, "what is up"]
         await self.conn.insert(self.TESTER_SPACE_ID, data)
 
-        msg = (
-            "Operation field_no must be int as there is "
-            "no format declaration in space {}".format(self.TESTER_SPACE_ID)
-        )
-        with self.assertRaisesRegex(TypeError, msg):
-            await self.conn.update(self.TESTER_SPACE_ID, [1], [["+", "f3", 1]])
+        res = await self.conn.update(self.TESTER_SPACE_ID, [1], [["+", "f3", 1]])
+        data[2] += 1
+        self.assertResponseEqual(res, [data], "Body ok")
 
     async def test__update_splice(self):
         data = [1, "hello2", 1, 4, "what is up"]
@@ -179,12 +235,12 @@ class UpdateTestCase(BaseTarantoolTestCase):
             await self.conn.update(self.TESTER_SPACE_ID, [1], [[":", 2]])
 
         with self.assertRaisesRegex(
-            IndexError, r"Splice operation must have length of 5"
+            ValueError, r"Splice operation must have length of 5"
         ):
             await self.conn.update(self.TESTER_SPACE_ID, [1], [[":", 2, 1]])
 
         with self.assertRaisesRegex(
-            IndexError, r"Splice operation must have length of 5"
+            ValueError, r"Splice operation must have length of 5"
         ):
             await self.conn.update(self.TESTER_SPACE_ID, [1], [[":", 2, 1, 3]])
 
@@ -214,10 +270,12 @@ class UpdateTestCase(BaseTarantoolTestCase):
         ):
             await self.conn.update(self.TESTER_SPACE_ID, [1], [{}])
 
-        with self.assertRaisesRegex(
-            TypeError, r"int argument required for " r"Arithmetic and Delete operations"
-        ):
+        with self.assertRaises(TarantoolDatabaseError) as exc:
             await self.conn.update(self.TESTER_SPACE_ID, [1], [("+", 2, {})])
+        self.assertRegex(
+            exc.exception.message,
+            r"Argument type in operation '\+' on field \d does not match field type: expected a number",
+        )
 
     async def test__update_multiple_operations(self):
         t = [1, "1", 1, 5, "hello", 3, 4, 8]

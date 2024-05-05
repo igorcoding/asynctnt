@@ -64,7 +64,9 @@ class EvalTestCase(BaseTarantoolTestCase):
             self.fail(e)
 
     async def test__eval_complex_param(self):
-        p, cmp = get_complex_param(encoding=self.conn.encoding)
+        p, cmp = get_complex_param(
+            encoding=self.conn.encoding, replace_bin=self.conn.version < (3, 0)
+        )
         res = await self.conn.eval("return {...}", [p])
         self.assertDictEqual(res[0][0], cmp, "Body ok")
 

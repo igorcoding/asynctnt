@@ -51,6 +51,14 @@ local function bootstrap()
         types = {}
     }
 
+    function b:sql_space_name(space_name)
+        if self:check_version({3, 0}) then
+            return space_name
+        else
+            return space_name:upper()
+        end
+    end
+
     function b:check_version(expected)
         return check_version(expected, self.tarantool_ver)
     end
@@ -197,16 +205,22 @@ function truncate()
     _truncate(box.space.tester)
     _truncate(box.space.no_schema_space)
 
-    if box.space.SQL_SPACE ~= nil then
-        box.execute('DELETE FROM sql_space')
-    end
+    local sql_spaces = {
+        'sql_space',
+        'sql_space_autoincrement',
+        'sql_space_autoincrement_multiple',
+    }
+    for _, sql_space in ipairs(sql_spaces) do
+        local variants = {
+            sql_space,
+            sql_space:upper(),
+        }
 
-    if box.space.SQL_SPACE_AUTOINCREMENT ~= nil then
-        box.execute('DELETE FROM sql_space_autoincrement')
-    end
-
-    if box.space.SQL_SPACE_AUTOINCREMENT_MULTIPLE ~= nil then
-        box.execute('DELETE FROM sql_space_autoincrement_multiple')
+        for _, variant in ipairs(variants) do
+            if box.space[variant] ~= nil then
+                box.execute('DELETE FROM ' .. variant)
+            end
+        end
     end
 
     _truncate(box.space.tester_ext_dec)

@@ -45,7 +45,7 @@ mypy:
 	$(PYTHON) -m mypy --enable-error-code ignore-without-code .
 
 ruff:
-	$(PYTHON) -m ruff .
+	$(PYTHON) -m ruff check .
 
 style-check:
 	$(PYTHON) -m black --check --diff .
