@@ -4,10 +4,10 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Changelog &mdash; asynctnt 2.1.0 documentation</title>
+  <title>Changelog &mdash; asynctnt 2.2.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
-      <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=eafc0fe6" />
+      <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=fd3f3429" />
 
   
   <!--[if lt IE 9]>
@@ -16,8 +16,8 @@
   
         <script src="_static/jquery.js?v=5d32c60e"></script>
         <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="_static/documentation_options.js?v=20623aea"></script>
-        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/documentation_options.js?v=b21de401"></script>
+        <script src="_static/doctools.js?v=9a2dae69"></script>
         <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
@@ -38,7 +38,7 @@
             asynctnt
           </a>
               <div class="version">
-                2.1.0
+                2.2.0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -59,6 +59,7 @@
 <li class="toctree-l1"><a class="reference internal" href="streams.html">Streams and Transactions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mpext.html">Type Extensions</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Changelog</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#v2-2-0">v2.2.0</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#v2-1-0">v2.1.0</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#v2-0-1">v2.0.1</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#v2-0-0">v2.0.0</a></li>
@@ -102,6 +103,23 @@
              
   <section id="changelog">
 <h1>Changelog<a class="headerlink" href="#changelog" title="Link to this heading"></a></h1>
+<section id="v2-2-0">
+<h2>v2.2.0<a class="headerlink" href="#v2-2-0" title="Link to this heading"></a></h2>
+<p><strong>New features:</strong></p>
+<ul class="simple">
+<li><p>Implemented ability to send update/upsert requests with field names when schema is disabled (<code class="docutils literal notranslate"><span class="pre">fetch_schema=False</span></code>) and when fields are not found in the schema (good example of this case is using json path like <code class="docutils literal notranslate"><span class="pre">data.inner1.inner2.key1</span></code> as a key)</p></li>
+</ul>
+<p><strong>Bug fixes:</strong></p>
+<ul class="simple">
+<li><p>Fixed issue with not being able to send Decimals in update statements. Now there are no extra checks - any payload is sent directly to Tarantool (fixes <a class="reference external" href="https://github.com/igorcoding/asynctnt/issues/34">#34</a>)</p></li>
+</ul>
+<p><strong>Other changes</strong></p>
+<ul class="simple">
+<li><p>Fixed tests failing on modern Tarantool in the SQL queries.</p></li>
+<li><p>Removed from ci/cd testing on macOS python 3.7</p></li>
+<li><p>Added Tarantool 3 to CI Testing</p></li>
+</ul>
+</section>
 <section id="v2-1-0">
 <h2>v2.1.0<a class="headerlink" href="#v2-1-0" title="Link to this heading"></a></h2>
 <p><strong>Breaking changes:</strong></p>

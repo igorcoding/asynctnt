@@ -1,5 +1,17 @@
 # Changelog
 
+## v2.2.0
+**New features:**
+* Implemented ability to send update/upsert requests with field names when schema is disabled (`fetch_schema=False`) and when fields are not found in the schema (good example of this case is using json path like `data.inner1.inner2.key1` as a key)
+
+**Bug fixes:**
+* Fixed issue with not being able to send Decimals in update statements. Now there are no extra checks - any payload is sent directly to Tarantool (fixes [#34](https://github.com/igorcoding/asynctnt/issues/34))
+
+**Other changes**
+* Fixed tests failing on modern Tarantool in the SQL queries.
+* Removed from ci/cd testing on macOS python 3.7
+* Added Tarantool 3 to CI Testing
+
 ## v2.1.0
 **Breaking changes:**
 * Dropped support for Python 3.6
