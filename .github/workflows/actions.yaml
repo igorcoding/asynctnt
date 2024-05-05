@@ -82,7 +82,7 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         with:
-          name: wheels
+          name: wheels-${{ matrix.os }}
           path: ./wheelhouse/*.whl
 
   publish:
@@ -110,14 +110,25 @@ jobs:
 
       - uses: actions/download-artifact@v4
         with:
-          name: wheels
-          path: wheels
+          name: wheels-ubuntu-latest
+          path: wheels-ubuntu
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: wheels-macos-latest
+          path: wheels-macos
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: wheels-windows-latest
+          path: wheels-windows
+
       - name: Publish dist
         run: |
           python -m build . -s
           tree wheels
           tree dist
-          twine upload dist/* wheels/*
+          twine upload dist/* wheels-ubuntu/*.whl wheels-macos/*.whl wheels-windows/*.whl
         env:
           TWINE_USERNAME: ${{ secrets.TWINE_USERNAME }}
           TWINE_PASSWORD: ${{ secrets.TWINE_PASSWORD }}
@@ -127,7 +138,9 @@ jobs:
           prerelease: false
           title: ${{ steps.get_tag.outputs.TAG }}
           files: |
-            wheels/*.whl
+            wheels-ubuntu/*.whl
+            wheels-macos/*.whl
+            wheels-windows/*.whl
             dist/*
 
   docs:
