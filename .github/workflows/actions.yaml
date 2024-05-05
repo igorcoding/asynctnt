@@ -126,8 +126,7 @@ jobs:
       - name: Publish dist
         run: |
           python -m build . -s
-          tree wheels-ubuntu/*.whl wheels-macos/*.whl wheels-windows/*.whl
-          tree dist
+          tree dist wheels-ubuntu wheels-macos wheels-windows
           twine upload dist/* wheels-ubuntu/*.whl wheels-macos/*.whl wheels-windows/*.whl
         env:
           TWINE_USERNAME: ${{ secrets.TWINE_USERNAME }}
