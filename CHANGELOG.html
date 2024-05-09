@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Changelog &mdash; asynctnt 2.2.0 documentation</title>
+  <title>Changelog &mdash; asynctnt 2.3.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=fd3f3429" />
@@ -16,7 +16,7 @@
   
         <script src="_static/jquery.js?v=5d32c60e"></script>
         <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="_static/documentation_options.js?v=b21de401"></script>
+        <script src="_static/documentation_options.js?v=c3c8ae58"></script>
         <script src="_static/doctools.js?v=9a2dae69"></script>
         <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
@@ -38,7 +38,7 @@
             asynctnt
           </a>
               <div class="version">
-                2.2.0
+                2.3.0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -59,6 +59,7 @@
 <li class="toctree-l1"><a class="reference internal" href="streams.html">Streams and Transactions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mpext.html">Type Extensions</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Changelog</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#v2-3-0">v2.3.0</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#v2-2-0">v2.2.0</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#v2-1-0">v2.1.0</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#v2-0-1">v2.0.1</a></li>
@@ -103,6 +104,14 @@
              
   <section id="changelog">
 <h1>Changelog<a class="headerlink" href="#changelog" title="Link to this heading"></a></h1>
+<section id="v2-3-0">
+<h2>v2.3.0<a class="headerlink" href="#v2-3-0" title="Link to this heading"></a></h2>
+<p><strong>New features:</strong></p>
+<ul class="simple">
+<li><p>Added support for <a class="reference external" href="https://www.tarantool.io/en/doc/latest/reference/reference_lua/datetime/interval_object/">interval types</a> <a class="reference external" href="https://github.com/igorcoding/asynctnt/issues/30">#30</a></p></li>
+<li><p>Added ability to retrieve IProto features <a class="reference external" href="https://www.tarantool.io/en/doc/latest/reference/reference_lua/box_iproto/feature/">available</a> in Tarantool using <code class="docutils literal notranslate"><span class="pre">conn.features</span></code> property</p></li>
+</ul>
+</section>
 <section id="v2-2-0">
 <h2>v2.2.0<a class="headerlink" href="#v2-2-0" title="Link to this heading"></a></h2>
 <p><strong>New features:</strong></p>

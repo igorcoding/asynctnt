@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>asynctnt.connection &mdash; asynctnt 2.2.0 documentation</title>
+  <title>asynctnt.connection &mdash; asynctnt 2.3.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=fd3f3429" />
@@ -16,7 +16,7 @@
   
         <script src="../../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../../_static/documentation_options.js?v=b21de401"></script>
+        <script src="../../../_static/documentation_options.js?v=c3c8ae58"></script>
         <script src="../../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/js/theme.js"></script>
@@ -38,7 +38,7 @@
             asynctnt
           </a>
               <div class="version">
-                2.2.0
+                2.3.0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -281,6 +281,13 @@ and schema fetching)</p>
 <dd><p>initial_read_buffer_size value</p>
 </dd></dl>
 
+<dl class="py property">
+<dt class="sig sig-object py" id="asynctnt.connection.Connection.features">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">features</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="../iproto/protocol/index.html#asynctnt.iproto.protocol.IProtoFeatures" title="asynctnt.iproto.protocol.IProtoFeatures"><span class="pre">asynctnt.iproto.protocol.IProtoFeatures</span></a></em><a class="reference internal" href="../../../_modules/asynctnt/connection.html#Connection.features"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#asynctnt.connection.Connection.features" title="Link to this definition"></a></dt>
+<dd><p>Lookup available Tarantool features - <a class="reference external" href="https://www.tarantool.io/en/doc/latest/reference/reference_lua/box_iproto/feature/">https://www.tarantool.io/en/doc/latest/reference/reference_lua/box_iproto/feature/</a>
+:return:</p>
+</dd></dl>
+
 <dl class="py attribute">
 <dt class="sig sig-object py" id="asynctnt.connection.Connection.__slots__">
 <span class="sig-name descname"><span class="pre">__slots__</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('_host',</span> <span class="pre">'_port',</span> <span class="pre">'_username',</span> <span class="pre">'_password',</span> <span class="pre">'_fetch_schema',</span> <span class="pre">'_auto_refetch_schema',...</span></em><a class="reference internal" href="../../../_modules/asynctnt/connection.html#Connection.__slots__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#asynctnt.connection.Connection.__slots__" title="Link to this definition"></a></dt>
@@ -349,7 +356,7 @@ Just calls disconnect() and connect()</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="asynctnt.connection.Connection.__aenter__">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">__aenter__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/asynctnt/connection.html#Connection.__aenter__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#asynctnt.connection.Connection.__aenter__" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">__aenter__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#asynctnt.connection.Connection" title="asynctnt.connection.Connection"><span class="pre">Connection</span></a></span></span><a class="reference internal" href="../../../_modules/asynctnt/connection.html#Connection.__aenter__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#asynctnt.connection.Connection.__aenter__" title="Link to this definition"></a></dt>
 <dd><p>Executed on entering the async with section.
 Connects to Tarantool instance.</p>
 </dd></dl>

@@ -1,6 +1,6 @@
 # Type Extensions
 
-Tarantool supports natively Decimal, uuid and Datetime types. `asynctnt` also supports
+Tarantool supports natively Decimal, uuid, Datetime and Interval types. `asynctnt` also supports
 encoding/decoding of such types to Python native `Decimal`, `UUID` and `datetime` types respectively.
 
 Some examples:
@@ -37,3 +37,39 @@ await conn.insert('wallets', {
     'created_at': datetime.datetime.now(tz=Moscow)
 })
 ```
+
+## Interval types
+
+Tarantool has support for an interval type. `asynctnt` also has a support for this type which can be used as follows:
+
+```python
+import asynctnt
+
+async with asynctnt.Connection() as conn:
+    resp = await conn.eval("""
+        local datetime = require('datetime')
+        return datetime.interval.new({
+            year=1,
+            month=2,
+            week=3,
+            day=4,
+            hour=5,
+            min=6,
+            sec=7,
+            nsec=8,
+        })
+    """)
+
+    assert resp[0] == asynctnt.MPInterval(
+        year=1,
+        month=2,
+        week=3,
+        day=4,
+        hour=5,
+        min=6,
+        sec=7,
+        nsec=8,
+    )
+```
+
+You may use `asynctnt.MPInterval` type also as parameters to Tarantool methods (like call, insert, and others).

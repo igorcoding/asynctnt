@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Type Extensions &mdash; asynctnt 2.2.0 documentation</title>
+  <title>Type Extensions &mdash; asynctnt 2.3.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=fd3f3429" />
@@ -16,7 +16,7 @@
   
         <script src="_static/jquery.js?v=5d32c60e"></script>
         <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="_static/documentation_options.js?v=b21de401"></script>
+        <script src="_static/documentation_options.js?v=c3c8ae58"></script>
         <script src="_static/doctools.js?v=9a2dae69"></script>
         <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
@@ -38,7 +38,7 @@
             asynctnt
           </a>
               <div class="version">
-                2.2.0
+                2.3.0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -57,7 +57,10 @@
 <li class="toctree-l1"><a class="reference internal" href="metadata.html">Metadata</a></li>
 <li class="toctree-l1"><a class="reference internal" href="pushes.html">Session Push</a></li>
 <li class="toctree-l1"><a class="reference internal" href="streams.html">Streams and Transactions</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Type Extensions</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Type Extensions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#interval-types">Interval types</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="CHANGELOG.html">Changelog</a></li>
 <li class="toctree-l1"><a class="reference internal" href="autoapi/index.html">API Reference</a></li>
 </ul>
@@ -88,7 +91,7 @@
              
   <section id="type-extensions">
 <h1>Type Extensions<a class="headerlink" href="#type-extensions" title="Link to this heading"></a></h1>
-<p>Tarantool supports natively Decimal, uuid and Datetime types. <code class="docutils literal notranslate"><span class="pre">asynctnt</span></code> also supports
+<p>Tarantool supports natively Decimal, uuid, Datetime and Interval types. <code class="docutils literal notranslate"><span class="pre">asynctnt</span></code> also supports
 encoding/decoding of such types to Python native <code class="docutils literal notranslate"><span class="pre">Decimal</span></code>, <code class="docutils literal notranslate"><span class="pre">UUID</span></code> and <code class="docutils literal notranslate"><span class="pre">datetime</span></code> types respectively.</p>
 <p>Some examples:</p>
 <div class="highlight-lua notranslate"><div class="highlight"><pre><span></span><span class="kd">local</span> <span class="n">s</span> <span class="o">=</span> <span class="n">box</span><span class="p">.</span><span class="n">schema</span><span class="p">.</span><span class="n">create_space</span><span class="p">(</span><span class="s1">&#39;wallets&#39;</span><span class="p">)</span>
@@ -121,6 +124,40 @@ encoding/decoding of such types to Python native <code class="docutils literal n
 <span class="p">})</span>
 </pre></div>
 </div>
+<section id="interval-types">
+<h2>Interval types<a class="headerlink" href="#interval-types" title="Link to this heading"></a></h2>
+<p>Tarantool has support for an interval type. <code class="docutils literal notranslate"><span class="pre">asynctnt</span></code> also has a support for this type which can be used as follows:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">asynctnt</span>
+
+<span class="k">async</span> <span class="k">with</span> <span class="n">asynctnt</span><span class="o">.</span><span class="n">Connection</span><span class="p">()</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
+    <span class="n">resp</span> <span class="o">=</span> <span class="k">await</span> <span class="n">conn</span><span class="o">.</span><span class="n">eval</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">        local datetime = require(&#39;datetime&#39;)</span>
+<span class="s2">        return datetime.interval.new({</span>
+<span class="s2">            year=1,</span>
+<span class="s2">            month=2,</span>
+<span class="s2">            week=3,</span>
+<span class="s2">            day=4,</span>
+<span class="s2">            hour=5,</span>
+<span class="s2">            min=6,</span>
+<span class="s2">            sec=7,</span>
+<span class="s2">            nsec=8,</span>
+<span class="s2">        })</span>
+<span class="s2">    &quot;&quot;&quot;</span><span class="p">)</span>
+
+    <span class="k">assert</span> <span class="n">resp</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">asynctnt</span><span class="o">.</span><span class="n">MPInterval</span><span class="p">(</span>
+        <span class="n">year</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">month</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+        <span class="n">week</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+        <span class="n">day</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
+        <span class="n">hour</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+        <span class="nb">min</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span>
+        <span class="n">sec</span><span class="o">=</span><span class="mi">7</span><span class="p">,</span>
+        <span class="n">nsec</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span>
+    <span class="p">)</span>
+</pre></div>
+</div>
+<p>You may use <code class="docutils literal notranslate"><span class="pre">asynctnt.MPInterval</span></code> type also as parameters to Tarantool methods (like call, insert, and others).</p>
+</section>
 </section>
 
 

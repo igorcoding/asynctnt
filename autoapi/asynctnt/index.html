@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>asynctnt &mdash; asynctnt 2.2.0 documentation</title>
+  <title>asynctnt &mdash; asynctnt 2.3.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=fd3f3429" />
@@ -16,7 +16,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=b21de401"></script>
+        <script src="../../_static/documentation_options.js?v=c3c8ae58"></script>
         <script src="../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -38,7 +38,7 @@
             asynctnt
           </a>
               <div class="version">
-                2.2.0
+                2.3.0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -165,22 +165,25 @@
 <tr class="row-even"><td><p><a class="reference internal" href="#asynctnt.Metadata" title="asynctnt.Metadata"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Metadata</span></code></a></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#asynctnt.PushIterator" title="asynctnt.PushIterator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PushIterator</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#asynctnt.MPInterval" title="asynctnt.MPInterval"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MPInterval</span></code></a></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#asynctnt.Response" title="asynctnt.Response"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Response</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#asynctnt.PushIterator" title="asynctnt.PushIterator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PushIterator</span></code></a></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#asynctnt.Schema" title="asynctnt.Schema"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Schema</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#asynctnt.Response" title="asynctnt.Response"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Response</span></code></a></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#asynctnt.SchemaIndex" title="asynctnt.SchemaIndex"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SchemaIndex</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#asynctnt.Schema" title="asynctnt.Schema"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Schema</span></code></a></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#asynctnt.SchemaSpace" title="asynctnt.SchemaSpace"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SchemaSpace</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#asynctnt.SchemaIndex" title="asynctnt.SchemaIndex"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SchemaIndex</span></code></a></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#asynctnt.TarantoolTuple" title="asynctnt.TarantoolTuple"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TarantoolTuple</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#asynctnt.SchemaSpace" title="asynctnt.SchemaSpace"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SchemaSpace</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#asynctnt.TarantoolTuple" title="asynctnt.TarantoolTuple"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TarantoolTuple</span></code></a></p></td>
 <td><p></p></td>
 </tr>
 </tbody>
@@ -322,6 +325,13 @@ and schema fetching)</p>
 <dd><p>initial_read_buffer_size value</p>
 </dd></dl>
 
+<dl class="py property">
+<dt class="sig sig-object py" id="asynctnt.Connection.features">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">features</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="iproto/protocol/index.html#asynctnt.iproto.protocol.IProtoFeatures" title="asynctnt.iproto.protocol.IProtoFeatures"><span class="pre">asynctnt.iproto.protocol.IProtoFeatures</span></a></em><a class="headerlink" href="#asynctnt.Connection.features" title="Link to this definition"></a></dt>
+<dd><p>Lookup available Tarantool features - <a class="reference external" href="https://www.tarantool.io/en/doc/latest/reference/reference_lua/box_iproto/feature/">https://www.tarantool.io/en/doc/latest/reference/reference_lua/box_iproto/feature/</a>
+:return:</p>
+</dd></dl>
+
 <dl class="py attribute">
 <dt class="sig sig-object py" id="asynctnt.Connection.__slots__">
 <span class="sig-name descname"><span class="pre">__slots__</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('_host',</span> <span class="pre">'_port',</span> <span class="pre">'_username',</span> <span class="pre">'_password',</span> <span class="pre">'_fetch_schema',</span> <span class="pre">'_auto_refetch_schema',...</span></em><a class="headerlink" href="#asynctnt.Connection.__slots__" title="Link to this definition"></a></dt>
@@ -390,7 +400,7 @@ Just calls disconnect() and connect()</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="asynctnt.Connection.__aenter__">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">__aenter__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/asynctnt/connection.html#Connection.__aenter__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#asynctnt.Connection.__aenter__" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">__aenter__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#asynctnt.Connection" title="asynctnt.Connection"><span class="pre">Connection</span></a></span></span><a class="reference internal" href="../../_modules/asynctnt/connection.html#Connection.__aenter__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#asynctnt.Connection.__aenter__" title="Link to this definition"></a></dt>
 <dd><p>Executed on entering the async with section.
 Connects to Tarantool instance.</p>
 </dd></dl>
@@ -631,6 +641,62 @@ Disconnects from Tarantool instance.</p>
 <dt class="sig sig-object py" id="asynctnt.Metadata.name_id_map">
 <span class="sig-name descname"><span class="pre">name_id_map</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#asynctnt.Metadata.name_id_map" title="Link to this definition"></a></dt>
 <dd><p>Mapping name -&gt; id</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="asynctnt.MPInterval">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">asynctnt.</span></span><span class="sig-name descname"><span class="pre">MPInterval</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">year</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">month</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">week</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">day</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hour</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sec</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nsec</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">adjust</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Adjust</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">Adjust.NONE</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/asynctnt/iproto/protocol.html#MPInterval"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#asynctnt.MPInterval" title="Link to this definition"></a></dt>
+<dd><dl class="py attribute">
+<dt class="sig sig-object py" id="asynctnt.MPInterval.year">
+<span class="sig-name descname"><span class="pre">year</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#asynctnt.MPInterval.year" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="asynctnt.MPInterval.month">
+<span class="sig-name descname"><span class="pre">month</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#asynctnt.MPInterval.month" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="asynctnt.MPInterval.week">
+<span class="sig-name descname"><span class="pre">week</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#asynctnt.MPInterval.week" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="asynctnt.MPInterval.day">
+<span class="sig-name descname"><span class="pre">day</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#asynctnt.MPInterval.day" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="asynctnt.MPInterval.hour">
+<span class="sig-name descname"><span class="pre">hour</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#asynctnt.MPInterval.hour" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="asynctnt.MPInterval.min">
+<span class="sig-name descname"><span class="pre">min</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#asynctnt.MPInterval.min" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="asynctnt.MPInterval.sec">
+<span class="sig-name descname"><span class="pre">sec</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#asynctnt.MPInterval.sec" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="asynctnt.MPInterval.nsec">
+<span class="sig-name descname"><span class="pre">nsec</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#asynctnt.MPInterval.nsec" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="asynctnt.MPInterval.adjust">
+<span class="sig-name descname"><span class="pre">adjust</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Adjust</span></em><a class="headerlink" href="#asynctnt.MPInterval.adjust" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="asynctnt.MPInterval.__eq__">
+<span class="sig-name descname"><span class="pre">__eq__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="../../_modules/asynctnt/iproto/protocol.html#MPInterval.__eq__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#asynctnt.MPInterval.__eq__" title="Link to this definition"></a></dt>
+<dd><p>Return self==value.</p>
 </dd></dl>
 
 </dd></dl>
@@ -920,7 +986,7 @@ Disconnects from Tarantool instance.</p>
 
 <dl class="py data">
 <dt class="sig sig-object py" id="asynctnt.__version__">
-<span class="sig-prename descclassname"><span class="pre">asynctnt.</span></span><span class="sig-name descname"><span class="pre">__version__</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'2.2.0'</span></em><a class="reference internal" href="../../_modules/asynctnt.html#__version__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#asynctnt.__version__" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">asynctnt.</span></span><span class="sig-name descname"><span class="pre">__version__</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'2.3.0'</span></em><a class="reference internal" href="../../_modules/asynctnt.html#__version__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#asynctnt.__version__" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 </section>

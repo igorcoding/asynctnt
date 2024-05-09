@@ -24,6 +24,8 @@ Classes
    asynctnt.iproto.protocol.PushIterator
    asynctnt.iproto.protocol.Db
    asynctnt.iproto.protocol.Protocol
+   asynctnt.iproto.protocol.MPInterval
+   asynctnt.iproto.protocol.IProtoFeatures
 
 
 
@@ -444,6 +446,10 @@ Attributes
       :type: Schema
 
 
+   .. py:property:: features
+      :type: IProtoFeatures
+
+
    .. py:method:: create_db(gen_stream_id: bool = False) -> Db
 
 
@@ -461,5 +467,113 @@ Attributes
 
    .. py:method:: get_version() -> tuple
 
+
+
+.. py:class:: MPInterval(year: int = 0, month: int = 0, week: int = 0, day: int = 0, hour: int = 0, min: int = 0, sec: int = 0, nsec: int = 0, adjust: Adjust = Adjust.NONE)
+
+
+   .. py:attribute:: year
+      :type: int
+
+      
+
+   .. py:attribute:: month
+      :type: int
+
+      
+
+   .. py:attribute:: week
+      :type: int
+
+      
+
+   .. py:attribute:: day
+      :type: int
+
+      
+
+   .. py:attribute:: hour
+      :type: int
+
+      
+
+   .. py:attribute:: min
+      :type: int
+
+      
+
+   .. py:attribute:: sec
+      :type: int
+
+      
+
+   .. py:attribute:: nsec
+      :type: int
+
+      
+
+   .. py:attribute:: adjust
+      :type: Adjust
+
+      
+
+   .. py:method:: __eq__(other) -> bool
+
+      Return self==value.
+
+
+
+.. py:class:: IProtoFeatures
+
+
+   .. py:attribute:: streams
+      :type: bool
+
+      
+
+   .. py:attribute:: transactions
+      :type: bool
+
+      
+
+   .. py:attribute:: error_extension
+      :type: bool
+
+      
+
+   .. py:attribute:: watchers
+      :type: bool
+
+      
+
+   .. py:attribute:: pagination
+      :type: bool
+
+      
+
+   .. py:attribute:: space_and_index_names
+      :type: bool
+
+      
+
+   .. py:attribute:: watch_once
+      :type: bool
+
+      
+
+   .. py:attribute:: dml_tuple_extension
+      :type: bool
+
+      
+
+   .. py:attribute:: call_ret_tuple_extension
+      :type: bool
+
+      
+
+   .. py:attribute:: call_arg_tuple_extension
+      :type: bool
+
+      
 
 

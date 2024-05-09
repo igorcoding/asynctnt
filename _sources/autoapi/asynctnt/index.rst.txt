@@ -43,6 +43,7 @@ Classes
    asynctnt.IProtoError
    asynctnt.IProtoErrorStackFrame
    asynctnt.Metadata
+   asynctnt.MPInterval
    asynctnt.PushIterator
    asynctnt.Response
    asynctnt.Schema
@@ -183,6 +184,13 @@ Attributes
       initial_read_buffer_size value
 
 
+   .. py:property:: features
+      :type: asynctnt.iproto.protocol.IProtoFeatures
+
+      Lookup available Tarantool features - https://www.tarantool.io/en/doc/latest/reference/reference_lua/box_iproto/feature/
+      :return:
+
+
    .. py:attribute:: __slots__
       :value: ('_host', '_port', '_username', '_password', '_fetch_schema', '_auto_refetch_schema',...
 
@@ -237,7 +245,7 @@ Attributes
       Just calls disconnect() and connect()
 
 
-   .. py:method:: __aenter__()
+   .. py:method:: __aenter__() -> Connection
       :async:
 
       Executed on entering the async with section.
@@ -435,6 +443,60 @@ Attributes
       :type: Dict[str, int]
 
       Mapping name -> id 
+
+
+
+.. py:class:: MPInterval(year: int = 0, month: int = 0, week: int = 0, day: int = 0, hour: int = 0, min: int = 0, sec: int = 0, nsec: int = 0, adjust: Adjust = Adjust.NONE)
+
+
+   .. py:attribute:: year
+      :type: int
+
+      
+
+   .. py:attribute:: month
+      :type: int
+
+      
+
+   .. py:attribute:: week
+      :type: int
+
+      
+
+   .. py:attribute:: day
+      :type: int
+
+      
+
+   .. py:attribute:: hour
+      :type: int
+
+      
+
+   .. py:attribute:: min
+      :type: int
+
+      
+
+   .. py:attribute:: sec
+      :type: int
+
+      
+
+   .. py:attribute:: nsec
+      :type: int
+
+      
+
+   .. py:attribute:: adjust
+      :type: Adjust
+
+      
+
+   .. py:method:: __eq__(other) -> bool
+
+      Return self==value.
 
 
 
@@ -673,7 +735,7 @@ Attributes
 
 
 .. py:data:: __version__
-   :value: '2.2.0'
+   :value: '2.3.0'
 
    
 

@@ -173,6 +173,13 @@ Functions
       initial_read_buffer_size value
 
 
+   .. py:property:: features
+      :type: asynctnt.iproto.protocol.IProtoFeatures
+
+      Lookup available Tarantool features - https://www.tarantool.io/en/doc/latest/reference/reference_lua/box_iproto/feature/
+      :return:
+
+
    .. py:attribute:: __slots__
       :value: ('_host', '_port', '_username', '_password', '_fetch_schema', '_auto_refetch_schema',...
 
@@ -227,7 +234,7 @@ Functions
       Just calls disconnect() and connect()
 
 
-   .. py:method:: __aenter__()
+   .. py:method:: __aenter__() -> Connection
       :async:
 
       Executed on entering the async with section.

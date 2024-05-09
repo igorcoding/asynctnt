@@ -34,7 +34,8 @@ Documentation is available [here](https://igorcoding.github.io/asynctnt).
 * Full support for [SQL](https://www.tarantool.io/en/doc/latest/tutorials/sql_tutorial/),
   including [prepared statements](https://www.tarantool.io/en/doc/latest/reference/reference_lua/box_sql/prepare/).
 * Support for [interactive transaction](https://www.tarantool.io/en/doc/latest/book/box/atomic/txn_mode_mvcc/) via Tarantool streams.
-* Support of `Decimal`, `UUID` and `datetime` types natively.
+* Support of `Decimal`, `UUID`,`datetime` types natively.
+* Support for [interval types](https://www.tarantool.io/en/doc/latest/reference/reference_lua/datetime/interval_object/).
 * Support for parsing [custom errors](https://www.tarantool.io/en/doc/latest/reference/reference_lua/box_error/new/).
 * **Schema fetching** on connection establishment, so you can use spaces and
   indexes names rather than their ids, and **auto refetching** if schema in
