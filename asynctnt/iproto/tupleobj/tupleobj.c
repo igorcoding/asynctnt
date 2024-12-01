@@ -72,7 +72,7 @@ ttuple_dealloc(AtntTupleObject *o)
 
     Py_CLEAR(o->metadata);
 
-    Py_TRASHCAN_SAFE_BEGIN(o)
+    CPy_TRASHCAN_BEGIN(o, ttuple_dealloc)
     if (len > 0) {
         i = len;
         while (--i >= 0) {
@@ -91,7 +91,7 @@ ttuple_dealloc(AtntTupleObject *o)
     }
     Py_TYPE(o)->tp_free((PyObject *)o);
 done:
-    Py_TRASHCAN_SAFE_END(o)
+    CPy_TRASHCAN_END(o)
 }
 
 

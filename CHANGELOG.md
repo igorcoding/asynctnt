@@ -1,5 +1,12 @@
 # Changelog
 
+## v2.4.0
+**New features**
+* Added support for Python 3.13 [#37](https://github.com/igorcoding/asynctnt/issues/37)
+
+**Other changes**
+* Upgraded Cython to 3.0.11
+
 ## v2.3.0
 **New features:**
 * Added support for [interval types](https://www.tarantool.io/en/doc/latest/reference/reference_lua/datetime/interval_object/) [#30](https://github.com/igorcoding/asynctnt/issues/30)

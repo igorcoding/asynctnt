@@ -8,6 +8,21 @@
 extern "C" {
 #endif
 
+#if defined(PYPY_VERSION)
+#  define CPy_TRASHCAN_BEGIN(op, dealloc)
+#  define CPy_TRASHCAN_END(op)
+#else
+
+#if PY_MAJOR_VERSION >= 3 && PY_MINOR_VERSION >= 8
+#  define CPy_TRASHCAN_BEGIN(op, dealloc) Py_TRASHCAN_BEGIN(op, dealloc)
+#  define CPy_TRASHCAN_END(op) Py_TRASHCAN_END
+#else
+#  define CPy_TRASHCAN_BEGIN(op, dealloc) Py_TRASHCAN_SAFE_BEGIN(op)
+#  define CPy_TRASHCAN_END(op) Py_TRASHCAN_SAFE_END(op)
+#endif
+
+#endif
+
 /* Largest ttuple to save on free list */
 #define AtntTuple_MAXSAVESIZE 20
 
