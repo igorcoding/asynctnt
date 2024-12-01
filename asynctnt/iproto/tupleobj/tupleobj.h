@@ -9,8 +9,8 @@ extern "C" {
 #endif
 
 #if defined(PYPY_VERSION)
-#  define CPy_TRASHCAN_BEGIN(op, dealloc)
-#  define CPy_TRASHCAN_END(op)
+#  define CPy_TRASHCAN_BEGIN(op, dealloc) do {} while(0);
+#  define CPy_TRASHCAN_END(op) do {} while(0);
 #else
 
 #if PY_MAJOR_VERSION >= 3 && PY_MINOR_VERSION >= 8
