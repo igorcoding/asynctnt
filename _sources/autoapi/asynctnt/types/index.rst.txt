@@ -1,7 +1,19 @@
-:py:mod:`asynctnt.types`
-========================
+asynctnt.types
+==============
 
 .. py:module:: asynctnt.types
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   asynctnt.types.MethodRet
+   asynctnt.types.SpaceType
+   asynctnt.types.IndexType
+   asynctnt.types.KeyType
+   asynctnt.types.TupleType
 
 
 Module Contents
@@ -9,21 +21,11 @@ Module Contents
 
 .. py:data:: MethodRet
 
-   
-
 .. py:data:: SpaceType
-
-   
 
 .. py:data:: IndexType
 
-   
-
 .. py:data:: KeyType
 
-   
-
 .. py:data:: TupleType
-
-   
 

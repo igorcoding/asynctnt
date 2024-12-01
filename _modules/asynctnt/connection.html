@@ -1,23 +1,21 @@
+
+
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" data-content_root="../../">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>asynctnt.connection &mdash; asynctnt 2.3.0 documentation</title>
+  <title>asynctnt.connection &mdash; asynctnt 2.4.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
-      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
-      <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=fd3f3429" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=4ae1632d" />
 
   
-  <!--[if lt IE 9]>
-    <script src="../../_static/js/html5shiv.min.js"></script>
-  <![endif]-->
-  
-        <script src="../../_static/jquery.js?v=5d32c60e"></script>
-        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=c3c8ae58"></script>
-        <script src="../../_static/doctools.js?v=9a2dae69"></script>
-        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=4d935f96"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
@@ -34,9 +32,6 @@
           <a href="../../index.html" class="icon icon-home">
             asynctnt
           </a>
-              <div class="version">
-                2.3.0
-              </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
@@ -235,11 +230,26 @@
 <span class="sd">                memory usage (default is 131072).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_host</span> <span class="o">=</span> <span class="n">host</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_port</span> <span class="o">=</span> <span class="n">port</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_username</span> <span class="o">=</span> <span class="n">username</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_password</span> <span class="o">=</span> <span class="n">password</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_fetch_schema</span> <span class="o">=</span> <span class="kc">False</span> <span class="k">if</span> <span class="n">fetch_schema</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">fetch_schema</span>
+<div class="viewcode-block" id="Connection._host">
+<a class="viewcode-back" href="../../autoapi/asynctnt/connection/index.html#asynctnt.connection.Connection._host">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_host</span> <span class="o">=</span> <span class="n">host</span></div>
+
+<div class="viewcode-block" id="Connection._port">
+<a class="viewcode-back" href="../../autoapi/asynctnt/connection/index.html#asynctnt.connection.Connection._port">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_port</span> <span class="o">=</span> <span class="n">port</span></div>
+
+<div class="viewcode-block" id="Connection._username">
+<a class="viewcode-back" href="../../autoapi/asynctnt/connection/index.html#asynctnt.connection.Connection._username">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_username</span> <span class="o">=</span> <span class="n">username</span></div>
+
+<div class="viewcode-block" id="Connection._password">
+<a class="viewcode-back" href="../../autoapi/asynctnt/connection/index.html#asynctnt.connection.Connection._password">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_password</span> <span class="o">=</span> <span class="n">password</span></div>
+
+<div class="viewcode-block" id="Connection._fetch_schema">
+<a class="viewcode-back" href="../../autoapi/asynctnt/connection/index.html#asynctnt.connection.Connection._fetch_schema">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_fetch_schema</span> <span class="o">=</span> <span class="kc">False</span> <span class="k">if</span> <span class="n">fetch_schema</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">fetch_schema</span></div>
+
         <span class="k">if</span> <span class="n">auto_refetch_schema</span><span class="p">:</span>  <span class="c1"># None hack</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_auto_refetch_schema</span> <span class="o">=</span> <span class="kc">True</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fetch_schema</span><span class="p">:</span>
@@ -249,24 +259,69 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">_fetch_schema</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_auto_refetch_schema</span> <span class="o">=</span> <span class="kc">False</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_initial_read_buffer_size</span> <span class="o">=</span> <span class="n">initial_read_buffer_size</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_encoding</span> <span class="o">=</span> <span class="n">encoding</span> <span class="ow">or</span> <span class="s2">&quot;utf-8&quot;</span>
+<div class="viewcode-block" id="Connection._initial_read_buffer_size">
+<a class="viewcode-back" href="../../autoapi/asynctnt/connection/index.html#asynctnt.connection.Connection._initial_read_buffer_size">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_initial_read_buffer_size</span> <span class="o">=</span> <span class="n">initial_read_buffer_size</span></div>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_connect_timeout</span> <span class="o">=</span> <span class="n">connect_timeout</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_reconnect_timeout</span> <span class="o">=</span> <span class="n">reconnect_timeout</span> <span class="ow">or</span> <span class="mi">0</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_request_timeout</span> <span class="o">=</span> <span class="n">request_timeout</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_ping_timeout</span> <span class="o">=</span> <span class="n">ping_timeout</span> <span class="ow">or</span> <span class="mi">0</span>
+<div class="viewcode-block" id="Connection._encoding">
+<a class="viewcode-back" href="../../autoapi/asynctnt/connection/index.html#asynctnt.connection.Connection._encoding">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_encoding</span> <span class="o">=</span> <span class="n">encoding</span> <span class="ow">or</span> <span class="s2">&quot;utf-8&quot;</span></div>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_transport</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_protocol</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">protocol</span><span class="o">.</span><span class="n">Protocol</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_state</span> <span class="o">=</span> <span class="n">ConnectionState</span><span class="o">.</span><span class="n">DISCONNECTED</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_state_prev</span> <span class="o">=</span> <span class="n">ConnectionState</span><span class="o">.</span><span class="n">DISCONNECTED</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_disconnect_waiter</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_reconnect_task</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_connect_lock</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Lock</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_disconnect_lock</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Lock</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_ping_task</span> <span class="o">=</span> <span class="kc">None</span>
+<div class="viewcode-block" id="Connection._connect_timeout">
+<a class="viewcode-back" href="../../autoapi/asynctnt/connection/index.html#asynctnt.connection.Connection._connect_timeout">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_connect_timeout</span> <span class="o">=</span> <span class="n">connect_timeout</span></div>
+
+<div class="viewcode-block" id="Connection._reconnect_timeout">
+<a class="viewcode-back" href="../../autoapi/asynctnt/connection/index.html#asynctnt.connection.Connection._reconnect_timeout">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_reconnect_timeout</span> <span class="o">=</span> <span class="n">reconnect_timeout</span> <span class="ow">or</span> <span class="mi">0</span></div>
+
+<div class="viewcode-block" id="Connection._request_timeout">
+<a class="viewcode-back" href="../../autoapi/asynctnt/connection/index.html#asynctnt.connection.Connection._request_timeout">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_request_timeout</span> <span class="o">=</span> <span class="n">request_timeout</span></div>
+
+<div class="viewcode-block" id="Connection._ping_timeout">
+<a class="viewcode-back" href="../../autoapi/asynctnt/connection/index.html#asynctnt.connection.Connection._ping_timeout">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ping_timeout</span> <span class="o">=</span> <span class="n">ping_timeout</span> <span class="ow">or</span> <span class="mi">0</span></div>
+
+
+<div class="viewcode-block" id="Connection._transport">
+<a class="viewcode-back" href="../../autoapi/asynctnt/connection/index.html#asynctnt.connection.Connection._transport">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_transport</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="Connection._protocol">
+<a class="viewcode-back" href="../../autoapi/asynctnt/connection/index.html#asynctnt.connection.Connection._protocol">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_protocol</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">protocol</span><span class="o">.</span><span class="n">Protocol</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="Connection._state">
+<a class="viewcode-back" href="../../autoapi/asynctnt/connection/index.html#asynctnt.connection.Connection._state">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_state</span> <span class="o">=</span> <span class="n">ConnectionState</span><span class="o">.</span><span class="n">DISCONNECTED</span></div>
+
+<div class="viewcode-block" id="Connection._state_prev">
+<a class="viewcode-back" href="../../autoapi/asynctnt/connection/index.html#asynctnt.connection.Connection._state_prev">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_state_prev</span> <span class="o">=</span> <span class="n">ConnectionState</span><span class="o">.</span><span class="n">DISCONNECTED</span></div>
+
+<div class="viewcode-block" id="Connection._disconnect_waiter">
+<a class="viewcode-back" href="../../autoapi/asynctnt/connection/index.html#asynctnt.connection.Connection._disconnect_waiter">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_disconnect_waiter</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="Connection._reconnect_task">
+<a class="viewcode-back" href="../../autoapi/asynctnt/connection/index.html#asynctnt.connection.Connection._reconnect_task">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_reconnect_task</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="Connection._connect_lock">
+<a class="viewcode-back" href="../../autoapi/asynctnt/connection/index.html#asynctnt.connection.Connection._connect_lock">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_connect_lock</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Lock</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Connection._disconnect_lock">
+<a class="viewcode-back" href="../../autoapi/asynctnt/connection/index.html#asynctnt.connection.Connection._disconnect_lock">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_disconnect_lock</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Lock</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Connection._ping_task">
+<a class="viewcode-back" href="../../autoapi/asynctnt/connection/index.html#asynctnt.connection.Connection._ping_task">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ping_task</span> <span class="o">=</span> <span class="kc">None</span></div>
+
 
 <div class="viewcode-block" id="Connection._set_state">
 <a class="viewcode-back" href="../../autoapi/asynctnt/index.html#asynctnt.connection.Connection._set_state">[docs]</a>

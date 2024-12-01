@@ -1,14 +1,11 @@
-:py:mod:`asynctnt.instance`
-===========================
+asynctnt.instance
+=================
 
 .. py:module:: asynctnt.instance
 
 
-Module Contents
----------------
-
 Classes
-~~~~~~~
+-------
 
 .. autoapisummary::
 
@@ -19,22 +16,32 @@ Classes
    asynctnt.instance.TarantoolSyncDockerInstance
 
 
-
+Module Contents
+---------------
 
 .. py:class:: TarantoolInstanceProtocol(tnt, on_exit)
 
-
    Bases: :py:obj:`asyncio.SubprocessProtocol`
 
+
    Interface for protocol for subprocess calls.
+
+
+   .. py:attribute:: _tnt
+
+
+   .. py:attribute:: _on_exit
+
+
+   .. py:attribute:: _transport
+      :value: None
+
+
 
    .. py:property:: logger
 
 
    .. py:property:: pid
-
-
-   .. py:property:: returncode
 
 
    .. py:method:: connection_made(transport)
@@ -46,6 +53,7 @@ Classes
       When the connection is closed, connection_lost() is called.
 
 
+
    .. py:method:: pipe_data_received(fd, data)
 
       Called when the subprocess writes data into stdout/stderr pipe.
@@ -54,17 +62,24 @@ Classes
       data is bytes object.
 
 
+
    .. py:method:: process_exited()
 
       Called when subprocess has exited.
 
 
+
+   .. py:property:: returncode
+
+
    .. py:method:: wait()
       :async:
+
 
       Wait until the process exit and return the process return code.
 
       This method is a coroutine.
+
 
 
    .. py:method:: send_signal(signal)
@@ -76,17 +91,213 @@ Classes
    .. py:method:: kill()
 
 
-
 .. py:class:: TarantoolInstance(*, host='127.0.0.1', port=3301, console_host=None, console_port=3302, replication_source=None, title=None, logger=None, log_level=5, slab_alloc_arena=0.1, wal_mode='none', root=None, specify_work_dir=True, cleanup=True, initlua_template=None, applua='-- app.lua --', extra_box_cfg='', timeout=5.0, command_to_run='tarantool', command_args=None)
+
+   .. py:attribute:: _host
+      :value: '127.0.0.1'
+
+
+
+   .. py:attribute:: _port
+      :value: 3301
+
+
+
+   .. py:attribute:: _console_host
+      :value: '127.0.0.1'
+
+
+
+   .. py:attribute:: _console_port
+      :value: 3302
+
+
+
+   .. py:attribute:: _replication_source
+      :value: None
+
+
+
+   .. py:attribute:: _title
+
+
+   .. py:attribute:: _logger
+
+
+   .. py:attribute:: _log_level
+      :value: 5
+
+
+
+   .. py:attribute:: _slab_alloc_arena
+      :value: 0.1
+
+
+
+   .. py:attribute:: _wal_mode
+      :value: 'none'
+
+
+
+   .. py:attribute:: _root
+
+
+   .. py:attribute:: _specify_work_dir
+      :value: True
+
+
+
+   .. py:attribute:: _cleanup
+      :value: True
+
+
+
+   .. py:attribute:: _initlua_template
+      :value: Multiline-String
+
+      .. raw:: html
+
+         <details><summary>Show Value</summary>
+
+      .. code-block:: python
+
+         """
+                     local function check_version(expected, version)
+                         -- from tarantool/queue compat.lua
+                         local fun = require 'fun'
+                         local iter, op  = fun.iter, fun.operator
+                         local function split(self, sep)
+                             local sep, fields = sep or ":", {}
+                             local pattern = string.format("([^%s]+)", sep)
+                             self:gsub(pattern, function(c) table.insert(fields, c) end)
+                             return fields
+                         end
+         
+                         local function reducer(res, l, r)
+                             if res ~= nil then
+                                 return res
+                             end
+                             if tonumber(l) == tonumber(r) then
+                                 return nil
+                             end
+                             return tonumber(l) > tonumber(r)
+                         end
+         
+                         local function split_version(version_string)
+                             local vtable  = split(version_string, '.')
+                             local vtable2 = split(vtable[3],  '-')
+                             vtable[3], vtable[4] = vtable2[1], vtable2[2]
+                             return vtable
+                         end
+         
+                         local function check_version_internal(expected, version)
+                             version = version or _TARANTOOL
+                             if type(version) == 'string' then
+                                 version = split_version(version)
+                             end
+                             local res = iter(version):zip(expected)
+                                                      :reduce(reducer, nil)
+                             if res or res == nil then res = true end
+                             return res
+                         end
+         
+                         return check_version_internal(expected, version)
+                     end
+                     local cfg = {
+                       listen = "${host}:${port}",
+                       wal_mode = "${wal_mode}",
+                       custom_proc_title = "${custom_proc_title}",
+                       slab_alloc_arena = ${slab_alloc_arena},
+                       work_dir = ${work_dir},
+                       log_level = ${log_level},
+                       ${extra_box_cfg}
+                     }
+                     if check_version({1, 7}, _TARANTOOL) then
+                         cfg.replication = ${replication_source}
+                     else
+                         local repl = ${replication_source}
+                         if type(repl) == 'table' then
+                             repl = table.concat(repl, ',')
+                         end
+                         cfg.replication_source = repl
+                     end
+                     require('console').listen("${console_host}:${console_port}")
+                     box.cfg(cfg)
+                     box.schema.user.grant("guest", "read,write,execute", "universe",
+                                           nil, {if_not_exists = true})
+                     ${applua}
+                 """
+
+      .. raw:: html
+
+         </details>
+
+
+
+
+   .. py:attribute:: _applua
+      :value: '-- app.lua --'
+
+
+
+   .. py:attribute:: _extra_box_cfg
+      :value: ''
+
+
+
+   .. py:attribute:: _command_to_run
+      :value: 'tarantool'
+
+
+
+   .. py:attribute:: _command_args
+      :value: None
+
+
+
+   .. py:attribute:: _timeout
+      :value: 5.0
+
+
+
+   .. py:attribute:: _is_running
+      :value: False
+
 
 
    .. py:property:: replication_source
+
+
+   .. py:method:: _random_string(length, *, source=string.ascii_uppercase + string.ascii_lowercase + string.digits)
+
+
+   .. py:method:: _generate_title()
+
+
+   .. py:method:: _generate_root_folder_name()
+
+
+   .. py:method:: get_random_port()
+      :staticmethod:
+
+
+
+   .. py:method:: _create_initlua_template()
+
+
+   .. py:method:: _render_initlua()
+
+
+   .. py:method:: _save_initlua(initlua)
 
 
    .. py:property:: logger
 
 
    .. py:property:: fingerprint
+
+
+   .. py:method:: prepare(recreate)
 
 
    .. py:property:: host
@@ -105,76 +316,62 @@ Classes
       :abstractmethod:
 
 
-   .. py:method:: _random_string(length, *, source=string.ascii_uppercase + string.ascii_lowercase + string.digits)
-
-
-   .. py:method:: _generate_title()
-
-
-   .. py:method:: _generate_root_folder_name()
-
-
-   .. py:method:: get_random_port()
-      :staticmethod:
-
-
-   .. py:method:: _create_initlua_template()
-
-
-   .. py:method:: _render_initlua()
-
-
-   .. py:method:: _save_initlua(initlua)
-
-
-   .. py:method:: prepare(recreate)
-
 
    .. py:method:: command(cmd, print_greeting=True)
       :abstractmethod:
+
 
 
    .. py:method:: start(*, wait=True, recreate=True)
       :abstractmethod:
 
 
+
    .. py:method:: stop()
       :abstractmethod:
+
 
 
    .. py:method:: terminate()
       :abstractmethod:
 
 
+
    .. py:method:: kill()
       :abstractmethod:
+
 
 
    .. py:method:: cleanup()
 
 
-
 .. py:class:: TarantoolSyncInstance(**kwargs)
 
-
    Bases: :py:obj:`TarantoolInstance`
-
-   .. py:property:: pid
-
-
-   .. py:property:: bin_version
-      :type: Optional[tuple]
 
 
    .. py:attribute:: WAIT_TIMEOUT
       :value: 5
 
-      
+
+
+   .. py:attribute:: _process
+      :value: None
+
+
+
+   .. py:attribute:: _logger_thread
+      :value: None
+
+
 
    .. py:method:: __enter__()
 
 
    .. py:method:: __exit__(exc_type, exc_val, exc_tb)
+
+
+   .. py:property:: pid
 
 
    .. py:method:: start(*, wait=True, recreate=True)
@@ -202,17 +399,45 @@ Classes
       :staticmethod:
 
 
+
    .. py:method:: version() -> Optional[tuple]
+
+
+   .. py:property:: bin_version
+      :type: Optional[tuple]
+
 
 
    .. py:method:: command(cmd, print_greeting=True)
 
 
-
 .. py:class:: TarantoolAsyncInstance(**kwargs)
 
-
    Bases: :py:obj:`TarantoolInstance`
+
+
+   .. py:attribute:: _is_stopping
+      :value: False
+
+
+
+   .. py:attribute:: _transport
+      :value: None
+
+
+
+   .. py:attribute:: _protocol
+      :value: None
+
+
+
+   .. py:attribute:: _last_return_code
+      :value: None
+
+
+
+   .. py:attribute:: _stop_event
+
 
    .. py:property:: pid
 
@@ -227,20 +452,25 @@ Classes
       :async:
 
 
+
    .. py:method:: version()
       :async:
+
 
 
    .. py:method:: command(cmd, print_greeting=True)
       :async:
 
 
+
    .. py:method:: start(*, wait=True, recreate=True)
       :async:
 
 
+
    .. py:method:: stop()
       :async:
+
 
 
    .. py:method:: terminate()
@@ -252,11 +482,26 @@ Classes
    .. py:method:: cleanup()
 
 
-
 .. py:class:: TarantoolSyncDockerInstance(*, docker_image=None, docker_tag=None, host='0.0.0.0', port=3301, console_host=None, console_port=3302, replication_source=None, title=None, logger=None, log_level=5, slab_alloc_arena=0.1, wal_mode='none', initlua_template=None, applua='-- app.lua --', timeout=10.0)
 
-
    Bases: :py:obj:`TarantoolSyncInstance`
+
+
+   .. py:attribute:: _docker_image
+      :value: 'tarantool/tarantool'
+
+
+
+   .. py:attribute:: _docker_tag
+      :value: '1'
+
+
+
+   .. py:attribute:: _command_to_run
+
+
+   .. py:attribute:: _command_args
+
 
    .. py:property:: bin_version
       :type: Optional[tuple]

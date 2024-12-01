@@ -1,43 +1,46 @@
-:py:mod:`asynctnt.stream`
-=========================
+asynctnt.stream
+===============
 
 .. py:module:: asynctnt.stream
 
 
-Module Contents
----------------
-
 Classes
-~~~~~~~
+-------
 
 .. autoapisummary::
 
    asynctnt.stream.Stream
 
 
-
+Module Contents
+---------------
 
 .. py:class:: Stream
 
-
    Bases: :py:obj:`asynctnt.api.Api`
+
 
    .. py:property:: stream_id
       :type: int
 
+
       Current stream is
+
 
 
    .. py:method:: __aenter__()
       :async:
+
 
           If used as Context Manager `begin()` and `commit()`/`rollback()`
           are called automatically
       :return:
 
 
+
    .. py:method:: __aexit__(exc_type, exc_val, exc_tb)
       :async:
+
 
       Normally `commit()` is called on context manager exit, but
       in the case of exception `rollback()` is called

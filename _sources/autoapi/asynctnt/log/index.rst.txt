@@ -1,13 +1,19 @@
-:py:mod:`asynctnt.log`
-======================
+asynctnt.log
+============
 
 .. py:module:: asynctnt.log
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   asynctnt.log.logger
 
 
 Module Contents
 ---------------
 
 .. py:data:: logger
-
-   
 

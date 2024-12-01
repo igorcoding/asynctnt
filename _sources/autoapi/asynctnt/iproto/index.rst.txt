@@ -1,15 +1,15 @@
-:py:mod:`asynctnt.iproto`
-=========================
+asynctnt.iproto
+===============
 
 .. py:module:: asynctnt.iproto
 
 
 Submodules
 ----------
+
 .. toctree::
-   :titlesonly:
    :maxdepth: 1
 
-   protocol/index.rst
+   /autoapi/asynctnt/iproto/protocol/index
 
 

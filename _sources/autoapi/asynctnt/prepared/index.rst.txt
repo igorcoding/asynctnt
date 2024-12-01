@@ -1,50 +1,75 @@
-:py:mod:`asynctnt.prepared`
-===========================
+asynctnt.prepared
+=================
 
 .. py:module:: asynctnt.prepared
 
 
-Module Contents
----------------
-
 Classes
-~~~~~~~
+-------
 
 .. autoapisummary::
 
    asynctnt.prepared.PreparedStatement
 
 
-
+Module Contents
+---------------
 
 .. py:class:: PreparedStatement(api: asynctnt.api.Api, query: str)
+
+   .. py:attribute:: __slots__
+      :value: ('_api', '_query', '_stmt_id', '_params', '_params_count')
+
+
+
+   .. py:attribute:: _api
+
+
+   .. py:attribute:: _query
+
+
+   .. py:attribute:: _stmt_id
+      :value: None
+
+
+
+   .. py:attribute:: _params
+      :value: None
+
+
+
+   .. py:attribute:: _params_count
+      :value: 0
+
 
 
    .. py:property:: id
       :type: int
 
+
       Prepared statement id
+
 
 
    .. py:property:: params_count
       :type: int
 
+
       Bound params count
+
 
 
    .. py:property:: params
       :type: Optional[asynctnt.iproto.protocol.Metadata]
 
+
       Bound params metadata
 
 
-   .. py:attribute:: __slots__
-      :value: ('_api', '_query', '_stmt_id', '_params', '_params_count')
-
-      
 
    .. py:method:: prepare(timeout: float = -1.0) -> int
       :async:
+
 
           Prepare statement
 
@@ -52,8 +77,10 @@ Classes
       :return: prepared statement id
 
 
+
    .. py:method:: execute(args: Optional[List[Union[Dict[str, Any], Any]]] = None, *, parse_metadata: bool = True, timeout: float = -1.0) -> asynctnt.iproto.protocol.Response
       :async:
+
 
           Execute this prepared statement with specified args
       :param args: arguments list
@@ -61,18 +88,23 @@ Classes
       :param timeout: request timeout
 
 
+
    .. py:method:: unprepare(timeout: float = -1.0)
       :async:
+
 
           Unprepare current prepared statement
       :param timeout: request timeout
 
 
+
    .. py:method:: __aenter__()
       :async:
 
+
       If used as a Context Manager `prepare()` and `unprepare()` methods
       are called automatically
+
 
 
    .. py:method:: __aexit__(exc_type, exc_val, exc_tb)

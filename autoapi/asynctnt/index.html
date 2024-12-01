@@ -1,28 +1,26 @@
+
+
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" data-content_root="../../">
 <head>
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>asynctnt &mdash; asynctnt 2.3.0 documentation</title>
+  <title>asynctnt &mdash; asynctnt 2.4.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
-      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
-      <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=fd3f3429" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=4ae1632d" />
 
   
-  <!--[if lt IE 9]>
-    <script src="../../_static/js/html5shiv.min.js"></script>
-  <![endif]-->
-  
-        <script src="../../_static/jquery.js?v=5d32c60e"></script>
-        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=c3c8ae58"></script>
-        <script src="../../_static/doctools.js?v=9a2dae69"></script>
-        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=4d935f96"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="asynctnt.iproto" href="iproto/index.html" />
+    <link rel="next" title="asynctnt.api" href="api/index.html" />
     <link rel="prev" title="API Reference" href="../index.html" /> 
 </head>
 
@@ -37,9 +35,6 @@
           <a href="../../index.html" class="icon icon-home">
             asynctnt
           </a>
-              <div class="version">
-                2.3.0
-              </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
@@ -60,26 +55,38 @@
 <li class="toctree-l1"><a class="reference internal" href="../../mpext.html">Type Extensions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../CHANGELOG.html">Changelog</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../index.html">API Reference</a><ul class="current">
-<li class="toctree-l2 current"><a class="current reference internal" href="#"><code class="xref py py-mod docutils literal notranslate"><span class="pre">asynctnt</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#subpackages">Subpackages</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="iproto/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">asynctnt.iproto</span></code></a></li>
-</ul>
-</li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">asynctnt</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#submodules">Submodules</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="api/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">asynctnt.api</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="connection/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">asynctnt.connection</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="exceptions/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">asynctnt.exceptions</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="instance/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">asynctnt.instance</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="log/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">asynctnt.log</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="prepared/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">asynctnt.prepared</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="stream/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">asynctnt.stream</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="types/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">asynctnt.types</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/index.html">asynctnt.api</a></li>
+<li class="toctree-l4"><a class="reference internal" href="connection/index.html">asynctnt.connection</a></li>
+<li class="toctree-l4"><a class="reference internal" href="exceptions/index.html">asynctnt.exceptions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="instance/index.html">asynctnt.instance</a></li>
+<li class="toctree-l4"><a class="reference internal" href="iproto/index.html">asynctnt.iproto</a></li>
+<li class="toctree-l4"><a class="reference internal" href="log/index.html">asynctnt.log</a></li>
+<li class="toctree-l4"><a class="reference internal" href="prepared/index.html">asynctnt.prepared</a></li>
+<li class="toctree-l4"><a class="reference internal" href="stream/index.html">asynctnt.stream</a></li>
+<li class="toctree-l4"><a class="reference internal" href="types/index.html">asynctnt.types</a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="#attributes">Attributes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#functions">Functions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#package-contents">Package Contents</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#classes">Classes</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#functions">Functions</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#attributes">Attributes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#asynctnt.Connection"><code class="docutils literal notranslate"><span class="pre">Connection</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#asynctnt.connect"><code class="docutils literal notranslate"><span class="pre">connect()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#asynctnt.Db"><code class="docutils literal notranslate"><span class="pre">Db</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#asynctnt.Field"><code class="docutils literal notranslate"><span class="pre">Field</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#asynctnt.IProtoError"><code class="docutils literal notranslate"><span class="pre">IProtoError</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#asynctnt.IProtoErrorStackFrame"><code class="docutils literal notranslate"><span class="pre">IProtoErrorStackFrame</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#asynctnt.Metadata"><code class="docutils literal notranslate"><span class="pre">Metadata</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#asynctnt.MPInterval"><code class="docutils literal notranslate"><span class="pre">MPInterval</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#asynctnt.PushIterator"><code class="docutils literal notranslate"><span class="pre">PushIterator</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#asynctnt.Response"><code class="docutils literal notranslate"><span class="pre">Response</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#asynctnt.Schema"><code class="docutils literal notranslate"><span class="pre">Schema</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#asynctnt.SchemaIndex"><code class="docutils literal notranslate"><span class="pre">SchemaIndex</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#asynctnt.SchemaSpace"><code class="docutils literal notranslate"><span class="pre">SchemaSpace</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#asynctnt.TarantoolTuple"><code class="docutils literal notranslate"><span class="pre">TarantoolTuple</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#asynctnt.__version__"><code class="docutils literal notranslate"><span class="pre">__version__</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -103,7 +110,7 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../index.html">API Reference</a></li>
-      <li class="breadcrumb-item active"><code class="xref py py-mod docutils literal notranslate"><span class="pre">asynctnt</span></code></li>
+      <li class="breadcrumb-item active">asynctnt</li>
       <li class="wy-breadcrumbs-aside">
               <a href="https://github.com/igorcoding/asynctnt/blob/master/docs/autoapi/asynctnt/index.rst" class="fa fa-github"> Edit on GitHub</a>
       </li>
@@ -114,37 +121,35 @@
            <div itemprop="articleBody">
              
   <section id="module-asynctnt">
-<span id="asynctnt"></span><h1><a class="reference internal" href="#module-asynctnt" title="asynctnt"><code class="xref py py-mod docutils literal notranslate"><span class="pre">asynctnt</span></code></a><a class="headerlink" href="#module-asynctnt" title="Link to this heading"></a></h1>
-<section id="subpackages">
-<h2>Subpackages<a class="headerlink" href="#subpackages" title="Link to this heading"></a></h2>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="iproto/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">asynctnt.iproto</span></code></a><ul>
-<li class="toctree-l2"><a class="reference internal" href="iproto/protocol/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">asynctnt.iproto.protocol</span></code></a></li>
-</ul>
-</li>
-</ul>
-</div>
-</section>
+<span id="asynctnt"></span><h1>asynctnt<a class="headerlink" href="#module-asynctnt" title="Link to this heading"></a></h1>
 <section id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading"></a></h2>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="api/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">asynctnt.api</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="connection/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">asynctnt.connection</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="exceptions/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">asynctnt.exceptions</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="instance/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">asynctnt.instance</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="log/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">asynctnt.log</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="prepared/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">asynctnt.prepared</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="stream/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">asynctnt.stream</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="types/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">asynctnt.types</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/index.html">asynctnt.api</a></li>
+<li class="toctree-l1"><a class="reference internal" href="connection/index.html">asynctnt.connection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="exceptions/index.html">asynctnt.exceptions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="instance/index.html">asynctnt.instance</a></li>
+<li class="toctree-l1"><a class="reference internal" href="iproto/index.html">asynctnt.iproto</a></li>
+<li class="toctree-l1"><a class="reference internal" href="log/index.html">asynctnt.log</a></li>
+<li class="toctree-l1"><a class="reference internal" href="prepared/index.html">asynctnt.prepared</a></li>
+<li class="toctree-l1"><a class="reference internal" href="stream/index.html">asynctnt.stream</a></li>
+<li class="toctree-l1"><a class="reference internal" href="types/index.html">asynctnt.types</a></li>
 </ul>
 </div>
 </section>
-<section id="package-contents">
-<h2>Package Contents<a class="headerlink" href="#package-contents" title="Link to this heading"></a></h2>
+<section id="attributes">
+<h2>Attributes<a class="headerlink" href="#attributes" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#asynctnt.__version__" title="asynctnt.__version__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__version__</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</section>
 <section id="classes">
-<h3>Classes<a class="headerlink" href="#classes" title="Link to this heading"></a></h3>
+<h2>Classes<a class="headerlink" href="#classes" title="Link to this heading"></a></h2>
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#asynctnt.Connection" title="asynctnt.Connection"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Connection</span></code></a></p></td>
@@ -190,7 +195,7 @@
 </table>
 </section>
 <section id="functions">
-<h3>Functions<a class="headerlink" href="#functions" title="Link to this heading"></a></h3>
+<h2>Functions<a class="headerlink" href="#functions" title="Link to this heading"></a></h2>
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#asynctnt.connect" title="asynctnt.connect"><code class="xref py py-obj docutils literal notranslate"><span class="pre">connect</span></code></a>(→ Connection)</p></td>
@@ -199,19 +204,192 @@
 </tbody>
 </table>
 </section>
-<section id="attributes">
-<h3>Attributes<a class="headerlink" href="#attributes" title="Link to this heading"></a></h3>
-<table class="autosummary longtable docutils align-default">
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#asynctnt.__version__" title="asynctnt.__version__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__version__</span></code></a></p></td>
-<td><p></p></td>
-</tr>
-</tbody>
-</table>
+<section id="package-contents">
+<h2>Package Contents<a class="headerlink" href="#package-contents" title="Link to this heading"></a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="asynctnt.Connection">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">asynctnt.</span></span><span class="sig-name descname"><span class="pre">Connection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">host</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'127.0.0.1'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">port</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">3301</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">username</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">password</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fetch_schema</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">auto_refetch_schema</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">connect_timeout</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">3.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">request_timeout</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">-1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reconnect_timeout</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.0</span> <span class="pre">/</span> <span class="pre">3.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ping_timeout</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">5.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">encoding</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initial_read_buffer_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/asynctnt/connection.html#Connection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#asynctnt.Connection" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="api/index.html#asynctnt.api.Api" title="asynctnt.api.Api"><code class="xref py py-obj docutils literal notranslate"><span class="pre">asynctnt.api.Api</span></code></a></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="asynctnt.Connection.__slots__">
+<span class="sig-name descname"><span class="pre">__slots__</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('_host',</span> <span class="pre">'_port',</span> <span class="pre">'_username',</span> <span class="pre">'_password',</span> <span class="pre">'_fetch_schema',</span> <span class="pre">'_auto_refetch_schema',...</span></em><a class="headerlink" href="#asynctnt.Connection.__slots__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="asynctnt.Connection._host">
+<span class="sig-name descname"><span class="pre">_host</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'127.0.0.1'</span></em><a class="headerlink" href="#asynctnt.Connection._host" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="asynctnt.Connection._port">
+<span class="sig-name descname"><span class="pre">_port</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">3301</span></em><a class="headerlink" href="#asynctnt.Connection._port" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="asynctnt.Connection._username">
+<span class="sig-name descname"><span class="pre">_username</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#asynctnt.Connection._username" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="asynctnt.Connection._password">
+<span class="sig-name descname"><span class="pre">_password</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#asynctnt.Connection._password" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="asynctnt.Connection._fetch_schema">
+<span class="sig-name descname"><span class="pre">_fetch_schema</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#asynctnt.Connection._fetch_schema" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="asynctnt.Connection._initial_read_buffer_size">
+<span class="sig-name descname"><span class="pre">_initial_read_buffer_size</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#asynctnt.Connection._initial_read_buffer_size" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="asynctnt.Connection._encoding">
+<span class="sig-name descname"><span class="pre">_encoding</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'utf-8'</span></em><a class="headerlink" href="#asynctnt.Connection._encoding" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="asynctnt.Connection._connect_timeout">
+<span class="sig-name descname"><span class="pre">_connect_timeout</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">3.0</span></em><a class="headerlink" href="#asynctnt.Connection._connect_timeout" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="asynctnt.Connection._reconnect_timeout">
+<span class="sig-name descname"><span class="pre">_reconnect_timeout</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.3333333333333333</span></em><a class="headerlink" href="#asynctnt.Connection._reconnect_timeout" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="asynctnt.Connection._request_timeout">
+<span class="sig-name descname"><span class="pre">_request_timeout</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">-1.0</span></em><a class="headerlink" href="#asynctnt.Connection._request_timeout" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="asynctnt.Connection._ping_timeout">
+<span class="sig-name descname"><span class="pre">_ping_timeout</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">5.0</span></em><a class="headerlink" href="#asynctnt.Connection._ping_timeout" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="asynctnt.Connection._transport">
+<span class="sig-name descname"><span class="pre">_transport</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#asynctnt.Connection._transport" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="asynctnt.Connection._protocol">
+<span class="sig-name descname"><span class="pre">_protocol</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="iproto/protocol/index.html#asynctnt.iproto.protocol.Protocol" title="asynctnt.iproto.protocol.Protocol"><span class="pre">asynctnt.iproto.protocol.Protocol</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#asynctnt.Connection._protocol" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="asynctnt.Connection._state">
+<span class="sig-name descname"><span class="pre">_state</span></span><a class="headerlink" href="#asynctnt.Connection._state" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="asynctnt.Connection._state_prev">
+<span class="sig-name descname"><span class="pre">_state_prev</span></span><a class="headerlink" href="#asynctnt.Connection._state_prev" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="asynctnt.Connection._disconnect_waiter">
+<span class="sig-name descname"><span class="pre">_disconnect_waiter</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#asynctnt.Connection._disconnect_waiter" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="asynctnt.Connection._reconnect_task">
+<span class="sig-name descname"><span class="pre">_reconnect_task</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#asynctnt.Connection._reconnect_task" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="asynctnt.Connection._connect_lock">
+<span class="sig-name descname"><span class="pre">_connect_lock</span></span><a class="headerlink" href="#asynctnt.Connection._connect_lock" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="asynctnt.Connection._disconnect_lock">
+<span class="sig-name descname"><span class="pre">_disconnect_lock</span></span><a class="headerlink" href="#asynctnt.Connection._disconnect_lock" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="asynctnt.Connection._ping_task">
+<span class="sig-name descname"><span class="pre">_ping_task</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#asynctnt.Connection._ping_task" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="asynctnt.Connection._set_state">
+<span class="sig-name descname"><span class="pre">_set_state</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_state</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="connection/index.html#asynctnt.connection.ConnectionState" title="asynctnt.connection.ConnectionState"><span class="pre">ConnectionState</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/asynctnt/connection.html#Connection._set_state"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#asynctnt.Connection._set_state" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="asynctnt.Connection.connection_lost">
+<span class="sig-name descname"><span class="pre">connection_lost</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">exc</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/asynctnt/connection.html#Connection.connection_lost"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#asynctnt.Connection.connection_lost" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="asynctnt.Connection._ping_task_func">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">_ping_task_func</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/asynctnt/connection.html#Connection._ping_task_func"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#asynctnt.Connection._ping_task_func" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="asynctnt.Connection._start_reconnect">
+<span class="sig-name descname"><span class="pre">_start_reconnect</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">return_exceptions</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/asynctnt/connection.html#Connection._start_reconnect"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#asynctnt.Connection._start_reconnect" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="asynctnt.Connection.protocol_factory">
+<span class="sig-name descname"><span class="pre">protocol_factory</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">connected_fut</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">asyncio.Future</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">loop</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">asyncio.AbstractEventLoop</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cls</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Type</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="iproto/protocol/index.html#asynctnt.iproto.protocol.Protocol" title="asynctnt.iproto.protocol.Protocol"><span class="pre">asynctnt.iproto.protocol.Protocol</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">protocol.Protocol</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/asynctnt/connection.html#Connection.protocol_factory"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#asynctnt.Connection.protocol_factory" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="asynctnt.Connection._connect">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">_connect</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">return_exceptions</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/asynctnt/connection.html#Connection._connect"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#asynctnt.Connection._connect" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="asynctnt.Connection._wait_reconnect">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">_wait_reconnect</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">exc</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Exception</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/asynctnt/connection.html#Connection._wait_reconnect"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#asynctnt.Connection._wait_reconnect" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="asynctnt.Connection.connect">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">connect</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#asynctnt.Connection" title="asynctnt.Connection"><span class="pre">Connection</span></a></span></span><a class="reference internal" href="../../_modules/asynctnt/connection.html#Connection.connect"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#asynctnt.Connection.connect" title="Link to this definition"></a></dt>
+<dd><p>Connect coroutine</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="asynctnt.Connection.disconnect">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">disconnect</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/asynctnt/connection.html#Connection.disconnect"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#asynctnt.Connection.disconnect" title="Link to this definition"></a></dt>
+<dd><p>Disconnect coroutine</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="asynctnt.Connection.close">
+<span class="sig-name descname"><span class="pre">close</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/asynctnt/connection.html#Connection.close"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#asynctnt.Connection.close" title="Link to this definition"></a></dt>
+<dd><p>Same as disconnect, but not a coroutine, i.e. it does not wait
+for disconnect to finish.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="asynctnt.Connection.reconnect">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">reconnect</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/asynctnt/connection.html#Connection.reconnect"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#asynctnt.Connection.reconnect" title="Link to this definition"></a></dt>
+<dd><p>Reconnect coroutine.
+Just calls disconnect() and connect()</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="asynctnt.Connection.__aenter__">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">__aenter__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#asynctnt.Connection" title="asynctnt.Connection"><span class="pre">Connection</span></a></span></span><a class="reference internal" href="../../_modules/asynctnt/connection.html#Connection.__aenter__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#asynctnt.Connection.__aenter__" title="Link to this definition"></a></dt>
+<dd><p>Executed on entering the async with section.
+Connects to Tarantool instance.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="asynctnt.Connection.__aexit__">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">__aexit__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">exc_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exc_val</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exc_tb</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/asynctnt/connection.html#Connection.__aexit__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#asynctnt.Connection.__aexit__" title="Link to this definition"></a></dt>
+<dd><p>Executed on leaving the async with section.
+Disconnects from Tarantool instance.</p>
+</dd></dl>
+
 <dl class="py property">
 <dt class="sig sig-object py" id="asynctnt.Connection.fingerprint">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">fingerprint</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#asynctnt.Connection.fingerprint" title="Link to this definition"></a></dt>
@@ -325,93 +503,6 @@ and schema fetching)</p>
 <dd><p>initial_read_buffer_size value</p>
 </dd></dl>
 
-<dl class="py property">
-<dt class="sig sig-object py" id="asynctnt.Connection.features">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">features</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="iproto/protocol/index.html#asynctnt.iproto.protocol.IProtoFeatures" title="asynctnt.iproto.protocol.IProtoFeatures"><span class="pre">asynctnt.iproto.protocol.IProtoFeatures</span></a></em><a class="headerlink" href="#asynctnt.Connection.features" title="Link to this definition"></a></dt>
-<dd><p>Lookup available Tarantool features - <a class="reference external" href="https://www.tarantool.io/en/doc/latest/reference/reference_lua/box_iproto/feature/">https://www.tarantool.io/en/doc/latest/reference/reference_lua/box_iproto/feature/</a>
-:return:</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="asynctnt.Connection.__slots__">
-<span class="sig-name descname"><span class="pre">__slots__</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('_host',</span> <span class="pre">'_port',</span> <span class="pre">'_username',</span> <span class="pre">'_password',</span> <span class="pre">'_fetch_schema',</span> <span class="pre">'_auto_refetch_schema',...</span></em><a class="headerlink" href="#asynctnt.Connection.__slots__" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="asynctnt.Connection._set_state">
-<span class="sig-name descname"><span class="pre">_set_state</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_state</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="connection/index.html#asynctnt.connection.ConnectionState" title="asynctnt.connection.ConnectionState"><span class="pre">ConnectionState</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/asynctnt/connection.html#Connection._set_state"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#asynctnt.Connection._set_state" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="asynctnt.Connection.connection_lost">
-<span class="sig-name descname"><span class="pre">connection_lost</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">exc</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/asynctnt/connection.html#Connection.connection_lost"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#asynctnt.Connection.connection_lost" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="asynctnt.Connection._ping_task_func">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">_ping_task_func</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/asynctnt/connection.html#Connection._ping_task_func"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#asynctnt.Connection._ping_task_func" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="asynctnt.Connection._start_reconnect">
-<span class="sig-name descname"><span class="pre">_start_reconnect</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">return_exceptions</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/asynctnt/connection.html#Connection._start_reconnect"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#asynctnt.Connection._start_reconnect" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="asynctnt.Connection.protocol_factory">
-<span class="sig-name descname"><span class="pre">protocol_factory</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">connected_fut</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">asyncio.Future</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">loop</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">asyncio.AbstractEventLoop</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cls</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Type</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="iproto/protocol/index.html#asynctnt.iproto.protocol.Protocol" title="asynctnt.iproto.protocol.Protocol"><span class="pre">asynctnt.iproto.protocol.Protocol</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">protocol.Protocol</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/asynctnt/connection.html#Connection.protocol_factory"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#asynctnt.Connection.protocol_factory" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="asynctnt.Connection._connect">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">_connect</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">return_exceptions</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/asynctnt/connection.html#Connection._connect"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#asynctnt.Connection._connect" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="asynctnt.Connection._wait_reconnect">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">_wait_reconnect</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">exc</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Exception</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/asynctnt/connection.html#Connection._wait_reconnect"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#asynctnt.Connection._wait_reconnect" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="asynctnt.Connection.connect">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">connect</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#asynctnt.Connection" title="asynctnt.Connection"><span class="pre">Connection</span></a></span></span><a class="reference internal" href="../../_modules/asynctnt/connection.html#Connection.connect"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#asynctnt.Connection.connect" title="Link to this definition"></a></dt>
-<dd><p>Connect coroutine</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="asynctnt.Connection.disconnect">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">disconnect</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/asynctnt/connection.html#Connection.disconnect"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#asynctnt.Connection.disconnect" title="Link to this definition"></a></dt>
-<dd><p>Disconnect coroutine</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="asynctnt.Connection.close">
-<span class="sig-name descname"><span class="pre">close</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/asynctnt/connection.html#Connection.close"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#asynctnt.Connection.close" title="Link to this definition"></a></dt>
-<dd><p>Same as disconnect, but not a coroutine, i.e. it does not wait
-for disconnect to finish.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="asynctnt.Connection.reconnect">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">reconnect</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/asynctnt/connection.html#Connection.reconnect"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#asynctnt.Connection.reconnect" title="Link to this definition"></a></dt>
-<dd><p>Reconnect coroutine.
-Just calls disconnect() and connect()</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="asynctnt.Connection.__aenter__">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">__aenter__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#asynctnt.Connection" title="asynctnt.Connection"><span class="pre">Connection</span></a></span></span><a class="reference internal" href="../../_modules/asynctnt/connection.html#Connection.__aenter__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#asynctnt.Connection.__aenter__" title="Link to this definition"></a></dt>
-<dd><p>Executed on entering the async with section.
-Connects to Tarantool instance.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="asynctnt.Connection.__aexit__">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">__aexit__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">exc_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exc_val</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exc_tb</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/asynctnt/connection.html#Connection.__aexit__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#asynctnt.Connection.__aexit__" title="Link to this definition"></a></dt>
-<dd><p>Executed on leaving the async with section.
-Disconnects from Tarantool instance.</p>
-</dd></dl>
-
 <dl class="py method">
 <dt class="sig sig-object py" id="asynctnt.Connection.refetch_schema">
 <em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">refetch_schema</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/asynctnt/connection.html#Connection.refetch_schema"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#asynctnt.Connection.refetch_schema" title="Link to this definition"></a></dt>
@@ -426,13 +517,19 @@ Disconnects from Tarantool instance.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="asynctnt.Connection.__repr__">
 <span class="sig-name descname"><span class="pre">__repr__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/asynctnt/connection.html#Connection.__repr__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#asynctnt.Connection.__repr__" title="Link to this definition"></a></dt>
-<dd><p>Return repr(self).</p>
-</dd></dl>
+<dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="asynctnt.Connection.stream">
 <span class="sig-name descname"><span class="pre">stream</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="stream/index.html#asynctnt.stream.Stream" title="asynctnt.stream.Stream"><span class="pre">asynctnt.stream.Stream</span></a></span></span><a class="reference internal" href="../../_modules/asynctnt/connection.html#Connection.stream"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#asynctnt.Connection.stream" title="Link to this definition"></a></dt>
 <dd><p>Create new stream suitable for interactive transactions</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="asynctnt.Connection.features">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">features</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="iproto/protocol/index.html#asynctnt.iproto.protocol.IProtoFeatures" title="asynctnt.iproto.protocol.IProtoFeatures"><span class="pre">asynctnt.iproto.protocol.IProtoFeatures</span></a></em><a class="headerlink" href="#asynctnt.Connection.features" title="Link to this definition"></a></dt>
+<dd><p>Lookup available Tarantool features - <a class="reference external" href="https://www.tarantool.io/en/doc/latest/reference/reference_lua/box_iproto/feature/">https://www.tarantool.io/en/doc/latest/reference/reference_lua/box_iproto/feature/</a>
+:return:</p>
 </dd></dl>
 
 </dd></dl>
@@ -696,20 +793,14 @@ Disconnects from Tarantool instance.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="asynctnt.MPInterval.__eq__">
 <span class="sig-name descname"><span class="pre">__eq__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="../../_modules/asynctnt/iproto/protocol.html#MPInterval.__eq__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#asynctnt.MPInterval.__eq__" title="Link to this definition"></a></dt>
-<dd><p>Return self==value.</p>
-</dd></dl>
+<dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="asynctnt.PushIterator">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">asynctnt.</span></span><span class="sig-name descname"><span class="pre">PushIterator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fut</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">asyncio.Future</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/asynctnt/iproto/protocol.html#PushIterator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#asynctnt.PushIterator" title="Link to this definition"></a></dt>
-<dd><dl class="py property">
-<dt class="sig sig-object py" id="asynctnt.PushIterator.response">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">response</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#asynctnt.Response" title="asynctnt.Response"><span class="pre">Response</span></a></em><a class="headerlink" href="#asynctnt.PushIterator.response" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
+<dd><dl class="py method">
 <dt class="sig sig-object py" id="asynctnt.PushIterator.__iter__">
 <span class="sig-name descname"><span class="pre">__iter__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/asynctnt/iproto/protocol.html#PushIterator.__iter__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#asynctnt.PushIterator.__iter__" title="Link to this definition"></a></dt>
 <dd></dd></dl>
@@ -729,42 +820,17 @@ Disconnects from Tarantool instance.</p>
 <em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">__anext__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/asynctnt/iproto/protocol.html#PushIterator.__anext__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#asynctnt.PushIterator.__anext__" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
+<dl class="py property">
+<dt class="sig sig-object py" id="asynctnt.PushIterator.response">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">response</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#asynctnt.Response" title="asynctnt.Response"><span class="pre">Response</span></a></em><a class="headerlink" href="#asynctnt.PushIterator.response" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="asynctnt.Response">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">asynctnt.</span></span><span class="sig-name descname"><span class="pre">Response</span></span><a class="reference internal" href="../../_modules/asynctnt/iproto/protocol.html#Response"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#asynctnt.Response" title="Link to this definition"></a></dt>
-<dd><dl class="py property">
-<dt class="sig sig-object py" id="asynctnt.Response.sync">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">sync</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#asynctnt.Response.sync" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="asynctnt.Response.code">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">code</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#asynctnt.Response.code" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="asynctnt.Response.return_code">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">return_code</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#asynctnt.Response.return_code" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="asynctnt.Response.schema_id">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">schema_id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#asynctnt.Response.schema_id" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="asynctnt.Response.stmt_id">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">stmt_id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#asynctnt.Response.stmt_id" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="asynctnt.Response.rowcount">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">rowcount</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#asynctnt.Response.rowcount" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
+<dd><dl class="py attribute">
 <dt class="sig sig-object py" id="asynctnt.Response.errmsg">
 <span class="sig-name descname"><span class="pre">errmsg</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#asynctnt.Response.errmsg" title="Link to this definition"></a></dt>
 <dd></dd></dl>
@@ -802,6 +868,36 @@ Disconnects from Tarantool instance.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="asynctnt.Response.params_count">
 <span class="sig-name descname"><span class="pre">params_count</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#asynctnt.Response.params_count" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="asynctnt.Response.sync">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">sync</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#asynctnt.Response.sync" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="asynctnt.Response.code">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">code</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#asynctnt.Response.code" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="asynctnt.Response.return_code">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">return_code</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#asynctnt.Response.return_code" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="asynctnt.Response.schema_id">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">schema_id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#asynctnt.Response.schema_id" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="asynctnt.Response.stmt_id">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">stmt_id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#asynctnt.Response.stmt_id" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="asynctnt.Response.rowcount">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">rowcount</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#asynctnt.Response.rowcount" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -929,8 +1025,7 @@ Disconnects from Tarantool instance.</p>
 <dd><dl class="py method">
 <dt class="sig sig-object py" id="asynctnt.TarantoolTuple.__repr__">
 <span class="sig-name descname"><span class="pre">__repr__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../../_modules/asynctnt/iproto/protocol.html#TarantoolTuple.__repr__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#asynctnt.TarantoolTuple.__repr__" title="Link to this definition"></a></dt>
-<dd><p>Return repr(self).</p>
-</dd></dl>
+<dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="asynctnt.TarantoolTuple.__index__">
@@ -986,10 +1081,9 @@ Disconnects from Tarantool instance.</p>
 
 <dl class="py data">
 <dt class="sig sig-object py" id="asynctnt.__version__">
-<span class="sig-prename descclassname"><span class="pre">asynctnt.</span></span><span class="sig-name descname"><span class="pre">__version__</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'2.3.0'</span></em><a class="reference internal" href="../../_modules/asynctnt.html#__version__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#asynctnt.__version__" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">asynctnt.</span></span><span class="sig-name descname"><span class="pre">__version__</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'2.4.0'</span></em><a class="reference internal" href="../../_modules/asynctnt.html#__version__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#asynctnt.__version__" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
-</section>
 </section>
 </section>
 
@@ -998,7 +1092,7 @@ Disconnects from Tarantool instance.</p>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="../index.html" class="btn btn-neutral float-left" title="API Reference" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="iproto/index.html" class="btn btn-neutral float-right" title="asynctnt.iproto" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="api/index.html" class="btn btn-neutral float-right" title="asynctnt.api" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

@@ -1,14 +1,19 @@
-:py:mod:`asynctnt.iproto.protocol`
-==================================
+asynctnt.iproto.protocol
+========================
 
 .. py:module:: asynctnt.iproto.protocol
 
 
-Module Contents
----------------
+Attributes
+----------
+
+.. autoapisummary::
+
+   asynctnt.iproto.protocol.BodyItem
+
 
 Classes
-~~~~~~~
+-------
 
 .. autoapisummary::
 
@@ -28,66 +33,61 @@ Classes
    asynctnt.iproto.protocol.IProtoFeatures
 
 
-
-
-Attributes
-~~~~~~~~~~
-
-.. autoapisummary::
-
-   asynctnt.iproto.protocol.BodyItem
-
+Module Contents
+---------------
 
 .. py:class:: Field
 
-
    .. py:attribute:: name
-      :type: Optional[str]
+      :type:  Optional[str]
 
       Field name 
 
 
+
    .. py:attribute:: type
-      :type: Optional[str]
+      :type:  Optional[str]
 
       Field type 
 
 
+
    .. py:attribute:: collation
-      :type: Optional[str]
+      :type:  Optional[str]
 
       Field collation value 
 
 
+
    .. py:attribute:: is_nullable
-      :type: Optional[bool]
+      :type:  Optional[bool]
 
       If field may be null 
 
 
+
    .. py:attribute:: is_autoincrement
-      :type: Optional[bool]
+      :type:  Optional[bool]
 
       Is Autoincrement 
 
 
-   .. py:attribute:: span
-      :type: Optional[str]
 
-      
+   .. py:attribute:: span
+      :type:  Optional[str]
 
 
 .. py:class:: Metadata
 
-
    .. py:attribute:: fields
-      :type: List[Field]
+      :type:  List[Field]
 
       List of fields 
 
 
+
    .. py:attribute:: name_id_map
-      :type: Dict[str, int]
+      :type:  Dict[str, int]
 
       Mapping name -> id 
 
@@ -95,104 +95,83 @@ Attributes
 
 .. py:class:: SchemaIndex
 
-
    .. py:attribute:: iid
-      :type: int
+      :type:  int
 
       Index id 
 
 
+
    .. py:attribute:: sid
-      :type: int
+      :type:  int
 
       Space id 
 
 
-   .. py:attribute:: name
-      :type: Optional[str]
 
-      
+   .. py:attribute:: name
+      :type:  Optional[str]
+
 
    .. py:attribute:: index_type
-      :type: Optional[str]
+      :type:  Optional[str]
 
-      
 
    .. py:attribute:: unique
-      :type: Optional[bool]
+      :type:  Optional[bool]
 
-      
 
    .. py:attribute:: metadata
-      :type: Optional[Metadata]
-
-      
+      :type:  Optional[Metadata]
 
 
 .. py:class:: SchemaSpace
 
-
    .. py:attribute:: sid
-      :type: int
+      :type:  int
 
-      
 
    .. py:attribute:: owner
-      :type: int
+      :type:  int
 
-      
 
    .. py:attribute:: name
-      :type: Optional[str]
+      :type:  Optional[str]
 
-      
 
    .. py:attribute:: engine
-      :type: Optional[str]
+      :type:  Optional[str]
 
-      
 
    .. py:attribute:: field_count
-      :type: int
+      :type:  int
 
-      
 
    .. py:attribute:: flags
-      :type: Optional[Any]
+      :type:  Optional[Any]
 
-      
 
    .. py:attribute:: metadata
-      :type: Optional[Metadata]
+      :type:  Optional[Metadata]
 
-      
 
    .. py:attribute:: indexes
-      :type: Dict[Union[int, str], SchemaIndex]
-
-      
+      :type:  Dict[Union[int, str], SchemaIndex]
 
 
 .. py:class:: Schema
 
-
    .. py:attribute:: id
-      :type: int
+      :type:  int
 
-      
 
    .. py:attribute:: spaces
-      :type: Dict[Union[str, int], SchemaSpace]
-
-      
+      :type:  Dict[Union[str, int], SchemaSpace]
 
 
 .. py:class:: TarantoolTuple
 
-
    .. py:method:: __repr__() -> str
-
-      Return repr(self).
 
 
    .. py:method:: __index__(i: int) -> Any
@@ -225,125 +204,107 @@ Attributes
    .. py:method:: __next__()
 
 
-
 .. py:class:: IProtoErrorStackFrame
 
-
    .. py:attribute:: error_type
-      :type: str
+      :type:  str
 
-      
 
    .. py:attribute:: file
-      :type: str
+      :type:  str
 
-      
 
    .. py:attribute:: line
-      :type: int
+      :type:  int
 
-      
 
    .. py:attribute:: message
-      :type: str
+      :type:  str
 
-      
 
    .. py:attribute:: err_no
-      :type: int
+      :type:  int
 
-      
 
    .. py:attribute:: code
-      :type: int
+      :type:  int
 
-      
 
    .. py:attribute:: fields
-      :type: Dict[str, Any]
-
-      
+      :type:  Dict[str, Any]
 
 
 .. py:class:: IProtoError
 
-
    .. py:attribute:: trace
-      :type: List[IProtoErrorStackFrame]
-
-      
+      :type:  List[IProtoErrorStackFrame]
 
 
 .. py:data:: BodyItem
 
-   
-
 .. py:class:: Response
+
+   .. py:attribute:: errmsg
+      :type:  Optional[str]
+
+
+   .. py:attribute:: error
+      :type:  Optional[IProtoError]
+
+
+   .. py:attribute:: encoding
+      :type:  bytes
+
+
+   .. py:attribute:: autoincrement_ids
+      :type:  Optional[List[int]]
+
+
+   .. py:attribute:: body
+      :type:  Optional[List[BodyItem]]
+
+
+   .. py:attribute:: metadata
+      :type:  Optional[Metadata]
+
+
+   .. py:attribute:: params
+      :type:  Optional[Metadata]
+
+
+   .. py:attribute:: params_count
+      :type:  int
 
 
    .. py:property:: sync
       :type: int
 
 
+
    .. py:property:: code
       :type: int
+
 
 
    .. py:property:: return_code
       :type: int
 
 
+
    .. py:property:: schema_id
       :type: int
+
 
 
    .. py:property:: stmt_id
       :type: int
 
 
+
    .. py:property:: rowcount
       :type: int
 
 
-   .. py:attribute:: errmsg
-      :type: Optional[str]
-
-      
-
-   .. py:attribute:: error
-      :type: Optional[IProtoError]
-
-      
-
-   .. py:attribute:: encoding
-      :type: bytes
-
-      
-
-   .. py:attribute:: autoincrement_ids
-      :type: Optional[List[int]]
-
-      
-
-   .. py:attribute:: body
-      :type: Optional[List[BodyItem]]
-
-      
-
-   .. py:attribute:: metadata
-      :type: Optional[Metadata]
-
-      
-
-   .. py:attribute:: params
-      :type: Optional[Metadata]
-
-      
-
-   .. py:attribute:: params_count
-      :type: int
-
-      
 
    .. py:method:: done() -> bool
 
@@ -357,13 +318,7 @@ Attributes
    .. py:method:: __iter__()
 
 
-
 .. py:class:: PushIterator(fut: asyncio.Future)
-
-
-   .. py:property:: response
-      :type: Response
-
 
    .. py:method:: __iter__()
 
@@ -379,11 +334,16 @@ Attributes
 
 
 
-.. py:class:: Db
+   .. py:property:: response
+      :type: Response
 
+
+
+.. py:class:: Db
 
    .. py:property:: stream_id
       :type: int
+
 
 
    .. py:method:: set_stream_id(stream_id: int)
@@ -434,20 +394,21 @@ Attributes
    .. py:method:: rollback(timeout: float = -1)
 
 
-
 .. py:class:: Protocol
-
 
    .. py:property:: schema_id
       :type: int
+
 
 
    .. py:property:: schema
       :type: Schema
 
 
+
    .. py:property:: features
       :type: IProtoFeatures
+
 
 
    .. py:method:: create_db(gen_stream_id: bool = False) -> Db
@@ -468,112 +429,86 @@ Attributes
    .. py:method:: get_version() -> tuple
 
 
-
 .. py:class:: MPInterval(year: int = 0, month: int = 0, week: int = 0, day: int = 0, hour: int = 0, min: int = 0, sec: int = 0, nsec: int = 0, adjust: Adjust = Adjust.NONE)
 
-
    .. py:attribute:: year
-      :type: int
+      :type:  int
 
-      
 
    .. py:attribute:: month
-      :type: int
+      :type:  int
 
-      
 
    .. py:attribute:: week
-      :type: int
+      :type:  int
 
-      
 
    .. py:attribute:: day
-      :type: int
+      :type:  int
 
-      
 
    .. py:attribute:: hour
-      :type: int
+      :type:  int
 
-      
 
    .. py:attribute:: min
-      :type: int
+      :type:  int
 
-      
 
    .. py:attribute:: sec
-      :type: int
+      :type:  int
 
-      
 
    .. py:attribute:: nsec
-      :type: int
+      :type:  int
 
-      
 
    .. py:attribute:: adjust
-      :type: Adjust
+      :type:  Adjust
 
-      
 
    .. py:method:: __eq__(other) -> bool
-
-      Return self==value.
-
 
 
 .. py:class:: IProtoFeatures
 
-
    .. py:attribute:: streams
-      :type: bool
+      :type:  bool
 
-      
 
    .. py:attribute:: transactions
-      :type: bool
+      :type:  bool
 
-      
 
    .. py:attribute:: error_extension
-      :type: bool
+      :type:  bool
 
-      
 
    .. py:attribute:: watchers
-      :type: bool
+      :type:  bool
 
-      
 
    .. py:attribute:: pagination
-      :type: bool
+      :type:  bool
 
-      
 
    .. py:attribute:: space_and_index_names
-      :type: bool
+      :type:  bool
 
-      
 
    .. py:attribute:: watch_once
-      :type: bool
+      :type:  bool
 
-      
 
    .. py:attribute:: dml_tuple_extension
-      :type: bool
+      :type:  bool
 
-      
 
    .. py:attribute:: call_ret_tuple_extension
-      :type: bool
+      :type:  bool
 
-      
 
    .. py:attribute:: call_arg_tuple_extension
-      :type: bool
-
-      
+      :type:  bool
 
 

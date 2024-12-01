@@ -1,14 +1,11 @@
-:py:mod:`asynctnt.api`
-======================
+asynctnt.api
+============
 
 .. py:module:: asynctnt.api
 
 
-Module Contents
----------------
-
 Classes
-~~~~~~~
+-------
 
 .. autoapisummary::
 
@@ -17,50 +14,52 @@ Classes
    asynctnt.api.Api
 
 
-
+Module Contents
+---------------
 
 .. py:class:: _DbMock
-
 
    .. py:method:: __getattr__(item)
 
 
-
 .. py:class:: Isolation
-
 
    Bases: :py:obj:`enum.IntEnum`
 
+
    Enum where members are also (and must be) ints
+
 
    .. py:attribute:: DEFAULT
       :value: 0
 
-      
+
 
    .. py:attribute:: READ_COMMITTED
       :value: 1
 
-      
+
 
    .. py:attribute:: READ_CONFIRMED
       :value: 2
 
-      
+
 
    .. py:attribute:: BEST_EFFORT
       :value: 3
 
-      
 
 
 .. py:class:: Api
 
-
    .. py:attribute:: __slots__
       :value: ('_db',)
 
-      
+
+
+   .. py:attribute:: _db
+      :type:  Union[_DbMock, asynctnt.iproto.protocol.Db]
+
 
    .. py:method:: _set_db(db: asynctnt.iproto.protocol.Db)
 
@@ -77,6 +76,7 @@ Classes
       :returns: :class:`asynctnt.Response` instance
 
 
+
    .. py:method:: call16(func_name: str, args: Optional[List[Any]] = None, *, timeout: float = -1.0, push_subscribe: bool = False) -> asynctnt.types.MethodRet
 
       Call16 request coroutine. It is a call with an old behaviour
@@ -89,6 +89,7 @@ Classes
       :param push_subscribe: Subscribe to push notifications
 
       :returns: :class:`asynctnt.Response` instance
+
 
 
    .. py:method:: call(func_name: str, args: Optional[List[Any]] = None, *, timeout: float = -1.0, push_subscribe: bool = False) -> asynctnt.types.MethodRet
@@ -121,6 +122,7 @@ Classes
       :returns: :class:`asynctnt.Response` instance
 
 
+
    .. py:method:: eval(expression: str, args: Optional[List[Any]] = None, *, timeout: float = -1.0, push_subscribe: bool = False) -> asynctnt.types.MethodRet
 
       Eval request coroutine.
@@ -143,6 +145,7 @@ Classes
       :param push_subscribe: Subscribe to push messages
 
       :returns: :class:`asynctnt.Response` instance
+
 
 
    .. py:method:: select(space: asynctnt.types.SpaceType, key: Optional[asynctnt.types.KeyType] = None, **kwargs) -> asynctnt.types.MethodRet
@@ -189,6 +192,7 @@ Classes
       :returns: :class:`asynctnt.Response` instance
 
 
+
    .. py:method:: insert(space: asynctnt.types.SpaceType, t: asynctnt.types.TupleType, *, replace: bool = False, timeout: float = -1) -> asynctnt.types.MethodRet
 
       Insert request coroutine.
@@ -220,6 +224,7 @@ Classes
       :returns: :class:`asynctnt.Response` instance
 
 
+
    .. py:method:: replace(space: asynctnt.types.SpaceType, t: asynctnt.types.TupleType, *, timeout: float = -1.0) -> asynctnt.types.MethodRet
 
       Replace request coroutine. Same as insert, but replace.
@@ -229,6 +234,7 @@ Classes
       :param timeout: Request timeout
 
       :returns: :class:`asynctnt.Response` instance
+
 
 
    .. py:method:: delete(space: asynctnt.types.SpaceType, key: asynctnt.types.KeyType, **kwargs) -> asynctnt.types.MethodRet
@@ -252,6 +258,7 @@ Classes
       :param timeout: Request timeout
 
       :returns: :class:`asynctnt.Response` instance
+
 
 
    .. py:method:: update(space: asynctnt.types.SpaceType, key: asynctnt.types.KeyType, operations: List[Any], **kwargs) -> asynctnt.types.MethodRet
@@ -291,6 +298,7 @@ Classes
       :returns: :class:`asynctnt.Response` instance
 
 
+
    .. py:method:: upsert(space: asynctnt.types.SpaceType, t: asynctnt.types.TupleType, operations: List[Any], **kwargs) -> asynctnt.types.MethodRet
 
       Update request coroutine. Performs either insert or update
@@ -318,6 +326,7 @@ Classes
       :param timeout: Request timeout
 
       :returns: :class:`asynctnt.Response` instance
+
 
 
    .. py:method:: execute(query: Union[str, int], args: Optional[List[Union[Dict[str, Any], Any]]] = None, *, parse_metadata: bool = True, timeout: float = -1.0) -> asynctnt.types.MethodRet
@@ -353,10 +362,12 @@ Classes
       :returns: :class:`asynctnt.Response` instance
 
 
+
    .. py:method:: prepare(query: str) -> asynctnt.prepared.PreparedStatement
 
       Create a :class:`asynctnt.prepared.PreparedStatement` instance
       :param query: query to be prepared
+
 
 
    .. py:method:: prepare_iproto(query: str, timeout: float = -1.0) -> asynctnt.types.MethodRet
@@ -366,11 +377,13 @@ Classes
       :param timeout: request timeout
 
 
+
    .. py:method:: unprepare_iproto(stmt_id: int, timeout: float = -1.0) -> asynctnt.types.MethodRet
 
       Low-level unprepare() call
       :param stmt_id: query to be unprepared
       :param timeout: request timeout
+
 
 
    .. py:method:: begin(isolation: Isolation = Isolation.DEFAULT, tx_timeout: float = 0.0, timeout: float = -1.0) -> asynctnt.types.MethodRet
@@ -382,10 +395,12 @@ Classes
       :return:
 
 
+
    .. py:method:: commit(timeout: float = -1.0) -> asynctnt.types.MethodRet
 
       Commit a running transaction
       :param timeout: request timeout
+
 
 
    .. py:method:: rollback(timeout: float = -1.0) -> asynctnt.types.MethodRet

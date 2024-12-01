@@ -1,14 +1,11 @@
-:py:mod:`asynctnt.connection`
-=============================
+asynctnt.connection
+===================
 
 .. py:module:: asynctnt.connection
 
 
-Module Contents
----------------
-
 Classes
-~~~~~~~
+-------
 
 .. autoapisummary::
 
@@ -16,174 +13,152 @@ Classes
    asynctnt.connection.Connection
 
 
-
 Functions
-~~~~~~~~~
+---------
 
 .. autoapisummary::
 
    asynctnt.connection.connect
 
 
+Module Contents
+---------------
 
 .. py:class:: ConnectionState
 
-
    Bases: :py:obj:`enum.IntEnum`
 
+
    Enum where members are also (and must be) ints
+
 
    .. py:attribute:: CONNECTING
       :value: 1
 
-      
+
 
    .. py:attribute:: CONNECTED
       :value: 2
 
-      
+
 
    .. py:attribute:: RECONNECTING
       :value: 3
 
-      
+
 
    .. py:attribute:: DISCONNECTING
       :value: 4
 
-      
+
 
    .. py:attribute:: DISCONNECTED
       :value: 5
 
-      
 
 
 .. py:class:: Connection(*, host: str = '127.0.0.1', port: Union[int, str] = 3301, username: Optional[str] = None, password: Optional[str] = None, fetch_schema: bool = True, auto_refetch_schema: bool = True, connect_timeout: float = 3.0, request_timeout: float = -1.0, reconnect_timeout: float = 1.0 / 3.0, ping_timeout: float = 5.0, encoding: Optional[str] = None, initial_read_buffer_size: Optional[int] = None)
 
-
    Bases: :py:obj:`asynctnt.api.Api`
-
-   .. py:property:: fingerprint
-      :type: str
-
-
-   .. py:property:: host
-      :type: str
-
-      Tarantool host
-
-
-   .. py:property:: port
-      :type: int
-
-      Tarantool port
-
-
-   .. py:property:: username
-      :type: Optional[str]
-
-      Tarantool username
-
-
-   .. py:property:: password
-      :type: Optional[str]
-
-      Tarantool password
-
-
-   .. py:property:: fetch_schema
-      :type: bool
-
-      fetch_schema flag
-
-
-   .. py:property:: auto_refetch_schema
-      :type: bool
-
-      auto_refetch_schema flag
-
-
-   .. py:property:: encoding
-      :type: str
-
-      Connection encoding
-
-
-   .. py:property:: reconnect_timeout
-      :type: float
-
-      Reconnect timeout value
-
-
-   .. py:property:: connect_timeout
-      :type: float
-
-      Connect timeout value
-
-
-   .. py:property:: request_timeout
-      :type: float
-
-      Request timeout value
-
-
-   .. py:property:: version
-      :type: Optional[tuple]
-
-      Protocol version tuple. ex.: (1, 6, 7)
-
-
-   .. py:property:: state
-      :type: ConnectionState
-
-      Current connection state
-
-      :rtype: ConnectionState
-
-
-   .. py:property:: is_connected
-      :type: bool
-
-      Check if an underlying connection is active
-
-
-   .. py:property:: is_fully_connected
-      :type: bool
-
-      Check if connection is fully active (performed auth
-      and schema fetching)
-
-
-   .. py:property:: schema_id
-      :type: Optional[int]
-
-      Tarantool's current schema id
-
-
-   .. py:property:: schema
-      :type: Optional[asynctnt.iproto.protocol.Schema]
-
-      Current Tarantool schema with all spaces, indexes and fields
-
-
-   .. py:property:: initial_read_buffer_size
-      :type: int
-
-      initial_read_buffer_size value
-
-
-   .. py:property:: features
-      :type: asynctnt.iproto.protocol.IProtoFeatures
-
-      Lookup available Tarantool features - https://www.tarantool.io/en/doc/latest/reference/reference_lua/box_iproto/feature/
-      :return:
 
 
    .. py:attribute:: __slots__
       :value: ('_host', '_port', '_username', '_password', '_fetch_schema', '_auto_refetch_schema',...
 
-      
+
+
+   .. py:attribute:: _host
+      :value: '127.0.0.1'
+
+
+
+   .. py:attribute:: _port
+      :value: 3301
+
+
+
+   .. py:attribute:: _username
+      :value: None
+
+
+
+   .. py:attribute:: _password
+      :value: None
+
+
+
+   .. py:attribute:: _fetch_schema
+      :value: False
+
+
+
+   .. py:attribute:: _initial_read_buffer_size
+      :value: None
+
+
+
+   .. py:attribute:: _encoding
+      :value: 'utf-8'
+
+
+
+   .. py:attribute:: _connect_timeout
+      :value: 3.0
+
+
+
+   .. py:attribute:: _reconnect_timeout
+      :value: 0.3333333333333333
+
+
+
+   .. py:attribute:: _request_timeout
+      :value: -1.0
+
+
+
+   .. py:attribute:: _ping_timeout
+      :value: 5.0
+
+
+
+   .. py:attribute:: _transport
+      :value: None
+
+
+
+   .. py:attribute:: _protocol
+      :type:  Optional[asynctnt.iproto.protocol.Protocol]
+      :value: None
+
+
+
+   .. py:attribute:: _state
+
+
+   .. py:attribute:: _state_prev
+
+
+   .. py:attribute:: _disconnect_waiter
+      :value: None
+
+
+
+   .. py:attribute:: _reconnect_task
+      :value: None
+
+
+
+   .. py:attribute:: _connect_lock
+
+
+   .. py:attribute:: _disconnect_lock
+
+
+   .. py:attribute:: _ping_task
+      :value: None
+
+
 
    .. py:method:: _set_state(new_state: ConnectionState)
 
@@ -193,6 +168,7 @@ Functions
 
    .. py:method:: _ping_task_func()
       :async:
+
 
 
    .. py:method:: _start_reconnect(return_exceptions: bool = False)
@@ -205,20 +181,26 @@ Functions
       :async:
 
 
+
    .. py:method:: _wait_reconnect(exc: Optional[Exception] = None)
       :async:
+
 
 
    .. py:method:: connect() -> Connection
       :async:
 
+
       Connect coroutine
+
 
 
    .. py:method:: disconnect()
       :async:
 
+
       Disconnect coroutine
+
 
 
    .. py:method:: close()
@@ -227,39 +209,190 @@ Functions
       for disconnect to finish.
 
 
+
    .. py:method:: reconnect()
       :async:
+
 
       Reconnect coroutine.
       Just calls disconnect() and connect()
 
 
+
    .. py:method:: __aenter__() -> Connection
       :async:
+
 
       Executed on entering the async with section.
       Connects to Tarantool instance.
 
 
+
    .. py:method:: __aexit__(exc_type, exc_val, exc_tb)
       :async:
+
 
       Executed on leaving the async with section.
       Disconnects from Tarantool instance.
 
 
+
+   .. py:property:: fingerprint
+      :type: str
+
+
+
+   .. py:property:: host
+      :type: str
+
+
+      Tarantool host
+
+
+
+   .. py:property:: port
+      :type: int
+
+
+      Tarantool port
+
+
+
+   .. py:property:: username
+      :type: Optional[str]
+
+
+      Tarantool username
+
+
+
+   .. py:property:: password
+      :type: Optional[str]
+
+
+      Tarantool password
+
+
+
+   .. py:property:: fetch_schema
+      :type: bool
+
+
+      fetch_schema flag
+
+
+
+   .. py:property:: auto_refetch_schema
+      :type: bool
+
+
+      auto_refetch_schema flag
+
+
+
+   .. py:property:: encoding
+      :type: str
+
+
+      Connection encoding
+
+
+
+   .. py:property:: reconnect_timeout
+      :type: float
+
+
+      Reconnect timeout value
+
+
+
+   .. py:property:: connect_timeout
+      :type: float
+
+
+      Connect timeout value
+
+
+
+   .. py:property:: request_timeout
+      :type: float
+
+
+      Request timeout value
+
+
+
+   .. py:property:: version
+      :type: Optional[tuple]
+
+
+      Protocol version tuple. ex.: (1, 6, 7)
+
+
+
+   .. py:property:: state
+      :type: ConnectionState
+
+
+      Current connection state
+
+      :rtype: ConnectionState
+
+
+
+   .. py:property:: is_connected
+      :type: bool
+
+
+      Check if an underlying connection is active
+
+
+
+   .. py:property:: is_fully_connected
+      :type: bool
+
+
+      Check if connection is fully active (performed auth
+      and schema fetching)
+
+
+
+   .. py:property:: schema_id
+      :type: Optional[int]
+
+
+      Tarantool's current schema id
+
+
+
+   .. py:property:: schema
+      :type: Optional[asynctnt.iproto.protocol.Schema]
+
+
+      Current Tarantool schema with all spaces, indexes and fields
+
+
+
+   .. py:property:: initial_read_buffer_size
+      :type: int
+
+
+      initial_read_buffer_size value
+
+
+
    .. py:method:: refetch_schema()
       :async:
 
+
       Coroutine to force refetch schema
+
 
 
    .. py:method:: _normalize_api()
 
 
    .. py:method:: __repr__()
-
-      Return repr(self).
 
 
    .. py:method:: stream() -> asynctnt.stream.Stream
@@ -268,8 +401,18 @@ Functions
 
 
 
+   .. py:property:: features
+      :type: asynctnt.iproto.protocol.IProtoFeatures
+
+
+      Lookup available Tarantool features - https://www.tarantool.io/en/doc/latest/reference/reference_lua/box_iproto/feature/
+      :return:
+
+
+
 .. py:function:: connect(**kwargs) -> Connection
    :async:
+
 
    connect shorthand. See :class:`asynctnt.Connection` for kwargs details
 

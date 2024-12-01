@@ -1,39 +1,36 @@
-:py:mod:`asynctnt`
-==================
+asynctnt
+========
 
 .. py:module:: asynctnt
 
 
-Subpackages
------------
-.. toctree::
-   :titlesonly:
-   :maxdepth: 3
-
-   iproto/index.rst
-
-
 Submodules
 ----------
+
 .. toctree::
-   :titlesonly:
    :maxdepth: 1
 
-   api/index.rst
-   connection/index.rst
-   exceptions/index.rst
-   instance/index.rst
-   log/index.rst
-   prepared/index.rst
-   stream/index.rst
-   types/index.rst
+   /autoapi/asynctnt/api/index
+   /autoapi/asynctnt/connection/index
+   /autoapi/asynctnt/exceptions/index
+   /autoapi/asynctnt/instance/index
+   /autoapi/asynctnt/iproto/index
+   /autoapi/asynctnt/log/index
+   /autoapi/asynctnt/prepared/index
+   /autoapi/asynctnt/stream/index
+   /autoapi/asynctnt/types/index
 
 
-Package Contents
-----------------
+Attributes
+----------
+
+.. autoapisummary::
+
+   asynctnt.__version__
+
 
 Classes
-~~~~~~~
+-------
 
 .. autoapisummary::
 
@@ -52,149 +49,119 @@ Classes
    asynctnt.TarantoolTuple
 
 
-
 Functions
-~~~~~~~~~
+---------
 
 .. autoapisummary::
 
    asynctnt.connect
 
 
-
-Attributes
-~~~~~~~~~~
-
-.. autoapisummary::
-
-   asynctnt.__version__
-
+Package Contents
+----------------
 
 .. py:class:: Connection(*, host: str = '127.0.0.1', port: Union[int, str] = 3301, username: Optional[str] = None, password: Optional[str] = None, fetch_schema: bool = True, auto_refetch_schema: bool = True, connect_timeout: float = 3.0, request_timeout: float = -1.0, reconnect_timeout: float = 1.0 / 3.0, ping_timeout: float = 5.0, encoding: Optional[str] = None, initial_read_buffer_size: Optional[int] = None)
 
-
    Bases: :py:obj:`asynctnt.api.Api`
-
-   .. py:property:: fingerprint
-      :type: str
-
-
-   .. py:property:: host
-      :type: str
-
-      Tarantool host
-
-
-   .. py:property:: port
-      :type: int
-
-      Tarantool port
-
-
-   .. py:property:: username
-      :type: Optional[str]
-
-      Tarantool username
-
-
-   .. py:property:: password
-      :type: Optional[str]
-
-      Tarantool password
-
-
-   .. py:property:: fetch_schema
-      :type: bool
-
-      fetch_schema flag
-
-
-   .. py:property:: auto_refetch_schema
-      :type: bool
-
-      auto_refetch_schema flag
-
-
-   .. py:property:: encoding
-      :type: str
-
-      Connection encoding
-
-
-   .. py:property:: reconnect_timeout
-      :type: float
-
-      Reconnect timeout value
-
-
-   .. py:property:: connect_timeout
-      :type: float
-
-      Connect timeout value
-
-
-   .. py:property:: request_timeout
-      :type: float
-
-      Request timeout value
-
-
-   .. py:property:: version
-      :type: Optional[tuple]
-
-      Protocol version tuple. ex.: (1, 6, 7)
-
-
-   .. py:property:: state
-      :type: ConnectionState
-
-      Current connection state
-
-      :rtype: ConnectionState
-
-
-   .. py:property:: is_connected
-      :type: bool
-
-      Check if an underlying connection is active
-
-
-   .. py:property:: is_fully_connected
-      :type: bool
-
-      Check if connection is fully active (performed auth
-      and schema fetching)
-
-
-   .. py:property:: schema_id
-      :type: Optional[int]
-
-      Tarantool's current schema id
-
-
-   .. py:property:: schema
-      :type: Optional[asynctnt.iproto.protocol.Schema]
-
-      Current Tarantool schema with all spaces, indexes and fields
-
-
-   .. py:property:: initial_read_buffer_size
-      :type: int
-
-      initial_read_buffer_size value
-
-
-   .. py:property:: features
-      :type: asynctnt.iproto.protocol.IProtoFeatures
-
-      Lookup available Tarantool features - https://www.tarantool.io/en/doc/latest/reference/reference_lua/box_iproto/feature/
-      :return:
 
 
    .. py:attribute:: __slots__
       :value: ('_host', '_port', '_username', '_password', '_fetch_schema', '_auto_refetch_schema',...
 
-      
+
+
+   .. py:attribute:: _host
+      :value: '127.0.0.1'
+
+
+
+   .. py:attribute:: _port
+      :value: 3301
+
+
+
+   .. py:attribute:: _username
+      :value: None
+
+
+
+   .. py:attribute:: _password
+      :value: None
+
+
+
+   .. py:attribute:: _fetch_schema
+      :value: False
+
+
+
+   .. py:attribute:: _initial_read_buffer_size
+      :value: None
+
+
+
+   .. py:attribute:: _encoding
+      :value: 'utf-8'
+
+
+
+   .. py:attribute:: _connect_timeout
+      :value: 3.0
+
+
+
+   .. py:attribute:: _reconnect_timeout
+      :value: 0.3333333333333333
+
+
+
+   .. py:attribute:: _request_timeout
+      :value: -1.0
+
+
+
+   .. py:attribute:: _ping_timeout
+      :value: 5.0
+
+
+
+   .. py:attribute:: _transport
+      :value: None
+
+
+
+   .. py:attribute:: _protocol
+      :type:  Optional[asynctnt.iproto.protocol.Protocol]
+      :value: None
+
+
+
+   .. py:attribute:: _state
+
+
+   .. py:attribute:: _state_prev
+
+
+   .. py:attribute:: _disconnect_waiter
+      :value: None
+
+
+
+   .. py:attribute:: _reconnect_task
+      :value: None
+
+
+
+   .. py:attribute:: _connect_lock
+
+
+   .. py:attribute:: _disconnect_lock
+
+
+   .. py:attribute:: _ping_task
+      :value: None
+
+
 
    .. py:method:: _set_state(new_state: ConnectionState)
 
@@ -204,6 +171,7 @@ Attributes
 
    .. py:method:: _ping_task_func()
       :async:
+
 
 
    .. py:method:: _start_reconnect(return_exceptions: bool = False)
@@ -216,20 +184,26 @@ Attributes
       :async:
 
 
+
    .. py:method:: _wait_reconnect(exc: Optional[Exception] = None)
       :async:
+
 
 
    .. py:method:: connect() -> Connection
       :async:
 
+
       Connect coroutine
+
 
 
    .. py:method:: disconnect()
       :async:
 
+
       Disconnect coroutine
+
 
 
    .. py:method:: close()
@@ -238,39 +212,190 @@ Attributes
       for disconnect to finish.
 
 
+
    .. py:method:: reconnect()
       :async:
+
 
       Reconnect coroutine.
       Just calls disconnect() and connect()
 
 
+
    .. py:method:: __aenter__() -> Connection
       :async:
+
 
       Executed on entering the async with section.
       Connects to Tarantool instance.
 
 
+
    .. py:method:: __aexit__(exc_type, exc_val, exc_tb)
       :async:
+
 
       Executed on leaving the async with section.
       Disconnects from Tarantool instance.
 
 
+
+   .. py:property:: fingerprint
+      :type: str
+
+
+
+   .. py:property:: host
+      :type: str
+
+
+      Tarantool host
+
+
+
+   .. py:property:: port
+      :type: int
+
+
+      Tarantool port
+
+
+
+   .. py:property:: username
+      :type: Optional[str]
+
+
+      Tarantool username
+
+
+
+   .. py:property:: password
+      :type: Optional[str]
+
+
+      Tarantool password
+
+
+
+   .. py:property:: fetch_schema
+      :type: bool
+
+
+      fetch_schema flag
+
+
+
+   .. py:property:: auto_refetch_schema
+      :type: bool
+
+
+      auto_refetch_schema flag
+
+
+
+   .. py:property:: encoding
+      :type: str
+
+
+      Connection encoding
+
+
+
+   .. py:property:: reconnect_timeout
+      :type: float
+
+
+      Reconnect timeout value
+
+
+
+   .. py:property:: connect_timeout
+      :type: float
+
+
+      Connect timeout value
+
+
+
+   .. py:property:: request_timeout
+      :type: float
+
+
+      Request timeout value
+
+
+
+   .. py:property:: version
+      :type: Optional[tuple]
+
+
+      Protocol version tuple. ex.: (1, 6, 7)
+
+
+
+   .. py:property:: state
+      :type: ConnectionState
+
+
+      Current connection state
+
+      :rtype: ConnectionState
+
+
+
+   .. py:property:: is_connected
+      :type: bool
+
+
+      Check if an underlying connection is active
+
+
+
+   .. py:property:: is_fully_connected
+      :type: bool
+
+
+      Check if connection is fully active (performed auth
+      and schema fetching)
+
+
+
+   .. py:property:: schema_id
+      :type: Optional[int]
+
+
+      Tarantool's current schema id
+
+
+
+   .. py:property:: schema
+      :type: Optional[asynctnt.iproto.protocol.Schema]
+
+
+      Current Tarantool schema with all spaces, indexes and fields
+
+
+
+   .. py:property:: initial_read_buffer_size
+      :type: int
+
+
+      initial_read_buffer_size value
+
+
+
    .. py:method:: refetch_schema()
       :async:
 
+
       Coroutine to force refetch schema
+
 
 
    .. py:method:: _normalize_api()
 
 
    .. py:method:: __repr__()
-
-      Return repr(self).
 
 
    .. py:method:: stream() -> asynctnt.stream.Stream
@@ -279,8 +404,18 @@ Attributes
 
 
 
+   .. py:property:: features
+      :type: asynctnt.iproto.protocol.IProtoFeatures
+
+
+      Lookup available Tarantool features - https://www.tarantool.io/en/doc/latest/reference/reference_lua/box_iproto/feature/
+      :return:
+
+
+
 .. py:function:: connect(**kwargs) -> Connection
    :async:
+
 
    connect shorthand. See :class:`asynctnt.Connection` for kwargs details
 
@@ -289,9 +424,9 @@ Attributes
 
 .. py:class:: Db
 
-
    .. py:property:: stream_id
       :type: int
+
 
 
    .. py:method:: set_stream_id(stream_id: int)
@@ -342,105 +477,94 @@ Attributes
    .. py:method:: rollback(timeout: float = -1)
 
 
-
 .. py:class:: Field
 
-
    .. py:attribute:: name
-      :type: Optional[str]
+      :type:  Optional[str]
 
       Field name 
 
 
+
    .. py:attribute:: type
-      :type: Optional[str]
+      :type:  Optional[str]
 
       Field type 
 
 
+
    .. py:attribute:: collation
-      :type: Optional[str]
+      :type:  Optional[str]
 
       Field collation value 
 
 
+
    .. py:attribute:: is_nullable
-      :type: Optional[bool]
+      :type:  Optional[bool]
 
       If field may be null 
 
 
+
    .. py:attribute:: is_autoincrement
-      :type: Optional[bool]
+      :type:  Optional[bool]
 
       Is Autoincrement 
 
 
-   .. py:attribute:: span
-      :type: Optional[str]
 
-      
+   .. py:attribute:: span
+      :type:  Optional[str]
 
 
 .. py:class:: IProtoError
 
-
    .. py:attribute:: trace
-      :type: List[IProtoErrorStackFrame]
-
-      
+      :type:  List[IProtoErrorStackFrame]
 
 
 .. py:class:: IProtoErrorStackFrame
 
-
    .. py:attribute:: error_type
-      :type: str
+      :type:  str
 
-      
 
    .. py:attribute:: file
-      :type: str
+      :type:  str
 
-      
 
    .. py:attribute:: line
-      :type: int
+      :type:  int
 
-      
 
    .. py:attribute:: message
-      :type: str
+      :type:  str
 
-      
 
    .. py:attribute:: err_no
-      :type: int
+      :type:  int
 
-      
 
    .. py:attribute:: code
-      :type: int
+      :type:  int
 
-      
 
    .. py:attribute:: fields
-      :type: Dict[str, Any]
-
-      
+      :type:  Dict[str, Any]
 
 
 .. py:class:: Metadata
 
-
    .. py:attribute:: fields
-      :type: List[Field]
+      :type:  List[Field]
 
       List of fields 
 
 
+
    .. py:attribute:: name_id_map
-      :type: Dict[str, int]
+      :type:  Dict[str, int]
 
       Mapping name -> id 
 
@@ -448,64 +572,46 @@ Attributes
 
 .. py:class:: MPInterval(year: int = 0, month: int = 0, week: int = 0, day: int = 0, hour: int = 0, min: int = 0, sec: int = 0, nsec: int = 0, adjust: Adjust = Adjust.NONE)
 
-
    .. py:attribute:: year
-      :type: int
+      :type:  int
 
-      
 
    .. py:attribute:: month
-      :type: int
+      :type:  int
 
-      
 
    .. py:attribute:: week
-      :type: int
+      :type:  int
 
-      
 
    .. py:attribute:: day
-      :type: int
+      :type:  int
 
-      
 
    .. py:attribute:: hour
-      :type: int
+      :type:  int
 
-      
 
    .. py:attribute:: min
-      :type: int
+      :type:  int
 
-      
 
    .. py:attribute:: sec
-      :type: int
+      :type:  int
 
-      
 
    .. py:attribute:: nsec
-      :type: int
+      :type:  int
 
-      
 
    .. py:attribute:: adjust
-      :type: Adjust
+      :type:  Adjust
 
-      
 
    .. py:method:: __eq__(other) -> bool
 
-      Return self==value.
-
-
 
 .. py:class:: PushIterator(fut: asyncio.Future)
-
-
-   .. py:property:: response
-      :type: Response
-
 
    .. py:method:: __iter__()
 
@@ -521,72 +627,74 @@ Attributes
 
 
 
+   .. py:property:: response
+      :type: Response
+
+
+
 .. py:class:: Response
+
+   .. py:attribute:: errmsg
+      :type:  Optional[str]
+
+
+   .. py:attribute:: error
+      :type:  Optional[IProtoError]
+
+
+   .. py:attribute:: encoding
+      :type:  bytes
+
+
+   .. py:attribute:: autoincrement_ids
+      :type:  Optional[List[int]]
+
+
+   .. py:attribute:: body
+      :type:  Optional[List[BodyItem]]
+
+
+   .. py:attribute:: metadata
+      :type:  Optional[Metadata]
+
+
+   .. py:attribute:: params
+      :type:  Optional[Metadata]
+
+
+   .. py:attribute:: params_count
+      :type:  int
 
 
    .. py:property:: sync
       :type: int
 
 
+
    .. py:property:: code
       :type: int
+
 
 
    .. py:property:: return_code
       :type: int
 
 
+
    .. py:property:: schema_id
       :type: int
+
 
 
    .. py:property:: stmt_id
       :type: int
 
 
+
    .. py:property:: rowcount
       :type: int
 
 
-   .. py:attribute:: errmsg
-      :type: Optional[str]
-
-      
-
-   .. py:attribute:: error
-      :type: Optional[IProtoError]
-
-      
-
-   .. py:attribute:: encoding
-      :type: bytes
-
-      
-
-   .. py:attribute:: autoincrement_ids
-      :type: Optional[List[int]]
-
-      
-
-   .. py:attribute:: body
-      :type: Optional[List[BodyItem]]
-
-      
-
-   .. py:attribute:: metadata
-      :type: Optional[Metadata]
-
-      
-
-   .. py:attribute:: params
-      :type: Optional[Metadata]
-
-      
-
-   .. py:attribute:: params_count
-      :type: int
-
-      
 
    .. py:method:: done() -> bool
 
@@ -600,107 +708,85 @@ Attributes
    .. py:method:: __iter__()
 
 
-
 .. py:class:: Schema
 
-
    .. py:attribute:: id
-      :type: int
+      :type:  int
 
-      
 
    .. py:attribute:: spaces
-      :type: Dict[Union[str, int], SchemaSpace]
-
-      
+      :type:  Dict[Union[str, int], SchemaSpace]
 
 
 .. py:class:: SchemaIndex
 
-
    .. py:attribute:: iid
-      :type: int
+      :type:  int
 
       Index id 
 
 
+
    .. py:attribute:: sid
-      :type: int
+      :type:  int
 
       Space id 
 
 
-   .. py:attribute:: name
-      :type: Optional[str]
 
-      
+   .. py:attribute:: name
+      :type:  Optional[str]
+
 
    .. py:attribute:: index_type
-      :type: Optional[str]
+      :type:  Optional[str]
 
-      
 
    .. py:attribute:: unique
-      :type: Optional[bool]
+      :type:  Optional[bool]
 
-      
 
    .. py:attribute:: metadata
-      :type: Optional[Metadata]
-
-      
+      :type:  Optional[Metadata]
 
 
 .. py:class:: SchemaSpace
 
-
    .. py:attribute:: sid
-      :type: int
+      :type:  int
 
-      
 
    .. py:attribute:: owner
-      :type: int
+      :type:  int
 
-      
 
    .. py:attribute:: name
-      :type: Optional[str]
+      :type:  Optional[str]
 
-      
 
    .. py:attribute:: engine
-      :type: Optional[str]
+      :type:  Optional[str]
 
-      
 
    .. py:attribute:: field_count
-      :type: int
+      :type:  int
 
-      
 
    .. py:attribute:: flags
-      :type: Optional[Any]
+      :type:  Optional[Any]
 
-      
 
    .. py:attribute:: metadata
-      :type: Optional[Metadata]
+      :type:  Optional[Metadata]
 
-      
 
    .. py:attribute:: indexes
-      :type: Dict[Union[int, str], SchemaIndex]
-
-      
+      :type:  Dict[Union[int, str], SchemaIndex]
 
 
 .. py:class:: TarantoolTuple
 
-
    .. py:method:: __repr__() -> str
-
-      Return repr(self).
 
 
    .. py:method:: __index__(i: int) -> Any
@@ -733,9 +819,7 @@ Attributes
    .. py:method:: __next__()
 
 
-
 .. py:data:: __version__
-   :value: '2.3.0'
+   :value: '2.4.0'
 
-   
 
