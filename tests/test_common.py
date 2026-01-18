@@ -55,7 +55,7 @@ class CommonTestCase(BaseTarantoolTestCase):
             self.assertIn("new_space", self.conn.schema.spaces)
         finally:
             await self.conn.eval(
-                "local s = box.space.new_space;" "if s ~= nil then s:drop(); end"
+                "local s = box.space.new_space;if s ~= nil then s:drop(); end"
             )
 
     async def test__schema_refetch_manual(self):
@@ -93,7 +93,7 @@ class CommonTestCase(BaseTarantoolTestCase):
         self.assertEqual(self.conn.schema_id, -1)
 
         # Changing scheme
-        await self.conn.eval("s = box.schema.create_space('new_space');" "s:drop();")
+        await self.conn.eval("s = box.schema.create_space('new_space');s:drop();")
 
         try:
             await self.conn.ping()
@@ -105,16 +105,14 @@ class CommonTestCase(BaseTarantoolTestCase):
         self.assertEqual(self.conn.schema_id, -1)
 
     async def test__parse_numeric_map_keys(self):
-        res = await self.conn.eval(
-            """return {
+        res = await self.conn.eval("""return {
                 [1] = 1,
                 [2] = 2,
                 hello = 3,
                 world = 4,
                 [-3] = 5,
                 [4.5] = 6
-            }"""
-        )
+            }""")
 
         d = {1: 1, 2: 2, "hello": 3, "world": 4, -3: 5, 4.5: 6}
 
@@ -185,7 +183,7 @@ class CommonTestCase(BaseTarantoolTestCase):
         try:
             for _ in range(251):
                 await self.conn.eval(
-                    "s = box.schema.create_space('new_space');" "s:drop();"
+                    "s = box.schema.create_space('new_space');s:drop();"
                 )
         except TarantoolDatabaseError as e:
             self.fail(e)
@@ -221,8 +219,7 @@ class CommonTestCase(BaseTarantoolTestCase):
             )
             async with conn:
                 await conn.eval(
-                    "s = box.schema.create_space('spacex');"
-                    "s:create_index('primary');"
+                    "s = box.schema.create_space('spacex');s:create_index('primary');"
                 )
         except TarantoolDatabaseError as e:
             self.fail(e)

@@ -1,5 +1,18 @@
 # Changelog
 
+## v2.5.0
+**Breaking changes**
+* Dropped support for Python 3.7 and 3.8 (minimum required version is now 3.9)
+
+**New features**
+* Added support for Python 3.14, including free-threaded (no-GIL) builds
+* Added support for PyPy 3.11
+
+**Other changes**
+* Upgraded Cython to 3.2.4
+* Declared Cython module as `freethreading_compatible` for Python 3.13+
+* Disabled C freelist in free-threaded builds to ensure thread safety
+
 ## v2.4.0
 **New features**
 * Added support for Python 3.13 [#37](https://github.com/igorcoding/asynctnt/issues/37)

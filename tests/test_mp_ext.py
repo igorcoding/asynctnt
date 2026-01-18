@@ -1,10 +1,8 @@
 import datetime
-import sys
 import uuid
 from dataclasses import dataclass
 from decimal import Decimal
 
-import dateutil.parser
 import pytz
 
 import asynctnt
@@ -117,11 +115,9 @@ class MpExtErrorTestCase(BaseTarantoolTestCase):
     @ensure_version(min=(2, 4, 1))
     async def test__ext_error(self):
         try:
-            await self.conn.eval(
-                """
+            await self.conn.eval("""
                 box.schema.space.create('_space')
-            """
-            )
+            """)
         except TarantoolDatabaseError as e:
             self.assertIsNotNone(e.error)
             self.assertGreater(len(e.error.trace), 0)
@@ -136,12 +132,10 @@ class MpExtErrorTestCase(BaseTarantoolTestCase):
     @ensure_version(min=(2, 4, 1))
     async def test__ext_error_custom(self):
         try:
-            await self.conn.eval(
-                """
+            await self.conn.eval("""
                 local e = box.error.new{code=5,reason='A',type='B'}
                 box.error(e)
-            """
-            )
+            """)
         except TarantoolDatabaseError as e:
             self.assertIsNotNone(e.error)
             self.assertGreater(len(e.error.trace), 0)
@@ -157,12 +151,10 @@ class MpExtErrorTestCase(BaseTarantoolTestCase):
 
     @ensure_version(min=(2, 10))
     async def test__ext_error_custom_return(self):
-        resp = await self.conn.eval(
-            """
+        resp = await self.conn.eval("""
             local e = box.error.new{code=5,reason='A',type='B'}
             return e
-        """
-        )
+        """)
         e = resp[0]
         self.assertIsInstance(e, IProtoError)
         self.assertGreater(len(e.trace), 0)
@@ -178,82 +170,68 @@ class MpExtErrorTestCase(BaseTarantoolTestCase):
 
     @ensure_version(min=(2, 10))
     async def test__ext_error_custom_return_with_disabled_exterror(self):
-        await self.conn.eval(
-            """
+        await self.conn.eval("""
             require('msgpack').cfg{encode_error_as_ext = false}
-        """
-        )
+        """)
         try:
-            resp = await self.conn.eval(
-                """
+            resp = await self.conn.eval("""
                 local e = box.error.new{code=5,reason='A',type='B'}
                 return e
-            """
-            )
+            """)
             e = resp[0]
             self.assertIsInstance(e, str)
             self.assertEqual("A", e)
         finally:
-            await self.conn.eval(
-                """
+            await self.conn.eval("""
                 require('msgpack').cfg{encode_error_as_ext = true}
-            """
-            )
+            """)
 
 
 class MpExtDatetimeTestCase(BaseTarantoolTestCase):
     @ensure_version(min=(2, 10))
     async def test__ext_datetime_read(self):
-        resp = await self.conn.eval(
-            """
+        resp = await self.conn.eval("""
             local date = require('datetime')
             return date.parse('2000-01-01T02:00:00.23+0300')
-        """
-        )
+        """)
         res = resp[0]
-        dt = datetime_fromisoformat("2000-01-01T02:00:00.230000+03:00")
+        dt = datetime.datetime.fromisoformat("2000-01-01T02:00:00.230000+03:00")
         self.assertEqual(dt, res)
 
     @ensure_version(min=(2, 10))
     async def test__ext_datetime_tz(self):
-        resp = await self.conn.eval(
-            """
+        resp = await self.conn.eval("""
             local date = require('datetime')
             return date.parse('2000-01-01T02:00:00 MSK')
-        """
-        )
+        """)
         res = resp[0]
-        dt = datetime_fromisoformat("2000-01-01T02:00:00+03:00")
+        dt = datetime.datetime.fromisoformat("2000-01-01T02:00:00+03:00")
         self.assertEqual(dt, res)
 
     @ensure_version(min=(2, 10))
     async def test__ext_datetime_read_neg_tz(self):
-        resp = await self.conn.eval(
-            """
+        resp = await self.conn.eval("""
             local date = require('datetime')
             return date.parse('2000-01-01T02:17:43.23-08:00')
-        """
-        )
+        """)
         res = resp[0]
-        dt = datetime_fromisoformat("2000-01-01T02:17:43.230000-08:00")
+        dt = datetime.datetime.fromisoformat("2000-01-01T02:17:43.230000-08:00")
         self.assertEqual(dt, res)
 
     @ensure_version(min=(2, 10))
     async def test__ext_datetime_read_before_1970(self):
-        resp = await self.conn.eval(
-            """
+        resp = await self.conn.eval("""
             local date = require('datetime')
             return date.parse('1930-01-01T02:17:43.23-08:00')
-        """
-        )
+        """)
         res = resp[0]
-        dt = datetime_fromisoformat("1930-01-01T02:17:43.230000-08:00")
+        dt = datetime.datetime.fromisoformat("1930-01-01T02:17:43.230000-08:00")
         self.assertEqual(dt, res)
 
     @ensure_version(min=(2, 10))
     async def test__ext_datetime_write(self):
         sp = "tester_ext_datetime"
-        dt = datetime_fromisoformat("2000-01-01T02:17:43.230000-08:00")
+        dt = datetime.datetime.fromisoformat("2000-01-01T02:17:43.230000-08:00")
         resp = await self.conn.insert(sp, [1, dt])
         res = resp[0]
         self.assertEqual(dt, res["dt"])
@@ -261,7 +239,7 @@ class MpExtDatetimeTestCase(BaseTarantoolTestCase):
     @ensure_version(min=(2, 10))
     async def test__ext_datetime_write_before_1970(self):
         sp = "tester_ext_datetime"
-        dt = datetime_fromisoformat("1004-01-01T02:17:43.230000+04:00")
+        dt = datetime.datetime.fromisoformat("1004-01-01T02:17:43.230000+04:00")
         resp = await self.conn.insert(sp, [1, dt])
         res = resp[0]
         self.assertEqual(dt, res["dt"])
@@ -269,7 +247,7 @@ class MpExtDatetimeTestCase(BaseTarantoolTestCase):
     @ensure_version(min=(2, 10))
     async def test__ext_datetime_write_without_tz(self):
         sp = "tester_ext_datetime"
-        dt = datetime_fromisoformat("2022-04-23T02:17:43.450000")
+        dt = datetime.datetime.fromisoformat("2022-04-23T02:17:43.450000")
         resp = await self.conn.insert(sp, [1, dt])
         res = resp[0]
         self.assertEqual(dt, res["dt"])
@@ -277,7 +255,7 @@ class MpExtDatetimeTestCase(BaseTarantoolTestCase):
     @ensure_version(min=(2, 10))
     async def test__ext_datetime_write_without_tz_integer(self):
         sp = "tester_ext_datetime"
-        dt = datetime_fromisoformat("2022-04-23T02:17:43")
+        dt = datetime.datetime.fromisoformat("2022-04-23T02:17:43")
         resp = await self.conn.insert(sp, [1, dt])
         res = resp[0]
         self.assertEqual(dt, res["dt"])
@@ -285,7 +263,7 @@ class MpExtDatetimeTestCase(BaseTarantoolTestCase):
     @ensure_version(min=(2, 10))
     async def test__ext_datetime_write_pytz(self):
         sp = "tester_ext_datetime"
-        dt = datetime_fromisoformat("2022-04-23T02:17:43")
+        dt = datetime.datetime.fromisoformat("2022-04-23T02:17:43")
         dt = pytz.timezone("Europe/Amsterdam").localize(dt)
         resp = await self.conn.insert(sp, [1, dt])
         res = resp[0]
@@ -294,7 +272,7 @@ class MpExtDatetimeTestCase(BaseTarantoolTestCase):
     @ensure_version(min=(2, 10))
     async def test__ext_datetime_write_pytz_america(self):
         sp = "tester_ext_datetime"
-        dt = datetime_fromisoformat("2022-04-23T02:17:43")
+        dt = datetime.datetime.fromisoformat("2022-04-23T02:17:43")
         dt = pytz.timezone("America/New_York").localize(dt)
         resp = await self.conn.insert(sp, [1, dt])
         res = resp[0]
@@ -304,8 +282,7 @@ class MpExtDatetimeTestCase(BaseTarantoolTestCase):
 class MpExtIntervalTestCase(BaseTarantoolTestCase):
     @ensure_version(min=(2, 10))
     async def test__ext_interval_read(self):
-        resp = await self.conn.eval(
-            """
+        resp = await self.conn.eval("""
             local datetime = require('datetime')
             return  datetime.interval.new({
                 year=1,
@@ -317,8 +294,7 @@ class MpExtIntervalTestCase(BaseTarantoolTestCase):
                 sec=7,
                 nsec=8,
             })
-        """
-        )
+        """)
         self.assertEqual(
             asynctnt.MPInterval(
                 year=1,
@@ -335,8 +311,7 @@ class MpExtIntervalTestCase(BaseTarantoolTestCase):
 
     @ensure_version(min=(2, 10))
     async def test__ext_interval_read_adjust_last(self):
-        resp = await self.conn.eval(
-            """
+        resp = await self.conn.eval("""
             local datetime = require('datetime')
             return  datetime.interval.new({
                 year=1,
@@ -349,8 +324,7 @@ class MpExtIntervalTestCase(BaseTarantoolTestCase):
                 nsec=8,
                 adjust='last'
             })
-        """
-        )
+        """)
         self.assertEqual(
             asynctnt.MPInterval(
                 year=1,
@@ -368,8 +342,7 @@ class MpExtIntervalTestCase(BaseTarantoolTestCase):
 
     @ensure_version(min=(2, 10))
     async def test__ext_interval_read_adjust_excess(self):
-        resp = await self.conn.eval(
-            """
+        resp = await self.conn.eval("""
             local datetime = require('datetime')
             return  datetime.interval.new({
                 year=1,
@@ -382,8 +355,7 @@ class MpExtIntervalTestCase(BaseTarantoolTestCase):
                 nsec=8,
                 adjust='excess'
             })
-        """
-        )
+        """)
         self.assertEqual(
             asynctnt.MPInterval(
                 year=1,
@@ -401,8 +373,7 @@ class MpExtIntervalTestCase(BaseTarantoolTestCase):
 
     @ensure_version(min=(2, 10))
     async def test__ext_interval_read_all_negative(self):
-        resp = await self.conn.eval(
-            """
+        resp = await self.conn.eval("""
             local datetime = require('datetime')
             return  datetime.interval.new({
                 year=-1,
@@ -415,8 +386,7 @@ class MpExtIntervalTestCase(BaseTarantoolTestCase):
                 nsec=-8,
                 adjust='excess'
             })
-        """
-        )
+        """)
         self.assertEqual(
             asynctnt.MPInterval(
                 year=-1,
@@ -434,8 +404,7 @@ class MpExtIntervalTestCase(BaseTarantoolTestCase):
 
     @ensure_version(min=(2, 10))
     async def test__ext_interval_read_all_mixed(self):
-        resp = await self.conn.eval(
-            """
+        resp = await self.conn.eval("""
             local datetime = require('datetime')
             return  datetime.interval.new({
                 year=1,
@@ -448,8 +417,7 @@ class MpExtIntervalTestCase(BaseTarantoolTestCase):
                 nsec=-8,
                 adjust='excess'
             })
-        """
-        )
+        """)
         self.assertEqual(
             asynctnt.MPInterval(
                 year=1,
@@ -467,12 +435,10 @@ class MpExtIntervalTestCase(BaseTarantoolTestCase):
 
     @ensure_version(min=(2, 10))
     async def test__ext_interval_read_zeros(self):
-        resp = await self.conn.eval(
-            """
+        resp = await self.conn.eval("""
             local datetime = require('datetime')
             return  datetime.interval.new({})
-        """
-        )
+        """)
         self.assertEqual(
             asynctnt.MPInterval(),
             resp[0],
@@ -564,9 +530,3 @@ class MpExtIntervalTestCase(BaseTarantoolTestCase):
             ],
         )
         self.assertTrue(resp[0])
-
-
-def datetime_fromisoformat(s):
-    if sys.version_info < (3, 7, 0):
-        return dateutil.parser.isoparse(s)
-    return datetime.datetime.fromisoformat(s)

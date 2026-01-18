@@ -12,8 +12,10 @@
 static PyObject *ttuple_iter(PyObject *);
 static PyObject *ttuple_new_items_iter(PyObject *);
 
+#ifndef Py_GIL_DISABLED
 static AtntTupleObject *free_list[AtntTuple_MAXSAVESIZE];
 static int numfree[AtntTuple_MAXSAVESIZE];
+#endif
 
 
 PyObject *
@@ -31,12 +33,15 @@ AtntTuple_New(PyObject *metadata, Py_ssize_t size)
         return NULL;
     }
 
+#ifndef Py_GIL_DISABLED
     if (size < AtntTuple_MAXSAVESIZE && (o = free_list[size]) != NULL) {
         free_list[size] = (AtntTupleObject *) o->ob_item[0];
         numfree[size]--;
         _Py_NewReference((PyObject *)o);
     }
-    else {
+    else
+#endif
+    {
         /* Check for overflow */
         if ((size_t)size > ((size_t)PY_SSIZE_T_MAX - sizeof(AtntTupleObject) -
                     sizeof(PyObject *)) / sizeof(PyObject *)) {
@@ -79,6 +84,7 @@ ttuple_dealloc(AtntTupleObject *o)
             Py_CLEAR(o->ob_item[i]);
         }
 
+#ifndef Py_GIL_DISABLED
         if (len < AtntTuple_MAXSAVESIZE &&
             numfree[len] < AtntTuple_MAXFREELIST &&
             AtntTuple_CheckExact(o))
@@ -88,10 +94,11 @@ ttuple_dealloc(AtntTupleObject *o)
             free_list[len] = o;
             goto done; /* return */
         }
+#endif
     }
     Py_TYPE(o)->tp_free((PyObject *)o);
 done:
-    CPy_TRASHCAN_END(o)
+    CPy_TRASHCAN_END(o);
 }
 
 
@@ -133,7 +140,7 @@ ttuple_hash(AtntTupleObject *v)
     }
 
     len = Py_SIZE(v);
-    mult = _PyHASH_MULTIPLIER;
+    mult = ATNT_HASH_MULTIPLIER;
 
     x = 0x345678UL;
     p = v->ob_item;
@@ -404,12 +411,13 @@ ttuple_repr(AtntTupleObject *v)
     }
 
 #else
-    _PyUnicodeWriter writer;
-    _PyUnicodeWriter_Init(&writer);
-    writer.overallocate = 1;
-    writer.min_length = 12; /* <TarantoolTuple a=1> */
+    ATNT_UW_DECL(writer);
+    ATNT_UW_CREATE(writer, 12); /* <TarantoolTuple a=1> */
+    if (ATNT_UW_CREATE_FAILED(writer)) {
+        goto error;
+    }
 
-    if (_PyUnicodeWriter_WriteASCIIString(&writer, "<TarantoolTuple ", 16) < 0) {
+    if (ATNT_UW_WRITE_ASCII(ATNT_UW_REF(writer), "<TarantoolTuple ", 16) < 0) {
         goto error;
     }
 
@@ -462,26 +470,26 @@ ttuple_repr(AtntTupleObject *v)
 
 #else
         if (i > 0) {
-            if (_PyUnicodeWriter_WriteChar(&writer, ' ') < 0) {
+            if (ATNT_UW_WRITE_CHAR(ATNT_UW_REF(writer), ' ') < 0) {
                 Py_DECREF(key_repr);
                 Py_DECREF(val_repr);
                 goto error;
             }
         }
 
-        if (_PyUnicodeWriter_WriteStr(&writer, key_repr) < 0) {
+        if (ATNT_UW_WRITE_STR(ATNT_UW_REF(writer), key_repr) < 0) {
             Py_DECREF(key_repr);
             Py_DECREF(val_repr);
             goto error;
         }
         Py_DECREF(key_repr);
 
-        if (_PyUnicodeWriter_WriteChar(&writer, '=') < 0) {
+        if (ATNT_UW_WRITE_CHAR(ATNT_UW_REF(writer), '=') < 0) {
             Py_DECREF(val_repr);
             goto error;
         }
 
-        if (_PyUnicodeWriter_WriteStr(&writer, val_repr) < 0) {
+        if (ATNT_UW_WRITE_STR(ATNT_UW_REF(writer), val_repr) < 0) {
             Py_DECREF(val_repr);
             goto error;
         }
@@ -514,17 +522,16 @@ ttuple_repr(AtntTupleObject *v)
     }
     Py_XDECREF(parts_joined);
 #else
-    writer.overallocate = 0;
     if (oversize) {
-        if (_PyUnicodeWriter_WriteASCIIString(&writer, " ...>", 5) < 0) {
+        if (ATNT_UW_WRITE_ASCII(ATNT_UW_REF(writer), " ...>", 5) < 0) {
             goto error;
         }
     } else {
-        if (_PyUnicodeWriter_WriteChar(&writer, '>') < 0) {
+        if (ATNT_UW_WRITE_CHAR(ATNT_UW_REF(writer), '>') < 0) {
             goto error;
         }
     }
-    result = _PyUnicodeWriter_Finish(&writer);
+    result = ATNT_UW_FINISH(ATNT_UW_REF(writer));
 #endif
 
     Py_XDECREF(keys_iter);
@@ -536,7 +543,7 @@ error:
 #if defined(PYPY_VERSION)
     Py_XDECREF(parts);
 #else
-    _PyUnicodeWriter_Dealloc(&writer);
+    ATNT_UW_DISCARD(ATNT_UW_REF(writer));
 #endif
     Py_ReprLeave((PyObject *)v);
     return NULL;

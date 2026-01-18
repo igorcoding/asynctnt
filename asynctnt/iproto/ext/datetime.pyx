@@ -1,5 +1,10 @@
-cimport cpython.datetime
-from cpython.datetime cimport PyDateTimeAPI, datetime, datetime_tzinfo, timedelta_new
+from cpython.datetime cimport (
+    datetime,
+    datetime_from_timestamp,
+    datetime_tzinfo,
+    timedelta_new,
+    timezone_new,
+)
 from libc.stdint cimport uint32_t
 from libc.string cimport memcpy
 
@@ -80,8 +85,4 @@ cdef object datetime_to_py(IProtoDateTime *dt):
         tz = timezone_new(delta)
 
     timestamp = dt.seconds + (<double> dt.nsec) / 1e9
-    return PyDateTimeAPI.DateTime_FromTimestamp(
-        <PyObject *>PyDateTimeAPI.DateTimeType,
-        (timestamp,) if tz is None else (timestamp, tz),
-        NULL,
-    )
+    return datetime_from_timestamp(timestamp, tz)

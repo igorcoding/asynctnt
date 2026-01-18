@@ -228,7 +228,7 @@ class PushTestCase(BaseTarantoolTestCase):
     @ensure_version(min=(1, 10))
     async def test__push_read_all_multiple_iterators(self):
         fut = self.conn.eval(
-            "box.session.push(1);" "box.session.push(2);" "box.session.push(3);",
+            "box.session.push(1);box.session.push(2);box.session.push(3);",
             push_subscribe=True,
         )
         it1 = PushIterator(fut)
