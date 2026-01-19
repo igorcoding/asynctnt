@@ -1,11 +1,56 @@
 .PHONY: clean build local debug annotate dist docs style mypy ruff style-check lint test quicktest coverage
 
-PYTHON?=python
-
 all: local
 
+build:
+	uv pip install -e '.[test,docs]'
+
+local:
+	uv pip install -e .
+
+debug: clean
+	ASYNCTNT_DEBUG=1 uv pip install -e '.[test]'
+
+annotate:
+	cython -3 -a asynctnt/iproto/protocol.pyx
+
+lint: style-check ruff
+
+style:
+	uv run --active ruff format .
+	uv run --active ruff check --select I,F401 --fix .
+
+style-check:
+	uv run --active ruff format --check .
+
+ruff:
+	uv run --active ruff check .
+
+mypy:
+	uv run --active mypy --enable-error-code ignore-without-code .
+
+test:
+	PYTHONASYNCIODEBUG=1 uv run --active pytest
+	uv run --active pytest
+	USE_UVLOOP=1 uv run --active pytest
+
+quicktest:
+	uv run --active pytest
+
+coverage:
+	uv run --active pytest --cov
+	./scripts/run_until_success.sh uv run --active coverage report -m
+	./scripts/run_until_success.sh uv run --active coverage html
+
+dist:
+	uv pip install build
+	uv run --active python -m build .
+
+docs: build
+	$(MAKE) -C docs html
+
 clean:
-	pip uninstall -y asynctnt
+	uv pip uninstall asynctnt
 	rm -rf asynctnt/*.c asynctnt/*.h asynctnt/*.cpp
 	rm -rf asynctnt/*.so asynctnt/*.html
 	rm -rf asynctnt/iproto/*.c asynctnt/iproto/*.h
@@ -15,53 +60,3 @@ clean:
 	rm -rf htmlcov
 	rm -rf __tnt*
 	rm -rf tests/__tnt*
-
-
-build:
-	$(PYTHON) -m pip install -e '.[test,docs]'
-
-local:
-	$(PYTHON) -m pip install -e .
-
-
-debug: clean
-	ASYNCTNT_DEBUG=1 $(PYTHON) -m pip install -e '.[test]'
-
-
-annotate:
-	cython -3 -a asynctnt/iproto/protocol.pyx
-
-dist:
-	$(PYTHON) -m build .
-
-docs: build
-	$(MAKE) -C docs html
-
-style:
-	$(PYTHON) -m black .
-	$(PYTHON) -m isort .
-
-mypy:
-	$(PYTHON) -m mypy --enable-error-code ignore-without-code .
-
-ruff:
-	$(PYTHON) -m ruff check .
-
-style-check:
-	$(PYTHON) -m black --check --diff .
-	$(PYTHON) -m isort --check --diff .
-
-lint: style-check ruff
-
-test: lint
-	PYTHONASYNCIODEBUG=1 $(PYTHON) -m pytest
-	$(PYTHON) -m pytest
-	USE_UVLOOP=1 $(PYTHON) -m pytest
-
-quicktest:
-	$(PYTHON) -m pytest
-
-coverage:
-	$(PYTHON) -m pytest --cov
-	./scripts/run_until_success.sh $(PYTHON) -m coverage report -m
-	./scripts/run_until_success.sh $(PYTHON) -m coverage html

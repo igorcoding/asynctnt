@@ -183,7 +183,7 @@ class ResponseTestCase(BaseTarantoolTestCase):
         )
 
         self.assertEqual(
-            "<TarantoolTuple f1=0 f2='hello' f3=5 f4=6 f5='help' " "5='common' 6='yo'>",
+            "<TarantoolTuple f1=0 f2='hello' f3=5 f4=6 f5='help' 5='common' 6='yo'>",
             repr(res[0]),
             "repr ok",
         )

@@ -1,4 +1,5 @@
 # cython: language_level=3
+# cython: freethreading_compatible=True
 
 cimport cpython.dict
 from cpython.datetime cimport import_datetime

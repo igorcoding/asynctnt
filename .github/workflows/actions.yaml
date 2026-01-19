@@ -7,16 +7,16 @@ jobs:
     strategy:
       matrix:
         os: [ ubuntu-latest, macos-latest ]
-        python-version: ['3.7', '3.8', '3.9', '3.10', '3.11', '3.12', '3.13', 'pypy3.10']
+        python-version: ['3.9', '3.10', '3.11', '3.12', '3.13', '3.14', '3.14t', 'pypy3.10', 'pypy3.11']
         tarantool: ['1.10', '2', '3']
         exclude:
           - os: macos-latest
             tarantool: '1.10'
           - os: macos-latest
             tarantool: '2'
-          - os: macos-latest
-            python-version: '3.7'
           - python-version: 'pypy3.10'
+            tarantool: '1.10'
+          - python-version: 'pypy3.11'
             tarantool: '1.10'
 
     runs-on: ${{ matrix.os }}
@@ -25,6 +25,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           submodules: recursive
+
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v5
         with:
@@ -40,24 +41,41 @@ jobs:
         if: matrix.os == 'macos-latest'
         run: brew install tarantool
 
+      - name: Install uv
+        uses: astral-sh/setup-uv@v4
+
       - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip setuptools wheel coveralls
+        run: uv sync --extra test
+
+      - name: Run ruff check
+        run: uv run ruff check .
+
+      - name: Run ruff format check
+        run: uv run ruff format --check .
+
       - name: Run tests
-        run: |
-          if [[ "$RUNNER_OS" == "Linux" && ${{ matrix.python-version }} == "3.12" && ${{ matrix.tarantool }} == "3" ]]; then
-              make build && make test
-              make clean && make debug && make coverage
-              # coveralls
-          else
-              make build && make lint && make quicktest
-          fi
+        run: uv run pytest .
+
+      - name: Run tests with uvloop
+        if: "!contains(matrix.python-version, 'pypy')"
         env:
+          USE_UVLOOP: "1"
+        run: uv run pytest .
+
+      - name: Run coverage tests
+        if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.14' && matrix.tarantool == '3'
+        env:
+          ASYNCTNT_DEBUG: "1"
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}"
+        run: |
+          make clean
+          uv pip install -e '.[test]'
+          uv run pytest --cov
+          ./scripts/run_until_success.sh uv run coverage report -m
+          ./scripts/run_until_success.sh uv run coverage html
 
   build-wheels:
     name: Build wheels on ${{ matrix.os }}
-    if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -71,19 +89,33 @@ jobs:
           submodules: recursive
 
       - uses: actions/setup-python@v5
+        with:
+          python-version: '3.14'
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v4
 
       - name: Install cibuildwheel
-        run: python -m pip install --upgrade cibuildwheel
+        run: uv tool install cibuildwheel
+
+      - name: Install pyproject-build
+        run: uv tool install build
+
+      - name: Build source archive
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          pyproject-build -s .
 
       - name: Build wheels
-        run: python -m cibuildwheel --output-dir wheelhouse
+        run: cibuildwheel --output-dir dist
         env:
-          CIBW_BUILD: "cp37-* cp38-* cp39-* cp310-* cp311-* cp312-* cp313-* pp310-*"
+          CIBW_ENABLE: pypy pypy-eol
+          CIBW_BUILD: "cp39-* cp310-* cp311-* cp312-* cp313-* cp314-* cp314t-* pp310-* pp311-*"
 
       - uses: actions/upload-artifact@v4
         with:
           name: wheels-${{ matrix.os }}
-          path: ./wheelhouse/*.whl
+          path: ./dist/*
 
   publish:
     name: Publish wheels
@@ -91,55 +123,66 @@ jobs:
     needs:
       - build-wheels
     runs-on: ubuntu-latest
+    environment:
+      name: pypi
+      url: https://pypi.org/p/asynctnt
+    permissions:
+      id-token: write  # Required for trusted publishing
+      contents: write  # Required for releases
     steps:
       - name: Get tag
         id: get_tag
         run: echo ::set-output name=TAG::${GITHUB_REF/refs\/tags\//}
+
       - run: echo "Current tag is ${{ steps.get_tag.outputs.TAG }}"
+
       - uses: actions/checkout@v4
         with:
           submodules: recursive
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.12'
+          python-version: '3.14'
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v4
 
       - name: Install dependencies
         run: |
-          python -m pip install --upgrade pip setuptools wheel twine build
+          uv pip install --upgrade build
 
       - uses: actions/download-artifact@v4
         with:
           name: wheels-ubuntu-latest
-          path: wheels-ubuntu
+          path: dist
 
       - uses: actions/download-artifact@v4
         with:
           name: wheels-macos-latest
-          path: wheels-macos
+          path: dist
 
       - uses: actions/download-artifact@v4
         with:
           name: wheels-windows-latest
-          path: wheels-windows
+          path: dist
 
-      - name: Publish dist
+      - name: Build source archive
         run: |
           python -m build . -s
-          tree dist wheels-ubuntu wheels-macos wheels-windows
-          twine upload dist/* wheels-ubuntu/*.whl wheels-macos/*.whl wheels-windows/*.whl
-        env:
-          TWINE_USERNAME: ${{ secrets.TWINE_USERNAME }}
-          TWINE_PASSWORD: ${{ secrets.TWINE_PASSWORD }}
+          tree dist
+
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          print-hash: true
+
       - uses: marvinpinto/action-automatic-releases@latest
         with:
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
           prerelease: false
           title: ${{ steps.get_tag.outputs.TAG }}
           files: |
-            wheels-ubuntu/*.whl
-            wheels-macos/*.whl
-            wheels-windows/*.whl
             dist/*
 
   docs:
@@ -156,12 +199,10 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.12'
+          python-version: '3.14'
 
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip setuptools wheel build
-          make build
+      - name: Install uv
+        uses: astral-sh/setup-uv@v4
 
       - name: Build docs
         run: make docs

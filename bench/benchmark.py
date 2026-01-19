@@ -20,7 +20,7 @@ def main():
     parser.add_argument("-b", type=int, default=300, help="number of bulks")
     args = parser.parse_args()
 
-    print("Running {} requests in {} batches. ".format(args.n, args.b))
+    print("Running {} requests in {} batches. ".format(args.n, args.b))  # noqa: T201
 
     scenarios = [
         ["ping", []],
@@ -34,30 +34,27 @@ def main():
     ]
 
     for use_uvloop in [True]:
+        run_func = asyncio.run
         if use_uvloop:
             try:
                 import uvloop
             except ImportError:
-                print("No uvloop installed. Skipping.")
+                print("No uvloop installed. Skipping.")  # noqa: T201
                 continue
 
-            asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
-        else:
-            asyncio.set_event_loop_policy(None)
-        asyncio.set_event_loop(None)
-        loop = asyncio.new_event_loop()
-        asyncio.set_event_loop(loop)
+            run_func = uvloop.run
 
-        print("--------- uvloop: {} --------- ".format(use_uvloop))
+        print("--------- uvloop: {} --------- ".format(use_uvloop))  # noqa: T201
 
         for name, conn_creator in [
             ("asynctnt", create_asynctnt),
             # ('aiotarantool', create_aiotarantool),
         ]:
-            conn = loop.run_until_complete(conn_creator())
-            for scenario in scenarios:
-                loop.run_until_complete(
-                    async_bench(
+
+            async def main(name=name, conn_creator=conn_creator):
+                conn = await conn_creator()
+                for scenario in scenarios:
+                    await async_bench(
                         name,
                         conn,
                         args.n,
@@ -66,7 +63,8 @@ def main():
                         args=scenario[1],
                         kwargs=scenario[2] if len(scenario) > 2 else {},
                     )
-                )
+
+            run_func(main())
 
 
 async def async_bench(name, conn, n, b, method, args=None, kwargs=None):
@@ -87,7 +85,7 @@ async def async_bench(name, conn, n, b, method, args=None, kwargs=None):
     end = datetime.datetime.now()
 
     elapsed = end - start
-    print(
+    print(  # noqa: T201
         "{} [{}] Elapsed: {}, RPS: {}".format(
             name, method, elapsed, n / elapsed.total_seconds()
         )

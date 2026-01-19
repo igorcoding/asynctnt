@@ -4,7 +4,7 @@ description = "A fast Tarantool Database connector for Python/asyncio."
 authors = [
     { name = "igorcoding", email = "igorcoding@gmail.com" }
 ]
-license = {text = "Apache License, Version 2.0"}
+license-files = ["LICENSE.txt"]
 dynamic = ["version"]
 classifiers=[
     "Development Status :: 5 - Production/Stable",
@@ -14,19 +14,18 @@ classifiers=[
     "Operating System :: Microsoft :: Windows",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3 :: Only",
-    "Programming Language :: Python :: 3.7",
-    "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
     'Programming Language :: Python :: Implementation :: CPython',
     "Intended Audience :: Developers",
-    "License :: OSI Approved :: Apache Software License",
     "Topic :: Software Development :: Libraries :: Python Modules",
     "Topic :: Database :: Front-Ends"
 ]
-requires-python = '>=3.7.0'
+requires-python = '>=3.9.0'
 readme = "README.md"
 dependencies = [
     'PyYAML >= 5.0',
@@ -37,16 +36,13 @@ github = "https://github.com/igorcoding/asynctnt"
 
 [project.optional-dependencies]
 test = [
-    'isort',
-    'black',
     'ruff',
     'uvloop>=0.12.3; platform_system != "Windows" and platform.python_implementation != "PyPy"',
     'pytest',
     'pytest-cov',
     'coverage[toml]',
     'pytz',
-    'python-dateutil',
-    "Cython==3.0.11",  # for coverage
+    "Cython==3.2.4",  # for coverage
 ]
 
 docs = [
@@ -60,10 +56,9 @@ docs = [
 
 [build-system]
 requires = [
-    "setuptools>=60",
+    "setuptools>=77",
     "wheel",
-
-    "Cython==3.0.11",
+    "Cython==3.2.4",
 ]
 build-backend = "setuptools.build_meta"
 
@@ -107,33 +102,66 @@ show_missing = true
 [tool.coverage.html]
 directory = "htmlcov"
 
-[tool.black]
-extend-exclude = '(env|.env|venv|.venv).*'
-
-[tool.isort]
-profile = "black"
-multi_line_output = 3
-skip_glob = [
-    "env*",
-    "venv*",
-]
-
-
 [tool.ruff]
-lint.select = [
-    "E",  # pycodestyle errors
-    "W",  # pycodestyle warnings
-    "F",  # pyflakes
-    # "I",  # isort
-    "C",  # flake8-comprehensions
-    "B",  # flake8-bugbear
+extend-exclude = [".venv*", "env*", "venv*"]
+
+[tool.ruff.format]
+# Аналогично black, двойные кавычки
+quote-style = "double"
+
+# Аналогично black, пробелы вместо табов
+indent-style = "space"
+
+# Аналогично black, уважаем trailing commas
+skip-magic-trailing-comma = false
+
+# Аналогично black, автоматически определяем подходящее окончание строки.
+line-ending = "auto"
+
+[tool.ruff.lint]
+# Список кодов или префиксов правил, которые следует считать исправляемыми. (https://docs.astral.sh/ruff/settings/#fixable)
+# По умолчанию все правила считаются исправляемыми.
+fixable = ["I", "RUF022", "RUF023", "F401"]
+preview = true
+
+select = [
+    "E",   # pycodestyle errors
+    "W",   # pycodestyle warnings
+    "F",   # pyflakes
+    "I",   # isort
+    "C",   # flake8-comprehensions
+    "B",   # flake8-bugbear
+    "T20", # flake8-print
 ]
-lint.ignore = [
-    "E501",  # line too long, handled by black
-    "B008",  # do not perform function calls in argument defaults
-    "C901",  # too complex
+ignore = [
+    "E501", # line too long, handled by black
+    "B008", # do not perform function calls in argument defaults
+    "C901", # too complex
 ]
 
-extend-exclude = [
-    "app/store/migrations",
+[tool.ruff.lint.isort]
+# Позволяет использовать as в комбинации с группировкой  (https://docs.astral.sh/ruff/settings/#isort-combine-as-imports)
+#from package import (
+#    func1 as foo,
+#    func2 as boo,
+#)
+combine-as-imports = true
+
+# Воспринимать следующие пакеты в качестве stdlib       (https://docs.astral.sh/ruff/settings/#isort-extra-standard-library)
+extra-standard-library = ["typing_extensions"]
+
+section-order = [
+  "future",
+  "standard-library",
+  "third-party",
+  "first-party",
+  "local-folder"
 ]
+
+# Не добавлять пустую строку перед данными секциям      (https://docs.astral.sh/ruff/settings/#isort-no-lines-before)
+no-lines-before = []
+
+[tool.ruff.lint.pep8-naming]
+# если навесить данные декораторы, то можно использовать cls    (https://docs.astral.sh/ruff/settings/#pep8-naming-classmethod-decorators)
+# в качестве первого аргумента.
+classmethod-decorators = ["cached_classproperty", "classproperty"]

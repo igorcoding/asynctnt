@@ -172,7 +172,7 @@ class TarantoolTestCase(TestCase):
         tarantool_docker_tag = os.getenv("TARANTOOL_DOCKER_VERSION")
         in_docker = False
         if tarantool_docker_tag:
-            print(
+            print(  # noqa: T201
                 "Running tarantool in docker: {}:{}".format(
                     tarantool_docker_image or "tarantool/tarantool",
                     tarantool_docker_tag,
@@ -269,6 +269,7 @@ class TarantoolTestCase(TestCase):
         await self.tnt_connect(**kwargs)
 
     def assertResponseEqual(self, resp, target, *args):
+        self.assertEqual(len(resp), len(target))
         tuples = []
         for item in resp:
             if isinstance(item, TarantoolTuple):

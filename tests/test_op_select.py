@@ -190,7 +190,9 @@ class SelectTestCase(BaseTarantoolTestCase):
         data = await self._fill_data(4, space="no_schema_space")
 
         res = await self.conn.select("no_schema_space", index="primary_hash")
-        self.assertResponseEqual(res, data, "Body ok")
+        self.assertResponseEqual(
+            sorted(res, key=lambda t: t[0]), sorted(data, key=lambda t: t[0]), "Body ok"
+        )
 
     async def test__select_key_tuple(self):
         try:

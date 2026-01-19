@@ -130,7 +130,7 @@ class SQLExecuteTestCase(BaseTarantoolTestCase):
     @ensure_version(min=(2, 0))
     async def test__sql_insert_multiple(self):
         res = await self.conn.execute(
-            "insert into sql_space (id, name) " "values (1, 'one'), (2, 'two')"
+            "insert into sql_space (id, name) values (1, 'one'), (2, 'two')"
         )
         self.assertEqual(2, res.rowcount, "rowcount ok")
 

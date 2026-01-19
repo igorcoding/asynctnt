@@ -12,15 +12,46 @@ extern "C" {
 #  define CPy_TRASHCAN_BEGIN(op, dealloc) do {} while(0);
 #  define CPy_TRASHCAN_END(op) do {} while(0);
 #else
-
-#if PY_MAJOR_VERSION >= 3 && PY_MINOR_VERSION >= 8
 #  define CPy_TRASHCAN_BEGIN(op, dealloc) Py_TRASHCAN_BEGIN(op, dealloc)
 #  define CPy_TRASHCAN_END(op) Py_TRASHCAN_END
-#else
-#  define CPy_TRASHCAN_BEGIN(op, dealloc) Py_TRASHCAN_SAFE_BEGIN(op)
-#  define CPy_TRASHCAN_END(op) Py_TRASHCAN_SAFE_END(op)
+
+/*
+ * PyUnicodeWriter compatibility macros for Python 3.14+
+ * Python 3.14 introduced public PyUnicodeWriter API, deprecating private _PyUnicodeWriter.
+ * These macros are only defined for CPython (not PyPy).
+ */
+#if PY_VERSION_HEX >= 0x030E0000  /* Python 3.14+ */
+#  define ATNT_UW_DECL(name)              PyUnicodeWriter *name
+#  define ATNT_UW_CREATE(name, len)       name = PyUnicodeWriter_Create(len)
+#  define ATNT_UW_CREATE_FAILED(name)     (name == NULL)
+#  define ATNT_UW_REF(name)               name
+#  define ATNT_UW_WRITE_ASCII             PyUnicodeWriter_WriteASCII
+#  define ATNT_UW_WRITE_CHAR              PyUnicodeWriter_WriteChar
+#  define ATNT_UW_WRITE_STR               PyUnicodeWriter_WriteStr
+#  define ATNT_UW_FINISH                  PyUnicodeWriter_Finish
+#  define ATNT_UW_DISCARD                 PyUnicodeWriter_Discard
+#else  /* Python < 3.14 */
+#  define ATNT_UW_DECL(name)              _PyUnicodeWriter name
+#  define ATNT_UW_CREATE(name, len)       do { _PyUnicodeWriter_Init(&name); name.overallocate = 1; name.min_length = len; } while(0)
+#  define ATNT_UW_CREATE_FAILED(name)     (0)  /* _PyUnicodeWriter_Init doesn't fail */
+#  define ATNT_UW_REF(name)               &name
+#  define ATNT_UW_WRITE_ASCII             _PyUnicodeWriter_WriteASCIIString
+#  define ATNT_UW_WRITE_CHAR              _PyUnicodeWriter_WriteChar
+#  define ATNT_UW_WRITE_STR               _PyUnicodeWriter_WriteStr
+#  define ATNT_UW_FINISH                  _PyUnicodeWriter_Finish
+#  define ATNT_UW_DISCARD                 _PyUnicodeWriter_Dealloc
 #endif
 
+#endif /* !PYPY_VERSION */
+
+/*
+ * PyHASH_MULTIPLIER compatibility macro for Python 3.13+
+ * Python 3.13 introduced public PyHASH_MULTIPLIER, replacing private _PyHASH_MULTIPLIER.
+ */
+#if PY_VERSION_HEX >= 0x030D0000  /* Python 3.13+ */
+#  define ATNT_HASH_MULTIPLIER PyHASH_MULTIPLIER
+#else
+#  define ATNT_HASH_MULTIPLIER _PyHASH_MULTIPLIER
 #endif
 
 /* Largest ttuple to save on free list */

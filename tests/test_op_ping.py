@@ -36,15 +36,11 @@ class PingTestCase(BaseTarantoolTestCase):
 
         try:
             os.kill(self.tnt.pid, 0)
-            running = True
         except Exception:
-            running = False
+            pass
 
         with self.assertRaises(TarantoolNotConnectedError):
-            res = await self.conn.ping()
-            print(res)
-            print("running", running)
-            print(os.system("ps aux | grep tarantool"))
+            await self.conn.ping()
 
         self.tnt.start()
         await self.sleep(1)

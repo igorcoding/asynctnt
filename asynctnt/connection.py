@@ -134,7 +134,7 @@ class Connection(Api):
             self._auto_refetch_schema = True
             if not self._fetch_schema:
                 logger.warning(
-                    "Setting fetch_schema to True as " "auto_refetch_schema is True"
+                    "Setting fetch_schema to True as auto_refetch_schema is True"
                 )
                 self._fetch_schema = True
         else:
@@ -257,12 +257,12 @@ class Connection(Api):
                             if self._host.startswith("unix/"):
                                 unix_path = self._port
                                 assert isinstance(unix_path, str), (
-                                    "port must be a str instance for " "unix socket"
+                                    "port must be a str instance for unix socket"
                                 )
                                 assert unix_path, "No unix file path specified"
-                                assert os.path.exists(
-                                    unix_path
-                                ), "Unix socket `{}` not found".format(unix_path)
+                                assert os.path.exists(unix_path), (
+                                    "Unix socket `{}` not found".format(unix_path)
+                                )
 
                                 conn = loop.create_unix_connection(
                                     functools.partial(

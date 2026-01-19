@@ -81,7 +81,7 @@ celerybeat-schedule
 .env
 
 # virtualenv
-.venv/
+.venv*/
 venv/
 ENV/
 
@@ -113,3 +113,10 @@ deploy_key*
 cython_debug
 
 temp
+bin
+include
+instances.enabled
+modules
+templates
+uv.lock
+.DS_Store

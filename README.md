@@ -3,7 +3,7 @@
 [![Build](https://github.com/igorcoding/asynctnt/actions/workflows/actions.yaml/badge.svg?branch=master)](https://github.com/igorcoding/asynctnt/actions)
 [![PyPI](https://img.shields.io/pypi/v/asynctnt.svg)](https://pypi.python.org/pypi/asynctnt)
 [![Maintainability](https://api.codeclimate.com/v1/badges/6cec8adae280cda3e161/maintainability)](https://codeclimate.com/github/igorcoding/asynctnt/maintainability)
-<a href="http://tarantool.org">
+<a href="https://tarantool.org">
 	<img src="https://avatars2.githubusercontent.com/u/2344919?v=2&s=250" align="right">
 </a>
 
@@ -11,7 +11,7 @@ asynctnt is a high-performance [Tarantool](https://tarantool.org/) database
 connector library for Python/asyncio. It was highly inspired by
 [asyncpg](https://github.com/MagicStack/asyncpg) module.
 
-asynctnt requires Python 3.7 or later and is supported for Tarantool
+asynctnt requires Python 3.9 or later and is supported for Tarantool
 versions 1.10+.
 
 
