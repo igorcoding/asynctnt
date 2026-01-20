@@ -182,8 +182,10 @@ async def _cleanup_connection(connection: asynctnt.Connection) -> None:
     if connection.is_connected:
         try:
             await connection.call("truncate", timeout=5)
-        except Exception:
-            pass
+        except Exception as exc:
+            logging.getLogger(__name__).warning(
+                "Failed to truncate connection during cleanup: %s", exc
+            )
 
 
 @pytest.fixture
