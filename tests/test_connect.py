@@ -41,9 +41,12 @@ class TestConnect:
 
         c = await conn.connect()
         assert c is conn
+        assert c._transport is not None
+        assert c._protocol is not None
         assert conn.is_connected
         assert conn.is_fully_connected
         assert conn.state == ConnectionState.CONNECTED
+        assert conn._protocol.schema is not None
         assert conn.version is not None
         assert conn.schema.id is not None
         assert conn.schema.spaces is not None
@@ -56,9 +59,17 @@ class TestConnect:
         try:
             assert conn.host == tnt.host
             assert conn.port == tnt.port
+            assert conn.username is None
+            assert conn.password is None
+            assert conn.reconnect_timeout == 0
+            assert conn.connect_timeout == 3
+            assert conn.initial_read_buffer_size is None
+            assert conn._transport is not None
+            assert conn._protocol is not None
             assert conn.is_connected
             assert conn.is_fully_connected
             assert conn.state == ConnectionState.CONNECTED
+            assert conn._protocol.schema is not None
             assert conn.version is not None
             await conn.call("box.info")
         finally:
@@ -80,8 +91,24 @@ class TestConnect:
         )
         unix_tnt.start()
         try:
-            conn = await asynctnt.connect(host=unix_tnt.host, port=unix_tnt.port)
+            conn = await asynctnt.connect(
+                host=unix_tnt.host, port=unix_tnt.port, reconnect_timeout=0
+            )
+            assert conn.host == unix_tnt.host
+            assert conn.port == unix_tnt.port
+            assert conn.username is None
+            assert conn.password is None
+            assert conn.reconnect_timeout == 0
+            assert conn.connect_timeout == 3
+            assert conn.initial_read_buffer_size is None
+            assert conn._transport is not None
+            assert conn._protocol is not None
             assert conn.is_connected
+            assert conn.is_fully_connected
+            assert conn.state == ConnectionState.CONNECTED
+            assert conn._protocol.schema is not None
+            assert conn.version is not None
+            await conn.call("box.info")
             await conn.disconnect()
         finally:
             unix_tnt.stop()
@@ -91,9 +118,13 @@ class TestConnect:
         assert conn.state == ConnectionState.DISCONNECTED
 
         async with conn:
+            assert conn._transport is not None
+            assert conn._protocol is not None
             assert conn.is_connected
             assert conn.is_fully_connected
             assert conn.state == ConnectionState.CONNECTED
+            assert conn._protocol.schema is not None
+            assert conn.version is not None
             await conn.call("box.info")
 
         assert conn.state == ConnectionState.DISCONNECTED
@@ -102,6 +133,7 @@ class TestConnect:
         self, tnt: TarantoolSyncInstance
     ) -> None:
         conn = asynctnt.Connection(host=tnt.host, port=tnt.port, reconnect_timeout=0)
+        assert conn.state == ConnectionState.DISCONNECTED
         async with conn:
             await conn.connect()
             assert conn.state == ConnectionState.CONNECTED
@@ -112,6 +144,7 @@ class TestConnect:
         self, tnt: TarantoolSyncInstance
     ) -> None:
         conn = asynctnt.Connection(host=tnt.host, port=tnt.port, reconnect_timeout=0)
+        assert conn.state == ConnectionState.DISCONNECTED
         async with conn:
             await conn.disconnect()
             assert conn.state == ConnectionState.DISCONNECTED
@@ -130,7 +163,12 @@ class TestConnect:
             auto_refetch_schema=False,
         )
         async with conn:
+            assert conn._transport is not None
+            assert conn._protocol is not None
             assert conn.is_connected
+            assert conn.is_fully_connected
+            assert conn.state == ConnectionState.CONNECTED
+            assert conn._protocol.schema is not None
             await conn.call("box.info")
 
     async def test_connect_auth(self, tnt: TarantoolSyncInstance) -> None:
@@ -142,7 +180,12 @@ class TestConnect:
             reconnect_timeout=0,
         )
         async with conn:
+            assert conn._transport is not None
+            assert conn._protocol is not None
             assert conn.is_connected
+            assert conn.is_fully_connected
+            assert conn.state == ConnectionState.CONNECTED
+            assert conn._protocol.schema is not None
             await conn.call("box.info")
 
     async def test_connect_auth_no_schema(self, tnt: TarantoolSyncInstance) -> None:
@@ -158,7 +201,12 @@ class TestConnect:
         assert conn.username == "t1"
         assert conn.password == "t1"
         async with conn:
+            assert conn._transport is not None
+            assert conn._protocol is not None
             assert conn.is_connected
+            assert conn.is_fully_connected
+            assert conn.state == ConnectionState.CONNECTED
+            assert conn._protocol.schema is not None
             await conn.call("box.info")
 
     async def test_disconnect(self, tnt: TarantoolSyncInstance) -> None:
@@ -194,6 +242,7 @@ class TestConnect:
         await conn.connect()
         await conn.disconnect()
         assert not conn.is_connected
+        assert not conn.is_fully_connected
         assert conn.state == ConnectionState.DISCONNECTED
 
         with pytest.raises(TarantoolNotConnectedError):
@@ -218,6 +267,7 @@ class TestConnect:
             await conn.disconnect()
 
             assert not conn.is_connected
+            assert not conn.is_fully_connected
             assert conn.state == ConnectionState.DISCONNECTED
 
             with pytest.raises(TarantoolNotConnectedError):
@@ -233,6 +283,7 @@ class TestConnect:
             password="t1",
             reconnect_timeout=0.1,
         )
+        assert conn.reconnect_timeout == 0.1
         try:
             await conn.connect()
             tnt.stop()
@@ -241,6 +292,7 @@ class TestConnect:
             conn.close()
 
             assert not conn.is_connected
+            assert not conn.is_fully_connected
             assert conn.state == ConnectionState.DISCONNECTED
 
             with pytest.raises(TarantoolNotConnectedError):
@@ -259,6 +311,7 @@ class TestConnect:
             await conn.connect()
             await conn.disconnect()
         assert not conn.is_connected
+        assert not conn.is_fully_connected
         assert conn.state == ConnectionState.DISCONNECTED
 
         with pytest.raises(TarantoolNotConnectedError):
