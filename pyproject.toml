@@ -28,7 +28,7 @@ classifiers=[
 requires-python = '>=3.9.0'
 readme = "README.md"
 dependencies = [
-    "ruff>=0.14.13",
+    'PyYAML >= 5.0',
 ]
 
 [project.urls]

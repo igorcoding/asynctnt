@@ -75,9 +75,7 @@ class TestConnect:
         finally:
             await conn.disconnect()
 
-    async def test_connect_unix(
-        self, tnt: TarantoolSyncInstance, in_docker: bool
-    ) -> None:
+    async def test_connect_unix(self, in_docker: bool) -> None:
         if in_docker:
             pytest.skip("Skipping as running inside docker")
 
