@@ -1,76 +1,68 @@
+"""Tests for response handling."""
+
+from __future__ import annotations
+
 import warnings
 
+import pytest
+
+import asynctnt
 from asynctnt import TarantoolTuple
-from tests import BaseTarantoolTestCase
+from tests.conftest import TESTER_SPACE_ID, TESTER_SPACE_NAME
+from tests.utils.assertions import assert_response_equal
 
 
-class ResponseTestCase(BaseTarantoolTestCase):
-    async def _fill_data(self, count=3):
-        data = []
-        for i in range(count):
-            t = [i, str(i), 1, 2, "something"]
-            data.append(t)
-            await self.conn.insert(self.TESTER_SPACE_ID, t)
-        return data
+class TestResponse:
+    """Response handling tests."""
 
-    async def _fill_data_dict(self, count=3):
-        data = []
-        for i in range(count):
-            t = {
-                "f1": i,
-                "f2": str(i),
-                "f3": 1,
-                "f4": 2,
-                "f5": "something",
-            }
-            t = await self.conn.insert(self.TESTER_SPACE_ID, t)
-            data.append(dict(t[0]))
-        return data
-
-    async def test__response_indexing(self):
-        res = await self.conn.call("box.info")
+    async def test_response_indexing(self, conn: asynctnt.Connection) -> None:
+        res = await conn.call("box.info")
         with warnings.catch_warnings():
             warnings.simplefilter("ignore", DeprecationWarning)
-            self.assertEqual(len(res), len(res.body), "len ok")
-            self.assertEqual(res[0], res.body[0], "value ok")
+            assert len(res) == len(res.body), "len ok"
+            assert res[0] == res.body[0], "value ok"
 
-    async def test__response_iter(self):
-        data = await self._fill_data(3)
-        res = await self.conn.select(self.TESTER_SPACE_ID)
+    async def test_response_iter(
+        self, conn: asynctnt.Connection, fill_data: list[list]
+    ) -> None:
+        res = await conn.select(TESTER_SPACE_ID)
 
-        self.assertEqual(len(res), len(data), "len ok")
+        assert len(res) == len(fill_data), "len ok"
 
         res_arr = []
         for el in res:
             res_arr.append(list(el))
-        self.assertListEqual(res_arr, data, "list ok")
+        assert res_arr == fill_data, "list ok"
 
-    async def test__response_tuple_iter(self):
-        data = await self._fill_data(1)
-        res = await self.conn.select(self.TESTER_SPACE_ID)
+    async def test_response_tuple_iter(
+        self, conn: asynctnt.Connection, fill_data: list[list]
+    ) -> None:
+        res = await conn.select(TESTER_SPACE_ID)
         t = res[0]
 
         t_list = [el for el in t]  # check iteration over tuple  # noqa: C416
-        self.assertListEqual(t_list, data[0], "tuple ok")
+        assert t_list == fill_data[0], "tuple ok"
 
-    async def test__response_tuple_keys(self):
-        await self._fill_data(1)
-        res = await self.conn.select(self.TESTER_SPACE_ID)
+    async def test_response_tuple_keys(
+        self, conn: asynctnt.Connection, fill_data: list[list]
+    ) -> None:
+        res = await conn.select(TESTER_SPACE_ID)
         t = res[0]
 
         correct_keys = ["f1", "f2", "f3", "f4", "f5"]
-        self.assertListEqual(list(t.keys()), correct_keys, "keys ok")
+        assert list(t.keys()) == correct_keys, "keys ok"
 
-    async def test__response_tuple_values(self):
-        data = await self._fill_data(1)
-        res = await self.conn.select(self.TESTER_SPACE_ID)
+    async def test_response_tuple_values(
+        self, conn: asynctnt.Connection, fill_data: list[list]
+    ) -> None:
+        res = await conn.select(TESTER_SPACE_ID)
         t = res[0]
 
-        self.assertListEqual(list(t.values()), data[0], "values ok")
+        assert list(t.values()) == fill_data[0], "values ok"
 
-    async def test__response_tuple_items(self):
+    async def test_response_tuple_items(self, conn: asynctnt.Connection) -> None:
         data = [0, "hello", 5, 6, "help", "common", "yo"]
-        res = await self.conn.insert(self.TESTER_SPACE_ID, data)
+        res = await conn.insert(TESTER_SPACE_ID, data)
         t = res[0]
         d = {
             "f1": data[0],
@@ -81,194 +73,183 @@ class ResponseTestCase(BaseTarantoolTestCase):
         }
 
         t_dict = {k: v for k, v in t.items()}  # noqa: C416
-        self.assertDictEqual(t_dict, d, "items ok")
+        assert t_dict == d, "items ok"
 
-    async def test__response_tuple_dict_extra_index(self):
+    async def test_response_tuple_dict_extra_index(
+        self, conn: asynctnt.Connection
+    ) -> None:
         data = [0, "hello", 5, 6, "help", "common", "yo"]
-        res = await self.conn.insert(self.TESTER_SPACE_ID, data)
+        res = await conn.insert(TESTER_SPACE_ID, data)
         res = res[0]
 
-        self.assertEqual(res[0], data[0])
-        self.assertEqual(res[1], data[1])
-        self.assertEqual(res[2], data[2])
-        self.assertEqual(res[3], data[3])
-        self.assertEqual(res[4], data[4])
-        self.assertEqual(res[5], data[5])
-        self.assertEqual(res[6], data[6])
-        self.assertEqual(res[-1], data[-1])
-        self.assertEqual(res[-3], data[-3])
+        assert res[0] == data[0]
+        assert res[1] == data[1]
+        assert res[2] == data[2]
+        assert res[3] == data[3]
+        assert res[4] == data[4]
+        assert res[5] == data[5]
+        assert res[6] == data[6]
+        assert res[-1] == data[-1]
+        assert res[-3] == data[-3]
 
-        self.assertEqual(res["f1"], data[0])
-        self.assertEqual(res["f2"], data[1])
-        self.assertEqual(res["f3"], data[2])
-        self.assertEqual(res["f4"], data[3])
-        self.assertEqual(res["f5"], data[4])
+        assert res["f1"] == data[0]
+        assert res["f2"] == data[1]
+        assert res["f3"] == data[2]
+        assert res["f4"] == data[3]
+        assert res["f5"] == data[4]
 
-    async def test__response_tuple_slice(self):
+    async def test_response_tuple_slice(self, conn: asynctnt.Connection) -> None:
         data = [0, "hello", 5, 6, "help", "common", "yo"]
-        res = await self.conn.insert(self.TESTER_SPACE_ID, data)
+        res = await conn.insert(TESTER_SPACE_ID, data)
         res = res[0]
 
-        self.assertEqual(type(res[:3]), tuple)
+        assert type(res[:3]) is tuple
 
-        self.assertListEqual(list(res[:3]), data[:3])
-        self.assertListEqual(list(res[1:5]), data[1:5])
-        self.assertListEqual(list(res[5:20]), data[5:20])
-        self.assertEqual(list(res[7:3:-1]), data[7:3:-1])
-        self.assertEqual(list(res[7:3:-2]), data[7:3:-2])
+        assert list(res[:3]) == data[:3]
+        assert list(res[1:5]) == data[1:5]
+        assert list(res[5:20]) == data[5:20]
+        assert list(res[7:3:-1]) == data[7:3:-1]
+        assert list(res[7:3:-2]) == data[7:3:-2]
 
-    async def test__response_tuple_contains(self):
+    async def test_response_tuple_contains(self, conn: asynctnt.Connection) -> None:
         data = [0, "hello", 5, 6, "help", "common", "yo"]
-        res = await self.conn.insert(self.TESTER_SPACE_ID, data)
+        res = await conn.insert(TESTER_SPACE_ID, data)
         res = res[0]
 
-        self.assertTrue("f1" in res)
-        self.assertTrue("f2" in res)
-        self.assertTrue("f3" in res)
-        self.assertTrue("f4" in res)
-        self.assertTrue("f5" in res)
-        self.assertFalse("f6" in res)
+        assert "f1" in res
+        assert "f2" in res
+        assert "f3" in res
+        assert "f4" in res
+        assert "f5" in res
+        assert "f6" not in res
 
-    async def test__response_tuple_key_error(self):
+    async def test_response_tuple_key_error(self, conn: asynctnt.Connection) -> None:
         data = [0, "hello", 5, 6, "help", "common", "yo"]
-        res = await self.conn.insert(self.TESTER_SPACE_ID, data)
+        res = await conn.insert(TESTER_SPACE_ID, data)
         res = res[0]
 
-        with self.assertRaises(KeyError):
+        with pytest.raises(KeyError):
             # noinspection PyStatementEffect
             res["f100"]
 
-    async def test__response_tuple_get(self):
+    async def test_response_tuple_get(self, conn: asynctnt.Connection) -> None:
         data = [0, "hello", 5, 6, "help", "common", "yo"]
-        res = await self.conn.insert(self.TESTER_SPACE_ID, data)
+        res = await conn.insert(TESTER_SPACE_ID, data)
         res = res[0]
 
-        self.assertEqual(res.get("f1"), 0)
-        self.assertEqual(res.get("f2"), "hello")
-        self.assertEqual(res.get("f100"), None)
-        self.assertEqual(res.get("f100", "zz"), "zz")
+        assert res.get("f1") == 0
+        assert res.get("f2") == "hello"
+        assert res.get("f100") is None
+        assert res.get("f100", "zz") == "zz"
 
-    async def test__response_with_no_space_format(self):
-        res = await self.conn.insert("no_schema_space", [0, "one"])
+    async def test_response_with_no_space_format(
+        self, conn: asynctnt.Connection
+    ) -> None:
+        res = await conn.insert("no_schema_space", [0, "one"])
 
-        with self.assertRaises(ValueError):
+        with pytest.raises(ValueError):
             res[0].keys()
 
-        with self.assertRaises(ValueError):
+        with pytest.raises(ValueError):
             res[0].items()
 
-    async def test__native_response_with_no_space_format(self):
-        await self.conn.insert("no_schema_space", [0, "one"])
+    async def test_native_response_with_no_space_format(
+        self, conn: asynctnt.Connection
+    ) -> None:
+        await conn.insert("no_schema_space", [0, "one"])
 
-        res = await self.conn.select("no_schema_space")
-        self.assertEqual(1, res.rowcount, "count correct")
-        self.assertTrue(
-            isinstance(res[0], TarantoolTuple), "expecting a TarantoolTuple"
-        )
-        self.assertResponseEqual(res, [[0, "one"]], "resp ok")
+        res = await conn.select("no_schema_space")
+        assert res.rowcount == 1, "count correct"
+        assert isinstance(res[0], TarantoolTuple), "expecting a TarantoolTuple"
+        assert_response_equal(res, [[0, "one"]], "resp ok")
 
-        try:
-            repr(res)
-        except Exception as e:
-            self.fail(e)
+        repr(res)  # Should not raise
 
-    async def test__response_repr(self):
+    async def test_response_repr(self, conn: asynctnt.Connection) -> None:
         data = [0, "hello", 5, 6, "help", "common", "yo"]
-        await self.conn.insert(self.TESTER_SPACE_ID, data)
+        await conn.insert(TESTER_SPACE_ID, data)
 
-        res = await self.conn.select("tester")
-        self.assertEqual(1, res.rowcount, "count correct")
-        self.assertTrue(
-            isinstance(res[0], TarantoolTuple), "expecting a TarantoolTuple"
-        )
+        res = await conn.select("tester")
+        assert res.rowcount == 1, "count correct"
+        assert isinstance(res[0], TarantoolTuple), "expecting a TarantoolTuple"
 
-        self.assertEqual(
-            "<TarantoolTuple f1=0 f2='hello' f3=5 f4=6 f5='help' 5='common' 6='yo'>",
-            repr(res[0]),
-            "repr ok",
-        )
+        assert (
+            repr(res[0])
+            == "<TarantoolTuple f1=0 f2='hello' f3=5 f4=6 f5='help' 5='common' 6='yo'>"
+        ), "repr ok"
 
-    async def test__response_repr_trunc(self):
+    async def test_response_repr_trunc(self, conn: asynctnt.Connection) -> None:
         data = [0, "hello", 5, 6, "help", "common", "yo"]
         for _ in range(50):
             data.append("x")
 
-        await self.conn.insert(self.TESTER_SPACE_ID, data)
+        await conn.insert(TESTER_SPACE_ID, data)
 
-        res = await self.conn.select("tester")
-        self.assertEqual(1, res.rowcount, "count correct")
-        self.assertTrue(
-            isinstance(res[0], TarantoolTuple), "expecting a TarantoolTuple"
-        )
+        res = await conn.select("tester")
+        assert res.rowcount == 1, "count correct"
+        assert isinstance(res[0], TarantoolTuple), "expecting a TarantoolTuple"
 
         tail = []
         for i in range(7, 50):  # 50: maximum number of fields to show in repr
             tail.append(f"{i}={repr('x')}")
 
-        self.assertEqual(
-            f"<TarantoolTuple f1=0 f2='hello' f3=5 f4=6 f5='help' 5='common' 6='yo' {' '.join(tail)} ...>",
-            repr(res[0]),
-            "repr ok",
-        )
+        assert (
+            repr(res[0])
+            == f"<TarantoolTuple f1=0 f2='hello' f3=5 f4=6 f5='help' 5='common' 6='yo' {' '.join(tail)} ...>"
+        ), "repr ok"
 
-    async def test__response_str(self):
+    async def test_response_str(self, conn: asynctnt.Connection) -> None:
         data = [0, "hello", 5, 6, "help", "common", "yo"]
-        await self.conn.insert(self.TESTER_SPACE_ID, data)
+        await conn.insert(TESTER_SPACE_ID, data)
 
-        res = await self.conn.select("tester")
-        self.assertEqual(1, res.rowcount, "count correct")
-        self.assertTrue(
-            isinstance(res[0], TarantoolTuple), "expecting a TarantoolTuple"
+        res = await conn.select("tester")
+        assert res.rowcount == 1, "count correct"
+        assert isinstance(res[0], TarantoolTuple), "expecting a TarantoolTuple"
+
+        str(res)  # Should not raise
+
+    async def test_metadata(self, conn: asynctnt.Connection) -> None:
+        assert conn.schema.id is not None
+        assert conn.schema.spaces is not None
+        assert TESTER_SPACE_NAME in conn.schema.spaces
+        assert TESTER_SPACE_ID in conn.schema.spaces
+        assert (
+            conn.schema.spaces[TESTER_SPACE_NAME] is conn.schema.spaces[TESTER_SPACE_ID]
         )
 
-        try:
-            str(res)
-        except Exception as e:
-            self.fail(e)
-
-    async def test__metadata(self):
-        self.assertIsNotNone(self.conn.schema.id)
-        self.assertIsNotNone(self.conn.schema.spaces)
-        self.assertIn(self.TESTER_SPACE_NAME, self.conn.schema.spaces)
-        self.assertIn(self.TESTER_SPACE_ID, self.conn.schema.spaces)
-        self.assertIs(
-            self.conn.schema.spaces[self.TESTER_SPACE_NAME],
-            self.conn.schema.spaces[self.TESTER_SPACE_ID],
-        )
-
-        sp = self.conn.schema.spaces[self.TESTER_SPACE_NAME]
-        self.assertEqual(self.TESTER_SPACE_NAME, sp.name)
-        self.assertEqual(self.TESTER_SPACE_ID, sp.sid)
-        self.assertEqual("memtx", sp.engine)
-        self.assertEqual(4, len(sp.indexes))
-        self.assertIn("primary", sp.indexes)
-        self.assertIn(0, sp.indexes)
-        self.assertIn("txt", sp.indexes)
-        self.assertIn(1, sp.indexes)
-        self.assertEqual(5, len(sp.metadata.fields))
-        self.assertEqual("f1", sp.metadata.fields[0].name)
-        self.assertEqual("unsigned", sp.metadata.fields[0].type)
-        self.assertEqual("f2", sp.metadata.fields[1].name)
-        self.assertEqual("string", sp.metadata.fields[1].type)
-        self.assertEqual("f5", sp.metadata.fields[4].name)
-        self.assertEqual("*", sp.metadata.fields[4].type)
-        self.assertEqual(5, len(sp.metadata.name_id_map))
-        self.assertEqual(0, sp.metadata.name_id_map["f1"])
+        sp = conn.schema.spaces[TESTER_SPACE_NAME]
+        assert TESTER_SPACE_NAME == sp.name
+        assert TESTER_SPACE_ID == sp.sid
+        assert "memtx" == sp.engine
+        assert 4 == len(sp.indexes)
+        assert "primary" in sp.indexes
+        assert 0 in sp.indexes
+        assert "txt" in sp.indexes
+        assert 1 in sp.indexes
+        assert 5 == len(sp.metadata.fields)
+        assert "f1" == sp.metadata.fields[0].name
+        assert "unsigned" == sp.metadata.fields[0].type
+        assert "f2" == sp.metadata.fields[1].name
+        assert "string" == sp.metadata.fields[1].type
+        assert "f5" == sp.metadata.fields[4].name
+        assert "*" == sp.metadata.fields[4].type
+        assert 5 == len(sp.metadata.name_id_map)
+        assert 0 == sp.metadata.name_id_map["f1"]
 
         idx = sp.indexes[0]
-        self.assertEqual(0, idx.iid)
-        self.assertEqual("primary", idx.name)
-        self.assertEqual(self.TESTER_SPACE_ID, idx.sid)
-        self.assertEqual("tree", idx.index_type)
-        self.assertEqual(1, len(idx.metadata.fields))
-        self.assertEqual("f1", idx.metadata.fields[0].name)
-        self.assertEqual("unsigned", idx.metadata.fields[0].type)
-        self.assertEqual(1, len(idx.metadata.name_id_map))
-        self.assertEqual(0, idx.metadata.name_id_map["f1"])
+        assert 0 == idx.iid
+        assert "primary" == idx.name
+        assert TESTER_SPACE_ID == idx.sid
+        assert "tree" == idx.index_type
+        assert 1 == len(idx.metadata.fields)
+        assert "f1" == idx.metadata.fields[0].name
+        assert "unsigned" == idx.metadata.fields[0].type
+        assert 1 == len(idx.metadata.name_id_map)
+        assert 0 == idx.metadata.name_id_map["f1"]
 
-    async def test__metadata_is_nullable(self):
+    async def test_metadata_is_nullable(self, conn: asynctnt.Connection) -> None:
         sp_name = "test_space_with_nullable"
-        await self.conn.eval(
+        await conn.eval(
             """
             local s = box.schema.space.create('%s')
             s:format({
@@ -281,26 +262,26 @@ class ResponseTestCase(BaseTarantoolTestCase):
 
         try:
             # just to be sure that schema is refreshed
-            await self.conn.refetch_schema()
+            await conn.refetch_schema()
 
-            self.assertIn(sp_name, self.conn.schema.spaces)
-            sp = self.conn.schema.spaces[sp_name]
-            self.assertEqual(sp_name, sp.name)
-            self.assertEqual("memtx", sp.engine)
-            self.assertEqual(0, len(sp.indexes))
-            self.assertEqual(2, len(sp.metadata.fields))
-            self.assertEqual("id", sp.metadata.fields[0].name)
-            self.assertEqual("unsigned", sp.metadata.fields[0].type)
-            self.assertEqual(None, sp.metadata.fields[0].is_nullable)
-            self.assertEqual("name", sp.metadata.fields[1].name)
-            self.assertEqual("string", sp.metadata.fields[1].type)
-            self.assertEqual(True, sp.metadata.fields[1].is_nullable)
-            self.assertEqual(2, len(sp.metadata.name_id_map))
-            self.assertEqual(0, sp.metadata.name_id_map["id"])
-            self.assertEqual(1, sp.metadata.name_id_map["name"])
+            assert sp_name in conn.schema.spaces
+            sp = conn.schema.spaces[sp_name]
+            assert sp_name == sp.name
+            assert "memtx" == sp.engine
+            assert 0 == len(sp.indexes)
+            assert 2 == len(sp.metadata.fields)
+            assert "id" == sp.metadata.fields[0].name
+            assert "unsigned" == sp.metadata.fields[0].type
+            assert sp.metadata.fields[0].is_nullable is None
+            assert "name" == sp.metadata.fields[1].name
+            assert "string" == sp.metadata.fields[1].type
+            assert sp.metadata.fields[1].is_nullable is True
+            assert 2 == len(sp.metadata.name_id_map)
+            assert 0 == sp.metadata.name_id_map["id"]
+            assert 1 == sp.metadata.name_id_map["name"]
 
         finally:
-            await self.conn.eval(
+            await conn.eval(
                 """
                 local s = box.space['%s']
                 if s ~= nil then

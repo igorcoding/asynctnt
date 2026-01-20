@@ -1,91 +1,96 @@
+"""Tests for eval operation."""
+
+from __future__ import annotations
+
 import asyncio
 
+import pytest
+
+import asynctnt
 from asynctnt import Response
-from tests import BaseTarantoolTestCase
-from tests.util import get_complex_param
+from tests.utils.assertions import assert_response_equal
+from tests.utils.params import get_complex_param
 
 
-class EvalTestCase(BaseTarantoolTestCase):
-    async def test__eval_basic(self):
-        res = await self.conn.eval('return "hola"')
+class TestEval:
+    """Eval operation tests."""
 
-        self.assertIsInstance(res, Response, "Got eval response")
-        self.assertEqual(res.code, 0, "success")
-        self.assertGreater(res.sync, 0, "sync > 0")
-        self.assertResponseEqual(res, ["hola"], "Body ok")
+    async def test_eval_basic(self, conn: asynctnt.Connection) -> None:
+        res = await conn.eval('return "hola"')
 
-    async def test__eval_basic_pack(self):
-        res = await self.conn.eval('return {"hola"}')
+        assert isinstance(res, Response), "Got eval response"
+        assert res.code == 0, "success"
+        assert res.sync > 0, "sync > 0"
+        assert_response_equal(res, ["hola"], "Body ok")
 
-        self.assertIsInstance(res, Response, "Got eval response")
-        self.assertEqual(res.code, 0, "success")
-        self.assertGreater(res.sync, 0, "sync > 0")
-        self.assertResponseEqual(res, [["hola"]], "Body ok")
+    async def test_eval_basic_pack(self, conn: asynctnt.Connection) -> None:
+        res = await conn.eval('return {"hola"}')
 
-    async def test__eval_with_param(self):
+        assert isinstance(res, Response), "Got eval response"
+        assert res.code == 0, "success"
+        assert res.sync > 0, "sync > 0"
+        assert_response_equal(res, [["hola"]], "Body ok")
+
+    async def test_eval_with_param(self, conn: asynctnt.Connection) -> None:
         args = [1, 2, 3, "hello"]
-        res = await self.conn.eval("return ...", args)
+        res = await conn.eval("return ...", args)
 
-        self.assertResponseEqual(res, args, "Body ok")
+        assert_response_equal(res, args, "Body ok")
 
-    async def test__eval_with_param_pack(self):
+    async def test_eval_with_param_pack(self, conn: asynctnt.Connection) -> None:
         args = [1, 2, 3, "hello"]
-        res = await self.conn.eval("return {...}", args)
+        res = await conn.eval("return {...}", args)
 
-        self.assertResponseEqual(res, [args], "Body ok")
+        assert_response_equal(res, [args], "Body ok")
 
-    async def test__eval_func_name_invalid_type(self):
-        with self.assertRaises(TypeError):
-            await self.conn.eval(12)
+    async def test_eval_func_name_invalid_type(self, conn: asynctnt.Connection) -> None:
+        with pytest.raises(TypeError):
+            await conn.eval(12)
 
-        with self.assertRaises(TypeError):
-            await self.conn.eval([1, 2])
+        with pytest.raises(TypeError):
+            await conn.eval([1, 2])
 
-        with self.assertRaises(TypeError):
-            await self.conn.eval({"a": 1})
+        with pytest.raises(TypeError):
+            await conn.eval({"a": 1})
 
-        with self.assertRaises(TypeError):
-            await self.conn.eval(b"qwer")
+        with pytest.raises(TypeError):
+            await conn.eval(b"qwer")
 
-    async def test__eval_params_invalid_type(self):
-        with self.assertRaises(TypeError):
-            await self.conn.eval("return {...}", 220349)
+    async def test_eval_params_invalid_type(self, conn: asynctnt.Connection) -> None:
+        with pytest.raises(TypeError):
+            await conn.eval("return {...}", 220349)
 
-        with self.assertRaises(TypeError):
-            await self.conn.eval("return {...}", "hey")
+        with pytest.raises(TypeError):
+            await conn.eval("return {...}", "hey")
 
-        with self.assertRaises(TypeError):
-            await self.conn.eval("return {...}", {1: 1, 2: 2})
+        with pytest.raises(TypeError):
+            await conn.eval("return {...}", {1: 1, 2: 2})
 
-    async def test__eval_args_tuple(self):
-        try:
-            await self.conn.eval("return {...}", (1, 2))
-        except Exception as e:
-            self.fail(e)
+    async def test_eval_args_tuple(self, conn: asynctnt.Connection) -> None:
+        # Should not raise
+        await conn.eval("return {...}", (1, 2))
 
-    async def test__eval_complex_param(self):
+    async def test_eval_complex_param(self, conn: asynctnt.Connection) -> None:
         p, cmp = get_complex_param(
-            encoding=self.conn.encoding, replace_bin=self.conn.version < (3, 0)
+            encoding=conn.encoding, replace_bin=conn.version < (3, 0)
         )
-        res = await self.conn.eval("return {...}", [p])
-        self.assertDictEqual(res[0][0], cmp, "Body ok")
+        res = await conn.eval("return {...}", [p])
+        assert res[0][0] == cmp, "Body ok"
 
-    async def test__eval_timeout_in_time(self):
-        try:
-            cmd = """
-            local args = {...}
-            local fiber = require("fiber")
-            fiber.sleep(args[1])
-            """
-            await self.conn.eval(cmd, [0.1], timeout=1)
-        except Exception as e:
-            self.fail(e)
-
-    async def test__eval_timeout_late(self):
+    async def test_eval_timeout_in_time(self, conn: asynctnt.Connection) -> None:
+        # Should not raise
         cmd = """
         local args = {...}
         local fiber = require("fiber")
         fiber.sleep(args[1])
         """
-        with self.assertRaises(asyncio.TimeoutError):
-            await self.conn.eval(cmd, [0.3], timeout=0.1)
+        await conn.eval(cmd, [0.1], timeout=1)
+
+    async def test_eval_timeout_late(self, conn: asynctnt.Connection) -> None:
+        cmd = """
+        local args = {...}
+        local fiber = require("fiber")
+        fiber.sleep(args[1])
+        """
+        with pytest.raises(asyncio.TimeoutError):
+            await conn.eval(cmd, [0.3], timeout=0.1)

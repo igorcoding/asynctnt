@@ -28,7 +28,7 @@ classifiers=[
 requires-python = '>=3.9.0'
 readme = "README.md"
 dependencies = [
-    'PyYAML >= 5.0',
+    "ruff>=0.14.13",
 ]
 
 [project.urls]
@@ -38,7 +38,8 @@ github = "https://github.com/igorcoding/asynctnt"
 test = [
     'ruff',
     'uvloop>=0.12.3; platform_system != "Windows" and platform.python_implementation != "PyPy"',
-    'pytest',
+    'pytest>=8.0.0',
+    'pytest-asyncio>=0.24.0',
     'pytest-cov',
     'coverage[toml]',
     'pytz',
@@ -72,9 +73,16 @@ include = ["asynctnt", "asynctnt.*"]
 "*" = ["*.c", "*.h"]
 
 [tool.pytest.ini_options]
-addopts = "--strict --tb native"
+addopts = "--strict-markers --tb native"
 testpaths = "tests"
 filterwarnings = "default"
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+markers = [
+    "min_version(version): skip if Tarantool version < specified",
+    "max_version(version): skip if Tarantool version >= specified",
+    "min_bin_version(version): skip based on binary version",
+]
 
 [tool.coverage.run]
 branch = true

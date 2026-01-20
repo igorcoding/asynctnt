@@ -1,111 +1,160 @@
+"""Tests for common functionality."""
+
+from __future__ import annotations
+
 import asyncio
+
+import pytest
 
 import asynctnt
 from asynctnt.exceptions import TarantoolDatabaseError, TarantoolNotConnectedError
-from tests import BaseTarantoolTestCase
-from tests.util import get_big_param, get_complex_param
+from asynctnt.instance import TarantoolSyncInstance
+from tests.conftest import TESTER_SPACE_ID, TESTER_SPACE_NAME
+from tests.utils.assertions import assert_response_equal
+from tests.utils.params import get_big_param, get_complex_param
 
 
-class CommonTestCase(BaseTarantoolTestCase):
-    async def test__encoding_utf8(self):
+class TestCommon:
+    """Common functionality tests."""
+
+    async def test_encoding_utf8(self, conn: asynctnt.Connection) -> None:
         p, p_cmp = get_complex_param(replace_bin=False)
 
         data = [1, "hello", 1, 0, p]
         data_cmp = [1, "hello", 1, 0, p_cmp]
 
-        res = await self.conn.insert(self.TESTER_SPACE_ID, data)
-        self.assertResponseEqual(res, [data_cmp], "Body ok")
+        res = await conn.insert(TESTER_SPACE_ID, data)
+        assert_response_equal(res, [data_cmp], "Body ok")
 
-        res = await self.conn.select(self.TESTER_SPACE_ID)
-        self.assertResponseEqual(res, [data_cmp], "Body ok")
+        res = await conn.select(TESTER_SPACE_ID)
+        assert_response_equal(res, [data_cmp], "Body ok")
 
-    async def test__encoding_cp1251(self):
-        await self.tnt_reconnect(encoding="cp1251")
-        p, p_cmp = get_complex_param(replace_bin=False)
-
-        data = [1, "hello", 1, 0, p]
-        data_cmp = [1, "hello", 1, 0, p_cmp]
-
-        res = await self.conn.insert(self.TESTER_SPACE_ID, data)
-        self.assertResponseEqual(res, [data_cmp], "Body ok")
-
-        res = await self.conn.select(self.TESTER_SPACE_ID)
-        self.assertResponseEqual(res, [data_cmp], "Body ok")
-
-    async def test__schema_refetch_on_schema_change(self):
-        await self.tnt_reconnect(auto_refetch_schema=True, username="t1", password="t1")
-        self.assertTrue(self.conn.fetch_schema)
-        self.assertTrue(self.conn.auto_refetch_schema)
-        schema_before = self.conn.schema_id
-        self.assertNotEqual(schema_before, -1)
-
-        # Changing scheme
-        await self.conn.eval("box.schema.create_space('new_space');")
-
+    async def test_encoding_cp1251(self, tnt: TarantoolSyncInstance) -> None:
+        conn = asynctnt.Connection(
+            host=tnt.host,
+            port=tnt.port,
+            encoding="cp1251",
+        )
+        await conn.connect()
         try:
-            try:
-                await self.conn.ping()
-            except Exception as e:
-                self.fail(e)
+            p, p_cmp = get_complex_param(replace_bin=False)
 
-            # wait for schema to refetch
-            await self.sleep(1)
+            data = [1, "hello", 1, 0, p]
+            data_cmp = [1, "hello", 1, 0, p_cmp]
 
-            self.assertGreater(self.conn.schema_id, schema_before, "Schema changed")
-            self.assertIn("new_space", self.conn.schema.spaces)
+            res = await conn.insert(TESTER_SPACE_ID, data)
+            assert_response_equal(res, [data_cmp], "Body ok")
+
+            res = await conn.select(TESTER_SPACE_ID)
+            assert_response_equal(res, [data_cmp], "Body ok")
         finally:
-            await self.conn.eval(
-                "local s = box.space.new_space;if s ~= nil then s:drop(); end"
-            )
+            if conn.is_connected:
+                await conn.call("truncate", timeout=5)
+            await conn.disconnect()
 
-    async def test__schema_refetch_manual(self):
-        await self.tnt_reconnect(
-            fetch_schema=True, auto_refetch_schema=False, username="t1", password="t1"
+    async def test_schema_refetch_on_schema_change(
+        self, tnt: TarantoolSyncInstance
+    ) -> None:
+        conn = asynctnt.Connection(
+            host=tnt.host,
+            port=tnt.port,
+            auto_refetch_schema=True,
+            username="t1",
+            password="t1",
         )
-        self.assertTrue(self.conn.fetch_schema)
-        self.assertFalse(self.conn.auto_refetch_schema)
-        schema_before = self.conn.schema_id
-        self.assertNotEqual(schema_before, -1)
-
-        await self.conn.call("change_format")
-
+        await conn.connect()
         try:
-            await self.conn.ping()
-        except Exception as e:
-            self.fail(e)
+            assert conn.fetch_schema
+            assert conn.auto_refetch_schema
+            schema_before = conn.schema_id
+            assert schema_before != -1
 
-        self.assertEqual(self.conn.schema_id, schema_before, "schema not changed")
+            # Changing scheme
+            await conn.eval("box.schema.create_space('new_space');")
 
-        await self.conn.refetch_schema()
+            try:
+                await conn.ping()  # Should not raise
 
-        self.assertGreater(self.conn.schema_id, schema_before, "Schema changed")
-        sp = self.conn.schema.spaces[self.TESTER_SPACE_NAME]
-        self.assertEqual(6, len(sp.metadata.fields))
-        self.assertEqual("f6", sp.metadata.fields[5].name)
-        self.assertEqual("*", sp.metadata.fields[5].type)
+                # wait for schema to refetch
+                await asyncio.sleep(1)
 
-    async def test__schema_no_fetch_and_refetch(self):
-        await self.tnt_reconnect(
-            auto_refetch_schema=False, username="t1", password="t1", fetch_schema=False
+                assert conn.schema_id > schema_before, "Schema changed"
+                assert "new_space" in conn.schema.spaces
+            finally:
+                await conn.eval(
+                    "local s = box.space.new_space;if s ~= nil then s:drop(); end"
+                )
+        finally:
+            if conn.is_connected:
+                await conn.call("truncate", timeout=5)
+            await conn.disconnect()
+
+    async def test_schema_refetch_manual(self, tnt: TarantoolSyncInstance) -> None:
+        conn = asynctnt.Connection(
+            host=tnt.host,
+            port=tnt.port,
+            fetch_schema=True,
+            auto_refetch_schema=False,
+            username="t1",
+            password="t1",
         )
-        self.assertFalse(self.conn.fetch_schema)
-        self.assertFalse(self.conn.auto_refetch_schema)
-        self.assertEqual(self.conn.schema_id, -1)
-
-        # Changing scheme
-        await self.conn.eval("s = box.schema.create_space('new_space');s:drop();")
-
+        await conn.connect()
         try:
-            await self.conn.ping()
-        except Exception as e:
-            self.fail(e)
+            assert conn.fetch_schema
+            assert not conn.auto_refetch_schema
+            schema_before = conn.schema_id
+            assert schema_before != -1
 
-        await asyncio.sleep(1)  # wait for potential schema refetch
+            await conn.call("change_format")
 
-        self.assertEqual(self.conn.schema_id, -1)
+            await conn.ping()  # Should not raise
 
-    async def test__parse_numeric_map_keys(self):
-        res = await self.conn.eval("""return {
+            assert conn.schema_id == schema_before, "schema not changed"
+
+            await conn.refetch_schema()
+
+            assert conn.schema_id > schema_before, "Schema changed"
+            sp = conn.schema.spaces[TESTER_SPACE_NAME]
+            assert 6 == len(sp.metadata.fields)
+            assert "f6" == sp.metadata.fields[5].name
+            assert "*" == sp.metadata.fields[5].type
+        finally:
+            if conn.is_connected:
+                await conn.call("truncate", timeout=5)
+            await conn.disconnect()
+
+    async def test_schema_no_fetch_and_refetch(
+        self, tnt: TarantoolSyncInstance
+    ) -> None:
+        conn = asynctnt.Connection(
+            host=tnt.host,
+            port=tnt.port,
+            auto_refetch_schema=False,
+            username="t1",
+            password="t1",
+            fetch_schema=False,
+        )
+        await conn.connect()
+        try:
+            assert not conn.fetch_schema
+            assert not conn.auto_refetch_schema
+            assert conn.schema_id == -1
+
+            # Changing scheme
+            await conn.eval("s = box.schema.create_space('new_space');s:drop();")
+
+            await conn.ping()  # Should not raise
+
+            await asyncio.sleep(1)  # wait for potential schema refetch
+
+            assert conn.schema_id == -1
+        finally:
+            if conn.is_connected:
+                await conn.call("truncate", timeout=5)
+            await conn.disconnect()
+
+    async def test_parse_numeric_map_keys(self, conn: asynctnt.Connection) -> None:
+        res = await conn.eval("""return {
                 [1] = 1,
                 [2] = 2,
                 hello = 3,
@@ -116,125 +165,151 @@ class CommonTestCase(BaseTarantoolTestCase):
 
         d = {1: 1, 2: 2, "hello": 3, "world": 4, -3: 5, 4.5: 6}
 
-        self.assertDictEqual(res[0], d, "Numeric keys parsed ok")
+        assert res[0] == d, "Numeric keys parsed ok"
 
-    async def test__read_buffer_reallocate_ok(self):
-        await self.tnt_reconnect(initial_read_buffer_size=1)
-
-        p, cmp = get_complex_param(
-            encoding=self.conn.encoding, replace_bin=self.conn.version < (3, 0)
+    async def test_read_buffer_reallocate_ok(self, tnt: TarantoolSyncInstance) -> None:
+        conn = asynctnt.Connection(
+            host=tnt.host,
+            port=tnt.port,
+            initial_read_buffer_size=1,
         )
+        await conn.connect()
         try:
-            res = await self.conn.call("func_param", [p])
-        except Exception as e:
-            self.fail(e)
+            p, cmp = get_complex_param(
+                encoding=conn.encoding, replace_bin=conn.version < (3, 0)
+            )
+            res = await conn.call("func_param", [p])  # Should not raise
+            assert res[0][0] == cmp, "Body ok"
+        finally:
+            if conn.is_connected:
+                await conn.call("truncate", timeout=5)
+            await conn.disconnect()
 
-        self.assertDictEqual(res[0][0], cmp, "Body ok")
-
-    async def test__read_buffer_deallocate_ok(self):
+    async def test_read_buffer_deallocate_ok(self, tnt: TarantoolSyncInstance) -> None:
         size = 100 * 1000
-        await self.tnt_reconnect(initial_read_buffer_size=size)
-
-        # Waiting big response, so ReadBuffer grows to hold it
-        p = get_big_param(size=size * 3)
+        conn = asynctnt.Connection(
+            host=tnt.host,
+            port=tnt.port,
+            initial_read_buffer_size=size,
+        )
+        await conn.connect()
         try:
-            await self.conn.call("func_param", [p])
-        except Exception as e:
-            self.fail(e)
+            # Waiting big response, so ReadBuffer grows to hold it
+            p = get_big_param(size=size * 3)
+            await conn.call("func_param", [p])  # Should not raise
 
-        # Waiting small response, so ReadBuffer deallocates memory
-        p = get_big_param(size=10)
-        try:
-            await self.conn.call("func_param", [p])
-        except Exception as e:
-            self.fail(e)
+            # Waiting small response, so ReadBuffer deallocates memory
+            p = get_big_param(size=10)
+            await conn.call("func_param", [p])  # Should not raise
+        finally:
+            if conn.is_connected:
+                await conn.call("truncate", timeout=5)
+            await conn.disconnect()
 
-    async def test__write_buffer_reallocate(self):
+    async def test_write_buffer_reallocate(self, conn: asynctnt.Connection) -> None:
         p = get_big_param(size=100 * 1024)
-        try:
-            res = await self.conn.call("func_param", [p])
-        except Exception as e:
-            self.fail(e)
+        res = await conn.call("func_param", [p])  # Should not raise
+        assert res[0][0] == p, "Body ok"
 
-        self.assertDictEqual(res[0][0], p, "Body ok")
+    async def test_ensure_no_attribute_error_on_not_connected(
+        self, tnt: TarantoolSyncInstance
+    ) -> None:
+        conn = asynctnt.Connection(host=tnt.host, port=tnt.port)
 
-    async def test__ensure_no_attribute_error_on_not_connected(self):
-        await self.tnt_disconnect()
+        with pytest.raises(TarantoolNotConnectedError):
+            await conn.ping()
 
-        self._conn = asynctnt.Connection(host=self.tnt.host, port=self.tnt.port)
-
-        with self.assertRaises(TarantoolNotConnectedError):
-            await self.conn.ping()
-
-    async def test__encode_unsupported_type(self):
+    async def test_encode_unsupported_type(self, conn: asynctnt.Connection) -> None:
         class A:
             pass
 
-        with self.assertRaisesRegex(
-            TypeError, "Type `(.+)` is not supported for encoding"
+        with pytest.raises(
+            TypeError, match=r"Type `(.+)` is not supported for encoding"
         ):
-            await self.conn.call("func_param", [{"a": A()}])
+            await conn.call("func_param", [{"a": A()}])
 
-    async def test__schema_refetch_next_byte(self):
-        await self.tnt_reconnect(auto_refetch_schema=True, username="t1", password="t1")
-        await self.conn.call("func_hello")
-
-        # Changing scheme
-        try:
-            for _ in range(251):
-                await self.conn.eval(
-                    "s = box.schema.create_space('new_space');s:drop();"
-                )
-        except TarantoolDatabaseError as e:
-            self.fail(e)
-
-        try:
-            for _ in range(1, 255):
-                await self.conn.call("func_hello")
-        except TarantoolDatabaseError as e:
-            self.fail(e)
-
-    async def test__schema_refetch_unknown_space(self):
-        await self.tnt_reconnect(
-            auto_refetch_schema=True, username="t1", password="t1", ping_timeout=0.1
-        )
-
-        async def func():
-            # trying to select from an unknown space until it is created
-            while True:
-                try:
-                    await self.conn.select("spacex")
-                    return
-                except Exception:
-                    pass
-
-                await asyncio.sleep(0.1)
-
-        f = asyncio.ensure_future(asyncio.wait_for(func(), timeout=1))
-
-        # Changing scheme
-        try:
-            conn = await asynctnt.connect(
-                host=self.tnt.host, port=self.tnt.port, username="t1", password="t1"
-            )
-            async with conn:
-                await conn.eval(
-                    "s = box.schema.create_space('spacex');s:create_index('primary');"
-                )
-        except TarantoolDatabaseError as e:
-            self.fail(e)
-
-        try:
-            await f
-        except (asyncio.TimeoutError, asyncio.CancelledError) as e:
-            self.fail("Schema is not updated: %s %s" % (type(e), e))
-
-    async def test__schema_refetch_on_disconnect_race_condition(self):
+    async def test_schema_refetch_next_byte(self, tnt: TarantoolSyncInstance) -> None:
         conn = asynctnt.Connection(
-            host=self.tnt.host, port=self.tnt.port, username="t1", password="t1"
+            host=tnt.host,
+            port=tnt.port,
+            auto_refetch_schema=True,
+            username="t1",
+            password="t1",
         )
         await conn.connect()
-        await conn.eval("require('msgpack').cfg{encode_use_tostring = true}")
-        await conn.call("box.schema.space.create", ["geo", {"if_not_exists": True}])
-        await conn.call("box.space.geo:format", [[{"name": "id", "type": "string"}]])
-        await conn.disconnect()
+        try:
+            await conn.call("func_hello")
+
+            # Changing scheme
+            for _ in range(251):
+                await conn.eval("s = box.schema.create_space('new_space');s:drop();")
+
+            for _ in range(1, 255):
+                await conn.call("func_hello")
+        except TarantoolDatabaseError:
+            pytest.fail("TarantoolDatabaseError raised unexpectedly")
+        finally:
+            if conn.is_connected:
+                await conn.call("truncate", timeout=5)
+            await conn.disconnect()
+
+    async def test_schema_refetch_unknown_space(
+        self, tnt: TarantoolSyncInstance
+    ) -> None:
+        conn = asynctnt.Connection(
+            host=tnt.host,
+            port=tnt.port,
+            auto_refetch_schema=True,
+            username="t1",
+            password="t1",
+            ping_timeout=0.1,
+        )
+        await conn.connect()
+        try:
+
+            async def func() -> None:
+                # trying to select from an unknown space until it is created
+                while True:
+                    try:
+                        await conn.select("spacex")
+                        return
+                    except Exception:
+                        pass
+
+                    await asyncio.sleep(0.1)
+
+            f = asyncio.ensure_future(asyncio.wait_for(func(), timeout=1))
+
+            # Changing scheme
+            conn2 = await asynctnt.connect(
+                host=tnt.host, port=tnt.port, username="t1", password="t1"
+            )
+            async with conn2:
+                await conn2.eval(
+                    "s = box.schema.create_space('spacex');s:create_index('primary');"
+                )
+
+            try:
+                await f
+            except (asyncio.TimeoutError, asyncio.CancelledError) as e:
+                pytest.fail(f"Schema is not updated: {type(e)} {e}")
+        finally:
+            if conn.is_connected:
+                await conn.call("truncate", timeout=5)
+            await conn.disconnect()
+
+    async def test_schema_refetch_on_disconnect_race_condition(
+        self, tnt: TarantoolSyncInstance
+    ) -> None:
+        conn = asynctnt.Connection(
+            host=tnt.host, port=tnt.port, username="t1", password="t1"
+        )
+        await conn.connect()
+        try:
+            await conn.eval("require('msgpack').cfg{encode_use_tostring = true}")
+            await conn.call("box.schema.space.create", ["geo", {"if_not_exists": True}])
+            await conn.call(
+                "box.space.geo:format", [[{"name": "id", "type": "string"}]]
+            )
+        finally:
+            await conn.disconnect()
