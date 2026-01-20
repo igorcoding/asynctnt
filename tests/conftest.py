@@ -46,6 +46,7 @@ def create_tarantool_instance(
     applua_path: str | None = None,
     extra_box_cfg: str = "",
     cleanup: bool = True,
+    replication_source: list[str] | str | None = None,
 ) -> TarantoolSyncInstance | TarantoolSyncDockerInstance:
     """Create a Tarantool instance based on environment configuration."""
     applua: str | None = None
@@ -67,6 +68,7 @@ def create_tarantool_instance(
             docker_tag=docker_tag,
             extra_box_cfg=extra_box_cfg,
             timeout=4 * 60,
+            replication_source=replication_source,
         )
 
     unix_path = os.getenv("TARANTOOL_LISTEN_UNIX_PATH")
@@ -78,6 +80,7 @@ def create_tarantool_instance(
             applua=applua,
             extra_box_cfg=extra_box_cfg,
             cleanup=cleanup,
+            replication_source=replication_source,
         )
 
     return TarantoolSyncInstance(
@@ -86,6 +89,7 @@ def create_tarantool_instance(
         applua=applua,
         extra_box_cfg=extra_box_cfg,
         cleanup=cleanup,
+        replication_source=replication_source,
     )
 
 
