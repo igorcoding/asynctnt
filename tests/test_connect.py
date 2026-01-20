@@ -586,6 +586,7 @@ class TestConnect:
             finally:
                 await conn.disconnect()
 
+    @pytest.mark.max_bin_version((1, 7))
     async def test_connect_waiting_for_spaces_no_reconnect_1_6(
         self, tnt: TarantoolSyncInstance, in_docker: bool
     ) -> None:
@@ -595,13 +596,6 @@ class TestConnect:
         with create_tarantool_instance(replication_source=["x:1"]) as instance:
             instance.start(wait=False)
             await asyncio.sleep(1)
-
-            # Check if version < 1.7
-            async with asynctnt.Connection(
-                host=instance.host, port=instance.port, fetch_schema=False
-            ) as check_conn:
-                if check_conn.version >= (1, 7):
-                    pytest.skip("Test only for Tarantool < 1.7")
 
             conn = asynctnt.Connection(
                 host=instance.host,
@@ -644,6 +638,7 @@ class TestConnect:
             finally:
                 await conn.disconnect()
 
+    @pytest.mark.max_bin_version((1, 7))
     async def test_connect_err_loading_1_6(
         self, tnt: TarantoolSyncInstance, in_docker: bool
     ) -> None:
@@ -653,13 +648,6 @@ class TestConnect:
         with create_tarantool_instance(replication_source=["x:1"]) as instance:
             instance.start(wait=False)
             await asyncio.sleep(1)
-
-            # Check if version < 1.7
-            async with asynctnt.Connection(
-                host=instance.host, port=instance.port, fetch_schema=False
-            ) as check_conn:
-                if check_conn.version >= (1, 7):
-                    pytest.skip("Test only for Tarantool < 1.7")
 
             conn = asynctnt.Connection(
                 host=instance.host,
@@ -745,11 +733,9 @@ class TestConnect:
             await conn.disconnect()
 
     @pytest.mark.min_bin_version((2, 10))
-    async def test_features(self, tnt: TarantoolSyncInstance) -> None:
+    @pytest.mark.max_bin_version((3, 0))
+    async def test_features_before_3_0(self, tnt: TarantoolSyncInstance) -> None:
         async with asynctnt.Connection(host=tnt.host, port=tnt.port) as conn:
-            if conn.version >= (3, 0):
-                pytest.skip(f"Requires Tarantool < (3, 0), got {conn.version}")
-
             assert conn.features is not None
             assert conn.features.streams
             assert conn.features.watchers
@@ -764,7 +750,7 @@ class TestConnect:
             assert not conn.features.call_arg_tuple_extension
 
     @pytest.mark.min_bin_version((3, 0))
-    async def test_features_3_0(self, tnt: TarantoolSyncInstance) -> None:
+    async def test_features(self, tnt: TarantoolSyncInstance) -> None:
         async with asynctnt.Connection(host=tnt.host, port=tnt.port) as conn:
             assert conn.features is not None
             assert conn.features.streams

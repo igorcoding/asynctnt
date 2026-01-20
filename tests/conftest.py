@@ -120,17 +120,22 @@ def pytest_configure(config: pytest.Config) -> None:
         "markers",
         "min_bin_version(version): skip test if Tarantool binary version is below the specified version",
     )
+    config.addinivalue_line(
+        "markers",
+        "max_bin_version(version): skip test if Tarantool binary version is above the specified version",
+    )
 
 
 def pytest_collection_modifyitems(
     config: pytest.Config, items: list[pytest.Item]
 ) -> None:
-    """Skip tests based on min_bin_version marker."""
+    """Skip tests based on min_bin_version and max_bin_version markers."""
     bin_version = get_tarantool_bin_version()
     if bin_version is None:
         return
 
     for item in items:
+        # Check min_bin_version marker
         marker = item.get_closest_marker("min_bin_version")
         if marker is not None:
             min_version = marker.args[0]
@@ -138,6 +143,17 @@ def pytest_collection_modifyitems(
                 item.add_marker(
                     pytest.mark.skip(
                         reason=f"Requires Tarantool >= {min_version}, got {bin_version}"
+                    )
+                )
+
+        # Check max_bin_version marker
+        marker = item.get_closest_marker("max_bin_version")
+        if marker is not None:
+            max_version = marker.args[0]
+            if bin_version >= max_version:
+                item.add_marker(
+                    pytest.mark.skip(
+                        reason=f"Requires Tarantool < {max_version}, got {bin_version}"
                     )
                 )
 
