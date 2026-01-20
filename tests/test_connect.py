@@ -287,6 +287,182 @@ class TestConnect:
         with pytest.raises(ConnectionRefusedError):
             await conn.connect()
 
+    async def test_connect_wait_tnt_started(self, tnt: TarantoolSyncInstance) -> None:
+        tnt.stop()
+        conn = asynctnt.Connection(
+            host=tnt.host,
+            port=tnt.port,
+            username="t1",
+            password="t1",
+            fetch_schema=True,
+            reconnect_timeout=0.000000001,
+        )
+        try:
+            coro = asyncio.ensure_future(conn.connect())
+            await asyncio.sleep(0.3)
+            tnt.start()
+            await asyncio.sleep(1)
+            while True:
+                try:
+                    await coro
+                    break
+                except TarantoolDatabaseError as e:
+                    if e.code == ErrorCode.ER_NO_SUCH_USER:
+                        # Try again
+                        coro = asyncio.ensure_future(conn.connect())
+                        continue
+                    raise
+
+            assert conn.state == ConnectionState.CONNECTED
+            await conn.call("box.info")
+        finally:
+            await conn.disconnect()
+
+    async def test_connect_waiting_for_spaces(
+        self, tnt: TarantoolSyncInstance, in_docker: bool
+    ) -> None:
+        if in_docker:
+            pytest.skip("not running in docker")
+
+        with create_tarantool_instance(replication_source=["x:1"]) as instance:
+            instance.start(wait=False)
+
+            conn = asynctnt.Connection(
+                host=instance.host,
+                port=instance.port,
+                fetch_schema=True,
+                reconnect_timeout=0.1,
+                connect_timeout=10,
+            )
+            assert conn.connect_timeout == 10
+            try:
+                states: dict[ConnectionState, bool] = {}
+
+                async def state_checker() -> None:
+                    while True:
+                        states[conn.state] = True
+                        await asyncio.sleep(0.001)
+
+                checker = asyncio.ensure_future(state_checker())
+
+                try:
+                    await asyncio.wait_for(conn.connect(), 1)
+                except asyncio.TimeoutError:
+                    pass  # connect cancelled as expected
+
+                checker.cancel()
+
+                assert states.get(ConnectionState.CONNECTING, False), "was in connecting"
+
+                with pytest.raises(TarantoolNotConnectedError):
+                    await conn.call("box.info")
+            finally:
+                await conn.disconnect()
+
+    @pytest.mark.min_bin_version((1, 7))
+    async def test_connect_waiting_for_spaces_no_reconnect(
+        self, tnt: TarantoolSyncInstance, in_docker: bool
+    ) -> None:
+        if in_docker:
+            pytest.skip("not running in docker")
+
+        with create_tarantool_instance(replication_source=["x:1"]) as instance:
+            instance.start(wait=False)
+            await asyncio.sleep(1)
+
+            conn = asynctnt.Connection(
+                host=instance.host,
+                port=instance.port,
+                fetch_schema=True,
+                reconnect_timeout=0,
+                connect_timeout=10,
+            )
+            try:
+                with pytest.raises(TarantoolDatabaseError) as exc:
+                    await conn.connect()
+
+                assert exc.value.code == ErrorCode.ER_NO_SUCH_SPACE
+            finally:
+                await conn.disconnect()
+
+    @pytest.mark.max_bin_version((1, 7))
+    async def test_connect_waiting_for_spaces_no_reconnect_1_6(
+        self, tnt: TarantoolSyncInstance, in_docker: bool
+    ) -> None:
+        if in_docker:
+            pytest.skip("not running in docker")
+
+        with create_tarantool_instance(replication_source=["x:1"]) as instance:
+            instance.start(wait=False)
+            await asyncio.sleep(1)
+
+            conn = asynctnt.Connection(
+                host=instance.host,
+                port=instance.port,
+                fetch_schema=True,
+                reconnect_timeout=0,
+                connect_timeout=10,
+            )
+            try:
+                with pytest.raises(ConnectionRefusedError):
+                    await conn.connect()
+            finally:
+                await conn.disconnect()
+
+    @pytest.mark.min_bin_version((1, 7))
+    async def test_connect_err_loading(
+        self, tnt: TarantoolSyncInstance, in_docker: bool
+    ) -> None:
+        if in_docker:
+            pytest.skip("not running in docker")
+
+        with create_tarantool_instance(replication_source=["x:1"]) as instance:
+            instance.start(wait=False)
+            await asyncio.sleep(1)
+
+            conn = asynctnt.Connection(
+                host=instance.host,
+                port=instance.port,
+                username="t1",
+                password="t1",
+                fetch_schema=True,
+                reconnect_timeout=0,
+                connect_timeout=10,
+            )
+            try:
+                with pytest.raises(TarantoolDatabaseError) as exc:
+                    await conn.connect()
+
+                assert exc.value.code == ErrorCode.ER_LOADING
+            finally:
+                await conn.disconnect()
+
+    @pytest.mark.max_bin_version((1, 7))
+    async def test_connect_err_loading_1_6(
+        self, tnt: TarantoolSyncInstance, in_docker: bool
+    ) -> None:
+        if in_docker:
+            pytest.skip("not running in docker")
+
+        with create_tarantool_instance(replication_source=["x:1"]) as instance:
+            instance.start(wait=False)
+            await asyncio.sleep(1)
+
+            conn = asynctnt.Connection(
+                host=instance.host,
+                port=instance.port,
+                username="t1",
+                password="t1",
+                fetch_schema=True,
+                reconnect_timeout=0,
+                connect_timeout=10,
+            )
+            try:
+                with pytest.raises(ConnectionRefusedError):
+                    await conn.connect()
+            finally:
+                await conn.disconnect()
+
     async def test_connect_tnt_restarted(self, tnt: TarantoolSyncInstance) -> None:
         conn = asynctnt.Connection(
             host=tnt.host,
@@ -487,182 +663,6 @@ class TestConnect:
             await conn.call("box.info")
         finally:
             await conn.disconnect()
-
-    async def test_connect_wait_tnt_started(self, tnt: TarantoolSyncInstance) -> None:
-        tnt.stop()
-        conn = asynctnt.Connection(
-            host=tnt.host,
-            port=tnt.port,
-            username="t1",
-            password="t1",
-            fetch_schema=True,
-            reconnect_timeout=0.000000001,
-        )
-        try:
-            coro = asyncio.ensure_future(conn.connect())
-            await asyncio.sleep(0.3)
-            tnt.start()
-            await asyncio.sleep(1)
-            while True:
-                try:
-                    await coro
-                    break
-                except TarantoolDatabaseError as e:
-                    if e.code == ErrorCode.ER_NO_SUCH_USER:
-                        # Try again
-                        coro = asyncio.ensure_future(conn.connect())
-                        continue
-                    raise
-
-            assert conn.state == ConnectionState.CONNECTED
-            await conn.call("box.info")
-        finally:
-            await conn.disconnect()
-
-    async def test_connect_waiting_for_spaces(
-        self, tnt: TarantoolSyncInstance, in_docker: bool
-    ) -> None:
-        if in_docker:
-            pytest.skip("not running in docker")
-
-        with create_tarantool_instance(replication_source=["x:1"]) as instance:
-            instance.start(wait=False)
-
-            conn = asynctnt.Connection(
-                host=instance.host,
-                port=instance.port,
-                fetch_schema=True,
-                reconnect_timeout=0.1,
-                connect_timeout=10,
-            )
-            assert conn.connect_timeout == 10
-            try:
-                states: dict[ConnectionState, bool] = {}
-
-                async def state_checker() -> None:
-                    while True:
-                        states[conn.state] = True
-                        await asyncio.sleep(0.001)
-
-                checker = asyncio.ensure_future(state_checker())
-
-                try:
-                    await asyncio.wait_for(conn.connect(), 1)
-                except asyncio.TimeoutError:
-                    pass  # connect cancelled as expected
-
-                checker.cancel()
-
-                assert states.get(ConnectionState.CONNECTING, False), "was in connecting"
-
-                with pytest.raises(TarantoolNotConnectedError):
-                    await conn.call("box.info")
-            finally:
-                await conn.disconnect()
-
-    @pytest.mark.min_bin_version((1, 7))
-    async def test_connect_waiting_for_spaces_no_reconnect(
-        self, tnt: TarantoolSyncInstance, in_docker: bool
-    ) -> None:
-        if in_docker:
-            pytest.skip("not running in docker")
-
-        with create_tarantool_instance(replication_source=["x:1"]) as instance:
-            instance.start(wait=False)
-            await asyncio.sleep(1)
-
-            conn = asynctnt.Connection(
-                host=instance.host,
-                port=instance.port,
-                fetch_schema=True,
-                reconnect_timeout=0,
-                connect_timeout=10,
-            )
-            try:
-                with pytest.raises(TarantoolDatabaseError) as exc:
-                    await conn.connect()
-
-                assert exc.value.code == ErrorCode.ER_NO_SUCH_SPACE
-            finally:
-                await conn.disconnect()
-
-    @pytest.mark.max_bin_version((1, 7))
-    async def test_connect_waiting_for_spaces_no_reconnect_1_6(
-        self, tnt: TarantoolSyncInstance, in_docker: bool
-    ) -> None:
-        if in_docker:
-            pytest.skip("not running in docker")
-
-        with create_tarantool_instance(replication_source=["x:1"]) as instance:
-            instance.start(wait=False)
-            await asyncio.sleep(1)
-
-            conn = asynctnt.Connection(
-                host=instance.host,
-                port=instance.port,
-                fetch_schema=True,
-                reconnect_timeout=0,
-                connect_timeout=10,
-            )
-            try:
-                with pytest.raises(ConnectionRefusedError):
-                    await conn.connect()
-            finally:
-                await conn.disconnect()
-
-    @pytest.mark.min_bin_version((1, 7))
-    async def test_connect_err_loading(
-        self, tnt: TarantoolSyncInstance, in_docker: bool
-    ) -> None:
-        if in_docker:
-            pytest.skip("not running in docker")
-
-        with create_tarantool_instance(replication_source=["x:1"]) as instance:
-            instance.start(wait=False)
-            await asyncio.sleep(1)
-
-            conn = asynctnt.Connection(
-                host=instance.host,
-                port=instance.port,
-                username="t1",
-                password="t1",
-                fetch_schema=True,
-                reconnect_timeout=0,
-                connect_timeout=10,
-            )
-            try:
-                with pytest.raises(TarantoolDatabaseError) as exc:
-                    await conn.connect()
-
-                assert exc.value.code == ErrorCode.ER_LOADING
-            finally:
-                await conn.disconnect()
-
-    @pytest.mark.max_bin_version((1, 7))
-    async def test_connect_err_loading_1_6(
-        self, tnt: TarantoolSyncInstance, in_docker: bool
-    ) -> None:
-        if in_docker:
-            pytest.skip("not running in docker")
-
-        with create_tarantool_instance(replication_source=["x:1"]) as instance:
-            instance.start(wait=False)
-            await asyncio.sleep(1)
-
-            conn = asynctnt.Connection(
-                host=instance.host,
-                port=instance.port,
-                username="t1",
-                password="t1",
-                fetch_schema=True,
-                reconnect_timeout=0,
-                connect_timeout=10,
-            )
-            try:
-                with pytest.raises(ConnectionRefusedError):
-                    await conn.connect()
-            finally:
-                await conn.disconnect()
 
     async def test_connect_invalid_user_no_reconnect(
         self, tnt: TarantoolSyncInstance
