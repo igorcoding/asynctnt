@@ -371,9 +371,7 @@ class TestConnect:
         finally:
             await conn.disconnect()
 
-    async def test_connect_waiting_for_spaces(
-        self, tnt: TarantoolSyncInstance, in_docker: bool
-    ) -> None:
+    async def test_connect_waiting_for_spaces(self, in_docker: bool) -> None:
         if in_docker:
             pytest.skip("not running in docker")
 
@@ -416,7 +414,7 @@ class TestConnect:
 
     @pytest.mark.min_bin_version((1, 7))
     async def test_connect_waiting_for_spaces_no_reconnect(
-        self, tnt: TarantoolSyncInstance, in_docker: bool
+        self, in_docker: bool
     ) -> None:
         if in_docker:
             pytest.skip("not running in docker")
@@ -442,7 +440,7 @@ class TestConnect:
 
     @pytest.mark.max_bin_version((1, 7))
     async def test_connect_waiting_for_spaces_no_reconnect_1_6(
-        self, tnt: TarantoolSyncInstance, in_docker: bool
+        self, in_docker: bool
     ) -> None:
         if in_docker:
             pytest.skip("not running in docker")
@@ -465,9 +463,7 @@ class TestConnect:
                 await conn.disconnect()
 
     @pytest.mark.min_bin_version((1, 7))
-    async def test_connect_err_loading(
-        self, tnt: TarantoolSyncInstance, in_docker: bool
-    ) -> None:
+    async def test_connect_err_loading(self, in_docker: bool) -> None:
         if in_docker:
             pytest.skip("not running in docker")
 
@@ -493,9 +489,7 @@ class TestConnect:
                 await conn.disconnect()
 
     @pytest.mark.max_bin_version((1, 7))
-    async def test_connect_err_loading_1_6(
-        self, tnt: TarantoolSyncInstance, in_docker: bool
-    ) -> None:
+    async def test_connect_err_loading_1_6(self, in_docker: bool) -> None:
         if in_docker:
             pytest.skip("not running in docker")
 
