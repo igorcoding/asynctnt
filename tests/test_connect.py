@@ -30,6 +30,10 @@ class TestConnect:
         assert conn.schema_id is None
         assert conn.version is None
         assert conn.state == ConnectionState.DISCONNECTED
+        assert repr(conn) == (
+            f"<asynctnt.Connection host={conn.host} port={conn.port} "
+            f"state={conn.state!r}>"
+        )
 
         c = await conn.connect()
         assert c is conn
