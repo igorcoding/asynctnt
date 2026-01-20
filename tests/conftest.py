@@ -19,7 +19,6 @@ DEFAULT_APPLUA_PATH = os.path.join(TESTS_DIR, "files", "app.lua")
 TESTER_SPACE_ID = 512
 TESTER_SPACE_NAME = "tester"
 
-
 # --- Event Loop Configuration ---
 
 
@@ -91,6 +90,56 @@ def create_tarantool_instance(
         cleanup=cleanup,
         replication_source=replication_source,
     )
+
+
+# --- Binary Version Checking ---
+
+# Global to cache the Tarantool binary version
+_tarantool_bin_version: tuple[int, ...] | None = None
+
+
+def get_tarantool_bin_version() -> tuple[int, ...] | None:
+    """Get the Tarantool binary version, starting a temporary instance if needed."""
+    global _tarantool_bin_version
+    if _tarantool_bin_version is not None:
+        return _tarantool_bin_version
+
+    instance = create_tarantool_instance()
+    try:
+        instance.start()
+        _tarantool_bin_version = instance.bin_version
+    finally:
+        instance.stop()
+
+    return _tarantool_bin_version
+
+
+def pytest_configure(config: pytest.Config) -> None:
+    """Register custom markers."""
+    config.addinivalue_line(
+        "markers",
+        "min_bin_version(version): skip test if Tarantool binary version is below the specified version",
+    )
+
+
+def pytest_collection_modifyitems(
+    config: pytest.Config, items: list[pytest.Item]
+) -> None:
+    """Skip tests based on min_bin_version marker."""
+    bin_version = get_tarantool_bin_version()
+    if bin_version is None:
+        return
+
+    for item in items:
+        marker = item.get_closest_marker("min_bin_version")
+        if marker is not None:
+            min_version = marker.args[0]
+            if bin_version < min_version:
+                item.add_marker(
+                    pytest.mark.skip(
+                        reason=f"Requires Tarantool >= {min_version}, got {bin_version}"
+                    )
+                )
 
 
 # --- Tarantool Instance Fixtures ---
