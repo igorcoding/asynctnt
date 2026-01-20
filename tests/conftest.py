@@ -244,6 +244,42 @@ async def fill_data_dict(conn: asynctnt.Connection) -> list[dict]:
 # --- Version Checking ---
 
 
+def check_version(
+    version: tuple[int, ...],
+    *,
+    min: tuple[int, ...] | None = None,
+    max: tuple[int, ...] | None = None,
+    min_included: bool = True,
+    max_included: bool = False,
+) -> None:
+    """
+    Check if version meets requirements, skip test if not.
+
+    Args:
+        version: The version tuple to check
+        min: Minimum required version tuple (e.g., (2, 10))
+        max: Maximum required version tuple (e.g., (3, 0))
+        min_included: Whether min version is inclusive (default True)
+        max_included: Whether max version is inclusive (default False)
+
+    Raises:
+        pytest.skip: If version requirements aren't met
+    """
+    # Check minimum version
+    if min is not None:
+        if min_included and version < min:
+            pytest.skip(f"Requires Tarantool >= {min}, got {version}")
+        if not min_included and version <= min:
+            pytest.skip(f"Requires Tarantool > {min}, got {version}")
+
+    # Check maximum version
+    if max is not None:
+        if max_included and version > max:
+            pytest.skip(f"Requires Tarantool <= {max}, got {version}")
+        if not max_included and version >= max:
+            pytest.skip(f"Requires Tarantool < {max}, got {version}")
+
+
 def ensure_version(
     *,
     min: tuple[int, ...] | None = None,
@@ -297,25 +333,13 @@ def ensure_version(
                     f"Could not find connection parameter '{conn}' in test function"
                 )
 
-            version = connection.version
-
-            # Check minimum version
-            if min is not None:
-                if min_included and version < min:
-                    pytest.skip(f"Requires Tarantool >= {min}, got {version}")
-                    return
-                if not min_included and version <= min:
-                    pytest.skip(f"Requires Tarantool > {min}, got {version}")
-                    return
-
-            # Check maximum version
-            if max is not None:
-                if max_included and version > max:
-                    pytest.skip(f"Requires Tarantool <= {max}, got {version}")
-                    return
-                if not max_included and version >= max:
-                    pytest.skip(f"Requires Tarantool < {max}, got {version}")
-                    return
+            check_version(
+                connection.version,
+                min=min,
+                max=max,
+                min_included=min_included,
+                max_included=max_included,
+            )
 
             return await func(*args, **kwargs)
 
