@@ -405,7 +405,9 @@ class TestConnect:
 
                 checker.cancel()
 
-                assert states.get(ConnectionState.CONNECTING, False), "was in connecting"
+                assert states.get(ConnectionState.CONNECTING, False), (
+                    "was in connecting"
+                )
 
                 with pytest.raises(TarantoolNotConnectedError):
                     await conn.call("box.info")
@@ -776,9 +778,9 @@ class TestConnect:
             checker.cancel()
 
             assert states.get(ConnectionState.CONNECTING, False), "was in connecting"
-            assert states.get(
-                ConnectionState.RECONNECTING, False
-            ), "was in reconnecting"
+            assert states.get(ConnectionState.RECONNECTING, False), (
+                "was in reconnecting"
+            )
 
             with pytest.raises(TarantoolNotConnectedError):
                 await conn.call("box.info")
