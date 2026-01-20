@@ -1,90 +1,97 @@
+"""Tests for insert and replace operations."""
+
+from __future__ import annotations
+
+import pytest
+
+import asynctnt
 from asynctnt import Response
 from asynctnt.exceptions import TarantoolSchemaError
-from tests import BaseTarantoolTestCase
-from tests.util import get_complex_param
+from tests.conftest import TESTER_SPACE_ID, TESTER_SPACE_NAME
+from tests.utils.assertions import assert_response_equal, assert_response_equal_kv
+from tests.utils.params import get_complex_param
 
 
-class InsertTestCase(BaseTarantoolTestCase):
-    async def test__insert_one(self):
+class TestInsert:
+    """Insert operation tests."""
+
+    async def test_insert_one(self, conn: asynctnt.Connection) -> None:
         data = [1, "hello", 1, 4, "what is up"]
-        res = await self.conn.insert(self.TESTER_SPACE_ID, data)
+        res = await conn.insert(TESTER_SPACE_ID, data)
 
-        self.assertIsInstance(res, Response, "Got response")
-        self.assertEqual(res.code, 0, "success")
-        self.assertGreater(res.sync, 0, "sync > 0")
-        self.assertResponseEqual(res, [data], "Body ok")
+        assert isinstance(res, Response), "Got response"
+        assert res.code == 0, "success"
+        assert res.sync > 0, "sync > 0"
+        assert_response_equal(res, [data], "Body ok")
 
-    async def test__insert_by_name(self):
+    async def test_insert_by_name(self, conn: asynctnt.Connection) -> None:
         data = [1, "hello", 1, 4, "what is up"]
-        res = await self.conn.insert(self.TESTER_SPACE_NAME, data)
+        res = await conn.insert(TESTER_SPACE_NAME, data)
 
-        self.assertIsInstance(res, Response, "Got response")
-        self.assertEqual(res.code, 0, "success")
-        self.assertGreater(res.sync, 0, "sync > 0")
-        self.assertResponseEqual(res, [data], "Body ok")
+        assert isinstance(res, Response), "Got response"
+        assert res.code == 0, "success"
+        assert res.sync > 0, "sync > 0"
+        assert_response_equal(res, [data], "Body ok")
 
-    async def test__insert_by_name_no_schema(self):
-        await self.tnt_reconnect(fetch_schema=False)
-
+    async def test_insert_by_name_no_schema(
+        self, conn_no_schema: asynctnt.Connection
+    ) -> None:
         data = [1, "hello", 1, 4, "what is up"]
-        with self.assertRaises(TarantoolSchemaError):
-            await self.conn.insert(self.TESTER_SPACE_NAME, data)
+        with pytest.raises(TarantoolSchemaError):
+            await conn_no_schema.insert(TESTER_SPACE_NAME, data)
 
-    async def test__insert_complex_tuple(self):
+    async def test_insert_complex_tuple(self, conn: asynctnt.Connection) -> None:
         p, p_cmp = get_complex_param(replace_bin=False)
         data = [1, "hello", 1, 2, p]
         data_cmp = [1, "hello", 1, 2, p_cmp]
 
-        res = await self.conn.insert(self.TESTER_SPACE_ID, data)
-        self.assertResponseEqual(res, [data_cmp], "Body ok")
+        res = await conn.insert(TESTER_SPACE_ID, data)
+        assert_response_equal(res, [data_cmp], "Body ok")
 
-    async def test__insert_replace(self):
+    async def test_insert_replace(self, conn: asynctnt.Connection) -> None:
         data = [1, "hello", 1, 4, "what is up"]
 
-        await self.conn.insert(self.TESTER_SPACE_ID, data)
+        await conn.insert(TESTER_SPACE_ID, data)
 
-        try:
-            data = [1, "hello2", 1, 4, "what is up"]
-            res = await self.conn.insert(self.TESTER_SPACE_ID, t=data, replace=True)
+        data = [1, "hello2", 1, 4, "what is up"]
+        res = await conn.insert(TESTER_SPACE_ID, t=data, replace=True)
 
-            self.assertResponseEqual(res, [data], "Body ok")
-        except Exception as e:
-            self.fail(e)
+        assert_response_equal(res, [data], "Body ok")
 
-    async def test__insert_invalid_types(self):
-        with self.assertRaisesRegex(
+    async def test_insert_invalid_types(self, conn: asynctnt.Connection) -> None:
+        with pytest.raises(
             TypeError,
-            r"missing 2 required positional arguments: " r"\'space\' and \'t\'",
+            match=r"missing 2 required positional arguments: 'space' and 't'",
         ):
-            await self.conn.insert()
+            await conn.insert()
 
-        with self.assertRaisesRegex(
-            TypeError, r"missing 1 required positional argument: \'t\'"
+        with pytest.raises(
+            TypeError, match=r"missing 1 required positional argument: 't'"
         ):
-            await self.conn.insert(self.TESTER_SPACE_ID)
+            await conn.insert(TESTER_SPACE_ID)
 
-    async def test__replace(self):
+    async def test_replace(self, conn: asynctnt.Connection) -> None:
         data = [1, "hello", 1, 4, "what is up"]
-        res = await self.conn.replace(self.TESTER_SPACE_ID, data)
-        self.assertResponseEqual(res, [data], "Body ok")
+        res = await conn.replace(TESTER_SPACE_ID, data)
+        assert_response_equal(res, [data], "Body ok")
 
         data = [1, "hello2", 1, 5, "what is up"]
-        res = await self.conn.replace(self.TESTER_SPACE_ID, data)
-        self.assertResponseEqual(res, [data], "Body ok")
+        res = await conn.replace(TESTER_SPACE_ID, data)
+        assert_response_equal(res, [data], "Body ok")
 
-    async def test__replace_invalid_types(self):
-        with self.assertRaisesRegex(
+    async def test_replace_invalid_types(self, conn: asynctnt.Connection) -> None:
+        with pytest.raises(
             TypeError,
-            r"missing 2 required positional arguments: " r"\'space\' and \'t\'",
+            match=r"missing 2 required positional arguments: 'space' and 't'",
         ):
-            await self.conn.replace()
+            await conn.replace()
 
-        with self.assertRaisesRegex(
-            TypeError, r"missing 1 required positional argument: \'t\'"
+        with pytest.raises(
+            TypeError, match=r"missing 1 required positional argument: 't'"
         ):
-            await self.conn.replace(self.TESTER_SPACE_ID)
+            await conn.replace(TESTER_SPACE_ID)
 
-    async def test__insert_dict_key(self):
+    async def test_insert_dict_key(self, conn: asynctnt.Connection) -> None:
         data = {
             "f1": 1,
             "f2": "hello",
@@ -93,10 +100,10 @@ class InsertTestCase(BaseTarantoolTestCase):
             "f5": "hello dog",
         }
         data_cmp = [1, "hello", 5, 6, "hello dog"]
-        res = await self.conn.insert(self.TESTER_SPACE_ID, data)
-        self.assertResponseEqual(res, [data_cmp], "Body ok")
+        res = await conn.insert(TESTER_SPACE_ID, data)
+        assert_response_equal(res, [data_cmp], "Body ok")
 
-    async def test__insert_dict_key_holes(self):
+    async def test_insert_dict_key_holes(self, conn: asynctnt.Connection) -> None:
         data = {
             "f1": 1,
             "f2": "hello",
@@ -105,10 +112,10 @@ class InsertTestCase(BaseTarantoolTestCase):
             "f5": None,
         }
         data_cmp = [1, "hello", 3, 6, None]
-        res = await self.conn.insert(self.TESTER_SPACE_ID, data)
-        self.assertResponseEqual(res, [data_cmp], "Body ok")
+        res = await conn.insert(TESTER_SPACE_ID, data)
+        assert_response_equal(res, [data_cmp], "Body ok")
 
-    async def test__insert_no_special_empty_key(self):
+    async def test_insert_no_special_empty_key(self, conn: asynctnt.Connection) -> None:
         data = {
             "f1": 1,
             "f2": "hello",
@@ -116,25 +123,23 @@ class InsertTestCase(BaseTarantoolTestCase):
             "f4": 6,
             "f5": None,
         }
-        res = await self.conn.insert(self.TESTER_SPACE_ID, data)
+        res = await conn.insert(TESTER_SPACE_ID, data)
 
-        with self.assertRaises(KeyError):
+        with pytest.raises(KeyError):
             res[0][""]
 
-    async def test__insert_dict_resp(self):
+    async def test_insert_dict_resp(self, conn: asynctnt.Connection) -> None:
         data = [0, "hello", 0, 5, "wow"]
-        res = await self.conn.insert(self.TESTER_SPACE_ID, data)
-        self.assertResponseEqualKV(
+        res = await conn.insert(TESTER_SPACE_ID, data)
+        assert_response_equal_kv(
             res, [{"f1": 0, "f2": "hello", "f3": 0, "f4": 5, "f5": "wow"}]
         )
 
-    async def test__insert_resp_extra(self):
+    async def test_insert_resp_extra(self, conn: asynctnt.Connection) -> None:
         data = [0, "hello", 5, 6, "help", "common", "yo"]
-        res = await self.conn.insert(self.TESTER_SPACE_ID, data)
-        self.assertResponseEqual(res, [data])
+        res = await conn.insert(TESTER_SPACE_ID, data)
+        assert_response_equal(res, [data])
 
-    async def test__insert_bin_as_str(self):
-        try:
-            (await self.conn.call("func_load_bin_str"))[0]
-        except UnicodeDecodeError as e:
-            self.fail(e)
+    async def test_insert_bin_as_str(self, conn: asynctnt.Connection) -> None:
+        # Should not raise UnicodeDecodeError
+        (await conn.call("func_load_bin_str"))[0]

@@ -1,29 +1,26 @@
+"""Tests for MessagePack extension types."""
+
+from __future__ import annotations
+
 import datetime
 import uuid
-from dataclasses import dataclass
 from decimal import Decimal
 
+import pytest
 import pytz
 
 import asynctnt
 from asynctnt import IProtoError
 from asynctnt.exceptions import ErrorCode, TarantoolDatabaseError
-from tests import BaseTarantoolTestCase
-from tests._testbase import ensure_version
+from tests.conftest import ensure_version
 
 
-@dataclass
-class DecimalTestCase:
-    python: Decimal
-    tarantool: str
+class TestMpExtDecimal:
+    """Decimal extension type tests."""
 
-
-class MpExtDecimalTestCase(BaseTarantoolTestCase):
-    @ensure_version(min=(2, 2))
-    async def test__decimal(self):
-        space = "tester_ext_dec"
-
-        cases = [
+    @pytest.mark.parametrize(
+        "case",
+        [
             "-12.34",
             "-12.345",
             "-12.4",
@@ -67,222 +64,244 @@ class MpExtDecimalTestCase(BaseTarantoolTestCase):
             "1.2345e4",
             "-1e33",
             "1e-33",
-        ]
+        ],
+    )
+    @ensure_version(min=(2, 2))
+    async def test_decimal(self, conn: asynctnt.Connection, case: str) -> None:
+        space = "tester_ext_dec"
 
-        for case in cases:
-            with self.subTest(case):
-                dec = Decimal(case)
-                res = await self.conn.replace(space, [1, dec])
-                self.assertEqual(res[0][1], dec, "self-return works")
+        dec = Decimal(case)
+        res = await conn.replace(space, [1, dec])
+        assert res[0][1] == dec, "self-return works"
 
-                res = await self.conn.eval(
-                    f"local decimal = require('decimal'); return decimal.new('{case}')"
-                )
-                self.assertEqual(res[0], dec, "matches tarantool decimal")
+        res = await conn.eval(
+            f"local decimal = require('decimal'); return decimal.new('{case}')"
+        )
+        assert res[0] == dec, "matches tarantool decimal"
 
 
-class MpExtUUIDTestCase(BaseTarantoolTestCase):
+class TestMpExtUUID:
+    """UUID extension type tests."""
+
     @ensure_version(min=(2, 4, 1))
-    async def test__uuid(self):
+    async def test_uuid(self, conn: asynctnt.Connection) -> None:
         space = "tester_ext_uuid"
 
         val = uuid.uuid4()
-        res = await self.conn.replace(space, [1, val])
-        self.assertEqual(res[0][1], val)
+        res = await conn.replace(space, [1, val])
+        assert res[0][1] == val
 
         val = uuid.UUID("f6423bdf-b49e-4913-b361-0740c9702e4b")
-        res = await self.conn.replace(space, [1, val])
-        self.assertEqual(res[0][1], val)
+        res = await conn.replace(space, [1, val])
+        assert res[0][1] == val
 
         val = uuid.UUID("00000000-0000-0000-0000-000000000000")
-        res = await self.conn.replace(space, [1, val])
-        self.assertEqual(res[0][1], val)
+        res = await conn.replace(space, [1, val])
+        assert res[0][1] == val
 
         val = uuid.uuid1(1, 100)
-        res = await self.conn.replace(space, [1, val])
-        self.assertEqual(res[0][1], val)
+        res = await conn.replace(space, [1, val])
+        assert res[0][1] == val
 
         val = uuid.uuid3(uuid.uuid4(), "hellothere")
-        res = await self.conn.replace(space, [1, val])
-        self.assertEqual(res[0][1], val)
+        res = await conn.replace(space, [1, val])
+        assert res[0][1] == val
 
         val = uuid.uuid5(uuid.NAMESPACE_URL, "generalkenobi")
-        res = await self.conn.replace(space, [1, val])
-        self.assertEqual(res[0][1], val)
+        res = await conn.replace(space, [1, val])
+        assert res[0][1] == val
 
 
-class MpExtErrorTestCase(BaseTarantoolTestCase):
+class TestMpExtError:
+    """Error extension type tests."""
+
     @ensure_version(min=(2, 4, 1))
-    async def test__ext_error(self):
+    async def test_ext_error(self, conn: asynctnt.Connection) -> None:
         try:
-            await self.conn.eval("""
+            await conn.eval("""
                 box.schema.space.create('_space')
             """)
         except TarantoolDatabaseError as e:
-            self.assertIsNotNone(e.error)
-            self.assertGreater(len(e.error.trace), 0)
+            assert e.error is not None
+            assert len(e.error.trace) > 0
             frame = e.error.trace[0]
-            self.assertEqual("ClientError", frame.error_type)
-            self.assertIsNotNone(frame.file)
-            self.assertIsNotNone(frame.line)
-            self.assertEqual("Space '_space' already exists", frame.message)
-            self.assertEqual(0, frame.err_no)
-            self.assertEqual(ErrorCode.ER_SPACE_EXISTS, frame.code)
+            assert frame.error_type == "ClientError"
+            assert frame.file is not None
+            assert frame.line is not None
+            assert frame.message == "Space '_space' already exists"
+            assert frame.err_no == 0
+            assert frame.code == ErrorCode.ER_SPACE_EXISTS
 
     @ensure_version(min=(2, 4, 1))
-    async def test__ext_error_custom(self):
+    async def test_ext_error_custom(self, conn: asynctnt.Connection) -> None:
         try:
-            await self.conn.eval("""
+            await conn.eval("""
                 local e = box.error.new{code=5,reason='A',type='B'}
                 box.error(e)
             """)
         except TarantoolDatabaseError as e:
-            self.assertIsNotNone(e.error)
-            self.assertGreater(len(e.error.trace), 0)
+            assert e.error is not None
+            assert len(e.error.trace) > 0
             frame = e.error.trace[0]
-            self.assertEqual("CustomError", frame.error_type)
-            self.assertIsNotNone(frame.file)
-            self.assertIsNotNone(frame.line)
-            self.assertEqual("A", frame.message)
-            self.assertEqual(0, frame.err_no)
-            self.assertEqual(5, frame.code)
-            self.assertIn("custom_type", frame.fields)
-            self.assertEqual("B", frame.fields["custom_type"])
+            assert frame.error_type == "CustomError"
+            assert frame.file is not None
+            assert frame.line is not None
+            assert frame.message == "A"
+            assert frame.err_no == 0
+            assert frame.code == 5
+            assert "custom_type" in frame.fields
+            assert frame.fields["custom_type"] == "B"
 
     @ensure_version(min=(2, 10))
-    async def test__ext_error_custom_return(self):
-        resp = await self.conn.eval("""
+    async def test_ext_error_custom_return(self, conn: asynctnt.Connection) -> None:
+        resp = await conn.eval("""
             local e = box.error.new{code=5,reason='A',type='B'}
             return e
         """)
         e = resp[0]
-        self.assertIsInstance(e, IProtoError)
-        self.assertGreater(len(e.trace), 0)
+        assert isinstance(e, IProtoError)
+        assert len(e.trace) > 0
         frame = e.trace[0]
-        self.assertEqual("CustomError", frame.error_type)
-        self.assertEqual("eval", frame.file)
-        self.assertEqual(2, frame.line)
-        self.assertEqual("A", frame.message)
-        self.assertEqual(0, frame.err_no)
-        self.assertEqual(5, frame.code)
-        self.assertIn("custom_type", frame.fields)
-        self.assertEqual("B", frame.fields["custom_type"])
+        assert frame.error_type == "CustomError"
+        assert frame.file == "eval"
+        assert frame.line == 2
+        assert frame.message == "A"
+        assert frame.err_no == 0
+        assert frame.code == 5
+        assert "custom_type" in frame.fields
+        assert frame.fields["custom_type"] == "B"
 
     @ensure_version(min=(2, 10))
-    async def test__ext_error_custom_return_with_disabled_exterror(self):
-        await self.conn.eval("""
+    async def test_ext_error_custom_return_with_disabled_exterror(
+        self, conn: asynctnt.Connection
+    ) -> None:
+        await conn.eval("""
             require('msgpack').cfg{encode_error_as_ext = false}
         """)
         try:
-            resp = await self.conn.eval("""
+            resp = await conn.eval("""
                 local e = box.error.new{code=5,reason='A',type='B'}
                 return e
             """)
             e = resp[0]
-            self.assertIsInstance(e, str)
-            self.assertEqual("A", e)
+            assert isinstance(e, str)
+            assert e == "A"
         finally:
-            await self.conn.eval("""
+            await conn.eval("""
                 require('msgpack').cfg{encode_error_as_ext = true}
             """)
 
 
-class MpExtDatetimeTestCase(BaseTarantoolTestCase):
+class TestMpExtDatetime:
+    """Datetime extension type tests."""
+
     @ensure_version(min=(2, 10))
-    async def test__ext_datetime_read(self):
-        resp = await self.conn.eval("""
+    async def test_ext_datetime_read(self, conn: asynctnt.Connection) -> None:
+        resp = await conn.eval("""
             local date = require('datetime')
             return date.parse('2000-01-01T02:00:00.23+0300')
         """)
         res = resp[0]
         dt = datetime.datetime.fromisoformat("2000-01-01T02:00:00.230000+03:00")
-        self.assertEqual(dt, res)
+        assert dt == res
 
     @ensure_version(min=(2, 10))
-    async def test__ext_datetime_tz(self):
-        resp = await self.conn.eval("""
+    async def test_ext_datetime_tz(self, conn: asynctnt.Connection) -> None:
+        resp = await conn.eval("""
             local date = require('datetime')
             return date.parse('2000-01-01T02:00:00 MSK')
         """)
         res = resp[0]
         dt = datetime.datetime.fromisoformat("2000-01-01T02:00:00+03:00")
-        self.assertEqual(dt, res)
+        assert dt == res
 
     @ensure_version(min=(2, 10))
-    async def test__ext_datetime_read_neg_tz(self):
-        resp = await self.conn.eval("""
+    async def test_ext_datetime_read_neg_tz(self, conn: asynctnt.Connection) -> None:
+        resp = await conn.eval("""
             local date = require('datetime')
             return date.parse('2000-01-01T02:17:43.23-08:00')
         """)
         res = resp[0]
         dt = datetime.datetime.fromisoformat("2000-01-01T02:17:43.230000-08:00")
-        self.assertEqual(dt, res)
+        assert dt == res
 
     @ensure_version(min=(2, 10))
-    async def test__ext_datetime_read_before_1970(self):
-        resp = await self.conn.eval("""
+    async def test_ext_datetime_read_before_1970(
+        self, conn: asynctnt.Connection
+    ) -> None:
+        resp = await conn.eval("""
             local date = require('datetime')
             return date.parse('1930-01-01T02:17:43.23-08:00')
         """)
         res = resp[0]
         dt = datetime.datetime.fromisoformat("1930-01-01T02:17:43.230000-08:00")
-        self.assertEqual(dt, res)
+        assert dt == res
 
     @ensure_version(min=(2, 10))
-    async def test__ext_datetime_write(self):
+    async def test_ext_datetime_write(self, conn: asynctnt.Connection) -> None:
         sp = "tester_ext_datetime"
         dt = datetime.datetime.fromisoformat("2000-01-01T02:17:43.230000-08:00")
-        resp = await self.conn.insert(sp, [1, dt])
+        resp = await conn.insert(sp, [1, dt])
         res = resp[0]
-        self.assertEqual(dt, res["dt"])
+        assert dt == res["dt"]
 
     @ensure_version(min=(2, 10))
-    async def test__ext_datetime_write_before_1970(self):
+    async def test_ext_datetime_write_before_1970(
+        self, conn: asynctnt.Connection
+    ) -> None:
         sp = "tester_ext_datetime"
         dt = datetime.datetime.fromisoformat("1004-01-01T02:17:43.230000+04:00")
-        resp = await self.conn.insert(sp, [1, dt])
+        resp = await conn.insert(sp, [1, dt])
         res = resp[0]
-        self.assertEqual(dt, res["dt"])
+        assert dt == res["dt"]
 
     @ensure_version(min=(2, 10))
-    async def test__ext_datetime_write_without_tz(self):
+    async def test_ext_datetime_write_without_tz(
+        self, conn: asynctnt.Connection
+    ) -> None:
         sp = "tester_ext_datetime"
         dt = datetime.datetime.fromisoformat("2022-04-23T02:17:43.450000")
-        resp = await self.conn.insert(sp, [1, dt])
+        resp = await conn.insert(sp, [1, dt])
         res = resp[0]
-        self.assertEqual(dt, res["dt"])
+        assert dt == res["dt"]
 
     @ensure_version(min=(2, 10))
-    async def test__ext_datetime_write_without_tz_integer(self):
+    async def test_ext_datetime_write_without_tz_integer(
+        self, conn: asynctnt.Connection
+    ) -> None:
         sp = "tester_ext_datetime"
         dt = datetime.datetime.fromisoformat("2022-04-23T02:17:43")
-        resp = await self.conn.insert(sp, [1, dt])
+        resp = await conn.insert(sp, [1, dt])
         res = resp[0]
-        self.assertEqual(dt, res["dt"])
+        assert dt == res["dt"]
 
     @ensure_version(min=(2, 10))
-    async def test__ext_datetime_write_pytz(self):
+    async def test_ext_datetime_write_pytz(self, conn: asynctnt.Connection) -> None:
         sp = "tester_ext_datetime"
         dt = datetime.datetime.fromisoformat("2022-04-23T02:17:43")
         dt = pytz.timezone("Europe/Amsterdam").localize(dt)
-        resp = await self.conn.insert(sp, [1, dt])
+        resp = await conn.insert(sp, [1, dt])
         res = resp[0]
-        self.assertEqual(dt, res["dt"])
+        assert dt == res["dt"]
 
     @ensure_version(min=(2, 10))
-    async def test__ext_datetime_write_pytz_america(self):
+    async def test_ext_datetime_write_pytz_america(
+        self, conn: asynctnt.Connection
+    ) -> None:
         sp = "tester_ext_datetime"
         dt = datetime.datetime.fromisoformat("2022-04-23T02:17:43")
         dt = pytz.timezone("America/New_York").localize(dt)
-        resp = await self.conn.insert(sp, [1, dt])
+        resp = await conn.insert(sp, [1, dt])
         res = resp[0]
-        self.assertEqual(dt, res["dt"])
+        assert dt == res["dt"]
 
 
-class MpExtIntervalTestCase(BaseTarantoolTestCase):
+class TestMpExtInterval:
+    """Interval extension type tests."""
+
     @ensure_version(min=(2, 10))
-    async def test__ext_interval_read(self):
-        resp = await self.conn.eval("""
+    async def test_ext_interval_read(self, conn: asynctnt.Connection) -> None:
+        resp = await conn.eval("""
             local datetime = require('datetime')
             return  datetime.interval.new({
                 year=1,
@@ -295,23 +314,22 @@ class MpExtIntervalTestCase(BaseTarantoolTestCase):
                 nsec=8,
             })
         """)
-        self.assertEqual(
-            asynctnt.MPInterval(
-                year=1,
-                month=2,
-                week=3,
-                day=4,
-                hour=5,
-                min=6,
-                sec=7,
-                nsec=8,
-            ),
-            resp[0],
+        assert resp[0] == asynctnt.MPInterval(
+            year=1,
+            month=2,
+            week=3,
+            day=4,
+            hour=5,
+            min=6,
+            sec=7,
+            nsec=8,
         )
 
     @ensure_version(min=(2, 10))
-    async def test__ext_interval_read_adjust_last(self):
-        resp = await self.conn.eval("""
+    async def test_ext_interval_read_adjust_last(
+        self, conn: asynctnt.Connection
+    ) -> None:
+        resp = await conn.eval("""
             local datetime = require('datetime')
             return  datetime.interval.new({
                 year=1,
@@ -325,24 +343,23 @@ class MpExtIntervalTestCase(BaseTarantoolTestCase):
                 adjust='last'
             })
         """)
-        self.assertEqual(
-            asynctnt.MPInterval(
-                year=1,
-                month=2,
-                week=3,
-                day=4,
-                hour=5,
-                min=6,
-                sec=7,
-                nsec=8,
-                adjust=asynctnt.Adjust.LAST,
-            ),
-            resp[0],
+        assert resp[0] == asynctnt.MPInterval(
+            year=1,
+            month=2,
+            week=3,
+            day=4,
+            hour=5,
+            min=6,
+            sec=7,
+            nsec=8,
+            adjust=asynctnt.Adjust.LAST,
         )
 
     @ensure_version(min=(2, 10))
-    async def test__ext_interval_read_adjust_excess(self):
-        resp = await self.conn.eval("""
+    async def test_ext_interval_read_adjust_excess(
+        self, conn: asynctnt.Connection
+    ) -> None:
+        resp = await conn.eval("""
             local datetime = require('datetime')
             return  datetime.interval.new({
                 year=1,
@@ -356,24 +373,23 @@ class MpExtIntervalTestCase(BaseTarantoolTestCase):
                 adjust='excess'
             })
         """)
-        self.assertEqual(
-            asynctnt.MPInterval(
-                year=1,
-                month=2,
-                week=3,
-                day=4,
-                hour=5,
-                min=6,
-                sec=7,
-                nsec=8,
-                adjust=asynctnt.Adjust.EXCESS,
-            ),
-            resp[0],
+        assert resp[0] == asynctnt.MPInterval(
+            year=1,
+            month=2,
+            week=3,
+            day=4,
+            hour=5,
+            min=6,
+            sec=7,
+            nsec=8,
+            adjust=asynctnt.Adjust.EXCESS,
         )
 
     @ensure_version(min=(2, 10))
-    async def test__ext_interval_read_all_negative(self):
-        resp = await self.conn.eval("""
+    async def test_ext_interval_read_all_negative(
+        self, conn: asynctnt.Connection
+    ) -> None:
+        resp = await conn.eval("""
             local datetime = require('datetime')
             return  datetime.interval.new({
                 year=-1,
@@ -387,24 +403,21 @@ class MpExtIntervalTestCase(BaseTarantoolTestCase):
                 adjust='excess'
             })
         """)
-        self.assertEqual(
-            asynctnt.MPInterval(
-                year=-1,
-                month=-2,
-                week=-3,
-                day=-4,
-                hour=-5,
-                min=-6,
-                sec=-7,
-                nsec=-8,
-                adjust=asynctnt.Adjust.EXCESS,
-            ),
-            resp[0],
+        assert resp[0] == asynctnt.MPInterval(
+            year=-1,
+            month=-2,
+            week=-3,
+            day=-4,
+            hour=-5,
+            min=-6,
+            sec=-7,
+            nsec=-8,
+            adjust=asynctnt.Adjust.EXCESS,
         )
 
     @ensure_version(min=(2, 10))
-    async def test__ext_interval_read_all_mixed(self):
-        resp = await self.conn.eval("""
+    async def test_ext_interval_read_all_mixed(self, conn: asynctnt.Connection) -> None:
+        resp = await conn.eval("""
             local datetime = require('datetime')
             return  datetime.interval.new({
                 year=1,
@@ -418,35 +431,29 @@ class MpExtIntervalTestCase(BaseTarantoolTestCase):
                 adjust='excess'
             })
         """)
-        self.assertEqual(
-            asynctnt.MPInterval(
-                year=1,
-                month=-2,
-                week=3,
-                day=-4,
-                hour=5,
-                min=-6,
-                sec=7,
-                nsec=-8,
-                adjust=asynctnt.Adjust.EXCESS,
-            ),
-            resp[0],
+        assert resp[0] == asynctnt.MPInterval(
+            year=1,
+            month=-2,
+            week=3,
+            day=-4,
+            hour=5,
+            min=-6,
+            sec=7,
+            nsec=-8,
+            adjust=asynctnt.Adjust.EXCESS,
         )
 
     @ensure_version(min=(2, 10))
-    async def test__ext_interval_read_zeros(self):
-        resp = await self.conn.eval("""
+    async def test_ext_interval_read_zeros(self, conn: asynctnt.Connection) -> None:
+        resp = await conn.eval("""
             local datetime = require('datetime')
             return  datetime.interval.new({})
         """)
-        self.assertEqual(
-            asynctnt.MPInterval(),
-            resp[0],
-        )
+        assert resp[0] == asynctnt.MPInterval()
 
     @ensure_version(min=(2, 10))
-    async def test__ext_interval_send(self):
-        resp = await self.conn.eval(
+    async def test_ext_interval_send(self, conn: asynctnt.Connection) -> None:
+        resp = await conn.eval(
             """
             local args = {...}
             local val = args[1]
@@ -475,11 +482,11 @@ class MpExtIntervalTestCase(BaseTarantoolTestCase):
                 )
             ],
         )
-        self.assertTrue(resp[0])
+        assert resp[0] is True
 
     @ensure_version(min=(2, 10))
-    async def test__ext_interval_send_excess(self):
-        resp = await self.conn.eval(
+    async def test_ext_interval_send_excess(self, conn: asynctnt.Connection) -> None:
+        resp = await conn.eval(
             """
             local args = {...}
             local val = args[1]
@@ -510,11 +517,13 @@ class MpExtIntervalTestCase(BaseTarantoolTestCase):
                 )
             ],
         )
-        self.assertTrue(resp[0])
+        assert resp[0] is True
 
     @ensure_version(min=(2, 10))
-    async def test__ext_interval_send_with_zeros(self):
-        resp = await self.conn.eval(
+    async def test_ext_interval_send_with_zeros(
+        self, conn: asynctnt.Connection
+    ) -> None:
+        resp = await conn.eval(
             """
             local args = {...}
             local val = args[1]
@@ -529,4 +538,4 @@ class MpExtIntervalTestCase(BaseTarantoolTestCase):
                 )
             ],
         )
-        self.assertTrue(resp[0])
+        assert resp[0] is True

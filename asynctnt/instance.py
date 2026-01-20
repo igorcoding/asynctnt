@@ -768,6 +768,7 @@ class TarantoolSyncDockerInstance(TarantoolSyncInstance):
         wal_mode="none",
         initlua_template=None,
         applua="-- app.lua --",
+        extra_box_cfg="",
         timeout=10.0,
     ):
         super().__init__(
@@ -786,6 +787,7 @@ class TarantoolSyncDockerInstance(TarantoolSyncInstance):
             cleanup=True,
             initlua_template=initlua_template,
             applua=applua,
+            extra_box_cfg=extra_box_cfg,
             timeout=timeout,
         )
         self._docker_image = docker_image or "tarantool/tarantool"
